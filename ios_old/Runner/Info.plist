@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  LVS Control · ios/Runner/Info.plist
+  Configuración iOS: permisos BLE + background mode bluetooth-central
+-->
+<plist version="1.0">
+    <dict>
+        <!-- ══════════════════════════════════════════════════════════
+         INFORMACIÓN BÁSICA DE LA APP ═════════════════════════════════════════════════════════= -->
+        <key>CFBundleDevelopmentRegion</key>
+        <string>$(DEVELOPMENT_LANGUAGE)</string>
+        <key>CFBundleDisplayName</key>
+        <string>LVS Control</string>
+        <key>CFBundleExecutable</key>
+        <string>$(EXECUTABLE_NAME)</string>
+        <key>CFBundleIdentifier</key>
+        <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundleName</key>
+        <string>lvs_control</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleShortVersionString</key>
+        <string>$(FLUTTER_BUILD_NAME)</string>
+        <key>CFBundleSignature</key>
+        <string>????</string>
+        <key>CFBundleVersion</key>
+        <string>$(FLUTTER_BUILD_NUMBER)</string>
+
+        <!-- ══════════════════════════════════════════════════════════
+         PERMISOS BLE — iOS requiere cadenas descriptivas ═════════════════════════════════════════════════════════= -->
+
+        <!-- Descripción para el diálogo del sistema al pedir acceso BLE -->
+        <key>NSBluetoothAlwaysUsageDescription</key>
+        <string>LVS Control necesita Bluetooth para conectarse y controlar tu dispositivo Love Spouse 8154 (wbMSE) y enviarle comandos de vibración.</string>
+
+        <!-- iOS 12 y anteriores -->
+        <key>NSBluetoothPeripheralUsageDescription</key>
+        <string>LVS Control usa Bluetooth para comunicarse con el dispositivo Love Spouse 8154.</string>
+
+        <!-- ══════════════════════════════════════════════════════════
+         PERMISOS ACELERÓMETRO (Shake Mode) ═════════════════════════════════════════════════════════= -->
+        <key>NSMotionUsageDescription</key>
+        <string>El Modo Shake usa el acelerómetro de tu dispositivo para controlar la intensidad de vibración según el movimiento.</string>
+
+        <!-- ══════════════════════════════════════════════════════════
+         MODOS EN SEGUNDO PLANO
+         CRÍTICO: bluetooth-central permite que CoreBluetooth
+         continúe en background para mantener la conexión GATT activa ═════════════════════════════════════════════════════════= -->
+        <key>UIBackgroundModes</key>
+        <array>
+            <!-- Mantiene la conexión BLE y el envío de comandos cuando
+             la app está en background o la pantalla apagada -->
+            <string>bluetooth-central</string>
+            <!-- Permitir actualización periódica de la app en background -->
+            <string>fetch</string>
+            <!-- Para notificaciones de desconexión -->
+            <string>remote-notification</string>
+        </array>
+
+        <!-- ══════════════════════════════════════════════════════════
+         CONFIGURACION UI ═════════════════════════════════════════════════════════= -->
+        <key>UILaunchStoryboardName</key>
+        <string>LaunchScreen</string>
+        <key>UIMainStoryboardFile</key>
+        <string>Main</string>
+        <key>UISupportedInterfaceOrientations</key>
+        <array>
+            <string>UIInterfaceOrientationPortrait</string>
+            <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        </array>
+        <key>UISupportedInterfaceOrientations~ipad</key>
+        <array>
+            <string>UIInterfaceOrientationPortrait</string>
+            <string>UIInterfaceOrientationPortraitUpsideDown</string>
+            <string>UIInterfaceOrientationLandscapeLeft</string>
+            <string>UIInterfaceOrientationLandscapeRight</string>
+        </array>
+
+        <!-- Status bar oscura para fondo negro -->
+        <key>UIStatusBarStyle</key>
+        <string>UIStatusBarStyleLightContent</string>
+        <key>UIViewControllerBasedStatusBarAppearance</key>
+        <false/>
+
+        <!-- Flutter (no Flutter framework) -->
+        <key>CADisableMinimumFrameDurationOnPhone</key>
+        <true/>
+        <key>UIApplicationSupportsIndirectInputEvents</key>
+        <true/>
+    </dict>
+</plist>

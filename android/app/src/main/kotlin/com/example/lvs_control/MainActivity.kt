@@ -1,0 +1,5 @@
+package com.example.lvs_control
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

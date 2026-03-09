@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ═══════════════════════════════════════════════════════════════
+     LVS Control · android/app/src/main/AndroidManifest.xml
+     Permisos BLE completos para Android 6+ hasta Android 14+ ══════════════════════════════════════════════════════════════= -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ══════════════════════════════════════════════════════════
+         PERMISOS BLUETOOTH ═════════════════════════════════════════════════════════= -->
+
+    <!-- Android 12+ (API 31+): Nuevos permisos granulares BLE -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" tools:targetApi="s" />
+
+    <!-- Android < 12 (API 30-): Permisos clásicos de BLE -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+
+    <!-- Requerido en Android 6–11 para escaneo BLE (y útil genéricamente sin límite para evitar warnings) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- ══════════════════════════════════════════════════════════
+         PERMISOS PARA SEGUNDO PLANO (FOREGROUND SERVICE) ═════════════════════════════════════════════════════════= -->
+
+    <!-- Requerido para el foreground service que mantiene BLE activo -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Android 14+ (API 34+): tipo explícito para BLE en background -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" tools:targetApi="34" />
+
+    <!-- Mantener CPU activa durante envío de comandos -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Notificaciones (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:targetApi="tiramisu" />
+
+    <!-- Internet (requerido por flutter_foreground_task internamente) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- ── Multimedia & Files ─────────────────────────────────── -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- Android 13+ (API 33+) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" tools:targetApi="33" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:targetApi="33" />
+
+    <!-- ══════════════════════════════════════════════════════════
+         FEATURES — requiere BLE hardware ═════════════════════════════════════════════════════════= -->
+    <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
+    <!-- Acelerómetro para Shake Mode (no required, degradación elegante) -->
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" />
+
+    <application android:label="Velvet Sync" android:name="${applicationName}" android:icon="@mipmap/launcher_icon" android:allowBackup="false" android:supportsRtl="false" android:requestLegacyExternalStorage="false" android:enableOnBackInvokedCallback="true">
+
+        <!-- ── Actividad principal ─────────────────────────────── -->
+        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop" android:taskAffinity="" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
+
+            <meta-data android:name="io.flutter.embedding.android.NormalTheme" android:resource="@style/NormalTheme" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- FlutterActivity auxiliar para Flutter 3.x -->
+        <activity android:name="com.ryanheise.audioservice.AudioServiceActivity" android:exported="false" tools:replace="android:exported" />
+
+        <!-- FlutterForegroundTask entrypoint para Dart isolate BG -->
+        <meta-data android:name="flutterEmbedding" android:value="2" />
+    </application>
+</manifest>

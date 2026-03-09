@@ -1,0 +1,8 @@
+Analyzing lvs-flutter...                                        
+
+  error - The named parameter 'activeThumbColor' isn't defined - lib\screens\home_screen.dart:357:19 - undefined_named_parameter
+  error - The named parameter 'inactiveThumbColor' isn't defined - lib\screens\home_screen.dart:358:19 - undefined_named_parameter
+  error - The named parameter 'activeThumbColor' isn't defined - lib\screens\home_screen.dart:526:17 - undefined_named_parameter
+  error - The named parameter 'inactiveThumbColor' isn't defined - lib\screens\home_screen.dart:527:17 - undefined_named_parameter
+
+4 issues found. (ran in 38.7s)
