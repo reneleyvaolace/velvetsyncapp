@@ -127,6 +127,8 @@ class SupabaseService {
     } catch (e) {
       return 1.0;
     }
+  }
+
   // 5. Sesiones Compartidas (Link Remoto)
   Future<Map<String, dynamic>?> fetchSessionByToken(String token) async {
     if (!_isInitialized) return null;
