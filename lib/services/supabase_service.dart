@@ -127,5 +127,19 @@ class SupabaseService {
     } catch (e) {
       return 1.0;
     }
+  // 5. Sesiones Compartidas (Link Remoto)
+  Future<Map<String, dynamic>?> fetchSessionByToken(String token) async {
+    if (!_isInitialized) return null;
+    try {
+      final response = await client
+          .from('shared_session_view')
+          .select()
+          .eq('access_token', token)
+          .maybeSingle();
+      return response;
+    } catch (e) {
+      debugPrint('❌ Error fetchSessionByToken: $e');
+      return null;
+    }
   }
 }

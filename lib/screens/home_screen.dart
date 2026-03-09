@@ -21,6 +21,7 @@ import 'dice_screen.dart';
 import 'roulette_screen.dart';
 import 'reader_screen.dart';
 import 'catalog_screen.dart';
+import 'remote_session_screen.dart';
 import '../services/catalog_service.dart';
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -164,6 +165,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       _buildGameModeCard(context, ble),
                       const SizedBox(height: 20),
                       _buildCompanionCard(context, ble),
+                      const SizedBox(height: 20),
+                      _buildRemoteSessionCard(context),
                       const SizedBox(height: 20),
                       _buildDiceCard(context, ble),
                       const SizedBox(height: 20),
@@ -1349,6 +1352,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     Text('CATÁLOGO LVS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                     SizedBox(height: 4),
                     Text('Explora dispositivos verificados y compatibles.', style: TextStyle(color: LvsColors.text3, fontSize: 12)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.white24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRemoteSessionCard(BuildContext context) {
+    return CardGlass(
+      padding: EdgeInsets.zero,
+      child: InkWell(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen())),
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                LvsColors.bgCard,
+                LvsColors.pink.withOpacity(0.1),
+              ],
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50, height: 50,
+                decoration: BoxDecoration(
+                  color: LvsColors.pink.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.public_rounded, color: LvsColors.pink, size: 28),
+              ),
+              const SizedBox(width: 20),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('SESIÓN REMOTA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    SizedBox(height: 4),
+                    Text('Conecta con el link de tu pareja y controlen juntos.', style: TextStyle(color: LvsColors.text3, fontSize: 12)),
                   ],
                 ),
               ),

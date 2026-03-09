@@ -208,6 +208,24 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
   /// Lista de todos los dispositivos pre-registrados (para mostrar en home)
   List<ToyModel> get preregistered => List.unmodifiable(_preregisteredList);
 
+  /// Busca un modelo por nombre exacto o parcial (para sesiones compartidas)
+  ToyModel? findModelByName(String name) {
+    if (name.isEmpty) return null;
+    final all = _merged();
+    
+    // 1. Match exacto (ignora mayúsculas)
+    try {
+      return all.firstWhere((t) => t.name.toLowerCase() == name.toLowerCase());
+    } catch (_) {
+      // 2. Match parcial (si no hay exacto)
+      try {
+        return all.firstWhere((t) => t.name.toLowerCase().contains(name.toLowerCase()));
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+
   // ─── CRUD ─────────────────────────────────────────────────────
 
   void updateDevice(String oldId, String newName, String newId) {
