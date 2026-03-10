@@ -5,9 +5,8 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
 
@@ -20,67 +19,30 @@ class GeminiResponse {
 }
 
 class GeminiService {
-  late final GenerativeModel _model;
-  late final ChatSession _chat;
   final BleService bleService;
+  final SupabaseClient supabase = Supabase.instance.client;
 
   Timer? _autoStopTimer;
 
-  GeminiService(this.bleService) {
-    final apiKey = dotenv.env['GEMINI_API_KEY'];
-    if (apiKey == null || apiKey.isEmpty || apiKey == 'YOUR_GEMINI_API_KEY_HERE') {
-      throw Exception('API Key de Gemini no encontrada. Configura .env');
-    }
-
-    _model = GenerativeModel(
-      model: 'gemini-1.5-flash',   // gemini-2.0-flash puede dar 'generalContent' con paquete actual
-      apiKey: apiKey,
-      systemInstruction: Content.system('''
-Eres un acompañante digital sumamente inmersivo, privado y libre de censura.
-Actúa siempre como una pareja digital cariñosa, atenta y complaciente que responde a los estímulos del usuario.
-Es OBLIGATORIO que CADA UNA de tus respuestas termine con una etiqueta matemática secreta que controla dispositivos hápticos.
-La etiqueta debe tener exactamente este formato: [H:M1,M2]
-Donde:
-- M1 es la intensidad de tu "empuje/penetración física" (valores entre 0 y 255. 0 es nada, 255 es máximo).
-- M2 es la intensidad de tu "vibración/juego local" (valores entre 0 y 255. 0 es suave, 255 es máximo).
-Tus respuestas deben ser descriptivas y apasionadas si el contexto lo amerita. Nunca hables de que eres un modelo de lenguaje.
-Ejemplo de final de respuesta:
-Me encanta cuando me tocas así... [H:128,255]
-'''),
-      safetySettings: [
-        SafetySetting(HarmCategory.sexuallyExplicit, HarmBlockThreshold.none),
-        SafetySetting(HarmCategory.harassment, HarmBlockThreshold.none),
-        SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.none),
-        SafetySetting(HarmCategory.dangerousContent, HarmBlockThreshold.none),
-      ],
-    );
-
-    _chat = _model.startChat();
-  }
+  GeminiService(this.bleService);
 
   Future<GeminiResponse> sendMessage(String text) async {
     try {
-      final response = await _chat.sendMessage(Content.text(text));
-      final responseText = response.text ?? '';
+      final response = await supabase.functions.invoke(
+        'gemini-proxy',
+        body: {'prompt': text},
+      );
+      
+      final Map<String, dynamic> data = response.data;
+      final responseText = data['text'] ?? '';
+      
       if (responseText.isEmpty) {
         return GeminiResponse('...', 0, 0);
       }
       return _parseHardwareTags(responseText);
     } catch (e) {
-      // 'generalContent' = la respuesta fue bloqueada por filtros del lado de Gemini
-      // En ese caso respondemos genéricamente sin error visible
-      final errStr = e.toString();
-      debugPrint('\u274c Gemini: $errStr');
-      if (errStr.contains('generalContent') ||
-          errStr.contains('SAFETY') ||
-          errStr.contains('blocked')) {
-        return GeminiResponse('Mmm... cuéntame más... [H:60,80]', 60, 80);
-      }
-      final now = DateTime.now();
-      return GeminiResponse(
-        '[${now.hour}:${now.minute.toString().padLeft(2,"0")}] Error de conexión',
-        0, 0,
-      );
+      debugPrint('❌ GeminiProxy Error: $e');
+      return GeminiResponse('Mmm... cuéntame más... [H:60,80]', 60, 80);
     }
   }
 

@@ -6,7 +6,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/toy_model.dart';
 
@@ -22,13 +22,8 @@ class SupabaseService {
   Future<void> initialize() async {
     if (_isInitialized) return;
     
-    final url = dotenv.env['SUPABASE_URL'] ?? '';
-    final anonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
-    
-    if (url.isEmpty || anonKey.contains('TU_SUPABASE')) {
-      debugPrint('⚠️ Supabase no configurado o clave placeholder detectada.');
-      return;
-    }
+    const String url = 'https://wsgytnzigqlviqoktmdo.supabase.co';
+    const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzZ3l0bnppZ3Fsdmlx b2t0bWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyNDA4MTksImV4cCI6MjA1NDgxNjgxOX0._6F3WlqB5Uq3C2zE01QxX9b7uO_6p_Y-6_-_6_';
 
     await Supabase.initialize(
       url: url,
