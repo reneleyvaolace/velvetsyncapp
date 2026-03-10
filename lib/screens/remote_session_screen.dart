@@ -10,6 +10,7 @@ import '../services/supabase_service.dart';
 import '../services/catalog_service.dart';
 import '../models/toy_model.dart';
 import '../theme.dart';
+import '../utils/logger.dart';
 
 class RemoteSessionScreen extends ConsumerStatefulWidget {
   const RemoteSessionScreen({super.key});
@@ -75,19 +76,14 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     if (_sessionData == null) return;
     
     final supabase = ref.read(supabaseServiceProvider);
-    final id = _sessionData!['id']; // ID de la sesión (no el token)
-    
+    final sessionId = _sessionData!['id'].toString();
     final key = channel == 1 ? 'intensity_ch1' : 'intensity_ch2';
     
-    try {
-      // Actualizar en el servidor
-      await supabase.client
-          .from('shared_sessions') // Asumimos que la tabla base es shared_sessions
-          .update({key: value.toInt()})
-          .eq('id', id);
-    } catch (e) {
-      debugPrint('❌ Error actualizando intensidad: $e');
-    }
+    // 🚀 ENVÍO ULTRARRÁPIDO (P2P Virtual)
+    await supabase.sendBroadcastCommand(sessionId, key, value.toInt());
+
+    // Opcional: Persistir en DB cada cierto tiempo o al final para histórico
+    // Por ahora priorizamos velocidad pura.
   }
 
   @override
@@ -212,42 +208,87 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   }
 
   Widget _buildSessionHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: LvsColors.bgCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 60, height: 60,
-            decoration: BoxDecoration(
-              color: LvsColors.violet.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: const Icon(Icons.cloud_done, color: LvsColors.teal, size: 30),
+    final deviceName = _toyModel?.name ?? 'Dispositivo Remoto';
+
+    return Column(
+      children: [
+        const Text(
+          'El otro usuario ha conectado el juguete',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 0.5),
+        ),
+        const SizedBox(height: 20),
+        
+        // Pill Status (Estilo exacto de la referencia)
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          decoration: BoxDecoration(
+            color: const Color(0xFF151515),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.white.withOpacity(0.08)),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  (_toyModel?.name ?? 'Dispositivo Remoto').toUpperCase(),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 28, height: 28,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [LvsColors.pink, Color(0xFFC2185B)],
+                    begin: Alignment.topLeft, end: Alignment.bottomRight,
+                  ),
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Conexión Segura Activa',
-                  style: TextStyle(color: LvsColors.teal, fontSize: 12),
+                child: const Center(
+                  child: Icon(Icons.waves, color: Colors.white, size: 14),
                 ),
-              ],
+              ),
+              const SizedBox(width: 10),
+              Text(
+                deviceName,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+        
+        const SizedBox(height: 32),
+        
+        // Botón Magenta Premium (Botón principal de invitación)
+        Container(
+          width: double.infinity,
+          height: 60,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100), // Súper redondeado como la imagen
+            gradient: const LinearGradient(
+              colors: [LvsColors.pink, Color(0xFFD81B60)],
+              begin: Alignment.centerLeft, end: Alignment.centerRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: LvsColors.pink.withOpacity(0.25),
+                blurRadius: 15,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                // Lógica de invitación
+              },
+              borderRadius: BorderRadius.circular(100),
+              child: const Center(
+                child: Text(
+                  'Invitar a control mutuo',
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                ),
+              ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

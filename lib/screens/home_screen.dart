@@ -126,7 +126,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   // ══════════════════════════════════════════════════════════
   @override
   Widget build(BuildContext context) {
-    final ble = ref.watch(bleProvider);
+    // Rendimiento: Solo reconstruir el scaffold si cambia el ESTADO GLOBAL de conexión
+    final bleState = ref.watch(bleProvider.select((p) => p.state));
+    final ble = ref.read(bleProvider); // Acceso directo para callbacks sin disparar rebuilds
 
     return Scaffold(
       backgroundColor: LvsColors.bg,
@@ -148,7 +150,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
-                _buildAppBar(ble),
+                _buildAppBar(ref),
                 
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
@@ -156,7 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     delegate: SliverChildListDelegate([
                       _buildConnectCard(ble),
                       const SizedBox(height: 20),
-                      _buildControlCard(ble),
+                      _buildControlCard(ref),
                       const SizedBox(height: 20),
                       _buildCanvasCard(ble),
                       const SizedBox(height: 20),
@@ -197,7 +199,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ── AppBar ─────────────────────────────────────────────────
-  Widget _buildAppBar(BleService ble) {
+  Widget _buildAppBar(WidgetRef ref) {
+    final bleState = ref.watch(bleProvider.select((p) => p.state));
+    final deviceName = ref.watch(bleProvider.select((p) => p.toyProfile?.name ?? p.connectedDeviceName));
+
     return SliverAppBar(
       pinned: true,
       floating: true,
@@ -231,9 +236,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               children: [
                 const Text('Velvet Sync', style: TextStyle(
                   fontSize: 20, fontWeight: FontWeight.w400, fontFamily: 'serif', letterSpacing: 0.5, color: LvsColors.text1)),
-                if (ble.state == BleState.connected)
+                if (bleState == BleState.connected)
                   Text(
-                    'VINCULADO: ${ble.toyProfile?.name ?? ble.connectedDeviceName}',
+                    'VINCULADO: $deviceName',
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.teal)),
@@ -243,7 +248,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ],
       ),
       actions: [
-        _BleStateBox(state: ble.state),
+        _BleStateBox(state: bleState),
         const SizedBox(width: 8),
         IconButton(
           icon: const Icon(Icons.exit_to_app, color: LvsColors.text3, size: 20),
@@ -497,63 +502,72 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   // ── Dashboard Central (Intensidad / Círculo) ───────────────
-  Widget _buildControlCard(BleService ble) {
-    if (ble.state != BleState.connected) return const SizedBox.shrink();
+  Widget _buildControlCard(WidgetRef ref) {
+    final bleState = ref.watch(bleProvider.select((p) => p.state));
+    if (bleState != BleState.connected) return const SizedBox.shrink();
 
-    final int maxIntensity = ble.displayIntensity;
+    final ble = ref.read(bleProvider);
+    final int maxIntensity = ref.watch(bleProvider.select((p) => p.displayIntensity));
+    final activeSpeed = ref.watch(bleProvider.select((p) => p.activeSpeed));
+    final intensityCh1 = ref.watch(bleProvider.select((p) => p.activeIntensityCh1));
+    final intensityCh2 = ref.watch(bleProvider.select((p) => p.activeIntensityCh2));
 
     return Column(
       children: [
         const SizedBox(height: 10),
         
         // --- 1. RING INDICATOR NEÓN (IMAGE 1) ---
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            // Outer Glows (Pink left, Violet right)
-            Container(
-              width: 260, height: 260,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(color: LvsColors.red.withValues(alpha: 0.15),   blurRadius: 60, spreadRadius: 5, offset: const Offset(-20, 0)),
-                  BoxShadow(color: LvsColors.pink.withValues(alpha: 0.15), blurRadius: 60, spreadRadius: 5, offset: const Offset(-10, 0)),
-                  BoxShadow(color: LvsColors.violet.withValues(alpha: 0.15), blurRadius: 60, spreadRadius: 5, offset: const Offset(20, 0)),
-                ]
-              ),
-            ),
-            // Inner Static Background Ring
-            Container(
-              width: 230, height: 230,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 12),
-              ),
-            ),
-            // Gradient Active Ring
-            SizedBox(
-              width: 230, height: 230,
-              child: ShaderMask(
-                shaderCallback: (r) => const SweepGradient(
-                  colors: [LvsColors.pink, LvsColors.red, LvsColors.pink, LvsColors.violet, LvsColors.pink],
-                  stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-                  transform: GradientRotation(-pi/4),
-                ).createShader(r),
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0, end: maxIntensity.toDouble()),
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, val, _) => CircularProgressIndicator(
-                    value: val / 100, // En la variable local de UI es 0-100
-                    strokeWidth: 10,
-                    strokeCap: StrokeCap.round,
-                    backgroundColor: Colors.transparent,
-                    valueColor: const AlwaysStoppedAnimation(Colors.white),
+            RepaintBoundary(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Outer Glows (Pink left, Violet right)
+                  Container(
+                    width: 260, height: 260,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(color: LvsColors.red.withValues(alpha: 0.15),   blurRadius: 60, spreadRadius: 5, offset: const Offset(-20, 0)),
+                        BoxShadow(color: LvsColors.pink.withValues(alpha: 0.15), blurRadius: 60, spreadRadius: 5, offset: const Offset(-10, 0)),
+                        BoxShadow(color: LvsColors.violet.withValues(alpha: 0.15), blurRadius: 60, spreadRadius: 5, offset: const Offset(20, 0)),
+                      ]
+                    ),
                   ),
-                ),
+                  // Inner Static Background Ring
+                  Container(
+                    width: 230, height: 230,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 12),
+                    ),
+                  ),
+                  // Gradient Active Ring
+                  SizedBox(
+                    width: 230, height: 230,
+                    child: ShaderMask(
+                      shaderCallback: (r) => const SweepGradient(
+                        colors: [LvsColors.pink, LvsColors.red, LvsColors.pink, LvsColors.violet, LvsColors.pink],
+                        stops: [0.0, 0.25, 0.5, 0.75, 1.0],
+                        transform: GradientRotation(-pi/4),
+                      ).createShader(r),
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: maxIntensity.toDouble()),
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, val, _) => CircularProgressIndicator(
+                          value: val / 100, // En la variable local de UI es 0-100
+                          strokeWidth: 10,
+                          strokeCap: StrokeCap.round,
+                          backgroundColor: Colors.transparent,
+                          valueColor: const AlwaysStoppedAnimation(Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            // Inner Text Core
+            // Inner Text Core (Fuera del boundary para que el texto sea nítido)
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -584,7 +598,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   label: 'LOW',
                   color: LvsColors.teal,
                   icon: Icons.wifi_tethering,
-                  active: ble.activeSpeed == SpeedLevel.low,
+                  active: activeSpeed == SpeedLevel.low,
                   onTap: () => ble.selectSpeed(SpeedLevel.low),
                 ),
               ),
@@ -594,7 +608,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   label: 'MED',
                   color: LvsColors.pink,
                   icon: Icons.radio_button_checked,
-                  active: ble.activeSpeed == SpeedLevel.medium,
+                  active: activeSpeed == SpeedLevel.medium,
                   onTap: () => ble.selectSpeed(SpeedLevel.medium),
                 ),
               ),
@@ -604,7 +618,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   label: 'HIGH',
                   color: LvsColors.violet,
                   icon: Icons.signal_cellular_alt,
-                  active: ble.activeSpeed == SpeedLevel.high,
+                  active: activeSpeed == SpeedLevel.high,
                   onTap: () => ble.selectSpeed(SpeedLevel.high),
                 ),
               ),
@@ -681,7 +695,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
                 ),
                 child: Slider(
-                  value: (ble.activePatternCh1 != null ? 0 : (ble.activeIntensityCh1 ?? 0)).toDouble(), min: 0, max: 100, divisions: 100,
+                  value: (ble.activePatternCh1 != null ? 0 : (intensityCh1 ?? 0)).toDouble(), min: 0, max: 100, divisions: 100,
                   onChanged: (v) { HapticFeedback.selectionClick(); ble.setProportionalChannel1(v.round()); },
                 ),
               ),
@@ -701,7 +715,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
                 ),
                 child: Slider(
-                  value: (ble.activePatternCh2 != null ? 0 : (ble.activeIntensityCh2 ?? 0)).toDouble(), min: 0, max: 100, divisions: 100,
+                  value: (ble.activePatternCh2 != null ? 0 : (intensityCh2 ?? 0)).toDouble(), min: 0, max: 100, divisions: 100,
                   onChanged: (v) { HapticFeedback.selectionClick(); ble.setProportionalChannel2(v.round()); },
                 ),
               ),
@@ -1367,7 +1381,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return CardGlass(
       padding: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen())),
+        onTap: () async {
+          final supabase = ref.read(supabaseServiceProvider);
+          final ble = ref.read(bleProvider);
+
+          if (!ble.isConnected) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Conecta un dispositivo para iniciar sesión remota'))
+            );
+            return;
+          }
+
+          // 1. Crear sesión REAL en Supabase
+          final session = await supabase.createSharedSession(ble.toyProfile?.id ?? 'generic_lvs');
+          
+          if (session != null) {
+            final sessionId = session['id'].toString();
+            
+            // 2. Unirse al canal de Broadcast dinámico
+            supabase.joinControlRoom(sessionId, (payload) {
+              if (ble.isConnected) {
+                final int ch1 = (payload['intensity_ch1'] ?? 0).toInt();
+                final int ch2 = (payload['intensity_ch2'] ?? 0).toInt();
+                ble.sendMultimediaSync(ch1, ch2);
+              }
+            });
+
+            // 3. Navegar pasando los datos de la sesión (para mostrar el token/QR)
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen()));
+          }
+        },
         borderRadius: BorderRadius.circular(24),
         child: Container(
           padding: const EdgeInsets.all(20),

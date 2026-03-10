@@ -66,7 +66,7 @@ class ToyModel {
     );
   }
 
-  // ── Persistencia JSON (SharedPreferences) ──────────────────
+  // ── Persistencia JSON (Secure Storage) ──────────────────────
   factory ToyModel.fromJson(Map<String, dynamic> json) {
     return ToyModel(
       id            : json['id']?.toString() ?? '',

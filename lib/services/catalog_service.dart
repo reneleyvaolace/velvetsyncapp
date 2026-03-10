@@ -1,15 +1,16 @@
 // ═══════════════════════════════════════════════════════════════
-// Velvet Sync · lib/services/catalog_service.dart · v3.0.0
-// Catálogo con Fallback + Persistencia SharedPreferences
+// Velvet Sync · lib/services/catalog_service.dart · v3.1.0
+// Catálogo con Fallback + Persistencia Cifrada (Secure Storage)
 // Los dispositivos pre-registrados se guardan y sobreviven reinicios
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/toy_model.dart';
 import 'supabase_service.dart';
+import '../utils/logger.dart';
 
 // ── Clave de almacenamiento ─────────────────────────────────────
 const _kPreregisteredKey = 'lvs_preregistered_devices';
@@ -25,8 +26,9 @@ final catalogProvider = StateNotifierProvider<CatalogNotifier, AsyncValue<List<T
 class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
   final SupabaseService _supabase;
   final Ref _ref;
+  final _storage = const FlutterSecureStorage();
   List<ToyModel> _serverCatalog = [];
-  List<ToyModel> _preregisteredList = []; // Persisten en SharedPreferences
+  List<ToyModel> _preregisteredList = []; // Persisten Cifrados
 
   CatalogNotifier(this._supabase, this._ref) : super(const AsyncValue.loading()) {
     _init();
@@ -43,35 +45,31 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
 
   Future<void> _loadPreregistered() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getStringList(_kPreregisteredKey) ?? [];
-      _preregisteredList = raw
+      final jsonStr = await _storage.read(key: _kPreregisteredKey);
+      if (jsonStr == null) return;
+      
+      final List<dynamic> decoded = jsonDecode(jsonStr);
+      _preregisteredList = decoded
           .map((s) {
-            try { return ToyModel.fromJson(jsonDecode(s)); }
-            catch (e) { 
-              debugPrint('⚠️ Error decodificando: $e');
-              return null; 
-            }
+            try { return ToyModel.fromJson(s); }
+            catch (e) { return null; }
           })
           .whereType<ToyModel>()
           .toList();
       
-      // ✨ SINCRONIZACIÓN REACTIVA
       _ref.read(preregisteredProvider.notifier).state = _preregisteredList;
-      debugPrint('💾 Pre-registrados cargados: ${_preregisteredList.length}');
     } catch (e) {
-      debugPrint('⚠️ No se pudieron cargar pre-registrados: $e');
+      lvsLog('Error cargando almacenamiento seguro: $e', tag: 'CATALOG');
     }
   }
 
   Future<void> _savePreregistered() async {
     try {
       _ref.read(preregisteredProvider.notifier).state = _preregisteredList;
-      final prefs = await SharedPreferences.getInstance();
-      final raw = _preregisteredList.map((t) => jsonEncode(t.toJson())).toList();
-      await prefs.setStringList(_kPreregisteredKey, raw);
+      final raw = _preregisteredList.map((t) => t.toJson()).toList();
+      await _storage.write(key: _kPreregisteredKey, value: jsonEncode(raw));
     } catch (e) {
-      debugPrint('⚠️ Error guardando pre-registrados: $e');
+      lvsLog('Error guardando en almacenamiento seguro: $e', tag: 'CATALOG');
     }
   }
 
@@ -102,11 +100,11 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
 
       if (toys.isNotEmpty) {
         _serverCatalog = toys;
-        debugPrint('📦 Catálogo Supabase: ${toys.length} dispositivos.');
+        lvsLog('Catálogo Supabase: ${toys.length} dispositivos.', tag: 'CATALOG');
       } else {
         // Fallback local
         _serverCatalog = _localFallbackCatalog();
-        debugPrint('⚠️ Usando catálogo local (${_serverCatalog.length} items).');
+        lvsLog('Usando catálogo local (${_serverCatalog.length} items).', tag: 'CATALOG');
       }
 
       state = AsyncValue.data(_merged());
@@ -147,7 +145,7 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
     if (cleanId.isEmpty) cleanId = rawInput.toLowerCase();
     else cleanId = cleanId.toLowerCase();
 
-    debugPrint('🔎 Catalog: Procesando búsqueda para "$cleanId"');
+    lvsLog('Procesando búsqueda para "$cleanId"', tag: 'CATALOG');
 
     // ── 2. BYPASS INMEDIATO (Knight 8154) ────────────────────
     if (cleanId == '8154' || cleanId.contains('knight')) {

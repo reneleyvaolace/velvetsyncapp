@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/toy_model.dart';
+import '../utils/logger.dart';
 
 final supabaseServiceProvider = Provider<SupabaseService>((ref) {
   return SupabaseService();
@@ -18,6 +19,9 @@ class SupabaseService {
   static bool _isInitialized = false;
   
   static const String thermMax80 = 'THERM_MAX_80';
+  
+  // Canales para comunicación rápida (P2P Virtual)
+  RealtimeChannel? _activeChannel;
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -30,7 +34,7 @@ class SupabaseService {
       anonKey: anonKey,
     );
     _isInitialized = true;
-    debugPrint('✅ Supabase Inicializado: $url');
+    lvsLog('Supabase Inicializado: $url', tag: 'SUPABASE');
   }
 
   SupabaseClient get client => Supabase.instance.client;
@@ -42,7 +46,7 @@ class SupabaseService {
       final response = await client.from('device_catalog').select();
       return (response as List).map((data) => ToyModel.fromSupabase(data)).toList();
     } catch (e) {
-      debugPrint('❌ Error fetchCatalog: $e');
+      lvsLog('Error fetchCatalog: $e', tag: 'SUPABASE');
       return [];
     }
   }
@@ -58,13 +62,13 @@ class SupabaseService {
           .limit(1)
           .maybeSingle();
       if (response == null) {
-        debugPrint('ℹ️ Supabase: No se encontró match para "$id"');
+        lvsLog('No se encontró match para "$id"', tag: 'SUPABASE');
         return null;
       }
-      debugPrint('✅ Supabase: Match encontrado para "$id" -> ${response['name']}');
+      lvsLog('Match encontrado para "$id" -> ${response['name']}', tag: 'SUPABASE');
       return ToyModel.fromSupabase(response);
     } catch (e) {
-      debugPrint('❌ Error fetchDeviceById: $e');
+      lvsLog('Error fetchDeviceById: $e', tag: 'SUPABASE');
       return null;
     }
   }
@@ -138,5 +142,58 @@ class SupabaseService {
       debugPrint('❌ Error fetchSessionByToken: $e');
       return null;
     }
+  }
+
+  /// Crea una nueva sesión compartida en la DB y retorna sus datos (ID, Token)
+  Future<Map<String, dynamic>?> createSharedSession(String deviceId) async {
+    if (!_isInitialized) return null;
+    try {
+      final response = await client
+          .from('shared_sessions')
+          .insert({
+            'device_id': deviceId,
+            'is_active': true,
+          })
+          .select()
+          .single();
+      lvsLog('Sesión creada: ID ${response['id']}', tag: 'SUPABASE');
+      return response;
+    } catch (e) {
+      lvsLog('Error createSharedSession: $e', tag: 'SUPABASE');
+      return null;
+    }
+  }
+  // ── Comunicación Ultrarrápida (Broadcast) ──────────────────
+  
+  /// Se une a una sala de control en tiempo real para una sesión
+  void joinControlRoom(String sessionId, Function(Map<String, dynamic>) onCommandReceived) {
+    _activeChannel?.unsubscribe();
+    
+    _activeChannel = client.channel('session_$sessionId');
+    
+    _activeChannel!.onBroadcast(
+      event: 'control_command',
+      callback: (payload) {
+        lvsLog('Comando P2P recibido: $payload', tag: 'SUPA');
+        onCommandReceived(payload);
+      },
+    ).subscribe();
+    
+    lvsLog('Unido a sala de control: session_$sessionId', tag: 'SUPA');
+  }
+
+  /// Envía un comando de intensidad sin pasar por la base de datos (Latencia mínima)
+  Future<void> sendBroadcastCommand(String sessionId, String key, int value) async {
+    final channel = client.channel('session_$sessionId');
+    
+    await channel.sendBroadcast(
+      event: 'control_command',
+      payload: {key: value, 'ts': DateTime.now().millisecondsSinceEpoch},
+    );
+  }
+
+  void leaveControlRoom() {
+    _activeChannel?.unsubscribe();
+    _activeChannel = null;
   }
 }

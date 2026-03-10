@@ -23,6 +23,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'lvs_commands.dart';
 import '../models/toy_model.dart';
 import 'toy_profile.dart';
+import '../utils/logger.dart';
 
 // ── Provider Global para Riverpod ──────────────────────────────
 final bleProvider = ChangeNotifierProvider((ref) => BleService());
@@ -217,7 +218,7 @@ class BleService extends ChangeNotifier {
 
     await startForegroundService();
     _setState(BleState.scanning);
-    debugPrint('🚀 INICIANDO ESCANEO - Deep Scan: $isDeepScan');
+    lvsLog('INICIANDO ESCANEO - Deep Scan: $isDeepScan', tag: 'BLE');
     _log(isDeepScan ? 'MODO DEEP SCAN ACTIVO' : 'Escaneando dispositivos LVS...', 'info');
 
     BluetoothDevice? found;

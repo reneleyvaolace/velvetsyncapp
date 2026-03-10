@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../ble/ble_service.dart';
@@ -34,6 +34,8 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
   // Variables sensoriales
   int _currentM1 = 0;
   int _currentM2 = 0;
+  
+  final _storage = const FlutterSecureStorage();
 
   @override
   void initState() {
@@ -48,9 +50,9 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
   }
 
   Future<void> _loadAvatar() async {
-    final prefs = await SharedPreferences.getInstance();
+    final path = await _storage.read(key: 'companion_avatar');
     setState(() {
-      _avatarPath = prefs.getString('companion_avatar');
+      _avatarPath = path;
     });
   }
 
@@ -58,8 +60,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('companion_avatar', pickedFile.path);
+      await _storage.write(key: 'companion_avatar', value: pickedFile.path);
       setState(() {
         _avatarPath = pickedFile.path;
       });

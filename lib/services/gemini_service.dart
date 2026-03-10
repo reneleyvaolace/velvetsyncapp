@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
+import '../utils/logger.dart';
 
 class GeminiResponse {
   final String text;
@@ -41,7 +42,7 @@ class GeminiService {
       }
       return _parseHardwareTags(responseText);
     } catch (e) {
-      debugPrint('❌ GeminiProxy Error: $e');
+      lvsLog('GeminiProxy Error: $e', tag: 'GEMINI');
       return GeminiResponse('Mmm... cuéntame más... [H:60,80]', 60, 80);
     }
   }
