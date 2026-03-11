@@ -153,6 +153,13 @@ class LvsCommands {
     return [0xA6, 0x8E, intensityByte];
   }
 
+  // NUEVO: Comando Dual Sincronizado (Prefijo 0xF6)
+  // Permite controlar ambos motores en un solo paquete de 3 bytes.
+  // [0xF6, intensidad_m1, intensidad_m2]
+  static List<int> dualMotor(int m1, int m2) {
+    return [0xF6, m1.clamp(0, 255), m2.clamp(0, 255)];
+  }
+
   // ── Generar comando proporcional (0-100) ───────────────────
   static List<int> proportional(int intensityLevel) {
     final intensityByte = intensityLevel.clamp(0, 100);

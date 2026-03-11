@@ -187,22 +187,30 @@ class _PreregisterPanelState extends ConsumerState<PreregisterPanel>
                       spacing: 6,
                       runSpacing: 6,
                       children: preregistered.map((toy) {
-                        return Chip(
-                          label: Text(toy.name,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 10)),
-                          deleteIcon: const Icon(Icons.close, size: 13),
-                          onDeleted: () {
-                            ref
-                                .read(catalogProvider.notifier)
-                                .removeDevice(toy.id);
-                          },
-                          backgroundColor:
-                              LvsColors.teal.withValues(alpha: 0.15),
-                          side: BorderSide(
-                              color: LvsColors.teal.withValues(alpha: 0.4)),
-                          deleteIconColor: Colors.white54,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                        return GestureDetector(
+                          onTap: () => _editDevice(toy),
+                          child: Chip(
+                            avatar: CircleAvatar(
+                              backgroundColor: Colors.white10,
+                              backgroundImage: toy.imageUrl.isNotEmpty ? NetworkImage(toy.imageUrl) : null,
+                              child: toy.imageUrl.isEmpty ? const Icon(Icons.vibration, size: 10, color: LvsColors.teal) : null,
+                            ),
+                            label: Text(toy.name,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 10)),
+                            deleteIcon: const Icon(Icons.close, size: 13),
+                            onDeleted: () {
+                              ref
+                                  .read(catalogProvider.notifier)
+                                  .removeDevice(toy.id);
+                            },
+                            backgroundColor:
+                                LvsColors.teal.withValues(alpha: 0.15),
+                            side: BorderSide(
+                                color: LvsColors.teal.withValues(alpha: 0.4)),
+                            deleteIconColor: Colors.white54,
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                          ),
                         );
                       }).toList(),
                     ),
@@ -298,6 +306,44 @@ class _PreregisterPanelState extends ConsumerState<PreregisterPanel>
           ),
         ),
       ],
+    );
+  }
+
+  void _editDevice(ToyModel toy) {
+    final controller = TextEditingController(text: toy.name);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: LvsColors.bg,
+        title: const Text('EDITAR DISPOSITIVO', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (toy.imageUrl.isNotEmpty)
+              Image.network(toy.imageUrl, height: 100, errorBuilder: (_,__,___) => const SizedBox.shrink()),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Nombre Personalizado',
+                labelStyle: TextStyle(color: LvsColors.text3),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: LvsColors.pink)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
+          ElevatedButton(
+            onPressed: () {
+              ref.read(catalogProvider.notifier).updateDevice(toy.id, controller.text, '');
+              Navigator.pop(context);
+            },
+            child: const Text('GUARDAR'),
+          ),
+        ],
+      ),
     );
   }
 

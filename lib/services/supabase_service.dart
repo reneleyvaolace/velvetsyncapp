@@ -27,7 +27,7 @@ class SupabaseService {
     if (_isInitialized) return;
     
     const String url = 'https://wsgytnzigqlviqoktmdo.supabase.co';
-    const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzZ3l0bnppZ3Fsdmlx b2t0bWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyNDA4MTksImV4cCI6MjA1NDgxNjgxOX0._6F3WlqB5Uq3C2zE01QxX9b7uO_6p_Y-6_-_6_';
+    const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzZ3l0bnppZ3Fsdmlxb2t0bWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzMDk4NjQsImV4cCI6MjA3OTg4NTg2NH0.9Bp-bxWIEnsBEtXb1FaaNoxqRozTPnoYRInE8si8DjA';
 
     await Supabase.initialize(
       url: url,
@@ -43,7 +43,7 @@ class SupabaseService {
   Future<List<ToyModel>> fetchDeviceCatalog() async {
     if (!_isInitialized) return [];
     try {
-      final response = await client.from('device_catalog').select();
+      final response = await client.from('device_catalog').select().limit(2000);
       return (response as List).map((data) => ToyModel.fromSupabase(data)).toList();
     } catch (e) {
       lvsLog('Error fetchCatalog: $e', tag: 'SUPABASE');
@@ -58,14 +58,15 @@ class SupabaseService {
       final response = await client
           .from('device_catalog')
           .select()
-          .or('id.eq.$id,name.ilike.%$id%')
+          .or('id.eq.$id,model_name.ilike.%$id%')
           .limit(1)
           .maybeSingle();
       if (response == null) {
         lvsLog('No se encontró match para "$id"', tag: 'SUPABASE');
         return null;
       }
-      lvsLog('Match encontrado para "$id" -> ${response['name']}', tag: 'SUPABASE');
+      final matchName = response['model_name'] ?? response['name'] ?? 'Generic';
+      lvsLog('Match encontrado para "$id" -> $matchName', tag: 'SUPABASE');
       return ToyModel.fromSupabase(response);
     } catch (e) {
       lvsLog('Error fetchDeviceById: $e', tag: 'SUPABASE');
@@ -186,7 +187,7 @@ class SupabaseService {
   Future<void> sendBroadcastCommand(String sessionId, String key, int value) async {
     final channel = client.channel('session_$sessionId');
     
-    await channel.sendBroadcast(
+    await channel.sendBroadcastMessage(
       event: 'control_command',
       payload: {key: value, 'ts': DateTime.now().millisecondsSinceEpoch},
     );

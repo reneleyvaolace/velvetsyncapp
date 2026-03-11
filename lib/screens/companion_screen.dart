@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../ble/ble_service.dart';
-import '../services/gemini_service.dart';
+import '../services/ai_service.dart';
 
 class ChatMessage {
   final String text;
@@ -68,7 +68,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
   }
 
   void _sendMessage() async {
-    final geminiService = ref.read(geminiServiceProvider);
+    final aiService = ref.read(aiServiceProvider);
     if (_textController.text.trim().isEmpty) return;
 
     final userText = _textController.text.trim();
@@ -79,7 +79,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
       _isLoading = true;
     });
 
-    final response = await geminiService.sendMessage(userText);
+    final response = await aiService.sendMessage(userText);
 
     if (mounted) {
       setState(() {
@@ -90,25 +90,8 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
       });
       _scrollToBottom();
 
-      // ✨ ACTIVAR HARDWARE REAL
-      final ble = ref.read(bleProvider);
-      if (ble.isConnected) {
-        // Enviar ambos canales sincronizados (Knight 8154)
-        ble.sendMultimediaSync(_currentM1, _currentM2);
-      }
-
-      // AUTO-STOP VISUAL Y HARDWARE: Apagar después de 5-8 seg
-      Future.delayed(const Duration(seconds: 8), () {
-        if (mounted) {
-          setState(() {
-            _currentM1 = 0;
-            _currentM2 = 0;
-          });
-          // Detener hardware real
-          final bleNow = ref.read(bleProvider);
-          if (bleNow.isConnected) bleNow.emergencyStop(); 
-        }
-      });
+      // ✨ ACTIVAR HARDWARE REAL (Ya gestionado por AiService, pero aseguramos sync local si es necesario)
+      // Nota: AiService ya hace el despacho hardware, pero podemos forzarlo aquí si queremos feedback inmediato
     }
   }
 
@@ -136,7 +119,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
     _textController.dispose();
     _scrollController.dispose();
     // Hardware Kill al salir
-    ref.read(geminiServiceProvider).shutdownHardwareEmergency();
+    ref.read(bleProvider).emergencyStop();
     super.dispose();
   }
 

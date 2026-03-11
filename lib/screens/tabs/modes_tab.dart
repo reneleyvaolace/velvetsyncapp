@@ -22,7 +22,7 @@ class _ModesTabState extends ConsumerState<ModesTab> {
 
   @override
   Widget build(BuildContext context) {
-    final ble = ref.read(bleProvider);
+    final ble = ref.watch(bleProvider);
 
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
@@ -104,6 +104,10 @@ class _ModesTabState extends ConsumerState<ModesTab> {
       crossAxisSpacing: 16,
       childAspectRatio: 1.5,
       children: [
+        _GameTile(
+          title: 'FRUTAS', icon: Icons.animation, color: LvsColors.green,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalGameScreen())),
+        ),
         _GameTile(
           title: 'DADOS', icon: Icons.casino, color: LvsColors.amber,
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DiceScreen())),

@@ -41,9 +41,10 @@ class LogEntry {
 class BleService extends ChangeNotifier {
   // ── Estado ─────────────────────────────────────────────────
   BleState state = BleState.idle;
-  BluetoothDevice? device;
+  List<BluetoothDevice> connectedDevices = []; 
   BluetoothCharacteristic? characteristic;
   ToyProfile? toyProfile;
+  ToyModel? activeToy; // El modelo del catálogo que está en uso
 
   // Nombre real del hardware detectado en la sesión actual
   String connectedDeviceName = '';
@@ -87,6 +88,51 @@ class BleService extends ChangeNotifier {
       }
       notifyListeners();
     });
+  }
+
+  // ── Getters de Estado ─────────────────────────────────────
+  bool get isConnected => state == BleState.connected || activeToy != null;
+  bool get isScanning  => state == BleState.scanning;
+  bool get hasGatt      => connectedDevices.isNotEmpty;
+
+  // ── Activación desde Catálogo (Virtual) ──────────────────
+  void setActiveToy(ToyModel toy) {
+    activeToy = toy;
+    toyProfile = ToyProfile(
+      name: toy.name,
+      identifier: toy.id,
+      hasDualChannel: toy.hasDualChannel,
+    );
+    connectedDeviceName = toy.name;
+    _setState(BleState.connected); // "Virtualmente" conectado
+    _log('✨ Dispositivo "${toy.name}" activado desde el catálogo.', 'success');
+    notifyListeners();
+  }
+
+  void renameActiveToy(String newName) {
+    if (activeToy == null) return;
+    // Creamos una copia con el nuevo nombre
+    final updated = ToyModel(
+      id: activeToy!.id,
+      name: newName,
+      usageType: activeToy!.usageType,
+      targetAnatomy: activeToy!.targetAnatomy,
+      stimulationType: activeToy!.stimulationType,
+      motorLogic: activeToy!.motorLogic,
+      imageUrl: activeToy!.imageUrl,
+      qrCodeUrl: activeToy!.qrCodeUrl, // <--- FALTANTE
+      supportedFuncs: activeToy!.supportedFuncs,
+      isPrecise: activeToy!.isPrecise,
+      broadcastPrefix: activeToy!.broadcastPrefix,
+    );
+    activeToy = updated;
+    toyProfile = ToyProfile(
+      name: newName,
+      identifier: updated.id,
+      hasDualChannel: updated.hasDualChannel,
+    );
+    connectedDeviceName = newName;
+    notifyListeners();
   }
 
   // ── Getter Dinámico para Podómetro Frontal ────────────────
@@ -320,18 +366,24 @@ class BleService extends ChangeNotifier {
     // Pausa para recibir el ACK (0x06) del hardware
     await Future.delayed(const Duration(milliseconds: 500));
 
-    device = dev;
+    if (!connectedDevices.contains(dev)) {
+      connectedDevices.add(dev);
+    }
+    
     batteryLevel = 100;
     _setState(BleState.connected);
     _log('✅ Handshake OK — ${toyProfile?.name ?? connectedDeviceName} vinculado.', 'success');
-    await _updateNotification('Vinculado → ${toyProfile?.name ?? connectedDeviceName}');
+    await _updateNotification('Vinculado (${connectedDevices.length}) → ${toyProfile?.name ?? connectedDeviceName}');
   }
 
 
 
   Future<void> disconnect() async {
     _stopBurst();
-    await device?.disconnect();
+    for (var dev in connectedDevices) {
+      await dev.disconnect();
+    }
+    connectedDevices.clear();
     await _handleDisconnect();
   }
 
@@ -339,7 +391,7 @@ class BleService extends ChangeNotifier {
     _stopBurst();
     _batterySub?.cancel();
     characteristic = null;
-    device = null;
+    activeToy = null; // Limpiar dispositivo virtual
     activeSpeed = null;
     activePattern = null;
     activeIntensity = null;
@@ -370,27 +422,20 @@ class BleService extends ChangeNotifier {
   }
 
   // NUEVO: Sincronización Multimedia (Dual Motor 8154)
-  // Fuerza el envío aunque el paquete sea idéntico al anterior
+  // Utiliza el comando F6 para enviar ambos niveles en un solo paquete.
   Future<void> sendMultimediaSync(int ch1Val, int ch2Val) async {
     if (state != BleState.connected) return;
 
-    // Reset de cache para forzar el envío (Gemini siempre debe activar el hardware)
+    // Reset de cache para forzar el envío
     _lastPacket = null;
 
-    // CH2 primero (vibración)
-    final cmdCh2 = LvsCommands.preciseChannel2(ch2Val);
-    await writeCommand(cmdCh2, label: 'GEMINI CH2', silent: false);
-
-    // Delay entre canales para no saturar el HCI buffer
-    await Future.delayed(const Duration(milliseconds: 200));
-    _lastPacket = null; // reset antes del segundo canal
-
-    // CH1 (empuje)
-    if (ch1Val > 0) {
-      await writeCommand(LvsCommands.preciseChannel1(ch1Val), label: 'GEMINI CH1', silent: false);
-    } else if (_lastCh1Val > 0) {
-      await writeCommand(LvsCommands.ch1Stop, label: 'GEMINI CH1 STOP', silent: false);
-    }
+    // Enviar comando dual sincronizado (F6)
+    await writeCommand(
+      LvsCommands.dualMotor(ch1Val, ch2Val),
+      label: 'AI SYNC (F6)',
+      silent: false,
+    );
+    
     _lastCh1Val = ch1Val;
   }
 
@@ -441,6 +486,25 @@ class BleService extends ChangeNotifier {
         advertiseData: data, 
         advertiseSetParameters: parameters,
       );
+
+      // --- Soporte para dispositivos GATT estándar (No Broadlink) ---
+      for (var dev in connectedDevices) {
+        try {
+          // Intentar escribir en la característica si está disponible
+          final services = await dev.discoverServices();
+          for (var s in services) {
+            if (s.uuid.toString().contains('fff0')) {
+              for (var c in s.characteristics) {
+                if (c.properties.write || c.properties.writeWithoutResponse) {
+                  await c.write(packet, withoutResponse: true);
+                }
+              }
+            }
+          }
+        } catch (e) {
+          lvsLog('Error escribiendo a GATT: $e');
+        }
+      }
       
       return true;
     } catch (e) {
@@ -706,8 +770,6 @@ class BleService extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get isConnected => state == BleState.connected;
-  bool get isScanning  => state == BleState.scanning;
 
   @override
   void dispose() {

@@ -23,6 +23,7 @@ import 'reader_screen.dart';
 import 'catalog_screen.dart';
 import 'remote_session_screen.dart';
 import '../services/catalog_service.dart';
+import '../services/supabase_service.dart';
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
   @override
@@ -200,6 +201,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   // ── AppBar ─────────────────────────────────────────────────
   Widget _buildAppBar(WidgetRef ref) {
+    final ble = ref.read(bleProvider);
     final bleState = ref.watch(bleProvider.select((p) => p.state));
     final deviceName = ref.watch(bleProvider.select((p) => p.toyProfile?.name ?? p.connectedDeviceName));
 
@@ -274,6 +276,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
     // ── Estado: CONECTADO ────────────────────────────────────
     if (isConnected) {
+      final devicesCount = ble.connectedDevices.length;
+      final mainName = ble.toyProfile?.name ?? ble.connectedDeviceName;
+
       return CardGlass(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         borderColor: LvsColors.teal.withOpacity(0.3),
@@ -293,19 +298,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    ble.toyProfile?.name ?? ble.connectedDeviceName,
+                    devicesCount > 1 ? '$mainName (+${devicesCount - 1})' : mainName,
                     style: const TextStyle(fontSize: 13, color: LvsColors.teal, fontWeight: FontWeight.w900, letterSpacing: 0.5),
                   ),
                   Text(
-                    'LINK ACTIVO',
+                    devicesCount > 1 ? '$devicesCount LINKS ACTIVOS' : 'LINK ACTIVO',
                     style: TextStyle(fontSize: 9, color: LvsColors.text3, letterSpacing: 1.5),
                   ),
                 ],
               ),
             ),
             IconButton(
+              icon: const Icon(Icons.add_link, color: LvsColors.teal, size: 20),
+              tooltip: 'Vincular otro dispositivo',
+              onPressed: () {
+                final catalog = ref.read(catalogProvider).asData?.value;
+                ble.connectToDevice(catalog: catalog);
+              },
+            ),
+            IconButton(
               icon: const Icon(Icons.link_off, color: Colors.redAccent, size: 20),
-              tooltip: 'Desvincular dispositivo',
+              tooltip: 'Desvincular todo',
               onPressed: ble.disconnect,
             ),
           ],
@@ -567,7 +580,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ],
               ),
             ),
-            // Inner Text Core (Fuera del boundary para que el texto sea nítido)
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -583,10 +595,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 const Text('subtle glow', style: TextStyle(color: LvsColors.text3, fontSize: 9)),
               ],
             ),
-          ],
-        ),
-        
-        const SizedBox(height: 48),
+          const SizedBox(height: 48),
 
         // --- 2. NEON PRESETS BARS (LOW MED HIGH) GLASS PANEL ---
         CardGlass(
@@ -1393,7 +1402,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           }
 
           // 1. Crear sesión REAL en Supabase
-          final session = await supabase.createSharedSession(ble.toyProfile?.id ?? 'generic_lvs');
+          final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
           
           if (session != null) {
             final sessionId = session['id'].toString();

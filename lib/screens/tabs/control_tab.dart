@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lvs_control/ble/ble_service.dart';
 import 'package:lvs_control/theme.dart';
 import 'package:lvs_control/widgets/preregister_widget.dart';
+import 'package:lvs_control/services/catalog_service.dart';
+import 'package:lvs_control/ble/lvs_commands.dart';
+import 'package:lvs_control/widgets/quick_add_control.dart';
+import 'package:lvs_control/widgets/compatible_devices_row.dart';
 import 'dart:math';
 
 class ControlTab extends ConsumerWidget {
@@ -11,7 +16,7 @@ class ControlTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bleState = ref.watch(bleProvider.select((p) => p.state));
-    final ble = ref.read(bleProvider);
+    final ble = ref.watch(bleProvider);
 
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
@@ -22,16 +27,23 @@ class ControlTab extends ConsumerWidget {
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               _buildConnectCard(ref, ble),
+              const SizedBox(height: 16),
+              // Quick Add — fuera del card para evitar overflow
+              if (!ble.isConnected) ...([ 
+                CardGlass(
+                  padding: const EdgeInsets.all(20),
+                  child: QuickAddControl(ref: ref),
+                ),
+                const SizedBox(height: 16),
+                // Lista de dispositivos compatibles
+                CardGlass(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                  child: const CompatibleDevicesRow(),
+                ),
+              ]),
               const SizedBox(height: 24),
               _buildControlCard(ref),
               const SizedBox(height: 40),
-              if (bleState != BleState.connected)
-                const Center(
-                  child: Text(
-                    'CONECTA UN DISPOSITIVO PARA EMPEZAR',
-                    style: TextStyle(color: LvsColors.text3, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold),
-                  ),
-                ),
             ]),
           ),
         ),
@@ -40,28 +52,31 @@ class ControlTab extends ConsumerWidget {
   }
 
   Widget _buildSliverHeader(WidgetRef ref) {
-    final bleState = ref.watch(bleProvider.select((p) => p.state));
-    final deviceName = ref.watch(bleProvider.select((p) => p.toyProfile?.name ?? p.connectedDeviceName));
+    final deviceName = ref.watch(bleProvider.select((p) => p.activeToy?.name ?? 'DISPOSITIVO'));
+    final isConnected = ref.watch(bleProvider.select((p) => p.isConnected));
 
     return SliverAppBar(
-      expandedHeight: 120,
+      expandedHeight: 100,
       backgroundColor: Colors.transparent,
+      floating: false,
+      pinned: true,
       flexibleSpace: FlexibleSpaceBar(
+        centerTitle: true,
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('VELVET SYNC', style: GoogleFonts.cinzel(
+              fontSize: 11, letterSpacing: 4, color: Colors.white70, fontWeight: FontWeight.w300
+            )),
+            Text(deviceName.toUpperCase(), style: TextStyle(
+              fontSize: 7, fontWeight: FontWeight.w900, color: isConnected ? LvsColors.teal : LvsColors.text3, letterSpacing: 1.5
+            )),
+          ],
+        ),
         background: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              Image.asset('assets/images/logo_neon.png', width: 40, height: 40),
-              const SizedBox(height: 8),
-              const Text('VELVET SYNC', style: TextStyle(
-                fontFamily: 'serif', fontSize: 14, letterSpacing: 4, color: Colors.white70, fontWeight: FontWeight.w200
-              )),
-              if (bleState == BleState.connected)
-                Text(deviceName.toUpperCase(), style: const TextStyle(
-                  fontSize: 8, fontWeight: FontWeight.w900, color: LvsColors.teal, letterSpacing: 1.5
-                )),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 25),
+            child: Image.asset('assets/images/logo_neon.png', width: 30, height: 30),
           ),
         ),
       ),
@@ -72,8 +87,9 @@ class ControlTab extends ConsumerWidget {
     final bleState = ref.watch(bleProvider.select((p) => p.state));
     
     return CardGlass(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
@@ -90,41 +106,122 @@ class ControlTab extends ConsumerWidget {
               _BleStateBox(state: bleState),
             ],
           ),
-          const Divider(height: 32),
-          if (bleState != BleState.connected)
-            Row(
+          if (!ble.isConnected) ...[  
+            const Divider(height: 20),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: ble.isScanning ? null : () => ble.connectToDevice(),
-                    icon: const Icon(Icons.link, size: 18),
-                    label: Text(ble.isScanning ? 'BUSCANDO...' : 'VINCULAR AHORA'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: LvsColors.pink.withOpacity(0.8),
-                    ),
-                  ),
+                Icon(Icons.link_off, color: Colors.white24, size: 20),
+                SizedBox(width: 10),
+                Text(
+                  'Sin dispositivo — usa el panel de abajo',
+                  style: TextStyle(color: LvsColors.text3, fontSize: 11, fontStyle: FontStyle.italic),
                 ),
-                const SizedBox(width: 12),
-                const PreRegisterButton(),
               ],
-            )
-          else
-            ElevatedButton.icon(
-              onPressed: () => ble.disconnect(),
-              icon: const Icon(Icons.link_off, size: 18),
-              label: const Text('DESCONECTAR DISPOSITIVO'),
-              style: ElevatedButton.styleFrom(backgroundColor: LvsColors.red.withOpacity(0.5)),
             ),
+          ] else ...[  
+          const Divider(height: 24, color: Colors.white10),
+          Row(
+            children: [
+              Container(
+                width: 42, height: 42,
+                decoration: BoxDecoration(
+                  color: LvsColors.teal.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.bluetooth_connected, color: LvsColors.teal, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ble.activeToy?.name.toUpperCase() ?? ble.connectedDeviceName.toUpperCase(),
+                      style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                    ),
+                    Text(
+                      'ID: ${ble.activeToy?.id ?? ble.toyProfile?.identifier ?? "---"}',
+                      style: const TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => _showRenameDialog(ref, ble),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: LvsColors.bgCardH,
+                  minimumSize: const Size(40, 32),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                child: const Text('EDITAR', style: TextStyle(fontSize: 10)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () => ble.disconnect(),
+            icon: const Icon(Icons.link_off, size: 16),
+            label: const Text('DESVINCULAR DISPOSITIVO', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.withOpacity(0.15),
+              foregroundColor: Colors.redAccent,
+              elevation: 0,
+              side: BorderSide(color: Colors.red.withOpacity(0.3)),
+              minimumSize: const Size(double.infinity, 42),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        ],
+        ],
+      ),
+    );
+  }
+
+  void _showRenameDialog(WidgetRef ref, BleService ble) {
+    final controller = TextEditingController(text: ble.activeToy?.name ?? ble.connectedDeviceName);
+    showDialog(
+      context: ref.context,
+      builder: (context) => AlertDialog(
+        backgroundColor: LvsColors.bg,
+        title: const Text('RENOMBRAR DISPOSITIVO', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintText: 'Nombre personalizado',
+            hintStyle: TextStyle(color: Colors.white24),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: LvsColors.pink)),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
+          ElevatedButton(
+            onPressed: () {
+              if (controller.text.isNotEmpty) {
+                // Actualizar en el catálogo primero para persistencia
+                ref.read(catalogProvider.notifier).updateDevice(
+                  ble.activeToy?.id ?? '', 
+                  controller.text, 
+                  ''
+                );
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('GUARDAR'),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildControlCard(WidgetRef ref) {
-    final bleState = ref.watch(bleProvider.select((p) => p.state));
-    if (bleState != BleState.connected) return const SizedBox.shrink();
+    final ble = ref.watch(bleProvider);
+    if (!ble.isConnected) return const SizedBox.shrink();
 
-    final ble = ref.read(bleProvider);
+    final activeToy = ref.watch(bleProvider.select((p) => p.activeToy));
     final int maxIntensity = ref.watch(bleProvider.select((p) => p.displayIntensity));
     final activeSpeed = ref.watch(bleProvider.select((p) => p.activeSpeed));
     final intensityCh1 = ref.watch(bleProvider.select((p) => p.activeIntensityCh1));
@@ -132,8 +229,27 @@ class ControlTab extends ConsumerWidget {
 
     return Column(
       children: [
+        if (activeToy?.imageUrl.isNotEmpty ?? false)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 24),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Container(
+                height: 120,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.02),
+                ),
+                child: Image.network(
+                  activeToy!.imageUrl,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.vibration, color: Colors.white12, size: 64),
+                ),
+              ),
+            ),
+          ),
         const SectionLabel('INTENSIDAD MAESTRA'),
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
         
         RepaintBoundary(
           child: Stack(
@@ -194,12 +310,28 @@ class ControlTab extends ConsumerWidget {
         
         Row(
           children: [
-            Expanded(child: _NeonPresetBtn(label: 'LOW', active: activeSpeed == SpeedLevel.low, color: LvsColors.teal, icon: Icons.wifi_tethering, onTap: () => ble.selectSpeed(SpeedLevel.low))),
+            Expanded(child: _NeonPresetBtn(label: 'BAJO', active: activeSpeed == SpeedLevel.low, color: LvsColors.teal, icon: Icons.wifi_tethering, onTap: () => ble.selectSpeed(SpeedLevel.low))),
             const SizedBox(width: 12),
             Expanded(child: _NeonPresetBtn(label: 'MED', active: activeSpeed == SpeedLevel.medium, color: LvsColors.pink, icon: Icons.radio_button_checked, onTap: () => ble.selectSpeed(SpeedLevel.medium))),
             const SizedBox(width: 12),
-            Expanded(child: _NeonPresetBtn(label: 'HIGH', active: activeSpeed == SpeedLevel.high, color: LvsColors.violet, icon: Icons.signal_cellular_alt, onTap: () => ble.selectSpeed(SpeedLevel.high))),
+            Expanded(child: _NeonPresetBtn(label: 'ALTO', active: activeSpeed == SpeedLevel.high, color: LvsColors.violet, icon: Icons.signal_cellular_alt, onTap: () => ble.selectSpeed(SpeedLevel.high))),
           ],
+        ),
+        
+        const SizedBox(height: 24),
+        
+        ElevatedButton.icon(
+          onPressed: () => ble.emergencyStop(),
+          icon: const Icon(Icons.stop_circle, size: 28),
+          label: const Text('STOP DE EMERGENCIA (ALTO)', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: LvsColors.red,
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 60),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            elevation: 12,
+            shadowColor: LvsColors.red.withOpacity(0.4),
+          ),
         ),
         
         const SizedBox(height: 32),
@@ -214,29 +346,31 @@ class ControlTab extends ConsumerWidget {
           ),
           child: Column(
             children: [
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('CANAL 1 (EMPUJE)', style: TextStyle(fontSize: 9, color: LvsColors.text3, fontWeight: FontWeight.w900)),
-                  Text('AUTO-SYNC', style: TextStyle(fontSize: 9, color: LvsColors.teal, fontWeight: FontWeight.w900)),
+                  Text(activeToy?.hasDualChannel ?? false ? 'CANAL 1 (EMPUJE)' : 'INTENSIDAD', style: const TextStyle(fontSize: 9, color: LvsColors.text3, fontWeight: FontWeight.w900)),
+                  const Text('AUTO-SYNC', style: TextStyle(fontSize: 9, color: LvsColors.teal, fontWeight: FontWeight.w900)),
                 ],
               ),
               Slider(
                 value: (ble.activePatternCh1 != null ? 0 : (intensityCh1 ?? 0)).toDouble(), min: 0, max: 100,
                 onChanged: (v) => ble.setProportionalChannel1(v.round()),
               ),
-              const SizedBox(height: 12),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('CANAL 2 (VIBRACIÓN)', style: TextStyle(fontSize: 9, color: LvsColors.text3, fontWeight: FontWeight.w900)),
-                  Text('AUTO-SYNC', style: TextStyle(fontSize: 9, color: LvsColors.pink, fontWeight: FontWeight.w900)),
-                ],
-              ),
-              Slider(
-                value: (ble.activePatternCh2 != null ? 0 : (intensityCh2 ?? 0)).toDouble(), min: 0, max: 100,
-                onChanged: (v) => ble.setProportionalChannel2(v.round()),
-              ),
+              if (activeToy?.hasDualChannel ?? false) ...[
+                const SizedBox(height: 12),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('CANAL 2 (VIBRACIÓN)', style: TextStyle(fontSize: 9, color: LvsColors.text3, fontWeight: FontWeight.w900)),
+                    Text('PROPORCIONAL', style: TextStyle(fontSize: 9, color: LvsColors.pink, fontWeight: FontWeight.w900)),
+                  ],
+                ),
+                Slider(
+                  value: (intensityCh2 ?? 0).toDouble(), min: 0, max: 100,
+                  onChanged: (v) => ble.setProportionalChannel2(v.round()),
+                ),
+              ],
             ],
           ),
         ),
@@ -253,16 +387,17 @@ class _BleStateBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final (label, color) = switch(state) {
       BleState.connected  => ('Online',   LvsColors.teal),
-      BleState.scanning   => ('Scanning', LvsColors.amber),
-      BleState.connecting => ('Joining',  LvsColors.amber),
+      BleState.scanning   => ('Buscando', LvsColors.amber),
+      BleState.connecting => ('Uniendo',  LvsColors.amber),
       BleState.error      => ('Error',    LvsColors.red),
       BleState.idle       => ('Offline',  LvsColors.text3),
     };
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(

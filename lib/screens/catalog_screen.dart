@@ -53,9 +53,41 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
         actions: [
           // Refrescar desde Supabase
           IconButton(
-            icon: const Icon(Icons.sync_rounded, color: LvsColors.teal),
-            tooltip: 'Sincronizar con Supabase',
-            onPressed: () => ref.read(catalogProvider.notifier).fetchCatalog(),
+            icon: const Icon(Icons.cleaning_services_rounded, color: LvsColors.pink),
+            tooltip: 'Limpiar y Recargar Catálogo',
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  backgroundColor: LvsColors.bgCard,
+                  title: const Text('Limpieza Profunda', style: TextStyle(color: Colors.white)),
+                  content: const Text('Esto borrará los dispositivos guardados localmente y recargará todo desde Supabase. ¿Continuar?'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCELAR')),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: LvsColors.pink),
+                      onPressed: () => Navigator.pop(ctx, true), 
+                      child: const Text('LIMPIAR Y RECARGAR'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Limpiando caché local y recargando datos...')),
+                );
+                await ref.read(catalogProvider.notifier).nukeAndReload();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('✅ Catálogo reconstruido desde Supabase'),
+                      backgroundColor: LvsColors.teal,
+                    ),
+                  );
+                }
+              }
+            },
           ),
         ],
         bottom: TabBar(
@@ -165,7 +197,37 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
     );
   }
 
+  // ── Helper para construir el ícono del dispositivo ───────────
+  Widget _buildToyIcon(ToyModel toy) {
+    IconData iconData = Icons.vibration_rounded;
+    Color color = LvsColors.pink;
+
+    final s = toy.stimulationType.toLowerCase();
+    final n = toy.name.toLowerCase();
+    final u = toy.usageType.toLowerCase();
+
+    if (toy.hasDualChannel || s.contains('empuje')) {
+      iconData = Icons.multiple_stop_rounded;
+      color = LvsColors.teal;
+    } else if (n.contains('egg') || n.contains('huevo') || u.contains('egg')) {
+      iconData = Icons.egg_rounded;
+    } else if (n.contains('bullet') || n.contains('bala') || u.contains('bullet')) {
+      iconData = Icons.bolt_rounded;
+    }
+
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Icon(iconData, color: color, size: 32),
+    );
+  }
+
   // ── Tarjeta de dispositivo con menú de acciones ──────────────
+
   Widget _buildToyCard(ToyModel toy, List<ToyModel> allToys) {
     return GestureDetector(
       onLongPress: () => _showCardMenu(toy, allToys),
@@ -196,13 +258,14 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                           ? CachedNetworkImage(
                               imageUrl: toy.imageUrl,
                               fit: BoxFit.contain,
-                              placeholder: (_, __) => const Center(
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: LvsColors.pink)),
-                              errorWidget: (_, __, ___) =>
-                                  const Icon(Icons.vibration, color: Colors.white12, size: 48),
+                              placeholder: (_, __) => Center(
+                                child: _buildToyIcon(toy),
+                              ),
+                              errorWidget: (_, __, ___) => Center(
+                                child: _buildToyIcon(toy),
+                              ),
                             )
-                          : const Icon(Icons.vibration, color: Colors.white12, size: 48),
+                          : Center(child: _buildToyIcon(toy)),
                     ),
                   ),
                   Padding(

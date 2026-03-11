@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lvs_control/screens/main_navigation.dart';
-import 'package:lvs_control/theme/lvs_colors.dart';
+import 'package:lvs_control/theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
 
     _scale = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.6, curve: Curves.outBack)),
+      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic)),
     );
 
     _controller.forward().then((_) {
@@ -69,14 +70,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 40),
-                    const Text(
+                    Text(
                       'VELVET SYNC',
-                      style: TextStyle(
-                        fontFamily: 'serif',
+                      style: GoogleFonts.cinzel(
                         fontSize: 24,
                         letterSpacing: 8,
                         color: Colors.white70,
-                        fontWeight: FontWeight.w200,
+                        fontWeight: FontWeight.w300,
                       ),
                     ),
                     const SizedBox(height: 10),

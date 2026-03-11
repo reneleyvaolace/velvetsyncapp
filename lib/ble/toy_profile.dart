@@ -20,21 +20,16 @@ class ToyProfile {
 
   /// Construye el perfil a partir del nombre BLE real del hardware.
   static ToyProfile fromName(String deviceName) {
-    // Detección de familia 8154 (Knight / wbMSE)
-    if (deviceName.contains('8154') ||
+    // Si el nombre sugiere una familia específica, lo marcamos como Dual Channel si aplica,
+    // pero respetamos el nombre y el ID real detectado.
+    final bool isDual = deviceName.contains('8154') ||
         deviceName.startsWith('wbMSE') ||
-        deviceName.toLowerCase().contains('knight')) {
-      return ToyProfile(
-        name: deviceName.isEmpty ? 'Knight No. 3' : deviceName,
-        identifier: '8154',
-        hasDualChannel: true,
-      );
-    }
-    // Para cualquier otro dispositivo: usar su nombre real como identificador
+        deviceName.toLowerCase().contains('knight');
+
     return ToyProfile(
       name: deviceName.isNotEmpty ? deviceName : 'Dispositivo LVS',
-      identifier: deviceName.length > 4 ? deviceName.substring(0, 4) : deviceName,
-      hasDualChannel: false,
+      identifier: deviceName, // Usar el nombre/ID real como identificador
+      hasDualChannel: isDual,
     );
   }
 

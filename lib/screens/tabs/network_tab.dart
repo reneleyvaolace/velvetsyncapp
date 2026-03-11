@@ -69,7 +69,7 @@ class NetworkTab extends ConsumerWidget {
             return;
           }
 
-          final session = await supabase.createSharedSession(ble.toyProfile?.id ?? 'generic_lvs');
+          final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
           if (session != null) {
             final sessionId = session['id'].toString();
             supabase.joinControlRoom(sessionId, (payload) {
