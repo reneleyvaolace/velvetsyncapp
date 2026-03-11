@@ -28,13 +28,34 @@ def run_command(command):
 
 def stop_adb():
     print("Intentando cerrar el servidor ADB...")
+    # Intento 1: comando adb kill-server
     success, output = run_command("adb kill-server")
     if success:
-        print("Servidor ADB cerrado correctamente.")
-        logging.info("Servidor ADB detenido por el usuario.")
+        print("Servidor ADB cerrado correctamente mediante comando.")
+        logging.info("Servidor ADB detenido mediante comando adb.")
+        return True
+    
+    # Intento 2: taskkill (Windows)
+    print("Comando adb no disponible. Intentando terminación forzada del proceso...")
+    success, output = run_command("taskkill /F /IM adb.exe")
+    if success:
+        print("Proceso adb.exe terminado forzosamente.")
+        logging.info("Proceso adb.exe terminado mediante taskkill.")
+        return True
+    
+    # Intento 3: Stop-Process (PowerShell via shell)
+    success, output = run_command('powershell -Command "Stop-Process -Name adb -ErrorAction SilentlyContinue"')
+    # Nota: Stop-Process no devuelve mucho si funciona, verificamos si el proceso sigue ahí
+    
+    print("Verificando si el proceso persiste...")
+    # Verificación final
+    check_success, check_output = run_command('powershell -Command "Get-Process adb -ErrorAction SilentlyContinue"')
+    if not check_output:
+        print("El proceso ADB ya no se encuentra en ejecución.")
+        logging.info("Gestión de ADB exitosa (proceso no detectado).")
         return True
     else:
-        print(f"Error al cerrar ADB: {output}")
+        print(f"No se pudo cerrar el proceso ADB: {output}")
         return False
 
 if __name__ == "__main__":

@@ -14,7 +14,9 @@ Gestionar el ciclo de vida del servidor ADB (Android Debug Bridge) para liberar 
 4. **Registro:** Documentar acciones en `activity.log`.
 
 ### Restricciones/Historial de Aprendizaje
-- Asegurarse de cerrar procesos que dependan de ADB antes de matar el servidor si es posible.
+- **Limitación de PATH:** Es posible que el comando `adb` no esté en el PATH del sistema, aunque el proceso esté corriendo.
+- **Terminación Forzada:** Si `adb kill-server` falla, se debe intentar terminar el proceso `adb` por nombre de sistema (ej. `taskkill /F /IM adb.exe` o `Stop-Process`).
+- **Registro:** Siempre verificar si el proceso sigue vivo tras el intento de cierre.
 
 ### Skills Usadas
 - ADB CLI
