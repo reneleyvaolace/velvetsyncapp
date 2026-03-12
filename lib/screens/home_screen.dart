@@ -14,6 +14,7 @@ import '../ble/lvs_commands.dart';
 import '../main.dart'; 
 import '../theme.dart';
 import '../widgets/preregister_widget.dart';
+import '../widgets/compatible_devices_row.dart';
 import 'debug_screen.dart';
 import 'game_screen.dart';
 import 'companion_screen.dart';
@@ -160,7 +161,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       _buildConnectCard(ble),
                       const SizedBox(height: 20),
                       _buildControlCard(ref),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 25),
+                      const CompatibleDevicesRow(),
+                      const SizedBox(height: 25),
                       _buildCanvasCard(ble),
                       const SizedBox(height: 20),
                       _buildMediaSyncCard(ble),
