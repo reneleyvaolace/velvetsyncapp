@@ -6,7 +6,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/toy_model.dart';
 import '../utils/logger.dart';
@@ -22,12 +21,13 @@ class SupabaseService {
   
   // Canales para comunicación rápida (P2P Virtual)
   RealtimeChannel? _activeChannel;
+  final String _clientId = DateTime.now().millisecondsSinceEpoch.toString(); // Identificador único por sesión de app
 
   Future<void> initialize() async {
     if (_isInitialized) return;
     
-    const String url = 'https://wsgytnzigqlviqoktmdo.supabase.co';
-    const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzZ3l0bnppZ3Fsdmlxb2t0bWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzMDk4NjQsImV4cCI6MjA3OTg4NTg2NH0.9Bp-bxWIEnsBEtXb1FaaNoxqRozTPnoYRInE8si8DjA';
+    const String url = 'https://baeclricgedhxdtmirid.supabase.co';
+    const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
 
     await Supabase.initialize(
       url: url,
@@ -40,10 +40,12 @@ class SupabaseService {
   SupabaseClient get client => Supabase.instance.client;
 
   // 1. Mapeo de Hardware (device_catalog)
-  Future<List<ToyModel>> fetchDeviceCatalog() async {
+  /// Obtiene el catálogo de dispositivos desde Supabase
+  /// [limit] Cantidad máxima de dispositivos a retornar (por defecto 2000)
+  Future<List<ToyModel>> fetchDeviceCatalog({int limit = 2000}) async {
     if (!_isInitialized) return [];
     try {
-      final response = await client.from('device_catalog').select().limit(2000);
+      final response = await client.from('device_catalog').select().limit(limit);
       return (response as List).map((data) => ToyModel.fromSupabase(data)).toList();
     } catch (e) {
       lvsLog('Error fetchCatalog: $e', tag: 'SUPABASE');
@@ -133,12 +135,24 @@ class SupabaseService {
   Future<Map<String, dynamic>?> fetchSessionByToken(String token) async {
     if (!_isInitialized) return null;
     try {
+      // Intentar primero con la vista enriquecida
       final response = await client
           .from('shared_session_view')
           .select()
           .eq('access_token', token)
           .maybeSingle();
-      return response;
+      
+      if (response != null) return response;
+
+      // Si la vista falla (ej: el dispositivo no está en el catálogo remoto),
+      // intentar directamente con la tabla base para al menos obtener el ID
+      final rawSession = await client
+          .from('shared_sessions')
+          .select()
+          .eq('access_token', token)
+          .maybeSingle();
+          
+      return rawSession;
     } catch (e) {
       debugPrint('❌ Error fetchSessionByToken: $e');
       return null;
@@ -149,6 +163,7 @@ class SupabaseService {
   Future<Map<String, dynamic>?> createSharedSession(String deviceId) async {
     if (!_isInitialized) return null;
     try {
+      // 1. Intentar insertar con el ID del dispositivo
       final response = await client
           .from('shared_sessions')
           .insert({
@@ -160,14 +175,33 @@ class SupabaseService {
       lvsLog('Sesión creada: ID ${response['id']}', tag: 'SUPABASE');
       return response;
     } catch (e) {
-      lvsLog('Error createSharedSession: $e', tag: 'SUPABASE');
-      return null;
+      lvsLog('⚠️ Fallo inicial en createSharedSession ($deviceId): $e', tag: 'SUPABASE');
+      
+      // 2. Reintento con ID genérico (por si el deviceId no existe en el catálogo remoto y hay FK)
+      if (deviceId != '8154') {
+        try {
+          lvsLog('🔄 Reintentando con ID genérico...', tag: 'SUPABASE');
+          final retryResponse = await client
+              .from('shared_sessions')
+              .insert({
+                'device_id': '8154', // Usamos el ID del Knight No. 3 como fallback universal
+                'is_active': true,
+              })
+              .select()
+              .single();
+          return retryResponse;
+        } catch (e2) {
+          lvsLog('❌ Error fatal en reintento: $e2', tag: 'SUPABASE');
+          throw e2; // Propagar el error para que la UI lo muestre
+        }
+      }
+      rethrow;
     }
   }
   // ── Comunicación Ultrarrápida (Broadcast) ──────────────────
   
   /// Se une a una sala de control en tiempo real para una sesión
-  void joinControlRoom(String sessionId, Function(Map<String, dynamic>) onCommandReceived) {
+  void joinControlRoom(String sessionId, Function(Map<String, dynamic> payload, bool isSelf) onCommandReceived) {
     _activeChannel?.unsubscribe();
     
     _activeChannel = client.channel('session_$sessionId');
@@ -175,8 +209,10 @@ class SupabaseService {
     _activeChannel!.onBroadcast(
       event: 'control_command',
       callback: (payload) {
-        lvsLog('Comando P2P recibido: $payload', tag: 'SUPA');
-        onCommandReceived(payload);
+        final String? senderId = payload['sender_id'];
+        final bool isSelf = senderId == _clientId;
+        lvsLog('Comando P2P (${isSelf ? 'Mío' : 'Socio'}): $payload', tag: 'SUPA');
+        onCommandReceived(payload, isSelf);
       },
     ).subscribe();
     
@@ -189,7 +225,11 @@ class SupabaseService {
     
     await channel.sendBroadcastMessage(
       event: 'control_command',
-      payload: {key: value, 'ts': DateTime.now().millisecondsSinceEpoch},
+      payload: {
+        'sender_id': _clientId,
+        key: value, 
+        'ts': DateTime.now().millisecondsSinceEpoch
+      },
     );
   }
 

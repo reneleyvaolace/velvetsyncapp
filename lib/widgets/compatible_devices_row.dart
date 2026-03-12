@@ -18,30 +18,11 @@ class CompatibleDevicesRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ← USA el catálogo COMPLETO del servidor, no los pre-registrados del usuario
+    // ← USA el catálogo del servidor (inicializado con fallback local)
     final toys = ref.watch(serverCatalogProvider);
+    final isLoading = ref.watch(catalogLoadingProvider);
 
-    if (toys.isEmpty) {
-      return const SizedBox(
-        height: 100,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 20, height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: LvsColors.teal),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Descubriendo modelos...',
-                style: TextStyle(color: LvsColors.text3, fontSize: 10, letterSpacing: 1),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    // ✨ FIX: Siempre hay dispositivos disponibles inmediatamente
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,7 +32,21 @@ class CompatibleDevicesRow extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SectionLabel('DISPOSITIVOS COMPATIBLES'),
+            Row(
+              children: [
+                const SectionLabel('DISPOSITIVOS COMPATIBLES'),
+                if (isLoading) ...[
+                  const SizedBox(width: 8),
+                  const SizedBox(
+                    width: 12, height: 12,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: LvsColors.teal,
+                    ),
+                  ),
+                ],
+              ],
+            ),
             Text(
               '${toys.length} MODELOS',
               style: const TextStyle(

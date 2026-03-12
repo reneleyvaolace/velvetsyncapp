@@ -87,7 +87,7 @@ class ToyModel {
 
     return ToyModel(
       id: row['id']?.toString() ?? '',
-      name: row['model_name']?.toString() ?? row['name']?.toString() ?? 'Generic LVS',
+      name: row['factory_model']?.toString() ?? row['model_name']?.toString() ?? row['name']?.toString() ?? 'Generic LVS',
       usageType: row['usage_type']?.toString() ?? 'Universal',
       targetAnatomy: anatomy,
       stimulationType: row['stimulation_type']?.toString() ?? 'Vibración',

@@ -62,23 +62,29 @@ class NetworkTab extends ConsumerWidget {
           final supabase = ref.read(supabaseServiceProvider);
           final ble = ref.read(bleProvider);
 
-          if (!ble.isConnected) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Conecta un dispositivo para iniciar sesión remota'))
-            );
-            return;
-          }
-
-          final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
-          if (session != null) {
-            final sessionId = session['id'].toString();
-            supabase.joinControlRoom(sessionId, (payload) {
-              if (ble.isConnected) {
-                final int ch1 = (payload['intensity_ch1'] ?? 0).toInt();
-                final int ch2 = (payload['intensity_ch2'] ?? 0).toInt();
-                ble.sendMultimediaSync(ch1, ch2);
+          if (ble.isConnected) {
+            try {
+              final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
+              if (session != null && context.mounted) {
+                final sessionId = session['id'].toString();
+                supabase.joinControlRoom(sessionId, (payload, isSelf) {
+                  if (isSelf) return;
+                  if (ble.isConnected) {
+                    final int ch1 = (payload['intensity_ch1'] ?? 0).toInt();
+                    final int ch2 = (payload['intensity_ch2'] ?? 0).toInt();
+                    ble.sendMultimediaSync(ch1, ch2);
+                  }
+                });
+                Navigator.push(context, MaterialPageRoute(builder: (_) => RemoteSessionScreen(initialSessionData: session)));
               }
-            });
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error de servidor: $e')),
+                );
+              }
+            }
+          } else {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen()));
           }
         },

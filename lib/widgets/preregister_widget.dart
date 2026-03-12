@@ -23,7 +23,7 @@ class PreregisterPanel extends ConsumerStatefulWidget {
 
 class _PreregisterPanelState extends ConsumerState<PreregisterPanel>
     with SingleTickerProviderStateMixin {
-  bool _expanded = false;
+  bool _expanded = true; // ✨ Expandido por defecto para mostrar sugerencias
   final TextEditingController _keyCtrl = TextEditingController();
   bool _loading = false;
   String? _feedback;
@@ -37,6 +37,7 @@ class _PreregisterPanelState extends ConsumerState<PreregisterPanel>
     _anim = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 280));
     _fadeAnim = CurvedAnimation(parent: _anim, curve: Curves.easeOut);
+    _anim.forward(); // ✨ Expandir inmediatamente al iniciar
   }
 
   @override
@@ -100,6 +101,13 @@ class _PreregisterPanelState extends ConsumerState<PreregisterPanel>
       orElse: () => <ToyModel>[],
     );
 
+    // 5 productos aleatorios del catálogo como sugerencias
+    final suggestedDevices = ref.watch(serverCatalogProvider);
+    
+    // DEBUG: Imprimir valores para verificar carga
+    debugPrint('🔍 SUGGESTIONS: ${suggestedDevices.length} dispositivos');
+    suggestedDevices.forEach((t) => debugPrint('   - ${t.name} (${t.id})'));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -124,8 +132,8 @@ class _PreregisterPanelState extends ConsumerState<PreregisterPanel>
                 Expanded(
                   child: Text(
                     preregistered.isEmpty
-                        ? 'Pre-registrar dispositivo'
-                        : 'Dispositivos pre-registrados (${preregistered.length})',
+                        ? 'Dispositivos Sugeridos (5)'
+                        : 'Pre-registrados: ${preregistered.length} · Sugeridos: ${suggestedDevices.length}',
                     style: TextStyle(
                       color: _expanded ? LvsColors.teal : LvsColors.text3,
                       fontSize: 12,
@@ -300,6 +308,49 @@ class _PreregisterPanelState extends ConsumerState<PreregisterPanel>
                       ),
                     ),
                   ],
+
+                  // ── Sugerencias: 5 dispositivos aleatorios ─────────────────
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Icon(Icons.auto_awesome_rounded, color: LvsColors.violet, size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Sugerencias para ti',
+                        style: TextStyle(
+                          color: LvsColors.violet,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 100,
+                    child: suggestedDevices.isEmpty
+                        ? Center(
+                            child: Text(
+                              'Cargando sugerencias...',
+                              style: TextStyle(color: LvsColors.text3, fontSize: 10),
+                            ),
+                          )
+                        : ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: suggestedDevices.length,
+                            separatorBuilder: (_, __) => const SizedBox(width: 8),
+                            itemBuilder: (ctx, i) {
+                              final toy = suggestedDevices[i];
+                              final isRegistered = preregistered.any((t) => t.id == toy.id);
+                              return _SuggestionChip(
+                                toy: toy,
+                                isRegistered: isRegistered,
+                                onAdd: () => _addByKey(toy.id),
+                              );
+                            },
+                          ),
+                  ),
                 ],
               ),
             ),
@@ -358,6 +409,114 @@ class _PreregisterPanelState extends ConsumerState<PreregisterPanel>
           border: Border.all(color: color.withValues(alpha: 0.4)),
         ),
         child: Center(child: icon),
+      ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// Chip de sugerencia de dispositivo
+// ══════════════════════════════════════════════════════════════
+class _SuggestionChip extends StatelessWidget {
+  final ToyModel toy;
+  final bool isRegistered;
+  final VoidCallback onAdd;
+
+  const _SuggestionChip({
+    required this.toy,
+    required this.isRegistered,
+    required this.onAdd,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: isRegistered ? null : onAdd,
+      child: Container(
+        width: 85,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isRegistered
+              ? LvsColors.teal.withValues(alpha: 0.15)
+              : LvsColors.violet.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isRegistered
+                ? LvsColors.teal.withValues(alpha: 0.4)
+                : LvsColors.violet.withValues(alpha: 0.4),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Imagen o ícono
+            toy.imageUrl.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      toy.imageUrl,
+                      width: 45,
+                      height: 45,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _buildIcon(),
+                    ),
+                  )
+                : _buildIcon(),
+            const SizedBox(height: 4),
+            // Nombre truncado
+            Text(
+              toy.name.length > 12 ? '${toy.name.substring(0, 10)}..' : toy.name,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 7,
+                fontWeight: FontWeight.w600,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 2),
+            // Badge de estado
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+              decoration: BoxDecoration(
+                color: isRegistered
+                    ? LvsColors.teal.withValues(alpha: 0.3)
+                    : LvsColors.violet.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(3),
+              ),
+              child: Text(
+                isRegistered ? '✓ AGREGADO' : '+ AGREGAR',
+                style: TextStyle(
+                  color: isRegistered ? LvsColors.teal : LvsColors.violet,
+                  fontSize: 6,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIcon() {
+    return Container(
+      width: 45,
+      height: 45,
+      decoration: BoxDecoration(
+        color: isRegistered
+            ? LvsColors.teal.withValues(alpha: 0.2)
+            : LvsColors.violet.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        toy.stimulationType.toLowerCase().contains('empuje')
+            ? Icons.multiple_stop_rounded
+            : Icons.vibration_rounded,
+        color: isRegistered ? LvsColors.teal : LvsColors.violet,
+        size: 20,
       ),
     );
   }

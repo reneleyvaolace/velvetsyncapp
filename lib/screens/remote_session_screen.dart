@@ -6,14 +6,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import '../services/supabase_service.dart';
 import '../services/catalog_service.dart';
+import '../ble/ble_service.dart';
 import '../models/toy_model.dart';
 import '../theme.dart';
 import '../utils/logger.dart';
 
 class RemoteSessionScreen extends ConsumerStatefulWidget {
-  const RemoteSessionScreen({super.key});
+  final Map<String, dynamic>? initialSessionData;
+  const RemoteSessionScreen({super.key, this.initialSessionData});
 
   @override
   ConsumerState<RemoteSessionScreen> createState() => _RemoteSessionScreenState();
@@ -23,6 +26,8 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   final TextEditingController _tokenController = TextEditingController();
   bool _isConnected = false;
   bool _isLoading = false;
+  bool _partnerActive = false;
+  Timer? _partnerTimer;
   
   Map<String, dynamic>? _sessionData;
   ToyModel? _toyModel;
@@ -30,13 +35,102 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   double _valCh1 = 0;
   double _valCh2 = 0;
   
-  Timer? _updateTimer;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialSessionData != null) {
+      _sessionData = widget.initialSessionData;
+      _isConnected = true;
+      _loadToyModel();
+      _startListening();
+    }
+  }
 
   @override
   void dispose() {
     _tokenController.dispose();
-    _updateTimer?.cancel();
+    _partnerTimer?.cancel();
     super.dispose();
+  }
+
+  Future<void> _loadToyModel() async {
+    if (_sessionData == null) return;
+    
+    final modelName = _sessionData!['model_name'] ?? '';
+    final deviceId = _sessionData!['device_id'] ?? '';
+    
+    final catalog = ref.read(catalogProvider.notifier);
+    
+    // 1. Intentar por nombre
+    _toyModel = catalog.findModelByName(modelName);
+    
+    // 2. Si falló, intentar por ID (robusto para dispositivos genéricos)
+    if (_toyModel == null && deviceId.isNotEmpty) {
+      lvsLog('Buscando modelo por ID: $deviceId', tag: 'REMOTE');
+      _toyModel = await ref.read(supabaseServiceProvider).fetchDeviceById(deviceId);
+    }
+    
+    // 3. FALLBACK: Si sigue siendo nulo, crear perfil genérico para no romper la UI
+    if (_toyModel == null && deviceId.isNotEmpty) {
+      _toyModel = ToyModel(
+        id: deviceId,
+        name: 'LVS Genérico $deviceId',
+        usageType: 'Universal',
+        targetAnatomy: 'Universal',
+        stimulationType: 'Vibración',
+        motorLogic: 'Single Channel',
+        imageUrl: '',
+        qrCodeUrl: '',
+        supportedFuncs: 'speed,vibration,pattern',
+        isPrecise: false,
+        broadcastPrefix: '77 62 4d 53 45',
+      );
+    }
+    
+    if (mounted) {
+      setState(() {
+        _valCh1 = (_sessionData!['intensity_ch1'] ?? 0).toDouble();
+        _valCh2 = (_sessionData!['intensity_ch2'] ?? 0).toDouble();
+      });
+    }
+  }
+
+  void _startListening() {
+    if (_sessionData == null) return;
+    final sessionId = _sessionData!['id'].toString();
+    final supabase = ref.read(supabaseServiceProvider);
+    
+    supabase.joinControlRoom(sessionId, (payload, isSelf) {
+      if (!mounted || isSelf) return;
+      
+      final ble = ref.read(bleProvider);
+
+      // Feedback visual de actividad del socio
+      setState(() => _partnerActive = true);
+      _partnerTimer?.cancel();
+      _partnerTimer = Timer(const Duration(seconds: 3), () {
+        if (mounted) setState(() => _partnerActive = false);
+      });
+      
+      setState(() {
+        if (payload.containsKey('intensity_ch1')) {
+          final val = (payload['intensity_ch1'] as num).toDouble();
+          _valCh1 = val;
+          if (ble.isConnected) {
+            // Aplicar al juguete local (Bidireccional)
+            ble.sendMultimediaSync(val.toInt(), _valCh2.toInt());
+          }
+        }
+        if (payload.containsKey('intensity_ch2')) {
+          final val = (payload['intensity_ch2'] as num).toDouble();
+          _valCh2 = val;
+          if (ble.isConnected) {
+            // Aplicar al juguete local (Bidireccional)
+            ble.sendMultimediaSync(_valCh1.toInt(), val.toInt());
+          }
+        }
+      });
+    });
   }
 
   Future<void> _connect() async {
@@ -58,18 +152,14 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
       return;
     }
 
-    final modelName = session['model_name'] ?? '';
-    final catalog = ref.read(catalogProvider.notifier);
-    final toy = catalog.findModelByName(modelName);
-
     setState(() {
       _sessionData = session;
-      _toyModel = toy;
       _isConnected = true;
       _isLoading = false;
-      _valCh1 = (session['intensity_ch1'] ?? 0).toDouble();
-      _valCh2 = (session['intensity_ch2'] ?? 0).toDouble();
     });
+    
+    _loadToyModel();
+    _startListening();
   }
 
   Future<void> _updateIntensity(int channel, double value) async {
@@ -79,11 +169,17 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     final sessionId = _sessionData!['id'].toString();
     final key = channel == 1 ? 'intensity_ch1' : 'intensity_ch2';
     
-    // 🚀 ENVÍO ULTRARRÁPIDO (P2P Virtual)
     await supabase.sendBroadcastCommand(sessionId, key, value.toInt());
-
-    // Opcional: Persistir en DB cada cierto tiempo o al final para histórico
-    // Por ahora priorizamos velocidad pura.
+    
+    // Si somos el HOST, también debemos actualizar el juguete localmente
+    final ble = ref.read(bleProvider);
+    if (ble.isConnected) {
+       if (channel == 1) {
+         ble.setProportionalChannel1(value.toInt());
+       } else {
+         ble.setProportionalChannel2(value.toInt());
+       }
+    }
   }
 
   @override
@@ -95,6 +191,13 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
+        actions: [
+          if (_isConnected)
+            IconButton(
+              icon: const Icon(Icons.share, color: LvsColors.teal),
+              onPressed: _showTokenDialog,
+            ),
+        ],
       ),
       body: Container(
         width: double.infinity,
@@ -108,12 +211,52 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     );
   }
 
+  void _showTokenDialog() {
+    final token = _sessionData?['access_token'] ?? '---';
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: LvsColors.bgCard,
+        title: const Text('COMPARTIR ACCESO', style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Comparte este código con tu pajera:', style: TextStyle(color: LvsColors.text3, fontSize: 12)),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: LvsColors.teal.withOpacity(0.5)),
+              ),
+              child: Text(
+                token,
+                style: const TextStyle(color: LvsColors.teal, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 4),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: token));
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copiado al portapapeles')));
+              },
+              icon: const Icon(Icons.copy),
+              label: const Text('COPIAR CÓDIGO'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildLoginView() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(height: 40),
-        Icon(Icons.vibration, size: 80, color: LvsColors.violet.withOpacity(0.5)),
+        Icon(Icons.public_rounded, size: 80, color: LvsColors.pink.withOpacity(0.5)),
         const SizedBox(height: 20),
         const Text(
           'ACCESO INVITADO',
@@ -130,13 +273,14 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
           controller: _tokenController,
           style: const TextStyle(color: Colors.white, fontSize: 18),
           textAlign: TextAlign.center,
+          textCapitalization: TextCapitalization.characters,
           decoration: InputDecoration(
             hintText: 'CÓDIGO DE ACCESO',
             hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
             filled: true,
             fillColor: LvsColors.bgCard,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-            prefixIcon: const Icon(Icons.key, color: LvsColors.violet),
+            prefixIcon: const Icon(Icons.key, color: LvsColors.pink),
           ),
         ),
         const SizedBox(height: 24),
@@ -146,10 +290,10 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
           child: ElevatedButton(
             onPressed: _isLoading ? null : _connect,
             style: ElevatedButton.styleFrom(
-              backgroundColor: LvsColors.violet,
+              backgroundColor: LvsColors.pink,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               elevation: 8,
-              shadowColor: LvsColors.violet.withOpacity(0.5),
+              shadowColor: LvsColors.pink.withOpacity(0.5),
             ),
             child: _isLoading 
               ? const CircularProgressIndicator(color: Colors.white) 
@@ -198,7 +342,10 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
           
           const Spacer(),
           TextButton.icon(
-            onPressed: () => setState(() => _isConnected = false),
+            onPressed: () {
+               ref.read(supabaseServiceProvider).leaveControlRoom();
+               setState(() => _isConnected = false);
+            },
             icon: const Icon(Icons.exit_to_app, color: LvsColors.red),
             label: const Text('SALIR DE LA SESIÓN', style: TextStyle(color: LvsColors.red)),
           ),
@@ -209,85 +356,99 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
 
   Widget _buildSessionHeader() {
     final deviceName = _toyModel?.name ?? 'Dispositivo Remoto';
+    final isHost = ref.read(bleProvider).isConnected;
 
     return Column(
       children: [
-        const Text(
-          'El otro usuario ha conectado el juguete',
+        Text(
+          isHost ? 'ESTÁS COMPARTIENDO EL CONTROL' : 'CONECTADO AL DISPOSITIVO DE TU PAREJA',
           textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w400, letterSpacing: 0.5),
+          style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.5),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         
-        // Pill Status (Estilo exacto de la referencia)
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          decoration: BoxDecoration(
-            color: const Color(0xFF151515),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 28, height: 28,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [LvsColors.pink, Color(0xFFC2185B)],
-                    begin: Alignment.topLeft, end: Alignment.bottomRight,
+        // Pill Status
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF151515),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: LvsColors.teal.withOpacity(0.2)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 24, height: 24,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [LvsColors.teal, Color(0xFF00ACC1)],
+                      ),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.bolt, color: Colors.white, size: 14),
+                    ),
                   ),
-                ),
-                child: const Center(
-                  child: Icon(Icons.waves, color: Colors.white, size: 14),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                deviceName,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 13),
-              ),
-            ],
-          ),
-        ),
-        
-        const SizedBox(height: 32),
-        
-        // Botón Magenta Premium (Botón principal de invitación)
-        Container(
-          width: double.infinity,
-          height: 60,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100), // Súper redondeado como la imagen
-            gradient: const LinearGradient(
-              colors: [LvsColors.pink, Color(0xFFD81B60)],
-              begin: Alignment.centerLeft, end: Alignment.centerRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: LvsColors.pink.withOpacity(0.25),
-                blurRadius: 15,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                // Lógica de invitación
-              },
-              borderRadius: BorderRadius.circular(100),
-              child: const Center(
-                child: Text(
-                  'Invitar a control mutuo',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 0.5),
-                ),
+                  const SizedBox(width: 10),
+                  Text(
+                    deviceName.toUpperCase(),
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1),
+                  ),
+                ],
               ),
             ),
-          ),
+            const SizedBox(width: 12),
+             // Indicador de Socio
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: _partnerActive ? LvsColors.pink.withOpacity(0.1) : Colors.black45,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: _partnerActive ? LvsColors.pink : Colors.white12),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.person, size: 14, color: _partnerActive ? LvsColors.pink : Colors.white38),
+                  const SizedBox(width: 6),
+                  Text(
+                    _partnerActive ? 'SOCIO ACTIVO' : 'SOCIO EN ESPERA',
+                    style: TextStyle(
+                      color: _partnerActive ? LvsColors.pink : Colors.white38,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
+        
+        if (isHost) ...[
+          const SizedBox(height: 24),
+          const SectionLabel('CÓDIGO DE ACCESO'),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: _showTokenDialog,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: LvsColors.bgCardH,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: LvsColors.pink.withOpacity(0.3)),
+              ),
+              child: Text(
+                _sessionData?['access_token'] ?? '---',
+                style: const TextStyle(color: LvsColors.pink, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 4),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -307,25 +468,25 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label.toUpperCase(), style: const TextStyle(color: LvsColors.text3, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-              Text('${value.toInt()}%', style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+              Text(label.toUpperCase(), style: const TextStyle(color: LvsColors.text3, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+              Text('${((value / 255) * 100).round()}%', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16)),
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: color,
             inactiveTrackColor: color.withOpacity(0.1),
             thumbColor: Colors.white,
             overlayColor: color.withOpacity(0.2),
-            trackHeight: 12,
-            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 14, elevation: 6),
+            trackHeight: 8,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
           ),
           child: Slider(
             value: value,
             min: 0,
-            max: 255, // Basado en el requerimiento de canales 0xD y 0xA (0-255)
+            max: 255,
             onChanged: onChanged,
             onChangeEnd: onChangeEnd,
           ),

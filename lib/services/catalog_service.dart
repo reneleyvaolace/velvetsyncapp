@@ -20,7 +20,21 @@ const _kPreregisteredKey = 'lvs_preregistered_devices';
 final preregisteredProvider = StateProvider<List<ToyModel>>((ref) => []);
 
 // Provider para TODOS los dispositivos del catálogo servidor (para CompatibleDevicesRow)
-final serverCatalogProvider = StateProvider<List<ToyModel>>((ref) => []);
+// Usamos StateNotifierProvider para que sea reactivo cuando se actualiza
+final serverCatalogProvider = StateNotifierProvider<ServerCatalogNotifier, List<ToyModel>>((ref) {
+  return ServerCatalogNotifier();
+});
+
+class ServerCatalogNotifier extends StateNotifier<List<ToyModel>> {
+  ServerCatalogNotifier() : super([]);
+  
+  void updateCatalog(List<ToyModel> toys) {
+    state = toys;
+  }
+}
+
+// ✨ Provider para indicar si se está cargando el catálogo desde Supabase
+final catalogLoadingProvider = StateProvider<bool>((ref) => true);
 
 final catalogProvider = StateNotifierProvider<CatalogNotifier, AsyncValue<List<ToyModel>>>((ref) {
   final supabase = ref.watch(supabaseServiceProvider);
@@ -39,11 +53,12 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
   }
 
   Future<void> _init() async {
-    // await _storage.delete(key: _kPreregisteredKey); // Borrado realizado
-    // 1. Cargar pre-registrados del almacenamiento local primero (instantáneo)
+    // 1. Cargar pre-registrados del almacenamiento local (rápido)
     await _loadPreregistered();
-    // 2. Luego cargar el catálogo del servidor
-    await fetchCatalog();
+    
+    // 2. Cargar catálogo del servidor en segundo plano (NO bloquear la UI)
+    // Usamos Future.delayed para que la UI se renderice primero con el fallback
+    Future.delayed(Duration.zero, () => fetchCatalog());
   }
 
   // ─── PERSISTENCIA ─────────────────────────────────────────────
@@ -96,48 +111,76 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
   // ─── CATÁLOGO SERVIDOR ─────────────────────────────────────────
 
   Future<void> fetchCatalog() async {
+    // FASE 1: Mostrar inmediatamente fallback local (SIN NINGÚN AWAIT - instantáneo)
+    final fallback = _localFallbackCatalog()..shuffle();
+    final sample = fallback.take(5).toList();
+    
+    // DEBUG: Print directo que funciona siempre
+    print('📦 CATALOGO: ${sample.length} dispositivos cargados');
+    sample.forEach((t) => print('   → ${t.name} (${t.id})'));
+    
+    _ref.read(serverCatalogProvider.notifier).updateCatalog(sample);
+    _serverCatalog = fallback;
+    state = AsyncValue.data(_merged());
+
+    // FASE 2: Cargar desde Supabase en segundo plano (sin bloquear)
+    Future.delayed(Duration.zero, () => _loadFromSupabaseInBackground());
+  }
+
+  /// Carga dispositivos desde Supabase en segundo plano sin bloquear la UI
+  Future<void> _loadFromSupabaseInBackground() async {
+    // Marcar como cargando
+    _ref.read(catalogLoadingProvider.notifier).state = true;
+
     try {
-      // Intentar Supabase (Discovery)
-      final toys = await _supabase.fetchDeviceCatalog();
+      lvsLog('🔄 Iniciando carga desde Supabase...', tag: 'CATALOG');
+
+      // Cargar catálogo completo directamente con timeout corto
+      final toys = await Future.any([
+        // Intento 1: Traer todos los dispositivos
+        _supabase.fetchDeviceCatalog(limit: 500).then((result) {
+          lvsLog('✅ Recibidos ${result.length} dispositivos de Supabase', tag: 'CATALOG');
+          return result;
+        }),
+        // Timeout: Si tarda más de 5 segundos, cancelar
+        Future.delayed(const Duration(seconds: 5), () {
+          lvsLog('⚠️ Timeout (5s) en carga de Supabase', tag: 'CATALOG');
+          return <ToyModel>[];
+        }),
+      ]);
+
       if (toys.isNotEmpty) {
         _serverCatalog = toys;
-        
-        // ✨ Mejora Artificer: Selección aleatoria de 10 productos para el Dashboard
-        // Esto evita que el Home se bloquee y da variedad visual en cada visita.
-        final shuffled = List<ToyModel>.from(toys)..shuffle();
-        final sample = shuffled.take(10).toList();
-        
-        // Exponer la muestra aleatoria al provider que usa el Dashboard
-        _ref.read(serverCatalogProvider.notifier).state = sample;
 
-        // ✨ Mejora Artificer: Sincronizar pre-registrados con datos frescos del servidor
-        // Si un dispositivo ya estaba "guardado" pero con datos viejos (ej: genérico), lo actualizamos.
+        // Actualizar con 5 aleatorios del catálogo completo
+        final shuffled = List<ToyModel>.from(toys)..shuffle();
+        final sample = shuffled.take(5).toList();
+        _ref.read(serverCatalogProvider.notifier).updateCatalog(sample);
+
+        // Sincronizar pre-registrados con datos frescos
         bool changed = false;
         for (int i = 0; i < _preregisteredList.length; i++) {
           final localToy = _preregisteredList[i];
           try {
             final freshToy = toys.firstWhere((t) => t.id == localToy.id);
-            // Si el nombre o la imagen cambiaron, actualizamos el local
             if (localToy.name != freshToy.name || localToy.imageUrl != freshToy.imageUrl) {
               _preregisteredList[i] = freshToy;
               changed = true;
             }
-          } catch (_) {
-            // No está en el servidor, mantenemos el local
-          }
+          } catch (_) {}
         }
-        if (changed) {
-          await _savePreregistered();
-        }
+        if (changed) await _savePreregistered();
+        
+        lvsLog('✅ Catálogo actualizado: ${toys.length} dispositivos, mostrando 5 aleatorios', tag: 'CATALOG');
+      } else {
+        lvsLog('⚠️ Supabase devolvió vacío, manteniendo fallback local', tag: 'CATALOG');
       }
-      // El estado del notifier siempre es lo que el usuario ha "dado de alta"
-      state = AsyncValue.data(_merged());
-    } catch (e, stack) {
-      // El fallback también se aleatoriza
-      final fallback = _localFallbackCatalog()..shuffle();
-      _serverCatalog = _localFallbackCatalog();
-      _ref.read(serverCatalogProvider.notifier).state = fallback.take(10).toList();
-      state = AsyncValue.data(_merged());
+      
+      // Carga completada
+      _ref.read(catalogLoadingProvider.notifier).state = false;
+    } catch (e) {
+      lvsLog('❌ Error cargando catálogo: $e', tag: 'CATALOG');
+      _ref.read(catalogLoadingProvider.notifier).state = false;
     }
   }
 
@@ -152,7 +195,7 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
       _preregisteredList.clear();
       _serverCatalog.clear();
       _ref.read(preregisteredProvider.notifier).state = [];
-      _ref.read(serverCatalogProvider.notifier).state = [];
+      _ref.read(serverCatalogProvider.notifier).updateCatalog([]);
       
       // 3. Recargar todo desde Supabase
       await fetchCatalog();
@@ -348,6 +391,51 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
       ToyModel(
         id: '9001', name: 'LVS Aria Pro',
         usageType: 'Wearable', targetAnatomy: 'Universal',
+        stimulationType: 'Vibración', motorLogic: 'Single Channel',
+        imageUrl: '',
+        qrCodeUrl: '',
+        supportedFuncs: 'speed,vibration,pattern',
+        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+      ),
+      ToyModel(
+        id: '7721', name: 'LVS Luna Mini',
+        usageType: 'Wearable', targetAnatomy: 'Clitoral',
+        stimulationType: 'Vibración', motorLogic: 'Single Channel',
+        imageUrl: '',
+        qrCodeUrl: '',
+        supportedFuncs: 'speed,vibration,pattern',
+        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+      ),
+      ToyModel(
+        id: '5543', name: 'LVS Storm Plus',
+        usageType: 'Insertable', targetAnatomy: 'Vaginal',
+        stimulationType: 'Vibración', motorLogic: 'Dual Channel',
+        imageUrl: '',
+        qrCodeUrl: '',
+        supportedFuncs: 'speed,vibration,pattern',
+        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+      ),
+      ToyModel(
+        id: '3398', name: 'LVS Wave',
+        usageType: 'Wearable', targetAnatomy: 'Universal',
+        stimulationType: 'Vibración', motorLogic: 'Single Channel',
+        imageUrl: '',
+        qrCodeUrl: '',
+        supportedFuncs: 'speed,vibration,pattern',
+        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+      ),
+      ToyModel(
+        id: '6672', name: 'LVS Pulse',
+        usageType: 'Wearable', targetAnatomy: 'Peniano',
+        stimulationType: 'Vibración', motorLogic: 'Single Channel',
+        imageUrl: '',
+        qrCodeUrl: '',
+        supportedFuncs: 'speed,vibration,pattern',
+        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+      ),
+      ToyModel(
+        id: '4429', name: 'LVS Zen',
+        usageType: 'Insertable', targetAnatomy: 'Anal',
         stimulationType: 'Vibración', motorLogic: 'Single Channel',
         imageUrl: '',
         qrCodeUrl: '',

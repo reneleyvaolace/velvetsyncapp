@@ -1394,29 +1394,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           final supabase = ref.read(supabaseServiceProvider);
           final ble = ref.read(bleProvider);
 
-          if (!ble.isConnected) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Conecta un dispositivo para iniciar sesión remota'))
-            );
-            return;
-          }
+          if (ble.isConnected) {
+            try {
+              final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
+              
+              if (session != null && context.mounted) {
+                final sessionId = session['id'].toString();
+                
+                // 2. Unirse al canal de Broadcast dinámico
+                supabase.joinControlRoom(sessionId, (payload, isSelf) {
+                  if (isSelf) return; // Ignorar mis propios movimientos para evitar ecos
+                  if (ble.isConnected) {
+                    final int ch1 = (payload['intensity_ch1'] ?? 0).toInt();
+                    final int ch2 = (payload['intensity_ch2'] ?? 0).toInt();
+                    ble.sendMultimediaSync(ch1, ch2);
+                  }
+                });
 
-          // 1. Crear sesión REAL en Supabase
-          final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
-          
-          if (session != null) {
-            final sessionId = session['id'].toString();
-            
-            // 2. Unirse al canal de Broadcast dinámico
-            supabase.joinControlRoom(sessionId, (payload) {
-              if (ble.isConnected) {
-                final int ch1 = (payload['intensity_ch1'] ?? 0).toInt();
-                final int ch2 = (payload['intensity_ch2'] ?? 0).toInt();
-                ble.sendMultimediaSync(ch1, ch2);
+                // 3. Navegar pasando los datos de la sesión (como Host)
+                Navigator.push(context, MaterialPageRoute(builder: (_) => RemoteSessionScreen(initialSessionData: session)));
               }
-            });
-
-            // 3. Navegar pasando los datos de la sesión (para mostrar el token/QR)
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error de servidor: $e')),
+                );
+              }
+            }
+          } else {
+            // Si no está conectado, abrimos la pantalla en modo INVITADO (Login con Token)
             Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen()));
           }
         },
