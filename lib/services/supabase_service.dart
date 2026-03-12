@@ -140,24 +140,14 @@ class SupabaseService {
   Future<Map<String, dynamic>?> fetchSessionByToken(String token) async {
     if (!_isInitialized) return null;
     try {
-      // Intentar primero con la vista enriquecida
+      // Consultar directamente la tabla base (la vista compartida fue eliminada en esta versión)
       final response = await client
-          .from('shared_session_view')
-          .select()
-          .eq('access_token', token)
-          .maybeSingle();
-      
-      if (response != null) return response;
-
-      // Si la vista falla (ej: el dispositivo no está en el catálogo remoto),
-      // intentar directamente con la tabla base para al menos obtener el ID
-      final rawSession = await client
           .from('shared_sessions')
           .select()
           .eq('access_token', token)
           .maybeSingle();
-          
-      return rawSession;
+      
+      return response;
     } catch (e) {
       debugPrint('❌ Error fetchSessionByToken: $e');
       return null;

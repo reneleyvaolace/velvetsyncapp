@@ -142,7 +142,9 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
                 const Text('NO TE MUEVAS...', 
                   style: TextStyle(color: LvsColors.amber, fontWeight: FontWeight.bold, letterSpacing: 4)),
               
-              const SizedBox(height: 100),
+              const SizedBox(height: 60),
+              _buildCenterVisual(),
+              const SizedBox(height: 60),
               
               const CardGlass(
                 child: Text(
@@ -190,7 +192,7 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
                   ),
                   child: Center(
                     child: _isExploded 
-                      ? const Icon(Icons.flash_on, color: LvsColors.red, size: 80)
+                      ? Image.asset('assets/icons/icon_game_roulette.png', color: LvsColors.red, width: 100, height: 100)
                       : Text(
                           _isActive ? '$_secondsLeft' : '?',
                           style: TextStyle(color: color, fontSize: 60, fontWeight: FontWeight.w900),

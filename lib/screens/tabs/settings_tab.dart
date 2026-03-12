@@ -81,12 +81,12 @@ class SettingsTab extends ConsumerWidget {
       child: CardGlass(
         borderColor: LvsColors.amber.withOpacity(0.2),
         padding: const EdgeInsets.all(16),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.terminal, color: LvsColors.amber, size: 20),
+            Image.asset('assets/icons/icon_tab_settings.png', width: 22, height: 22, color: LvsColors.amber),
             const SizedBox(width: 14),
-            Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
-            Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
+            const Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
+            const Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
           ],
         ),
       ),

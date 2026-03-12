@@ -163,17 +163,17 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
                           style: const TextStyle(color: LvsColors.teal, fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.w900),
                         ),
                         const SizedBox(height: 12),
-                        ElevatedButton.icon(
-                          onPressed: _hardwareStop,
-                          icon: const Icon(Icons.stop_rounded),
-                          label: const Text('DETENER AHORA'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: LvsColors.red,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          ElevatedButton.icon(
+                            onPressed: _hardwareStop,
+                            icon: const Icon(Icons.power_settings_new_rounded),
+                            label: const Text('DETENER AHORA'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: LvsColors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                            ),
                           ),
-                        ),
                       ],
                     )
                   : ElevatedButton(

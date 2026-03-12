@@ -1,7 +1,7 @@
 # Directiva: Integración Supabase + Hardware (Handshake & Sigilo)
-## Versión: 1.0.0 | Última actualización: 2026-03-09
+## Versión: 1.1.0 | Última actualización: 2026-03-12
 
-Este documento define la lógica de integración entre la base de datos Supabase (Proyecto: baeclricgedhxdtmirid) y los servicios BLE de la aplicación LVS Control.
+Este documento define la lógica de integración entre la base de datos Supabase (Proyecto Primario: wsgytnzigqlviqoktmdo - CoreAura) y los servicios BLE de la aplicación LVS Control.
 
 ### 1. Mapeo Dinámico de Dispositivos (Tabla device_catalog)
 - **Origen:** Tabla `device_catalog`.
@@ -41,3 +41,8 @@ Este documento define la lógica de integración entre la base de datos Supabase
 
 ### Historial de Aprendizaje
 - *2026-03-09:* Inicialización de la directiva de integración con Supabase. Definición del protocolo de Handshake y políticas de sigilo.
+- *2026-03-12:* 
+    - **Migración de Emergencia:** Se movió la lógica de sesiones al proyecto `wsgytnzigqlviqoktmdo` debido a error 401 (Unauthorized) en el proyecto anterior.
+    - **Estabilidad de Vistas:** Se eliminó la dependencia de `shared_session_view` en favor de consultas directas a la tabla base para evitar errores `PGRST205` (Schema cache mismatch).
+    - **Filtro de Ecos:** Implementación de `sender_id` en el Broadcast P2P para asegurar que los movimientos del Host no generen saltos visuales en su propia pantalla.
+    - **Instalación Android:** Se corrigió error de "paquete no válido" mediante compilación multi-arquitectura forzada (`arm64-v8a`).

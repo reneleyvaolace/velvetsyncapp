@@ -99,7 +99,7 @@ class NetworkTab extends ConsumerWidget {
           ),
           child: const Row(
             children: [
-              Icon(Icons.public, color: LvsColors.pink, size: 40),
+              Image.asset('assets/icons/icon_remote_partner.png', color: LvsColors.pink, width: 40, height: 40),
               SizedBox(width: 20),
               Expanded(
                 child: Column(
@@ -135,7 +135,7 @@ class NetworkTab extends ConsumerWidget {
           ),
           child: const Row(
             children: [
-              Icon(Icons.auto_stories, color: LvsColors.violet, size: 40),
+              Image.asset('assets/icons/icon_add_device.png', color: LvsColors.violet, width: 40, height: 40),
               SizedBox(width: 20),
               Expanded(
                 child: Column(

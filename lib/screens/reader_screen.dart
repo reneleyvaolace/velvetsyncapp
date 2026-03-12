@@ -170,7 +170,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           actions: [
             // Botón de parada de emergencia
             IconButton(
-              icon: const Icon(Icons.stop_circle_outlined, color: LvsColors.red),
+              icon: const Icon(Icons.power_settings_new_rounded, color: LvsColors.red),
               tooltip: 'Parada de Emergencia',
               onPressed: () {
                 _autoStopTimer?.cancel();
@@ -193,7 +193,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.touch_app, color: LvsColors.pink, size: 14),
+                          Image.asset('assets/icons/icon_ai_assistant.png', color: LvsColors.pink, width: 14, height: 14),
                           const SizedBox(width: 6),
                           Text(
                             'Toca las palabras en rosa para activar',

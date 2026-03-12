@@ -125,14 +125,10 @@ class _QuickAddControlState extends State<QuickAddControl> {
             // Botón QR
             GestureDetector(
               onTap: _loading ? null : _openQrScanner,
-              child: Container(
-                width: 50, height: 50,
-                decoration: BoxDecoration(
-                  color: LvsColors.teal.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: LvsColors.teal.withOpacity(0.5)),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Image.asset('assets/icons/icon_qr_scan.png', color: LvsColors.teal),
                 ),
-                child: const Icon(Icons.qr_code_scanner_rounded, color: LvsColors.teal, size: 24),
               ),
             ),
           ],

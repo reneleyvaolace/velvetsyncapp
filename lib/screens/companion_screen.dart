@@ -136,7 +136,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
         title: const Text('Compañía Digital'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.stop_circle_outlined, color: Colors.orangeAccent),
+            icon: const Icon(Icons.power_settings_new_rounded, color: LvsColors.red),
             tooltip: 'Parada de Emergencia',
             onPressed: () {
               _stopHardware();
@@ -182,7 +182,12 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
                       radius: 70,
                       backgroundColor: Colors.grey[850],
                       backgroundImage: _avatarPath != null ? FileImage(File(_avatarPath!)) : null,
-                      child: _avatarPath == null ? const Icon(Icons.person, size: 70, color: Colors.white54) : null,
+                      child: _avatarPath == null 
+                        ? Padding(
+                            padding: const EdgeInsets.all(25.0),
+                            child: Image.asset('assets/icons/icon_ai_assistant.png', color: Colors.white54),
+                          )
+                        : null,
                     ),
                   ),
                 );

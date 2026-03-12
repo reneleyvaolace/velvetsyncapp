@@ -106,14 +106,17 @@ class _ModesTabState extends ConsumerState<ModesTab> {
       children: [
         _GameTile(
           title: 'FRUTAS', icon: Icons.animation, color: LvsColors.green,
+          assetPath: 'assets/icons/icon_game_roulette.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalGameScreen())),
         ),
         _GameTile(
           title: 'DADOS', icon: Icons.casino, color: LvsColors.amber,
+          assetPath: 'assets/icons/icon_shake_mode.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DiceScreen())),
         ),
         _GameTile(
           title: 'RULETA', icon: Icons.timer, color: LvsColors.red,
+          assetPath: 'assets/icons/icon_game_roulette.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RouletteScreen())),
         ),
         _GameTile(
@@ -122,6 +125,7 @@ class _ModesTabState extends ConsumerState<ModesTab> {
         ),
         _GameTile(
           title: 'COMPANION', icon: Icons.auto_awesome, color: LvsColors.pink,
+          assetPath: 'assets/icons/icon_ai_assistant.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CompanionScreen())),
         ),
       ],
@@ -132,6 +136,12 @@ class _ModesTabState extends ConsumerState<ModesTab> {
     return CardGlass(
       child: Row(
         children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: LvsColors.pink.withOpacity(0.1), shape: BoxShape.circle),
+            child: Image.asset('assets/icons/icon_shake_mode.png', width: 24, height: 24, color: LvsColors.pink),
+          ),
+          const SizedBox(width: 16),
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,9 +165,10 @@ class _ModesTabState extends ConsumerState<ModesTab> {
 class _GameTile extends StatelessWidget {
   final String title;
   final IconData icon;
+  final String? assetPath;
   final Color color;
   final VoidCallback onTap;
-  const _GameTile({required this.title, required this.icon, required this.color, required this.onTap});
+  const _GameTile({required this.title, required this.icon, this.assetPath, required this.color, required this.onTap});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -169,7 +180,9 @@ class _GameTile extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: color, size: 28),
+              assetPath != null
+                ? Image.asset(assetPath!, color: color, width: 28, height: 28)
+                : Icon(icon, color: color, size: 28),
               const SizedBox(height: 8),
               Text(title, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
             ],

@@ -93,13 +93,19 @@ class ControlTab extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SectionLabel('ESTADO DE CONEXIÓN'),
-                    SizedBox(height: 4),
-                    Text('Auto-Link activo para rMesh v2', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+                    Row(
+                      children: [
+                        Image.asset('assets/icons/icon_bluetooth.png', width: 14, height: 14, color: LvsColors.teal),
+                        const SizedBox(width: 8),
+                        const SectionLabel('ESTADO DE CONEXIÓN'),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    const Text('Auto-Link activo para rMesh v2', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
                   ],
                 ),
               ),

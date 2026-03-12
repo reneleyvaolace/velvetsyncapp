@@ -199,13 +199,15 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
             ),
         ],
       ),
-      body: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            if (!_isConnected) _buildLoginView() else _buildControlView(),
-          ],
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+          child: Column(
+            children: [
+              if (!_isConnected) _buildLoginView() else _buildControlView(),
+            ],
+          ),
         ),
       ),
     );
@@ -256,7 +258,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const SizedBox(height: 40),
-        Icon(Icons.public_rounded, size: 80, color: LvsColors.pink.withOpacity(0.5)),
+        Image.asset('assets/icons/icon_remote_partner.png', width: 80, height: 80, color: LvsColors.pink.withOpacity(0.5)),
         const SizedBox(height: 20),
         const Text(
           'ACCESO INVITADO',
@@ -341,13 +343,16 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
           ],
           
           const Spacer(),
-          TextButton.icon(
-            onPressed: () {
-               ref.read(supabaseServiceProvider).leaveControlRoom();
-               setState(() => _isConnected = false);
-            },
-            icon: const Icon(Icons.exit_to_app, color: LvsColors.red),
-            label: const Text('SALIR DE LA SESIÓN', style: TextStyle(color: LvsColors.red)),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: TextButton.icon(
+              onPressed: () {
+                 ref.read(supabaseServiceProvider).leaveControlRoom();
+                 setState(() => _isConnected = false);
+              },
+              icon: const Icon(Icons.exit_to_app, color: LvsColors.red),
+              label: const Text('SALIR DE LA SESIÓN', style: TextStyle(color: LvsColors.red, fontWeight: FontWeight.bold)),
+            ),
           ),
         ],
       ),
@@ -389,8 +394,8 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
                         colors: [LvsColors.teal, Color(0xFF00ACC1)],
                       ),
                     ),
-                    child: const Center(
-                      child: Icon(Icons.bolt, color: Colors.white, size: 14),
+                    child: Center(
+                      child: Image.asset('assets/icons/icon_bluetooth.png', color: Colors.white, width: 14, height: 14),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -413,7 +418,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.person, size: 14, color: _partnerActive ? LvsColors.pink : Colors.white38),
+                  Image.asset('assets/icons/icon_ai_assistant.png', width: 14, height: 14, color: _partnerActive ? LvsColors.pink : Colors.white38),
                   const SizedBox(width: 6),
                   Text(
                     _partnerActive ? 'SOCIO ACTIVO' : 'SOCIO EN ESPERA',

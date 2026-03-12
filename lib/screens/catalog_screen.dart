@@ -96,8 +96,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
           labelColor: LvsColors.pink,
           unselectedLabelColor: LvsColors.text3,
           tabs: const [
-            Tab(icon: Icon(Icons.grid_view_rounded), text: 'Mis Dispositivos'),
-            Tab(icon: Icon(Icons.add_circle_outline_rounded), text: 'Agregar'),
+            Tab(icon: Image.asset('assets/icons/icon_tab_control.png', width: 20, height: 20, color: LvsColors.pink), text: 'Mis Dispositivos'),
+            Tab(icon: Image.asset('assets/icons/icon_add_device.png', width: 20, height: 20, color: LvsColors.pink), text: 'Agregar'),
           ],
         ),
       ),
@@ -199,30 +199,21 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
 
   // ── Helper para construir el ícono del dispositivo ───────────
   Widget _buildToyIcon(ToyModel toy) {
-    IconData iconData = Icons.vibration_rounded;
-    Color color = LvsColors.pink;
-
-    final s = toy.stimulationType.toLowerCase();
-    final n = toy.name.toLowerCase();
-    final u = toy.usageType.toLowerCase();
-
-    if (toy.hasDualChannel || s.contains('empuje')) {
-      iconData = Icons.multiple_stop_rounded;
-      color = LvsColors.teal;
-    } else if (n.contains('egg') || n.contains('huevo') || u.contains('egg')) {
-      iconData = Icons.egg_rounded;
-    } else if (n.contains('bullet') || n.contains('bala') || u.contains('bullet')) {
-      iconData = Icons.bolt_rounded;
-    }
-
     return Container(
       width: 60,
       height: 60,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: LvsColors.pink.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
       ),
-      child: Icon(iconData, color: color, size: 32),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Image.asset(
+          toy.iconAsset,
+          color: LvsColors.pink,
+          fit: BoxFit.contain,
+        ),
+      ),
     );
   }
 
@@ -298,7 +289,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                             ),
                             const SizedBox(width: 4),
                             if (toy.hasDualChannel)
-                              const Icon(Icons.bolt, color: LvsColors.amber, size: 13),
+                              Image.asset('assets/icons/icon_bluetooth.png', color: LvsColors.amber, width: 13, height: 13),
                             if (toy.isPrecise)
                               const Icon(Icons.tune, color: LvsColors.teal, size: 13),
                           ],
@@ -359,7 +350,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
             const SizedBox(height: 20),
             // ── Acciones ─────────────────────────────────────
             _menuAction(
-              icon: Icons.edit_rounded,
+              iconWidget: Image.asset('assets/icons/icon_tab_settings.png', width: 20, height: 20, color: LvsColors.teal),
               color: LvsColors.teal,
               label: 'Editar nombre / ID',
               onTap: () {
@@ -390,7 +381,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
     );
   }
 
-  Widget _menuAction({required IconData icon, required Color color, required String label, required VoidCallback onTap}) {
+  Widget _menuAction({IconData? icon, Widget? iconWidget, required Color color, required String label, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
@@ -404,7 +395,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
         ),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 20),
+            iconWidget ?? Icon(icon, color: color, size: 20),
             const SizedBox(width: 14),
             Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
           ],

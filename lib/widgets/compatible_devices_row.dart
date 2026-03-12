@@ -176,12 +176,17 @@ class _DeviceChip extends StatelessWidget {
   Widget _buildIconWidget() {
     return Container(
       width: 56, height: 56,
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: _color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: _color.withOpacity(0.3)),
+        color: _color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _color.withOpacity(0.2)),
       ),
-      child: Icon(_icon, color: _color, size: 28),
+      child: Image.asset(
+        toy.iconAsset,
+        color: _color, // Tintar el icono neón con el color temático
+        fit: BoxFit.contain,
+      ),
     );
   }
 

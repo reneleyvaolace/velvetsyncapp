@@ -798,7 +798,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.pink.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.music_note, color: LvsColors.pink, size: 24),
+                child: Image.asset('assets/icons/icon_sync_music.png', color: LvsColors.pink, width: 24, height: 24),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -897,7 +897,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.violet.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.sports_esports, color: LvsColors.violet, size: 24),
+                child: Image.asset('assets/icons/icon_game_roulette.png', color: LvsColors.violet, width: 24, height: 24),
               ),
               const SizedBox(width: 12),
               const Expanded(
@@ -950,7 +950,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.amber.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.favorite, color: LvsColors.amber, size: 24),
+                child: Image.asset('assets/icons/icon_ai_assistant.png', color: LvsColors.amber, width: 24, height: 24),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1003,7 +1003,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.violet.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.casino, color: LvsColors.violet, size: 24),
+                child: Image.asset('assets/icons/icon_shake_mode.png', color: LvsColors.violet, width: 24, height: 24),
               ),
               const SizedBox(width: 12),
               const Expanded(
@@ -1452,7 +1452,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.pink.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.public_rounded, color: LvsColors.pink, size: 28),
+                child: Image.asset('assets/icons/icon_remote_partner.png', color: LvsColors.pink, width: 28, height: 28),
               ),
               const SizedBox(width: 20),
               const Expanded(

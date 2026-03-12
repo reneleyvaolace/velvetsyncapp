@@ -45,25 +45,37 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           unselectedItemColor: LvsColors.text3,
           selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
           unselectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 1),
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard, color: LvsColors.pink),
+              icon: Opacity(
+                opacity: 0.5,
+                child: Image.asset('assets/icons/icon_tab_control.png', width: 22, height: 22),
+              ),
+              activeIcon: Image.asset('assets/icons/icon_tab_control.png', width: 24, height: 24),
               label: 'CONTROL',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.play_circle_outline),
-              activeIcon: Icon(Icons.play_circle, color: LvsColors.pink),
+              icon: Opacity(
+                opacity: 0.5,
+                child: Image.asset('assets/icons/icon_tab_modes.png', width: 22, height: 22),
+              ),
+              activeIcon: Image.asset('assets/icons/icon_tab_modes.png', width: 24, height: 24),
               label: 'MODOS',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.public_outlined),
-              activeIcon: Icon(Icons.public, color: LvsColors.pink),
+              icon: Opacity(
+                opacity: 0.5,
+                child: Image.asset('assets/icons/icon_remote_partner.png', width: 22, height: 22),
+              ),
+              activeIcon: Image.asset('assets/icons/icon_remote_partner.png', width: 24, height: 24),
               label: 'REMOTO',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings, color: LvsColors.pink),
+              icon: Opacity(
+                opacity: 0.5,
+                child: Image.asset('assets/icons/icon_tab_settings.png', width: 22, height: 22),
+              ),
+              activeIcon: Image.asset('assets/icons/icon_tab_settings.png', width: 24, height: 24),
               label: 'SISTEMA',
             ),
           ],
