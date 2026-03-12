@@ -174,7 +174,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
     return Scaffold(
       backgroundColor: LvsColors.bg,
       appBar: AppBar(
-        title: const Text('BYTEMASTER LAB', style: TextStyle(
+        title: const Text('COREAURA LAB', style: TextStyle(
           fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: LvsColors.amber)),
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,

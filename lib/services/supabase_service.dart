@@ -81,7 +81,7 @@ class SupabaseService {
     }
   }
 
-  // 3. Gestión de Errores (Bytemaster Lab)
+  // 3. Gestión de Errores (Coreaura Lab)
   Future<String?> getTroubleshooting(String errorCode) async {
     if (!_isInitialized) return null;
     try {

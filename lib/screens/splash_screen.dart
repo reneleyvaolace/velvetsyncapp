@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'BYTEMASTER LABS',
+                      'COREAURA LABS',
                       style: TextStyle(
                         fontSize: 10,
                         letterSpacing: 4,
