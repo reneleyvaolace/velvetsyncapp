@@ -34,6 +34,10 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   
   double _valCh1 = 0;
   double _valCh2 = 0;
+
+  // Estados de navegación interna
+  bool _showGuestLogin = false;
+  String? _hostError;
   
   @override
   void initState() {
@@ -200,16 +204,215 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         ],
       ),
       body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-          child: Column(
-            children: [
-              if (!_isConnected) _buildLoginView() else _buildControlView(),
-            ],
+        child: SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+            child: Column(
+              children: [
+                if (!_isConnected) 
+                   (_showGuestLogin ? _buildGuestLoginView() : _buildSelectionView())
+                else 
+                   _buildControlView(),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSelectionView() {
+    final ble = ref.watch(bleProvider);
+    
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        const Icon(Icons.hub_outlined, size: 80, color: LvsColors.pink),
+        const SizedBox(height: 24),
+        const Text(
+          'SESIÓN REMOTA',
+          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Elige cómo quieres conectar hoy',
+          style: TextStyle(color: LvsColors.text3, fontSize: 14),
+        ),
+        const SizedBox(height: 48),
+
+        // OPCIÓN 1: SER ANFITRIÓN
+        GestureDetector(
+          onTap: () => _startHostSession(ble),
+          child: CardGlass(
+            borderColor: LvsColors.teal.withOpacity(0.3),
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: LvsColors.teal.withOpacity(0.1), shape: BoxShape.circle),
+                  child: const Icon(Icons.share_rounded, color: LvsColors.teal, size: 28),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('SER EL ANFITRIÓN', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1)),
+                      const SizedBox(height: 4),
+                      Text(
+                        ble.isConnected 
+                          ? 'Genera un código para que tu pareja controle tu ${ble.activeToy?.name ?? "dispositivo"}.'
+                          : 'Conecta un dispositivo primero para ser controlado.',
+                        style: const TextStyle(color: LvsColors.text3, fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        if (_hostError != null)
+           Padding(
+             padding: const EdgeInsets.only(top: 8),
+             child: Text(_hostError!, style: const TextStyle(color: LvsColors.red, fontSize: 10, fontWeight: FontWeight.bold)),
+           ),
+
+        const SizedBox(height: 20),
+
+        // OPCIÓN 2: ACCESO INVITADO
+        GestureDetector(
+          onTap: () => setState(() => _showGuestLogin = true),
+          child: CardGlass(
+            borderColor: LvsColors.pink.withOpacity(0.3),
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: LvsColors.pink.withOpacity(0.1), shape: BoxShape.circle),
+                  child: const Icon(Icons.vpn_key_rounded, color: LvsColors.pink, size: 28),
+                ),
+                const SizedBox(width: 20),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('ACCESO INVITADO', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1)),
+                      const SizedBox(height: 4),
+                      Text('Usa el código que te compartieron para controlar el dispositivo de tu pareja.',
+                        style: TextStyle(color: LvsColors.text3, fontSize: 11)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _startHostSession(BleService ble) async {
+    if (!ble.isConnected) {
+      setState(() => _hostError = '❌ ERROR: Debes tener un dispositivo vinculado para ser anfitrión.');
+      Timer(const Duration(seconds: 4), () { if(mounted) setState(() => _hostError = null); });
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final supabase = ref.read(supabaseServiceProvider);
+      final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
+      
+      if (session != null) {
+        setState(() {
+          _sessionData = session;
+          _isConnected = true;
+          _isLoading = false;
+        });
+        _loadToyModel();
+        _startListening();
+        
+        // Mostrar el diálogo del token automáticamente al crear
+        if (mounted) _showTokenDialog();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _hostError = '❌ Error de red: $e';
+        });
+      }
+    }
+  }
+
+  Widget _buildGuestLoginView() {
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
+              onPressed: () => setState(() => _showGuestLogin = false),
+            ),
+            const Text('VOLVER', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+          ],
+        ),
+        const SizedBox(height: 30),
+        Image.asset('assets/icons/icon_remote_session.png', width: 80, height: 80),
+        const SizedBox(height: 24),
+        const Text(
+          'CONFIGURAR ACCESO',
+          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1),
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Ingresa el token de 6 dígitos generado por tu pareja.',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: LvsColors.text3, fontSize: 13),
+        ),
+        const SizedBox(height: 40),
+        TextField(
+          controller: _tokenController,
+          style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: 10),
+          textAlign: TextAlign.center,
+          maxLength: 6,
+          textCapitalization: TextCapitalization.characters,
+          keyboardType: TextInputType.text,
+          decoration: InputDecoration(
+            counterText: "",
+            hintText: '------',
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.1)),
+            filled: true,
+            fillColor: LvsColors.bgCard,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white12)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: LvsColors.pink.withOpacity(0.5))),
+          ),
+        ),
+        const SizedBox(height: 32),
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _connect,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: LvsColors.pink,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              elevation: 0,
+            ),
+            child: _isLoading 
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const Text('CONECTAR AHORA', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+          ),
+        ),
+      ],
     );
   }
 
@@ -217,92 +420,88 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     final token = _sessionData?['access_token'] ?? '---';
     showDialog(
       context: context,
+      barrierColor: Colors.black.withOpacity(0.85), // Fondo mucho más oscuro
       builder: (context) => AlertDialog(
-        backgroundColor: LvsColors.bgCard,
-        title: const Text('COMPARTIR ACCESO', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF1A1A1A), // Fondo de tarjeta más sólido
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: LvsColors.teal.withOpacity(0.2), width: 1),
+        ),
+        title: const Text(
+          'COMPARTIR ACCESO',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Comparte este código con tu pajera:', style: TextStyle(color: LvsColors.text3, fontSize: 12)),
-            const SizedBox(height: 20),
+            const Text(
+              'Comparte este código con tu pareja para que pueda controlar tu dispositivo.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: LvsColors.text3, fontSize: 13),
+            ),
+            const SizedBox(height: 24),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               decoration: BoxDecoration(
                 color: Colors.black,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: LvsColors.teal.withOpacity(0.5)),
+                boxShadow: [
+                  BoxShadow(color: LvsColors.teal.withOpacity(0.1), blurRadius: 20, spreadRadius: 2),
+                ],
               ),
               child: Text(
                 token,
-                style: const TextStyle(color: LvsColors.teal, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 4),
+                style: const TextStyle(
+                  color: LvsColors.teal,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 6,
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () {
+            const SizedBox(height: 32),
+            GestureDetector(
+              onTap: () {
                 Clipboard.setData(ClipboardData(text: token));
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copiado al portapapeles')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Código copiado al portapapeles'),
+                    backgroundColor: LvsColors.teal,
+                  ),
+                );
               },
-              icon: const Icon(Icons.copy),
-              label: const Text('COPIAR CÓDIGO'),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [LvsColors.pink, Color(0xFFFF4081)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(color: LvsColors.pink.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.copy_rounded, color: Colors.white, size: 20),
+                    SizedBox(width: 12),
+                    Text(
+                      'COPIAR CÓDIGO',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1),
+                    ),
+                  ],
+                ),
+              ),
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildLoginView() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(height: 40),
-        Image.asset('assets/icons/icon_remote_partner.png', width: 80, height: 80, color: LvsColors.pink.withOpacity(0.5)),
-        const SizedBox(height: 20),
-        const Text(
-          'ACCESO INVITADO',
-          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2),
-        ),
-        const SizedBox(height: 10),
-        const Text(
-          'Ingresa el código compartido por tu pareja para tomar el control.',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: LvsColors.text3, fontSize: 14),
-        ),
-        const SizedBox(height: 40),
-        TextField(
-          controller: _tokenController,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-          textAlign: TextAlign.center,
-          textCapitalization: TextCapitalization.characters,
-          decoration: InputDecoration(
-            hintText: 'CÓDIGO DE ACCESO',
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
-            filled: true,
-            fillColor: LvsColors.bgCard,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-            prefixIcon: const Icon(Icons.key, color: LvsColors.pink),
-          ),
-        ),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          height: 60,
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : _connect,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: LvsColors.pink,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 8,
-              shadowColor: LvsColors.pink.withOpacity(0.5),
-            ),
-            child: _isLoading 
-              ? const CircularProgressIndicator(color: Colors.white) 
-              : const Text('CONECTAR', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-          ),
-        ),
-      ],
     );
   }
 
@@ -311,9 +510,8 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     final label = 'Estimulación $anatomy';
     final bool isDual = _toyModel?.hasDualChannel ?? false;
 
-    return Expanded(
-      child: Column(
-        children: [
+    return Column(
+      children: [
           _buildSessionHeader(),
           const SizedBox(height: 40),
           
@@ -342,7 +540,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
             ),
           ],
           
-          const Spacer(),
+          const SizedBox(height: 60),
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: TextButton.icon(
@@ -355,8 +553,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 
   Widget _buildSessionHeader() {
@@ -373,8 +570,10 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         const SizedBox(height: 16),
         
         // Pill Status
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 12,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -386,27 +585,34 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                   if (_toyModel != null) ...[
+                    Image.asset(_toyModel!.iconAsset, width: 22, height: 22),
+                    const SizedBox(width: 10),
+                  ],
                   Container(
-                    width: 24, height: 24,
+                    width: 20, height: 20,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
                         colors: [LvsColors.teal, Color(0xFF00ACC1)],
                       ),
                     ),
-                    child: Center(
-                      child: Image.asset('assets/icons/icon_bluetooth.png', color: Colors.white, width: 14, height: 14),
+                    child: const Center(
+                      child: Icon(Icons.bluetooth, color: Colors.white, size: 14),
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text(
-                    deviceName.toUpperCase(),
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1),
+                  Flexible(
+                    child: Text(
+                      deviceName.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1),
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 12),
              // Indicador de Socio
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
@@ -417,9 +623,12 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
                 border: Border.all(color: _partnerActive ? LvsColors.pink : Colors.white12),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('assets/icons/icon_ai_assistant.png', width: 14, height: 14, color: _partnerActive ? LvsColors.pink : Colors.white38),
-                  const SizedBox(width: 6),
+                  Image.asset('assets/icons/icon_remote_partner.png', width: 32, height: 32,
+                    errorBuilder: (_, __, ___) => const Icon(Icons.person_outline, color: LvsColors.pink, size: 24),
+                  ),
+                  const SizedBox(width: 8),
                   Text(
                     _partnerActive ? 'SOCIO ACTIVO' : 'SOCIO EN ESPERA',
                     style: TextStyle(

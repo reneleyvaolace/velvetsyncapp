@@ -9,6 +9,7 @@ import 'package:lvs_control/screens/companion_screen.dart';
 import 'package:lvs_control/screens/game_screen.dart';
 import 'package:lvs_control/widgets/lvs_modes.dart';
 import 'package:flutter/services.dart';
+import 'package:lvs_control/screens/kegel_screen.dart';
 
 class ModesTab extends ConsumerStatefulWidget {
   const ModesTab({super.key});
@@ -102,16 +103,16 @@ class _ModesTabState extends ConsumerState<ModesTab> {
       crossAxisCount: 2,
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
-      childAspectRatio: 1.5,
+      childAspectRatio: 0.7,
       children: [
         _GameTile(
           title: 'FRUTAS', icon: Icons.animation, color: LvsColors.green,
-          assetPath: 'assets/icons/icon_game_roulette.png',
+          assetPath: 'assets/icons/icon_fruit_game.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalGameScreen())),
         ),
         _GameTile(
           title: 'DADOS', icon: Icons.casino, color: LvsColors.amber,
-          assetPath: 'assets/icons/icon_shake_mode.png',
+          assetPath: 'assets/icons/icon_tab_games.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DiceScreen())),
         ),
         _GameTile(
@@ -121,12 +122,18 @@ class _ModesTabState extends ConsumerState<ModesTab> {
         ),
         _GameTile(
           title: 'LECTOR', icon: Icons.book, color: LvsColors.teal,
+          assetPath: 'assets/icons/icon_reading_section.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReaderScreen())),
         ),
         _GameTile(
           title: 'COMPANION', icon: Icons.auto_awesome, color: LvsColors.pink,
           assetPath: 'assets/icons/icon_ai_assistant.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CompanionScreen())),
+        ),
+        _GameTile(
+          title: 'KEGEL', icon: Icons.fitness_center, color: LvsColors.amber,
+          assetPath: 'assets/icons/icon_kegel.png',
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KegelScreen())),
         ),
       ],
     );
@@ -139,7 +146,7 @@ class _ModesTabState extends ConsumerState<ModesTab> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(color: LvsColors.pink.withOpacity(0.1), shape: BoxShape.circle),
-            child: Image.asset('assets/icons/icon_shake_mode.png', width: 24, height: 24, color: LvsColors.pink),
+            child: Image.asset('assets/icons/icon_shake_mode.png', width: 36, height: 36),
           ),
           const SizedBox(width: 16),
           const Expanded(
@@ -181,8 +188,17 @@ class _GameTile extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               assetPath != null
-                ? Image.asset(assetPath!, color: color, width: 28, height: 28)
-                : Icon(icon, color: color, size: 28),
+                ? SizedBox(
+                    width: 132,
+                    height: 132,
+                    child: ClipRect(
+                      child: Transform.scale(
+                        scale: 1.15, // Aumenta un 15% total para que el recorte del ClipRect quite los bordes (7.5% por lado)
+                        child: Image.asset(assetPath!, fit: BoxFit.cover),
+                      ),
+                    ),
+                  )
+                : Icon(icon, color: color, size: 132),
               const SizedBox(height: 8),
               Text(title, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
             ],

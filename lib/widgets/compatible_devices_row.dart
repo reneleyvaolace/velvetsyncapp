@@ -184,7 +184,8 @@ class _DeviceChip extends StatelessWidget {
       ),
       child: Image.asset(
         toy.iconAsset,
-        color: _color, // Tintar el icono neón con el color temático
+        width: 32,
+        height: 32,
         fit: BoxFit.contain,
       ),
     );

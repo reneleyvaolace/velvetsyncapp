@@ -31,6 +31,8 @@ class SettingsTab extends ConsumerWidget {
             delegate: SliverChildListDelegate([
               _buildSettingsCard(ble),
               const SizedBox(height: 20),
+              _buildSystemProCard(ble),
+              const SizedBox(height: 20),
               _buildDebugButton(context),
               const SizedBox(height: 20),
               _buildLogCard(ble),
@@ -83,7 +85,7 @@ class SettingsTab extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Image.asset('assets/icons/icon_tab_settings.png', width: 22, height: 22, color: LvsColors.amber),
+            Image.asset('assets/icons/icon_tab_settings.png', width: 32, height: 32),
             const SizedBox(width: 14),
             const Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
             const Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
@@ -126,6 +128,60 @@ class SettingsTab extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+  Widget _buildSystemProCard(BleService ble) {
+    return CardGlass(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionLabel('MODO AVANZADO'),
+          const SizedBox(height: 20),
+          _buildProOption(
+            icon: 'assets/icons/icon_timer.png',
+            title: 'TEMPORIZADOR DE SESIÓN',
+            subtitle: 'Auto-desconexión de seguridad',
+          ),
+          const Divider(height: 32, color: Colors.white10),
+          _buildProOption(
+            icon: 'assets/icons/icon_travel_lock.png',
+            title: 'BLOQUEO DE VIAJE',
+            subtitle: 'Evita encendidos accidentales',
+          ),
+          const Divider(height: 32, color: Colors.white10),
+           _buildProOption(
+            icon: 'assets/icons/icon_cloud_save.png',
+            title: 'RESPALDO EN NUBE',
+            subtitle: 'Sincronizar perfiles y ritmos',
+          ),
+          const Divider(height: 32, color: Colors.white10),
+           _buildProOption(
+            icon: 'assets/icons/icon_firmware_update.png',
+            title: 'ACTUALIZAR FIRMWARE',
+            subtitle: 'v1.4.0 disponible para rMesh',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProOption({required String icon, required String title, required String subtitle}) {
+    return Row(
+      children: [
+        Image.asset(icon, width: 38, height: 38),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+              const SizedBox(height: 2),
+              Text(subtitle, style: const TextStyle(fontSize: 9, color: LvsColors.text3)),
+            ],
+          ),
+        ),
+        const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+      ],
     );
   }
 }

@@ -39,9 +39,15 @@ class AiService {
         body: {'prompt': text},
       ).timeout(const Duration(seconds: 10));
 
+      lvsLog('Respuesta IA recibida: ${response.data}', tag: 'AI');
+
       if (response.status == 200 && response.data != null) {
         final data = response.data as Map<String, dynamic>;
-        final aiText = data['text'] ?? '';
+        
+        // ✨ Log extra para debuggear la estructura
+        lvsLog('Data keys: ${data.keys.toList()}', tag: 'AI');
+        
+        final aiText = data['text'] ?? data['message'] ?? '';
         return _handleSuccess(aiText, 'supabase');
       }
       

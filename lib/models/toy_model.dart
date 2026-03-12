@@ -39,22 +39,28 @@ class ToyModel {
     final anatomyLower = targetAnatomy.toLowerCase();
     final stimLower = stimulationType.toLowerCase();
 
-    // 1. Prioridad por Anatomía Específica
+    // 1. Prioridad por Anatomía Específica / Tipo de Ejercitador
+    if (anatomyLower.contains('kegel') || nameLower.contains('kegel')) return 'assets/icons/icon_kegel.png';
     if (anatomyLower.contains('anal') || anatomyLower.contains('zen')) return 'assets/icons/icon_anal.png';
     if (anatomyLower.contains('prostat') || anatomyLower.contains('prostático')) return 'assets/icons/icon_prostate.png';
     if (anatomyLower.contains('clitor') || anatomyLower.contains('luna')) return 'assets/icons/icon_clitoral.png';
     if (anatomyLower.contains('penian') || anatomyLower.contains('ring') || anatomyLower.contains('anillo')) return 'assets/icons/icon_ring.png';
 
     // 2. Prioridad por Tipo de Estimulación / Mecanismo
-    if (stimLower.contains('succión') || stimLower.contains('suction') || stimLower.contains('pulse')) return 'assets/icons/icon_suction.png';
+    if (stimLower.contains('onda') || stimLower.contains('pulse') || stimLower.contains('wave')) return 'assets/icons/icon_pulse_waves.png';
+    if (stimLower.contains('succión') || stimLower.contains('suction')) return 'assets/icons/icon_suction.png';
     if (stimLower.contains('empuje') || stimLower.contains('thrust')) return 'assets/icons/icon_thrust.png';
     if (hasDualChannel || stimLower.contains('dual')) return 'assets/icons/icon_dual_motor.png';
 
-    // 3. Casos por Forma (Fallbacks)
+    // 3. Casos por Género o Anatomía General
+    if (anatomyLower.contains('female') || typeLower.contains('female')) return 'assets/icons/icon_female_anatomy.png';
+    if (anatomyLower.contains('male') || typeLower.contains('male')) return 'assets/icons/icon_male_anatomy.png';
+
+    // 4. Casos por Forma (Fallbacks)
     if (nameLower.contains('egg') || nameLower.contains('huevo') || typeLower.contains('egg')) return 'assets/icons/icon_egg.png';
     if (nameLower.contains('bullet') || nameLower.contains('bala') || typeLower.contains('bullet')) return 'assets/icons/icon_bullet.png';
 
-    // 4. Default
+    // 5. Default
     return 'assets/icons/icon_vibrator.png';
   }
 

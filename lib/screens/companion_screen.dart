@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../ble/ble_service.dart';
 import '../services/ai_service.dart';
+import '../theme.dart';
 
 class ChatMessage {
   final String text;
@@ -136,7 +137,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
         title: const Text('Compañía Digital'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.power_settings_new_rounded, color: LvsColors.red),
+            icon: Icon(Icons.power_settings_new_rounded, color: LvsColors.red),
             tooltip: 'Parada de Emergencia',
             onPressed: () {
               _stopHardware();
@@ -185,7 +186,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
                       child: _avatarPath == null 
                         ? Padding(
                             padding: const EdgeInsets.all(25.0),
-                            child: Image.asset('assets/icons/icon_ai_assistant.png', color: Colors.white54),
+                            child: Image.asset('assets/icons/icon_ai_assistant.png'),
                           )
                         : null,
                     ),

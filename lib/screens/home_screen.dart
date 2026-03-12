@@ -222,10 +222,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         children: [
           // Logo from Image 2 (Glass Square + Waveform)
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               boxShadow: [
                 BoxShadow(color: LvsColors.pink.withValues(alpha: 0.1), blurRadius: 10),
@@ -234,20 +234,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             ),
             child: ShaderMask(
               shaderCallback: (r) => const LinearGradient(colors: [LvsColors.pink, LvsColors.violet]).createShader(r),
-              child: const Icon(Icons.show_chart, color: Colors.white, size: 20),
+              child: const Icon(Icons.show_chart, color: Colors.white, size: 42),
             ),
           ),
           const SizedBox(width: 12),
-          Flexible(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text('Velvet Sync', style: TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w400, fontFamily: 'serif', letterSpacing: 0.5, color: LvsColors.text1)),
+                  fontSize: 18, fontWeight: FontWeight.w400, fontFamily: 'serif', letterSpacing: 0.5, color: LvsColors.text1)),
                 if (bleState == BleState.connected)
                   Text(
                     'VINCULADO: $deviceName',
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.teal)),
@@ -306,6 +307,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 children: [
                   Text(
                     devicesCount > 1 ? '$mainName (+${devicesCount - 1})' : mainName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 13, color: LvsColors.teal, fontWeight: FontWeight.w900, letterSpacing: 0.5),
                   ),
                   Text(
@@ -379,6 +382,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             Text(
               preregistered.map((t) => t.name).join(' · '),
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                   fontSize: 13,
                   color: Colors.white,
@@ -793,12 +798,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: LvsColors.pink.withOpacity(0.15),
+                  color: LvsColors.pink.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset('assets/icons/icon_sync_music.png', color: LvsColors.pink, width: 24, height: 24),
+                child: Image.asset('assets/icons/icon_sync_music.png', width: 42, height: 42),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -858,15 +863,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 onPressed: media.fileName != null ? (media.isPlaying ? media.pause : media.play) : null,
               ),
               
-              ElevatedButton.icon(
-                onPressed: media.fileName != null ? media.toggleSync : null,
-                icon: Icon(media.isSyncing ? Icons.sync : Icons.sync_disabled, size: 18),
-                label: Text(media.isSyncing ? 'SINCRONIZADO' : 'SINCRONIZAR'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: media.isSyncing ? LvsColors.pink : Colors.white12,
-                  foregroundColor: media.isSyncing ? Colors.black : Colors.white38,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              Flexible(
+                child: ElevatedButton.icon(
+                  onPressed: media.fileName != null ? media.toggleSync : null,
+                  icon: Icon(media.isSyncing ? Icons.sync : Icons.sync_disabled, size: 18),
+                  label: Text(media.isSyncing ? 'SINCRONIZADO' : 'SINCRONIZAR', overflow: TextOverflow.ellipsis),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: media.isSyncing ? LvsColors.pink : Colors.white12,
+                    foregroundColor: media.isSyncing ? Colors.black : Colors.white38,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
                 ),
               ),
             ],
@@ -892,12 +899,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: LvsColors.violet.withOpacity(0.15),
+                  color: LvsColors.violet.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset('assets/icons/icon_game_roulette.png', color: LvsColors.violet, width: 24, height: 24),
+                child: Image.asset('assets/icons/icon_game_roulette.png', width: 42, height: 42),
               ),
               const SizedBox(width: 12),
               const Expanded(
@@ -945,12 +952,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: LvsColors.amber.withOpacity(0.15),
+                  color: LvsColors.amber.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset('assets/icons/icon_ai_assistant.png', color: LvsColors.amber, width: 24, height: 24),
+                child: Image.asset('assets/icons/icon_ai_assistant.png', width: 42, height: 42),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -998,12 +1005,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: LvsColors.violet.withOpacity(0.15),
+                  color: LvsColors.violet.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset('assets/icons/icon_shake_mode.png', color: LvsColors.violet, width: 24, height: 24),
+                child: Image.asset('assets/icons/icon_tab_games.png', width: 42, height: 42),
               ),
               const SizedBox(width: 12),
               const Expanded(
@@ -1326,8 +1333,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         children: [
           Row(
             children: [
-              const SectionLabel('LOGS DE SISTEMA'),
-              const Spacer(),
+              const Flexible(child: SectionLabel('LOGS DE SISTEMA')),
+              const SizedBox(width: 10),
               IconButton(icon: const Icon(Icons.delete_sweep_outlined, size: 18, color: LvsColors.text3), onPressed: ble.clearLogs),
             ],
           ),
@@ -1397,41 +1404,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return CardGlass(
       padding: EdgeInsets.zero,
       child: InkWell(
-        onTap: () async {
-          final supabase = ref.read(supabaseServiceProvider);
-          final ble = ref.read(bleProvider);
-
-          if (ble.isConnected) {
-            try {
-              final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
-              
-              if (session != null && context.mounted) {
-                final sessionId = session['id'].toString();
-                
-                // 2. Unirse al canal de Broadcast dinámico
-                supabase.joinControlRoom(sessionId, (payload, isSelf) {
-                  if (isSelf) return; // Ignorar mis propios movimientos para evitar ecos
-                  if (ble.isConnected) {
-                    final int ch1 = (payload['intensity_ch1'] ?? 0).toInt();
-                    final int ch2 = (payload['intensity_ch2'] ?? 0).toInt();
-                    ble.sendMultimediaSync(ch1, ch2);
-                  }
-                });
-
-                // 3. Navegar pasando los datos de la sesión (como Host)
-                Navigator.push(context, MaterialPageRoute(builder: (_) => RemoteSessionScreen(initialSessionData: session)));
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error de servidor: $e')),
-                );
-              }
-            }
-          } else {
-            // Si no está conectado, abrimos la pantalla en modo INVITADO (Login con Token)
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen()));
-          }
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const RemoteSessionScreen()),
+          );
         },
         borderRadius: BorderRadius.circular(24),
         child: Container(
@@ -1447,21 +1424,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           child: Row(
             children: [
               Container(
-                width: 50, height: 50,
+                width: 65, height: 65,
                 decoration: BoxDecoration(
-                  color: LvsColors.pink.withOpacity(0.2),
+                  color: LvsColors.pink.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
+                  border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2)),
                 ),
-                child: Image.asset('assets/icons/icon_remote_partner.png', color: LvsColors.pink, width: 28, height: 28),
+                child: Image.asset(
+                  'assets/icons/icon_remote_session.png', 
+                  width: 44, height: 44,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, color: LvsColors.pink, size: 32),
+                ),
               ),
               const SizedBox(width: 20),
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('SESIÓN REMOTA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text('SESIÓN REMOTA', maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                     SizedBox(height: 4),
-                    Text('Conecta con el link de tu pareja y controlen juntos.', style: TextStyle(color: LvsColors.text3, fontSize: 12)),
+                    Text('Conecta con el link de tu pareja y controlen juntos.', maxLines: 1, overflow: TextOverflow.ellipsis, 
+                      style: TextStyle(color: LvsColors.text3, fontSize: 12)),
                   ],
                 ),
               ),

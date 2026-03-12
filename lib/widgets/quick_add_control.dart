@@ -126,11 +126,10 @@ class _QuickAddControlState extends State<QuickAddControl> {
             GestureDetector(
               onTap: _loading ? null : _openQrScanner,
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Image.asset('assets/icons/icon_qr_scan.png', color: LvsColors.teal),
+                  padding: const EdgeInsets.all(8),
+                  child: Image.asset('assets/icons/icon_qr_scan.png', width: 58, height: 58),
                 ),
               ),
-            ),
           ],
         ),
 

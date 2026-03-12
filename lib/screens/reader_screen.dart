@@ -193,7 +193,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     children: [
                       Row(
                         children: [
-                          Image.asset('assets/icons/icon_ai_assistant.png', color: LvsColors.pink, width: 14, height: 14),
+                          Image.asset('assets/icons/icon_ai_assistant.png', width: 24, height: 24),
                           const SizedBox(width: 6),
                           Text(
                             'Toca las palabras en rosa para activar',

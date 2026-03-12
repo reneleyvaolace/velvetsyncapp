@@ -32,10 +32,10 @@ class NetworkTab extends ConsumerWidget {
               const SizedBox(height: 20),
               _buildCatalogCard(context),
               const SizedBox(height: 40),
-              const CardGlass(
+              CardGlass(
                 child: Column(
                   children: [
-                    Icon(Icons.security, color: LvsColors.teal, size: 32),
+                    Image.asset('assets/icons/icon_encryption.png', width: 52, height: 52),
                     SizedBox(height: 12),
                     Text('CONEXIÓN ENCRIPTADA', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
                     SizedBox(height: 8),
@@ -58,35 +58,11 @@ class NetworkTab extends ConsumerWidget {
     return CardGlass(
       padding: EdgeInsets.zero,
       child: InkWell(
-        onTap: () async {
-          final supabase = ref.read(supabaseServiceProvider);
-          final ble = ref.read(bleProvider);
-
-          if (ble.isConnected) {
-            try {
-              final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
-              if (session != null && context.mounted) {
-                final sessionId = session['id'].toString();
-                supabase.joinControlRoom(sessionId, (payload, isSelf) {
-                  if (isSelf) return;
-                  if (ble.isConnected) {
-                    final int ch1 = (payload['intensity_ch1'] ?? 0).toInt();
-                    final int ch2 = (payload['intensity_ch2'] ?? 0).toInt();
-                    ble.sendMultimediaSync(ch1, ch2);
-                  }
-                });
-                Navigator.push(context, MaterialPageRoute(builder: (_) => RemoteSessionScreen(initialSessionData: session)));
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error de servidor: $e')),
-                );
-              }
-            }
-          } else {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen()));
-          }
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const RemoteSessionScreen()),
+          );
         },
         borderRadius: BorderRadius.circular(24),
         child: Container(
@@ -97,17 +73,25 @@ class NetworkTab extends ConsumerWidget {
               begin: Alignment.topLeft, end: Alignment.bottomRight,
             ),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Image.asset('assets/icons/icon_remote_partner.png', color: LvsColors.pink, width: 40, height: 40),
+              Image.asset(
+                'assets/icons/icon_remote_session.png', 
+                width: 52, height: 52,
+                errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, color: LvsColors.pink, size: 40),
+              ),
               SizedBox(width: 20),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('SESIÓN REMOTA', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    Text('SESIÓN REMOTA', 
+                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                     SizedBox(height: 4),
-                    Text('Control mutuo a cualquier distancia.', style: TextStyle(color: LvsColors.text3, fontSize: 12)),
+                    Text('Control mutuo a cualquier distancia.', 
+                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: LvsColors.text3, fontSize: 12)),
                   ],
                 ),
               ),
@@ -133,9 +117,13 @@ class NetworkTab extends ConsumerWidget {
               begin: Alignment.topLeft, end: Alignment.bottomRight,
             ),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Image.asset('assets/icons/icon_add_device.png', color: LvsColors.violet, width: 40, height: 40),
+              Image.asset(
+                'assets/icons/icon_catalog.png', 
+                width: 52, height: 52,
+                errorBuilder: (_, __, ___) => const Icon(Icons.auto_stories, color: LvsColors.violet, size: 40),
+              ),
               SizedBox(width: 20),
               Expanded(
                 child: Column(

@@ -49,33 +49,41 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
             BottomNavigationBarItem(
               icon: Opacity(
                 opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_control.png', width: 22, height: 22),
+                child: Image.asset('assets/icons/icon_tab_control.png', width: 28, height: 28),
               ),
-              activeIcon: Image.asset('assets/icons/icon_tab_control.png', width: 24, height: 24),
+              activeIcon: Image.asset('assets/icons/icon_tab_control.png', width: 32, height: 32),
               label: 'CONTROL',
             ),
             BottomNavigationBarItem(
               icon: Opacity(
                 opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_modes.png', width: 22, height: 22),
+                child: Image.asset('assets/icons/icon_tab_modes.png', width: 28, height: 28),
               ),
-              activeIcon: Image.asset('assets/icons/icon_tab_modes.png', width: 24, height: 24),
+              activeIcon: Image.asset('assets/icons/icon_tab_modes.png', width: 32, height: 32),
               label: 'MODOS',
             ),
             BottomNavigationBarItem(
               icon: Opacity(
                 opacity: 0.5,
-                child: Image.asset('assets/icons/icon_remote_partner.png', width: 22, height: 22),
+                child: Image.asset(
+                  'assets/icons/icon_remote_session.png', 
+                  width: 28, height: 28,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, size: 20),
+                ),
               ),
-              activeIcon: Image.asset('assets/icons/icon_remote_partner.png', width: 24, height: 24),
+              activeIcon: Image.asset(
+                'assets/icons/icon_remote_session.png', 
+                width: 32, height: 32,
+                errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, size: 24),
+              ),
               label: 'REMOTO',
             ),
             BottomNavigationBarItem(
               icon: Opacity(
                 opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_settings.png', width: 22, height: 22),
+                child: Image.asset('assets/icons/icon_tab_settings.png', width: 28, height: 28),
               ),
-              activeIcon: Image.asset('assets/icons/icon_tab_settings.png', width: 24, height: 24),
+              activeIcon: Image.asset('assets/icons/icon_tab_settings.png', width: 32, height: 32),
               label: 'SISTEMA',
             ),
           ],

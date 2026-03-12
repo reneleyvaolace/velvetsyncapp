@@ -8,6 +8,7 @@ import 'package:lvs_control/services/catalog_service.dart';
 import 'package:lvs_control/ble/lvs_commands.dart';
 import 'package:lvs_control/widgets/quick_add_control.dart';
 import 'package:lvs_control/widgets/compatible_devices_row.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:math';
 
 class ControlTab extends ConsumerWidget {
@@ -76,7 +77,7 @@ class ControlTab extends ConsumerWidget {
         background: Center(
           child: Padding(
             padding: const EdgeInsets.only(bottom: 25),
-            child: Image.asset('assets/images/logo_neon.png', width: 30, height: 30),
+            child: Image.asset('assets/images/logo_neon.png', width: 62, height: 62),
           ),
         ),
       ),
@@ -99,9 +100,11 @@ class ControlTab extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Image.asset('assets/icons/icon_bluetooth.png', width: 14, height: 14, color: LvsColors.teal),
+                        Image.asset('assets/icons/icon_bluetooth.png', width: 20, height: 20),
                         const SizedBox(width: 8),
-                        const SectionLabel('ESTADO DE CONEXIÓN'),
+                        const Flexible(
+                          child: SectionLabel('ESTADO DE CONEXIÓN'),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -109,7 +112,25 @@ class ControlTab extends ConsumerWidget {
                   ],
                 ),
               ),
-              _BleStateBox(state: bleState),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _BleStateBox(state: bleState),
+                    if (ble.isConnected) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _StatusIcon(icon: 'assets/icons/icon_battery.png', label: '85%'),
+                          const SizedBox(width: 4),
+                          _StatusIcon(icon: 'assets/icons/icon_signal_strength.png', label: 'GOOD'),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ],
           ),
           if (!ble.isConnected) ...[  
@@ -235,22 +256,26 @@ class ControlTab extends ConsumerWidget {
 
     return Column(
       children: [
-        if (activeToy?.imageUrl.isNotEmpty ?? false)
+        if (activeToy != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 24),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: Container(
-                height: 120,
+                height: 140,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.02),
+                  color: Colors.white.withValues(alpha: 0.02),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
-                child: Image.network(
-                  activeToy!.imageUrl,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.vibration, color: Colors.white12, size: 64),
-                ),
+                child: activeToy.imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: activeToy.imageUrl,
+                      fit: BoxFit.contain,
+                      placeholder: (_, __) => Center(child: Image.asset(activeToy.iconAsset, width: 80, height: 80)),
+                      errorWidget: (_, __, ___) => Center(child: Image.asset(activeToy.iconAsset, width: 80, height: 80)),
+                    )
+                  : Center(child: Image.asset(activeToy.iconAsset, width: 80, height: 80)),
               ),
             ),
           ),
@@ -328,7 +353,7 @@ class ControlTab extends ConsumerWidget {
         
         ElevatedButton.icon(
           onPressed: () => ble.emergencyStop(),
-          icon: const Icon(Icons.stop_circle, size: 28),
+          icon: Image.asset('assets/icons/icon_cool_down.png', width: 28, height: 28),
           label: const Text('STOP DE EMERGENCIA (ALTO)', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
           style: ElevatedButton.styleFrom(
             backgroundColor: LvsColors.red,
@@ -463,6 +488,32 @@ class _NeonPresetBtn extends StatelessWidget {
             Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1, color: active ? Colors.white : LvsColors.text1)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _StatusIcon extends StatelessWidget {
+  final String icon;
+  final String label;
+  const _StatusIcon({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(icon, width: 14, height: 14),
+          const SizedBox(width: 6),
+          Text(label, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white70)),
+        ],
       ),
     );
   }

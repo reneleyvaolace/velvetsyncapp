@@ -95,9 +95,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
           indicatorColor: LvsColors.pink,
           labelColor: LvsColors.pink,
           unselectedLabelColor: LvsColors.text3,
-          tabs: const [
-            Tab(icon: Image.asset('assets/icons/icon_tab_control.png', width: 20, height: 20, color: LvsColors.pink), text: 'Mis Dispositivos'),
-            Tab(icon: Image.asset('assets/icons/icon_add_device.png', width: 20, height: 20, color: LvsColors.pink), text: 'Agregar'),
+          tabs: [
+            Tab(icon: Image.asset('assets/icons/icon_tab_control.png', width: 24, height: 24), text: 'Mis Dispositivos'),
+            Tab(icon: Image.asset('assets/icons/icon_add_device.png', width: 24, height: 24), text: 'Agregar'),
           ],
         ),
       ),
@@ -210,7 +210,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
         padding: const EdgeInsets.all(12),
         child: Image.asset(
           toy.iconAsset,
-          color: LvsColors.pink,
+          width: 64,
+          height: 64,
           fit: BoxFit.contain,
         ),
       ),
@@ -289,7 +290,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                             ),
                             const SizedBox(width: 4),
                             if (toy.hasDualChannel)
-                              Image.asset('assets/icons/icon_bluetooth.png', color: LvsColors.amber, width: 13, height: 13),
+                              Image.asset('assets/icons/icon_bluetooth.png', width: 26, height: 26),
                             if (toy.isPrecise)
                               const Icon(Icons.tune, color: LvsColors.teal, size: 13),
                           ],
@@ -350,7 +351,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
             const SizedBox(height: 20),
             // ── Acciones ─────────────────────────────────────
             _menuAction(
-              iconWidget: Image.asset('assets/icons/icon_tab_settings.png', width: 20, height: 20, color: LvsColors.teal),
+              iconWidget: Image.asset('assets/icons/icon_tab_settings.png', width: 24, height: 24),
               color: LvsColors.teal,
               label: 'Editar nombre / ID',
               onTap: () {
