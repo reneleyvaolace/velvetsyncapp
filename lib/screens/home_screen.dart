@@ -176,7 +176,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       _buildRouletteCard(context, ble),
                       const SizedBox(height: 20),
                       _buildReaderCard(context, ble),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
+                      Center(
+                        child: Text(
+                          'LVS CONTROL V1.6.1-DEBUG',
+                          style: TextStyle(color: LvsColors.text3.withOpacity(0.3), fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 2),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
                       _buildCatalogCard(context),
                       const SizedBox(height: 20),
                       _buildPatternsCard(ble),

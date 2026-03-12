@@ -26,15 +26,20 @@ class SupabaseService {
   Future<void> initialize() async {
     if (_isInitialized) return;
     
-    const String url = 'https://baeclricgedhxdtmirid.supabase.co';
-    const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
+    const String url = 'https://wsgytnzigqlviqoktmdo.supabase.co';
+    const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzZ3l0bnppZ3Fsdmlxb2t0bWRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzMDk4NjQsImV4cCI6MjA3OTg4NTg2NH0.9Bp-bxWIEnsBEtXb1FaaNoxqRozTPnoYRInE8si8DjA';
 
-    await Supabase.initialize(
-      url: url,
-      anonKey: anonKey,
-    );
-    _isInitialized = true;
-    lvsLog('Supabase Inicializado: $url', tag: 'SUPABASE');
+    try {
+      await Supabase.initialize(
+        url: url,
+        anonKey: anonKey,
+      );
+      _isInitialized = true;
+      lvsLog('Supabase Inicializado OK: $url', tag: 'SUPABASE');
+    } catch (e) {
+      lvsLog('❌ Error crítico inicializando Supabase: $e', tag: 'SUPABASE');
+      rethrow;
+    }
   }
 
   SupabaseClient get client => Supabase.instance.client;
