@@ -50,7 +50,13 @@ class SupabaseService {
   Future<List<ToyModel>> fetchDeviceCatalog({int limit = 2000}) async {
     if (!_isInitialized) return [];
     try {
-      final response = await client.from('device_catalog').select().limit(limit);
+      // ✨ Optimización: Solo pedimos las columnas necesarias para la UI del catálogo
+      // Evitamos traer 'raw_json_data' y otros campos pesados en la lista general
+      final response = await client
+          .from('device_catalog')
+          .select('id, factory_model, model_name, usage_type, target_anatomy, stimulation_type, motor_logic, image_url, qr_code_url, supported_funcs, is_precise_new, broadcast_prefix')
+          .limit(limit);
+      
       return (response as List).map((data) => ToyModel.fromSupabase(data)).toList();
     } catch (e) {
       lvsLog('Error fetchCatalog: $e', tag: 'SUPABASE');

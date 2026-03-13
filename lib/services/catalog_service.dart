@@ -20,13 +20,12 @@ const _kPreregisteredKey = 'lvs_preregistered_devices';
 final preregisteredProvider = StateProvider<List<ToyModel>>((ref) => []);
 
 // Provider para TODOS los dispositivos del catálogo servidor (para CompatibleDevicesRow)
-// Usamos StateNotifierProvider para que sea reactivo cuando se actualiza
 final serverCatalogProvider = StateNotifierProvider<ServerCatalogNotifier, List<ToyModel>>((ref) {
   return ServerCatalogNotifier();
 });
 
 class ServerCatalogNotifier extends StateNotifier<List<ToyModel>> {
-  ServerCatalogNotifier() : super([]);
+  ServerCatalogNotifier() : super(lvsLocalFallback.take(5).toList());
   
   void updateCatalog(List<ToyModel> toys) {
     state = toys;
@@ -111,43 +110,34 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
   // ─── CATÁLOGO SERVIDOR ─────────────────────────────────────────
 
   Future<void> fetchCatalog() async {
-    // FASE 1: Mostrar inmediatamente fallback local (SIN NINGÚN AWAIT - instantáneo)
-    final fallback = _localFallbackCatalog()..shuffle();
+    // FASE 1: Usar catálogo local inmediato
+    final fallback = List<ToyModel>.from(lvsLocalFallback)..shuffle();
     final sample = fallback.take(5).toList();
     
-    // DEBUG: Print directo que funciona siempre
-    print('📦 CATALOGO: ${sample.length} dispositivos cargados');
-    sample.forEach((t) => print('   → ${t.name} (${t.id})'));
-    
-    _ref.read(serverCatalogProvider.notifier).updateCatalog(sample);
     _serverCatalog = fallback;
+    // Usamos microtask para no interferir con el ciclo de construcción de Riverpod
+    Future.microtask(() => _ref.read(serverCatalogProvider.notifier).updateCatalog(sample));
+    
     state = AsyncValue.data(_merged());
 
-    // FASE 2: Cargar desde Supabase en segundo plano (sin bloquear)
-    Future.delayed(Duration.zero, () => _loadFromSupabaseInBackground());
+    // FASE 2: Cargar desde Supabase en segundo plano
+    _loadFromSupabaseInBackground();
   }
 
   /// Carga dispositivos desde Supabase en segundo plano sin bloquear la UI
   Future<void> _loadFromSupabaseInBackground() async {
-    // Marcar como cargando
-    _ref.read(catalogLoadingProvider.notifier).state = true;
+    // Solo mostramos 'loading' en el indicador pequeño si no tenemos datos de Supabase previos
+    if (_serverCatalog.length <= _localFallbackCatalog().length) {
+      _ref.read(catalogLoadingProvider.notifier).state = true;
+    }
 
     try {
-      lvsLog('🔄 Iniciando carga desde Supabase...', tag: 'CATALOG');
+      lvsLog('🔄 Sincronizando catálogo con Supabase...', tag: 'CATALOG');
 
-      // Cargar catálogo completo directamente con timeout corto
-      final toys = await Future.any([
-        // Intento 1: Traer todos los dispositivos
-        _supabase.fetchDeviceCatalog(limit: 500).then((result) {
-          lvsLog('✅ Recibidos ${result.length} dispositivos de Supabase', tag: 'CATALOG');
-          return result;
-        }),
-        // Timeout: Si tarda más de 5 segundos, cancelar
-        Future.delayed(const Duration(seconds: 5), () {
-          lvsLog('⚠️ Timeout (5s) en carga de Supabase', tag: 'CATALOG');
-          return <ToyModel>[];
-        }),
-      ]);
+      final toys = await _supabase.fetchDeviceCatalog(limit: 500).timeout(
+        const Duration(seconds: 4),
+        onTimeout: () => [],
+      );
 
       if (toys.isNotEmpty) {
         _serverCatalog = toys;
@@ -376,72 +366,67 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
   }
 
   // ─── CATÁLOGO LOCAL DE EMERGENCIA ─────────────────────────────
-
-  List<ToyModel> _localFallbackCatalog() {
-    return [
-      ToyModel(
-        id: '8154', name: 'Knight No. 3',
-        usageType: 'Wearable', targetAnatomy: 'Universal',
-        stimulationType: 'Vibración + Empuje', motorLogic: 'Dual Channel',
-        imageUrl: 'https://image.zlmicro.com/images/product/20240920/20240920102355033.png',
-        qrCodeUrl: 'https://image.zlmicro.com/images/product/qrcode/8154.png',
-        supportedFuncs: 'speed,vibration,thrust,pattern',
-        isPrecise: true, broadcastPrefix: '77 62 4d 53 45',
-      ),
-      ToyModel(
-        id: '9001', name: 'LVS Aria Pro',
-        usageType: 'Wearable', targetAnatomy: 'Universal',
-        stimulationType: 'Vibración', motorLogic: 'Single Channel',
-        imageUrl: '',
-        qrCodeUrl: '',
-        supportedFuncs: 'speed,vibration,pattern',
-        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
-      ),
-      ToyModel(
-        id: '7721', name: 'LVS Luna Mini',
-        usageType: 'Wearable', targetAnatomy: 'Clitoral',
-        stimulationType: 'Vibración', motorLogic: 'Single Channel',
-        imageUrl: '',
-        qrCodeUrl: '',
-        supportedFuncs: 'speed,vibration,pattern',
-        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
-      ),
-      ToyModel(
-        id: '5543', name: 'LVS Storm Plus',
-        usageType: 'Insertable', targetAnatomy: 'Vaginal',
-        stimulationType: 'Vibración', motorLogic: 'Dual Channel',
-        imageUrl: '',
-        qrCodeUrl: '',
-        supportedFuncs: 'speed,vibration,pattern',
-        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
-      ),
-      ToyModel(
-        id: '3398', name: 'LVS Wave',
-        usageType: 'Wearable', targetAnatomy: 'Universal',
-        stimulationType: 'Vibración', motorLogic: 'Single Channel',
-        imageUrl: '',
-        qrCodeUrl: '',
-        supportedFuncs: 'speed,vibration,pattern',
-        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
-      ),
-      ToyModel(
-        id: '6672', name: 'LVS Pulse',
-        usageType: 'Wearable', targetAnatomy: 'Peniano',
-        stimulationType: 'Vibración', motorLogic: 'Single Channel',
-        imageUrl: '',
-        qrCodeUrl: '',
-        supportedFuncs: 'speed,vibration,pattern',
-        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
-      ),
-      ToyModel(
-        id: '4429', name: 'LVS Zen',
-        usageType: 'Insertable', targetAnatomy: 'Anal',
-        stimulationType: 'Vibración', motorLogic: 'Single Channel',
-        imageUrl: '',
-        qrCodeUrl: '',
-        supportedFuncs: 'speed,vibration,pattern',
-        isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
-      ),
-    ];
-  }
+  // (Mantenemos el método por compatibilidad interna de la clase)
+  List<ToyModel> _localFallbackCatalog() => lvsLocalFallback;
 }
+
+/// Catálogo estático garantizado disponible desde el arranque
+final List<ToyModel> lvsLocalFallback = [
+  ToyModel(
+    id: '8154', name: 'Knight No. 3',
+    usageType: 'Wearable', targetAnatomy: 'Universal',
+    stimulationType: 'Vibración + Empuje', motorLogic: 'Dual Channel',
+    imageUrl: 'https://image.zlmicro.com/images/product/20240920/20240920102355033.png',
+    qrCodeUrl: 'https://image.zlmicro.com/images/product/qrcode/8154.png',
+    supportedFuncs: 'speed,vibration,thrust,pattern',
+    isPrecise: true, broadcastPrefix: '77 62 4d 53 45',
+  ),
+  ToyModel(
+    id: '9001', name: 'LVS Aria Pro',
+    usageType: 'Wearable', targetAnatomy: 'Universal',
+    stimulationType: 'Vibración', motorLogic: 'Single Channel',
+    imageUrl: '', qrCodeUrl: '',
+    supportedFuncs: 'speed,vibration,pattern',
+    isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+  ),
+  ToyModel(
+    id: '7721', name: 'LVS Luna Mini',
+    usageType: 'Wearable', targetAnatomy: 'Clitoral',
+    stimulationType: 'Vibración', motorLogic: 'Single Channel',
+    imageUrl: '', qrCodeUrl: '',
+    supportedFuncs: 'speed,vibration,pattern',
+    isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+  ),
+  ToyModel(
+    id: '5543', name: 'LVS Storm Plus',
+    usageType: 'Insertable', targetAnatomy: 'Vaginal',
+    stimulationType: 'Vibración', motorLogic: 'Dual Channel',
+    imageUrl: '', qrCodeUrl: '',
+    supportedFuncs: 'speed,vibration,pattern',
+    isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+  ),
+  ToyModel(
+    id: '3398', name: 'LVS Wave',
+    usageType: 'Wearable', targetAnatomy: 'Universal',
+    stimulationType: 'Vibración', motorLogic: 'Single Channel',
+    imageUrl: '', qrCodeUrl: '',
+    supportedFuncs: 'speed,vibration,pattern',
+    isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+  ),
+  ToyModel(
+    id: '6672', name: 'LVS Pulse',
+    usageType: 'Wearable', targetAnatomy: 'Peniano',
+    stimulationType: 'Vibración', motorLogic: 'Single Channel',
+    imageUrl: '', qrCodeUrl: '',
+    supportedFuncs: 'speed,vibration,pattern',
+    isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+  ),
+  ToyModel(
+    id: '4429', name: 'LVS Zen',
+    usageType: 'Insertable', targetAnatomy: 'Anal',
+    stimulationType: 'Vibración', motorLogic: 'Single Channel',
+    imageUrl: '', qrCodeUrl: '',
+    supportedFuncs: 'speed,vibration,pattern',
+    isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+  ),
+];

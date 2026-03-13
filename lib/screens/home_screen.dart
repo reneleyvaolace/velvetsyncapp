@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// Velvet Sync · lib/screens/home_screen.dart · v2.1.0
+// Velvet Sync · lib/screens/home_screen.dart · v2.1.0 
 // Pantalla Principal: Control Dashboard con Neumorfismo y Glassmorphism
 // ═══════════════════════════════════════════════════════════════
 import 'dart:async';
