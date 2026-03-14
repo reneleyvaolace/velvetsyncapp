@@ -9,8 +9,15 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 import 'services/supabase_service.dart';
 import 'screens/splash_screen.dart';
+import 'screens/screenshot_gallery.dart';
 import 'theme.dart';
 import 'utils/logger.dart';
+
+// ═══════════════════════════════════════════════════════════════
+// MODO CAPTURA DE PANTALLA
+// Para generar capturas, cambia esto a true temporalmente
+// ═══════════════════════════════════════════════════════════════
+const bool kScreenshotMode = true;
 
 // ── Handler del Foreground Task (se ejecuta en segundo plano) ──
 @pragma('vm:entry-point')
@@ -73,7 +80,7 @@ class VelvetSyncApp extends StatelessWidget {
       title: 'Velvet Sync',
       debugShowCheckedModeBanner: false,
       theme: LvsTheme.darkTheme,
-      home: const SplashScreen(),
+      home: kScreenshotMode ? const ScreenshotGallery() : const SplashScreen(),
     );
   }
 }
