@@ -64,12 +64,55 @@ class CompatibleDevicesRow extends ConsumerWidget {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.zero,
-            itemCount: toys.length,
+            itemCount: toys.length + 1,
             separatorBuilder: (_, __) => const SizedBox(width: 10),
-            itemBuilder: (ctx, i) => _DeviceChip(toy: toys[i], ref: ref),
+            itemBuilder: (ctx, i) {
+              if (i < toys.length) {
+                return _DeviceChip(toy: toys[i], ref: ref);
+              }
+              // Botón final para ir al catálogo web
+              return _CatalogGatewayChip();
+            },
           ),
         ),
       ],
+    );
+  }
+}
+
+// ── Chip de acceso al catálogo completo ───────────────────────
+class _CatalogGatewayChip extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => CatalogNotifier.openWebCatalog(),
+      child: Container(
+        width: 100,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [LvsColors.pink.withOpacity(0.1), LvsColors.violet.withOpacity(0.1)],
+          ),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: LvsColors.pink.withOpacity(0.3), width: 1.5),
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.open_in_new_rounded, color: LvsColors.pink, size: 28),
+            SizedBox(height: 8),
+            Text(
+              'CATÁLOGO\nWEB',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 9,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -102,7 +145,7 @@ class _DeviceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _activate(context),
+      onTap: _openWebCatalog,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 90,
@@ -161,7 +204,7 @@ class _DeviceChip extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'ID: ${toy.id}',
+                'VER DETALLES', // Cambiado de ID para indicar pasarela
                 style: TextStyle(
                   color: _color, fontSize: 7, fontWeight: FontWeight.bold,
                 ),
@@ -190,25 +233,7 @@ class _DeviceChip extends StatelessWidget {
       ),
     );
   }
-
-  void _activate(BuildContext context) async {
-    final result = await ref.read(catalogProvider.notifier).addByKey(toy.id);
-    if (context.mounted) {
-      final ble = ref.read(bleProvider);
-      final ok = result != null;
-      
-      if (ok) {
-        // ✨ Establecer como activo inmediatamente en el Dashboard
-        ble.setActiveToy(result);
-      }
-
-      LvsSnack.show(
-        context,
-        ok: ok,
-        message: ok
-            ? '${result.name} vinculado\nListo para controlar'
-            : 'No se encontró el dispositivo "${toy.id}".',
-      );
-    }
+  void _openWebCatalog() {
+    CatalogNotifier.openWebCatalog();
   }
 }

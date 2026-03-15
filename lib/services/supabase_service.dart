@@ -6,6 +6,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/toy_model.dart';
 import '../utils/logger.dart';
@@ -26,8 +27,11 @@ class SupabaseService {
   Future<void> initialize() async {
     if (_isInitialized) return;
     
-    const String url = 'https://baeclricgedhxdtmirid.supabase.co';
-    const String anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
+    const String defaultUrl = 'https://baeclricgedhxdtmirid.supabase.co';
+    const String defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
+
+    final String url = dotenv.env['SUPABASE_URL'] ?? defaultUrl;
+    final String anonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? defaultKey;
 
     try {
       await Supabase.initialize(

@@ -25,6 +25,8 @@
 - **Nota**: El sistema de `StateNotifier` en `CatalogService` debe usar `_preregisteredList` como fuente única del `state` para evitar que dispositivos temporales del catálogo general aparezcan en "Mis Dispositivos".
 - **Nota**: La actualización de nombres fallaba porque solo afectaba al `state` volátil; ahora se fuerza la actualización en `FlutterSecureStorage` en cada cambio.
 - **Nota**: `ref.read` en el método `build` de una pestaña impedía que los modos se desbloquearan automáticamente al cambiar el estado del servicio BLE. Usar siempre `ref.watch`.
+- **Nota**: El catálogo de productos en el Dashboard ahora actúa como una **pasarela (Gateway)** al catálogo web externo. No vincula dispositivos localmente desde el scroll horizontal para evitar saturación de registros accidentales.
+- **Restricción de URL**: La URL del catálogo web (`kWebCatalogUrl`) es volátil y será un subdominio de Vercel en el futuro cercano. Mantenerla centralizada en `catalog_service.dart`.
 
 ## Skills Relacionadas
 - Flutter + Riverpod

@@ -70,5 +70,20 @@
 		<string>Esta aplicación necesita acceso continuo al Bluetooth para controlar tu dispositivo LVS incluso cuando la pantalla está apagada.</string>
 		<key>NSBluetoothPeripheralUsageDescription</key>
 		<string>Esta aplicación actúa como un controlador para tu dispositivo LVS mediante Bluetooth.</string>
+
+		<!-- Deep Linking: velvetsync:// -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>com.velvetsync.app</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>velvetsync</string>
+				</array>
+			</dict>
+		</array>
 	</dict>
 </plist>

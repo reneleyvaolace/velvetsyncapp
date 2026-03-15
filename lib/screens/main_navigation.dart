@@ -8,14 +8,21 @@ import 'package:lvs_control/screens/tabs/network_tab.dart';
 import 'package:lvs_control/screens/tabs/settings_tab.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
-  const MainNavigation({super.key});
+  final int initialIndex;
+  const MainNavigation({super.key, this.initialIndex = 0});
 
   @override
   ConsumerState<MainNavigation> createState() => _MainNavigationState();
 }
 
 class _MainNavigationState extends ConsumerState<MainNavigation> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
 
   final List<Widget> _tabs = [
     const ControlTab(),

@@ -24,6 +24,7 @@ import 'lvs_commands.dart';
 import '../models/toy_model.dart';
 import 'toy_profile.dart';
 import '../utils/logger.dart';
+import '../services/ai_hardware_bridge_service.dart';
 
 // ── Provider Global para Riverpod ──────────────────────────────
 final bleProvider = ChangeNotifierProvider((ref) => BleService());
@@ -41,13 +42,17 @@ class LogEntry {
 class BleService extends ChangeNotifier {
   // ── Estado ─────────────────────────────────────────────────
   BleState state = BleState.idle;
-  List<BluetoothDevice> connectedDevices = []; 
+  List<BluetoothDevice> connectedDevices = [];
   BluetoothCharacteristic? characteristic;
   ToyProfile? toyProfile;
   ToyModel? activeToy; // El modelo del catálogo que está en uso
 
   // Nombre real del hardware detectado en la sesión actual
   String connectedDeviceName = '';
+
+  // ── NUEVO: Control de conexión real vs virtual ─────────────
+  // True si hay hardware físico confirmado mediante handshake
+  bool _hardwareConfirmed = false;
 
   final FlutterBlePeripheral _peripheral = FlutterBlePeripheral();
 
@@ -91,9 +96,12 @@ class BleService extends ChangeNotifier {
   }
 
   // ── Getters de Estado ─────────────────────────────────────
-  bool get isConnected => state == BleState.connected || activeToy != null;
+  bool get isConnected => state == BleState.connected && _hardwareConfirmed;
   bool get isScanning  => state == BleState.scanning;
   bool get hasGatt      => connectedDevices.isNotEmpty;
+
+  // ── NUEVO: Verificar si es conexión virtual (sin hardware) ──
+  bool get isVirtualConnection => state == BleState.connected && !_hardwareConfirmed;
 
   // ── Activación desde Catálogo (Virtual) ──────────────────
   void setActiveToy(ToyModel toy) {
@@ -104,9 +112,45 @@ class BleService extends ChangeNotifier {
       hasDualChannel: toy.hasDualChannel,
     );
     connectedDeviceName = toy.name;
-    _setState(BleState.connected); // "Virtualmente" conectado
-    _log('✨ Dispositivo "${toy.name}" activado desde el catálogo.', 'success');
+
+    // ── NUEVO: Marcar como conexión VIRTUAL (sin hardware real) ──
+    _hardwareConfirmed = false;
+    _setState(BleState.connected); // Estado "virtual" para UI
+
+    // Notificar al AI Hardware Bridge
+    _notifyAIBridge(toy);
+
+    _log('📱 Dispositivo "${toy.name}" activado desde el catálogo (MODO VIRTUAL - sin hardware)', 'info');
     notifyListeners();
+  }
+
+  /// ── NUEVO: Método para verificar si hay hardware real conectado ──
+  Future<bool> verifyHardwareConnection() async {
+    if (!_hardwareConfirmed) {
+      _log('⚠️ No hay hardware confirmado. Intentando verificar...', 'warn');
+      // Intentar handshake de verificación
+      final bool ok = await writeCommand(verificationCmd, label: 'VERIFY_HW', silent: true);
+      if (ok) {
+        _hardwareConfirmed = true;
+        _log('✅ Hardware verificado exitosamente', 'success');
+      } else {
+        _log('❌ No hay hardware físico presente', 'error');
+      }
+      return ok;
+    }
+    return true;
+  }
+
+  /// Notifica al AI Hardware Bridge sobre el dispositivo activo
+  void _notifyAIBridge(ToyModel toy) {
+    try {
+      // Obtener instancia del AIHardwareBridge si está disponible
+      debugPrint('[BleService] Notificando AI Bridge: ${toy.name}');
+      final aiBridge = AIHardwareBridge();
+      aiBridge.setCurrentToy(toy);
+    } catch (e) {
+      debugPrint('[BleService] Error notificando AI Bridge: $e');
+    }
   }
 
   void renameActiveToy(String newName) {
@@ -283,6 +327,11 @@ class BleService extends ChangeNotifier {
           final rssi = r.rssi;
           final mac  = r.device.remoteId.str;
 
+          // ── NUEVO: Filtro de RSSI mínimo para evitar falsos positivos ──
+          // Si la señal es muy débil (< -85 dBm), probablemente esté fuera de rango
+          // o sea ruido. Ignoramos a menos que sea un match muy claro.
+          final bool isWeakSignal = rssi < -85;
+
           // Filtros base: LVS por nombre conocido
           final hasId       = realName.contains('8154') || realName.contains('LVS');
           final isBroadlink = realName.startsWith('wbMSE');
@@ -298,17 +347,29 @@ class BleService extends ChangeNotifier {
           }
 
           if (isDeepScan) {
-             _log('👁️ [DEEP] "$realName" RSSI: $rssi', 'info');
+             _log('👁️ [DEEP] "$realName" RSSI: $rssi ${isWeakSignal ? "(SEÑAL DÉBIL)" : ""}', 'info');
           }
 
+          // ── NUEVO: Validación más estricta para evitar falsos positivos ──
+          bool shouldConnect = false;
+          String reason = '';
+
           if (hasId || isBroadlink || matchesCatalog) {
-            final why = matchesCatalog ? 'PRE-REGISTRADO' : (isBroadlink ? 'Broadlink' : 'ID');
-            _log('🎯 MATCH ($why): "$realName" [$mac] RSSI: $rssi', 'success');
-            found = r.device;
-            FlutterBluePlus.stopScan();
-          } else if (isDeepScan && rssi > -75) {
-             // En Deep Scan somos más permisivos con la señal
-            _log('✅ Deep Scan seleccionó: "$realName"', 'success');
+            // Si es un match claro, conectar solo si la señal es razonable
+            if (!isWeakSignal || matchesCatalog) {
+              shouldConnect = true;
+              reason = matchesCatalog ? 'PRE-REGISTRADO' : (isBroadlink ? 'Broadlink' : 'ID');
+            } else {
+              _log('⚠️ MATCH ignorado por señal débil ($rssi dBm): "$realName"', 'warn');
+            }
+          } else if (isDeepScan && !isWeakSignal && rssi > -75) {
+             // En Deep Scan, solo si la señal es buena
+             shouldConnect = true;
+             reason = 'Deep Scan (RSSI: $rssi)';
+          }
+
+          if (shouldConnect && found == null) {
+            _log('🎯 MATCH ($reason): "$realName" [$mac] RSSI: $rssi', 'success');
             found = r.device;
             FlutterBluePlus.stopScan();
           }
@@ -349,31 +410,74 @@ class BleService extends ChangeNotifier {
 
   Future<void> _setupFastcon(BluetoothDevice dev) async {
     _setState(BleState.connecting);
-    _log('Handshake: Verificando hardware activo...', 'info');
+    _log('🔐 Handshake: Verificando hardware activo...', 'info');
 
-    // HANDSHAKE ACTIVO REAL: intentar enviar el paquete de verificación.
-    // Si el periférico BLE del Android no puede iniciar advertising
-    // (porque el hardware está apagado), writeCommand retorna false.
-    final bool ok = await writeCommand(verificationCmd, label: 'VERIFY', silent: false);
+    // ── NUEVO: Timeout estricto para handshake (3 segundos máx) ──
+    final handshakeTimeout = const Duration(seconds: 3);
 
-    if (!ok) {
-      _log('❌ Handshake fallido: el hardware no responde. Conexión rechazada.', 'error');
+    try {
+      // HANDSHAKE ACTIVO REAL con timeout
+      final bool ok = await writeCommand(verificationCmd, label: 'VERIFY', silent: false)
+          .timeout(handshakeTimeout, onTimeout: () {
+            _log('⏱️ Timeout de handshake (3s) - hardware no responde', 'error');
+            return false;
+          });
+
+      if (!ok) {
+        _log('❌ Handshake fallido: el hardware no responde. Conexión RECHAZADA.', 'error');
+        _log('   Posibles causas: 1) Dispositivo apagado, 2) Fuera de rango, 3) Falso positivo en escaneo', 'warn');
+        connectedDeviceName = '';
+        _hardwareConfirmed = false;
+        _setState(BleState.idle);
+
+        // Mostrar mensaje al usuario
+        _showHardwareNotFoundSnackbar();
+        return;
+      }
+
+      // Pausa para recibir el ACK (0x06) del hardware
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      // ── NUEVO: Segunda verificación para confirmar ──
+      await Future.delayed(const Duration(milliseconds: 200));
+      final bool secondCheck = await writeCommand([0x00, 0x00, 0x00], label: 'VERIFY2', silent: true)
+          .timeout(const Duration(milliseconds: 1500), onTimeout: () => false);
+
+      if (!secondCheck) {
+        _log('⚠️ Segunda verificación fallida - hardware inestable', 'warn');
+        // No rechazamos, pero logueamos
+      }
+
+      if (!connectedDevices.contains(dev)) {
+        connectedDevices.add(dev);
+      }
+
+      // ── NUEVO: Confirmar hardware exitoso ──
+      _hardwareConfirmed = true;
+      batteryLevel = 100;
+      _setState(BleState.connected);
+      _log('✅ Handshake OK — ${toyProfile?.name ?? connectedDeviceName} vinculado. Hardware CONFIRMADO.', 'success');
+      await _updateNotification('Vinculado (${connectedDevices.length}) → ${toyProfile?.name ?? connectedDeviceName}');
+
+    } catch (e) {
+      _log('❌ Error en handshake: $e', 'error');
       connectedDeviceName = '';
+      _hardwareConfirmed = false;
       _setState(BleState.idle);
-      return;
+      _showHardwareNotFoundSnackbar();
     }
+  }
 
-    // Pausa para recibir el ACK (0x06) del hardware
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    if (!connectedDevices.contains(dev)) {
-      connectedDevices.add(dev);
-    }
-    
-    batteryLevel = 100;
-    _setState(BleState.connected);
-    _log('✅ Handshake OK — ${toyProfile?.name ?? connectedDeviceName} vinculado.', 'success');
-    await _updateNotification('Vinculado (${connectedDevices.length}) → ${toyProfile?.name ?? connectedDeviceName}');
+  /// ── NUEVO: Mostrar Snackbar de hardware no encontrado ──
+  void _showHardwareNotFoundSnackbar() {
+    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
+    _log('⚠️  NO SE DETECTÓ HARDWARE FÍSICO', 'warn');
+    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
+    _log('La app intentó conectarse pero el dispositivo:', 'warn');
+    _log('  • Está apagado o fuera de rango', 'warn');
+    _log('  • No está en modo emparejamiento', 'warn');
+    _log('  • O fue un falso positivo del escaneo BLE', 'warn');
+    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
   }
 
 
@@ -396,8 +500,13 @@ class BleService extends ChangeNotifier {
     activePattern = null;
     activeIntensity = null;
     batteryLevel = 0;
+
+    // ── NUEVO: Resetear confirmación de hardware ──
+    _hardwareConfirmed = false;
+
     _setState(BleState.idle);
     await _updateNotification('Desconectado');
+    _log('🔌 Dispositivo desconectado. Hardware no confirmado.', 'info');
   }
 
   // Para de emergencia: detiene burst+sequencer, bypassa mutex y para el advertising

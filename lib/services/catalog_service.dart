@@ -12,9 +12,13 @@ import '../models/toy_model.dart';
 import 'supabase_service.dart';
 import '../ble/ble_service.dart';
 import '../utils/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ── Clave de almacenamiento ─────────────────────────────────────
 const _kPreregisteredKey = 'lvs_preregistered_devices';
+
+/// URL del Catálogo Web de Velvet Sync (Planeado: subdominio de Vercel)
+const kWebCatalogUrl = 'https://velvetsync.com/catalog';
 
 // Provider solo para los pre-registrados (donde vive la persistencia reactiva)
 final preregisteredProvider = StateProvider<List<ToyModel>>((ref) => []);
@@ -277,6 +281,14 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
       return found;
     }
     return null;
+  }
+
+  /// Abre el catálogo web externo
+  static Future<void> openWebCatalog() async {
+    final uri = Uri.parse(kWebCatalogUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   /// Registra un ToyModel directamente (para cuando se crea manualmente)

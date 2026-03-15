@@ -6,8 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'services/supabase_service.dart';
+import 'services/link_service.dart';
+import 'services/sync_service.dart';
+import 'services/ai_hardware_bridge_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/screenshot_gallery.dart';
 import 'theme.dart';
@@ -17,7 +21,7 @@ import 'utils/logger.dart';
 // MODO CAPTURA DE PANTALLA
 // Para generar capturas, cambia esto a true temporalmente
 // ═══════════════════════════════════════════════════════════════
-const bool kScreenshotMode = true;
+const bool kScreenshotMode = false;
 
 // ── Handler del Foreground Task (se ejecuta en segundo plano) ──
 @pragma('vm:entry-point')
@@ -47,8 +51,23 @@ class BleScanTaskHandler extends TaskHandler {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Cargar variables de entorno (Secretos)
+  await dotenv.load(fileName: ".env");
+
   final supabase = SupabaseService();
   await supabase.initialize();
+
+  // Inicializar Deep Linking
+  final linkService = LinkService();
+  await linkService.init();
+
+  // Inicializar Sincronización en Tiempo Real
+  final syncService = SyncService();
+  await syncService.init();
+
+  // Inicializar Puente IA-Hardware (se conectará cuando BLE esté activo)
+  final aiBridge = AIHardwareBridge();
+  await aiBridge.init();
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -80,7 +99,7 @@ class VelvetSyncApp extends StatelessWidget {
       title: 'Velvet Sync',
       debugShowCheckedModeBanner: false,
       theme: LvsTheme.darkTheme,
-      home: kScreenshotMode ? const ScreenshotGallery() : const SplashScreen(),
+      home: const ScreenshotGallery(),
     );
   }
 }
