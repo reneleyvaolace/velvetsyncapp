@@ -46,4 +46,6 @@ app.*.map.json
 
 # Secretos
 .env
+/android/key.properties
+/android/app/*.keystore
 
