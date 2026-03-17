@@ -119,17 +119,25 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
 
                     if (filteredToys.isEmpty) return _buildEmptyState();
 
-                    return GridView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.70,
-                        crossAxisSpacing: 14,
-                        mainAxisSpacing: 14,
-                      ),
-                      itemCount: filteredToys.length,
-                      itemBuilder: (context, index) =>
-                          _buildToyCard(filteredToys[index], toys),
+                    return LayoutBuilder(
+                      builder: (context, constraints) {
+                        // Calcular número de columnas basado en el ancho disponible
+                        // Mínimo 180px por tarjeta, máximo 4 columnas
+                        final crossAxisCount = (constraints.maxWidth / 180).clamp(2, 4).toInt();
+                        
+                        return GridView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            childAspectRatio: 0.70,
+                            crossAxisSpacing: 14,
+                            mainAxisSpacing: 14,
+                          ),
+                          itemCount: filteredToys.length,
+                          itemBuilder: (context, index) =>
+                              _buildToyCard(filteredToys[index], toys),
+                        );
+                      },
                     );
                   },
                   loading: () => const Center(

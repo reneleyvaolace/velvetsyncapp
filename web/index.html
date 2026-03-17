@@ -42,5 +42,11 @@
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
   <script src="flutter_bootstrap.js" async></script>
+  <script>
+    // Forzar CanvasKit para mejor rendimiento (reduce input delay)
+    window._flutter = window._flutter || {};
+    _flutter.buildConfig = _flutter.buildConfig || {};
+    _flutter.buildConfig.renderer = 'canvaskit';
+  </script>
 </body>
 </html>
