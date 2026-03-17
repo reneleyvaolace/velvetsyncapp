@@ -805,7 +805,9 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           children: [
             const Icon(Icons.check_circle, color: Colors.white, size: 20),
             const SizedBox(width: 12),
-            Text('Respaldo $code recuperado exitosamente', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+            Flexible(
+              child: Text('Respaldo $code recuperado exitosamente', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+            ),
           ],
         ),
         backgroundColor: LvsColors.teal,
@@ -838,7 +840,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           children: [
             Icon(icon, color: color, size: 22),
             const SizedBox(width: 14),
-            Expanded(
+            Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -848,6 +850,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                 ],
               ),
             ),
+            const SizedBox(width: 4),
             Icon(Icons.arrow_forward_ios, color: color, size: 14),
           ],
         ),
