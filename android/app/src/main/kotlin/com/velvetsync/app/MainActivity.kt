@@ -1,4 +1,4 @@
-package com.example.lvs_control
+package com.velvetsync.app
 
 import io.flutter.embedding.android.FlutterActivity
 
