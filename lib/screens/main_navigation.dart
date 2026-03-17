@@ -91,15 +91,13 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
               icon: Opacity(
                 opacity: 0.5,
                 child: Image.asset(
-                  'assets/icons/icon_tab_catalog.png',
+                  'assets/icons/icon_online_products.png',
                   width: 28, height: 28,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.inventory_2_outlined, size: 20),
                 ),
               ),
               activeIcon: Image.asset(
-                'assets/icons/icon_tab_catalog.png',
+                'assets/icons/icon_online_products.png',
                 width: 32, height: 32,
-                errorBuilder: (_, __, ___) => const Icon(Icons.inventory_2, size: 24),
               ),
               label: 'CATÁLOGO',
             ),
