@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// Velvet Sync · lib/main.dart · v2.1.0
+// Velvet Sync · lib/main.dart · v2.1.1
 // Punto de entrada — inicializa el Splash Screen y la navegación
 // ═══════════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
@@ -22,6 +22,13 @@ import 'utils/logger.dart';
 // Para generar capturas, cambia esto a true temporalmente
 // ═══════════════════════════════════════════════════════════════
 const bool kScreenshotMode = false;
+
+// ═══════════════════════════════════════════════════════════════
+// MODO EMULADOR
+// Si es true, omite la inicialización de servicios que requieren hardware físico (BLE)
+// Útil para testing en BlueStacks, Android Studio Emulator, etc.
+// ═══════════════════════════════════════════════════════════════
+const bool kEmulatorMode = false;
 
 // ── Handler del Foreground Task (se ejecuta en segundo plano) ──
 @pragma('vm:entry-point')
@@ -55,47 +62,70 @@ void main() async {
   // INICIALIZACIÓN CON MANEJO DE ERRORES
   // Para debugging en emuladores y dispositivos reales
   // ═══════════════════════════════════════════════════════════════
+  lvsLog('════════════════════════════════════════', tag: 'INIT');
+  lvsLog('🚀 Velvet Sync Iniciando...', tag: 'INIT');
+  lvsLog('════════════════════════════════════════', tag: 'INIT');
+
+  if (kEmulatorMode) {
+    lvsLog('⚠️ MODO EMULADOR ACTIVO - Omitiendo BLE', tag: 'INIT');
+  }
+
   try {
     // Cargar variables de entorno (Secretos)
+    lvsLog('Cargando .env...', tag: 'INIT');
     await dotenv.load(fileName: ".env");
-    lvsLog('.env cargado', tag: 'INIT');
+    lvsLog('✅ .env cargado', tag: 'INIT');
   } catch (e) {
     lvsLog('⚠️ Error cargando .env: $e', tag: 'INIT');
     // Continuamos con defaults si falla
   }
 
   try {
+    lvsLog('Inicializando Supabase...', tag: 'INIT');
     final supabase = SupabaseService();
     await supabase.initialize();
-    lvsLog('Supabase listo', tag: 'INIT');
+    lvsLog('✅ Supabase listo', tag: 'INIT');
   } catch (e) {
     lvsLog('❌ Error inicializando Supabase: $e', tag: 'INIT');
     // No bloqueamos la app si Supabase falla
   }
 
   try {
+    lvsLog('Inicializando Deep Linking...', tag: 'INIT');
     final linkService = LinkService();
     await linkService.init();
-    lvsLog('Deep Linking listo', tag: 'INIT');
+    lvsLog('✅ Deep Linking listo', tag: 'INIT');
   } catch (e) {
     lvsLog('⚠️ Error en Deep Linking: $e', tag: 'INIT');
   }
 
   try {
+    lvsLog('Inicializando Sync Service...', tag: 'INIT');
     final syncService = SyncService();
     await syncService.init();
-    lvsLog('Sync Service listo', tag: 'INIT');
+    lvsLog('✅ Sync Service listo', tag: 'INIT');
   } catch (e) {
     lvsLog('⚠️ Error en Sync Service: $e', tag: 'INIT');
   }
 
-  try {
-    final aiBridge = AIHardwareBridge();
-    await aiBridge.init();
-    lvsLog('AI Bridge listo', tag: 'INIT');
-  } catch (e) {
-    lvsLog('⚠️ Error en AI Bridge: $e', tag: 'INIT');
+  // AI Bridge requiere BLE - opcional en emuladores
+  if (!kEmulatorMode) {
+    try {
+      lvsLog('Inicializando AI Bridge (BLE)...', tag: 'INIT');
+      final aiBridge = AIHardwareBridge();
+      await aiBridge.init();
+      lvsLog('✅ AI Bridge listo', tag: 'INIT');
+    } catch (e) {
+      lvsLog('❌ Error en AI Bridge (BLE): $e', tag: 'INIT');
+      lvsLog('💡 TIP: Si estás en emulador, usa kEmulatorMode = true', tag: 'INIT');
+    }
+  } else {
+    lvsLog('⏭️ AI Bridge omitido (Modo Emulador)', tag: 'INIT');
   }
+
+  lvsLog('════════════════════════════════════════', tag: 'INIT');
+  lvsLog('✨ Inicialización completada', tag: 'INIT');
+  lvsLog('════════════════════════════════════════', tag: 'INIT');
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
