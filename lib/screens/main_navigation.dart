@@ -6,6 +6,7 @@ import 'package:lvs_control/screens/tabs/control_tab.dart';
 import 'package:lvs_control/screens/tabs/modes_tab.dart';
 import 'package:lvs_control/screens/tabs/network_tab.dart';
 import 'package:lvs_control/screens/tabs/settings_tab.dart';
+import 'package:lvs_control/screens/web_catalog_screen.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   final int initialIndex;
@@ -28,6 +29,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
     const ControlTab(),
     const ModesTab(),
     const NetworkTab(),
+    const WebCatalogScreen(),
     const SettingsTab(),
   ];
 
@@ -73,17 +75,33 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
               icon: Opacity(
                 opacity: 0.5,
                 child: Image.asset(
-                  'assets/icons/icon_remote_session.png', 
+                  'assets/icons/icon_remote_session.png',
                   width: 28, height: 28,
                   errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, size: 20),
                 ),
               ),
               activeIcon: Image.asset(
-                'assets/icons/icon_remote_session.png', 
+                'assets/icons/icon_remote_session.png',
                 width: 32, height: 32,
                 errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, size: 24),
               ),
               label: 'REMOTO',
+            ),
+            BottomNavigationBarItem(
+              icon: Opacity(
+                opacity: 0.5,
+                child: Image.asset(
+                  'assets/icons/icon_tab_catalog.png',
+                  width: 28, height: 28,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.inventory_2_outlined, size: 20),
+                ),
+              ),
+              activeIcon: Image.asset(
+                'assets/icons/icon_tab_catalog.png',
+                width: 32, height: 32,
+                errorBuilder: (_, __, ___) => const Icon(Icons.inventory_2, size: 24),
+              ),
+              label: 'CATÁLOGO',
             ),
             BottomNavigationBarItem(
               icon: Opacity(

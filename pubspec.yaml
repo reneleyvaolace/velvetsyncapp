@@ -47,6 +47,7 @@ dependencies:
   supabase_flutter: ^2.12.0
   url_launcher: ^6.3.1
   flutter_dotenv: ^5.1.0
+  webview_flutter: ^4.8.0     # WebView para catálogo web
 
 flutter_launcher_icons:
   android: "launcher_icon"

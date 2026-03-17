@@ -121,17 +121,17 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
 
                     return LayoutBuilder(
                       builder: (context, constraints) {
-                        // Calcular número de columnas basado en el ancho disponible
-                        // Mínimo 180px por tarjeta, máximo 4 columnas
-                        final crossAxisCount = (constraints.maxWidth / 180).clamp(2, 4).toInt();
-                        
+                        // Calcular número de columnas: 2 para móvil, más para tablets
+                        // Ancho típico móvil: ~360-400px → 2 columnas
+                        final crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
+
                         return GridView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: crossAxisCount,
-                            childAspectRatio: 0.70,
-                            crossAxisSpacing: 14,
-                            mainAxisSpacing: 14,
+                            childAspectRatio: 0.68,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
                           ),
                           itemCount: filteredToys.length,
                           itemBuilder: (context, index) =>
