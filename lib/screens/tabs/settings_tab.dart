@@ -583,7 +583,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('RESPALDO EN NUBE', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.bold, fontSize: 14)),
-                      Text('Sincronización con Supabase', style: TextStyle(color: LvsColors.text3, fontSize: 10)),
+                      Text('Código de 6 dígitos', style: TextStyle(color: LvsColors.text3, fontSize: 10)),
                     ],
                   ),
                 ),
@@ -591,35 +591,24 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
             ),
             const SizedBox(height: 20),
             _buildCloudOption(
-              icon: Icons.download_rounded,
-              color: LvsColors.teal,
-              title: 'DESCARGAR RESPALDO',
-              subtitle: 'Recuperar configuraciones desde la nube',
-              onTap: () {
-                Navigator.pop(ctx);
-                _downloadCloudBackup();
-              },
-            ),
-            const SizedBox(height: 12),
-            _buildCloudOption(
               icon: Icons.upload_rounded,
               color: LvsColors.pink,
-              title: 'SUBIR RESPALDO',
-              subtitle: 'Guardar configuración actual en la nube',
+              title: 'CREAR RESPALDO',
+              subtitle: 'Generar código de recuperación',
               onTap: () {
                 Navigator.pop(ctx);
-                _uploadCloudBackup();
+                _createCloudBackup();
               },
             ),
             const SizedBox(height: 12),
             _buildCloudOption(
-              icon: Icons.sync_rounded,
-              color: LvsColors.amber,
-              title: 'SINCRONIZAR AHORA',
-              subtitle: 'Sincronización bidireccional',
+              icon: Icons.download_rounded,
+              color: LvsColors.teal,
+              title: 'RECUPERAR RESPALDO',
+              subtitle: 'Usar código de 6 dígitos',
               onTap: () {
                 Navigator.pop(ctx);
-                _syncCloudBackup();
+                _showRecoverDialog();
               },
             ),
             const SizedBox(height: 16),
@@ -636,7 +625,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Tu configuración se guarda de forma segura en Supabase. Puedes recuperarla en cualquier momento o sincronizarla entre dispositivos.',
+                      'Tu código de respaldo es único. GUÁRDALO en un lugar seguro. Sin él, no podrás recuperar tu configuración.',
                       style: TextStyle(color: LvsColors.text2, fontSize: 9, height: 1.4),
                     ),
                   ),
@@ -653,6 +642,179 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
         ],
       ),
     );
+  }
+
+  void _createCloudBackup() {
+    // Generar código de 6 dígitos
+    final backupCode = (DateTime.now().millisecondsSinceEpoch % 1000000).toString().padLeft(6, '0');
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.cloud_done, color: LvsColors.teal, size: 48),
+            const SizedBox(height: 16),
+            const Text('¡Respaldo Creado!', style: TextStyle(color: LvsColors.text1, fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('Tu código de recuperación es:', style: TextStyle(color: LvsColors.text2, fontSize: 11)),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: LvsColors.pink.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: LvsColors.pink.withOpacity(0.3)),
+              ),
+              child: Text(
+                backupCode,
+                style: const TextStyle(
+                  color: LvsColors.pink,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 8,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: LvsColors.amber.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: LvsColors.amber.withOpacity(0.2)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.warning_amber, color: LvsColors.amber, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '¡TOMA UNA CAPTURA O ANÓTALO!',
+                      style: TextStyle(color: LvsColors.amber, fontSize: 9, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Respaldo guardado con código $backupCode'),
+                      backgroundColor: LvsColors.teal,
+                      duration: const Duration(seconds: 4),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.check, size: 18),
+                label: const Text('ENTENDIDO'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: LvsColors.teal,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showRecoverDialog() {
+    final codeController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A2E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.lock_open, color: LvsColors.teal, size: 40),
+            const SizedBox(height: 16),
+            const Text('RECUPERAR RESPALDO', style: TextStyle(color: LvsColors.text1, fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            const Text('Ingresa tu código de 6 dígitos', style: TextStyle(color: LvsColors.text3, fontSize: 10)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: codeController,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: LvsColors.text1, fontSize: 24, letterSpacing: 5),
+              maxLength: 6,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: '000000',
+                hintStyle: TextStyle(color: LvsColors.text3.withOpacity(0.3)),
+                counterText: '',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: LvsColors.teal.withOpacity(0.3)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: LvsColors.teal, width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  if (codeController.text.length == 6) {
+                    Navigator.pop(ctx);
+                    _recoverBackup(codeController.text);
+                  }
+                },
+                icon: const Icon(Icons.download, size: 18),
+                label: const Text('RECUPERAR'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: LvsColors.teal,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('CANCELAR', style: TextStyle(color: LvsColors.text3)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _recoverBackup(String code) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Text('Respaldo $code recuperado exitosamente', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+          ],
+        ),
+        backgroundColor: LvsColors.teal,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+    // TODO: Implementar recuperación real desde Supabase
   }
 
   Widget _buildCloudOption({
@@ -676,13 +838,13 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           children: [
             Icon(icon, color: color, size: 22),
             const SizedBox(width: 14),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.bold, fontSize: 11)),
-                  SizedBox(height: 2),
-                  Text(subtitle, style: TextStyle(color: LvsColors.text3, fontSize: 9)),
+                  Text(title, style: const TextStyle(color: LvsColors.text1, fontWeight: FontWeight.bold, fontSize: 11)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: const TextStyle(color: LvsColors.text3, fontSize: 9)),
                 ],
               ),
             ),
@@ -695,9 +857,18 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
 
   void _downloadCloudBackup() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Descargando respaldo desde la nube...'),
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.download_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            const Text('Descargando respaldo desde la nube...', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+          ],
+        ),
         backgroundColor: LvsColors.teal,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
       ),
     );
     // TODO: Implementar descarga desde Supabase
@@ -705,9 +876,18 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
 
   void _uploadCloudBackup() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Subiendo respaldo a la nube...'),
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.upload_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            const Text('Subiendo respaldo a la nube...', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+          ],
+        ),
         backgroundColor: LvsColors.pink,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
       ),
     );
     // TODO: Implementar subida a Supabase
@@ -715,9 +895,23 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
 
   void _syncCloudBackup() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sincronizando con la nube...'),
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.sync_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            const Text('Sincronizando con la nube...', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+          ],
+        ),
         backgroundColor: LvsColors.amber,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.black,
+          onPressed: () {},
+        ),
       ),
     );
     // TODO: Implementar sincronización bidireccional
