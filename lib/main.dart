@@ -51,23 +51,51 @@ class BleScanTaskHandler extends TaskHandler {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Cargar variables de entorno (Secretos)
-  await dotenv.load(fileName: ".env");
+  // ═══════════════════════════════════════════════════════════════
+  // INICIALIZACIÓN CON MANEJO DE ERRORES
+  // Para debugging en emuladores y dispositivos reales
+  // ═══════════════════════════════════════════════════════════════
+  try {
+    // Cargar variables de entorno (Secretos)
+    await dotenv.load(fileName: ".env");
+    lvsLog('.env cargado', tag: 'INIT');
+  } catch (e) {
+    lvsLog('⚠️ Error cargando .env: $e', tag: 'INIT');
+    // Continuamos con defaults si falla
+  }
 
-  final supabase = SupabaseService();
-  await supabase.initialize();
+  try {
+    final supabase = SupabaseService();
+    await supabase.initialize();
+    lvsLog('Supabase listo', tag: 'INIT');
+  } catch (e) {
+    lvsLog('❌ Error inicializando Supabase: $e', tag: 'INIT');
+    // No bloqueamos la app si Supabase falla
+  }
 
-  // Inicializar Deep Linking
-  final linkService = LinkService();
-  await linkService.init();
+  try {
+    final linkService = LinkService();
+    await linkService.init();
+    lvsLog('Deep Linking listo', tag: 'INIT');
+  } catch (e) {
+    lvsLog('⚠️ Error en Deep Linking: $e', tag: 'INIT');
+  }
 
-  // Inicializar Sincronización en Tiempo Real
-  final syncService = SyncService();
-  await syncService.init();
+  try {
+    final syncService = SyncService();
+    await syncService.init();
+    lvsLog('Sync Service listo', tag: 'INIT');
+  } catch (e) {
+    lvsLog('⚠️ Error en Sync Service: $e', tag: 'INIT');
+  }
 
-  // Inicializar Puente IA-Hardware (se conectará cuando BLE esté activo)
-  final aiBridge = AIHardwareBridge();
-  await aiBridge.init();
+  try {
+    final aiBridge = AIHardwareBridge();
+    await aiBridge.init();
+    lvsLog('AI Bridge listo', tag: 'INIT');
+  } catch (e) {
+    lvsLog('⚠️ Error en AI Bridge: $e', tag: 'INIT');
+  }
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
