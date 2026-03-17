@@ -342,28 +342,29 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                     ],
                   ),
                 ),
-              Container(
-                margin: const EdgeInsets.only(top: 8, right: 12),
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: LvsColors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: LvsColors.red.withOpacity(0.2)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.warning_amber, color: LvsColors.red, size: 14),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        'Ráfaga máxima aleatoria sin aviso',
-                        style: TextStyle(color: LvsColors.red, fontSize: 9),
+                Container(
+                  margin: const EdgeInsets.only(top: 8, right: 12),
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: LvsColors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: LvsColors.red.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.warning_amber, color: LvsColors.red, size: 14),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          'Ráfaga máxima aleatoria sin aviso',
+                          style: TextStyle(color: LvsColors.red, fontSize: 9),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         actions: [
