@@ -208,10 +208,11 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
             onTap: _showTravelLockDialog,
           ),
           const Divider(height: 32, color: Colors.white10),
-           _buildProOption(
+          _buildProOption(
             icon: 'assets/icons/icon_cloud_save.png',
             title: 'RESPALDO EN NUBE',
             subtitle: 'Sincronizar perfiles y ritmos',
+            onTap: _showCloudBackupDialog,
           ),
           const Divider(height: 32, color: Colors.white10),
            _buildProOption(
@@ -550,5 +551,175 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
         ),
       ),
     );
+  }
+
+  void _showCloudBackupDialog() {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A2E),
+        elevation: 8,
+        shadowColor: Colors.black54,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: LvsColors.violet.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.cloud_sync, color: LvsColors.violet, size: 24),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('RESPALDO EN NUBE', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text('Sincronización con Supabase', style: TextStyle(color: LvsColors.text3, fontSize: 10)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            _buildCloudOption(
+              icon: Icons.download_rounded,
+              color: LvsColors.teal,
+              title: 'DESCARGAR RESPALDO',
+              subtitle: 'Recuperar configuraciones desde la nube',
+              onTap: () {
+                Navigator.pop(ctx);
+                _downloadCloudBackup();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildCloudOption(
+              icon: Icons.upload_rounded,
+              color: LvsColors.pink,
+              title: 'SUBIR RESPALDO',
+              subtitle: 'Guardar configuración actual en la nube',
+              onTap: () {
+                Navigator.pop(ctx);
+                _uploadCloudBackup();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildCloudOption(
+              icon: Icons.sync_rounded,
+              color: LvsColors.amber,
+              title: 'SINCRONIZAR AHORA',
+              subtitle: 'Sincronización bidireccional',
+              onTap: () {
+                Navigator.pop(ctx);
+                _syncCloudBackup();
+              },
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: LvsColors.violet.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: LvsColors.violet.withOpacity(0.2)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline, color: LvsColors.violet, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Tu configuración se guarda de forma segura en Supabase. Puedes recuperarla en cualquier momento o sincronizarla entre dispositivos.',
+                      style: TextStyle(color: LvsColors.text2, fontSize: 9, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('CERRAR', style: TextStyle(color: LvsColors.text3)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCloudOption({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.bold, fontSize: 11)),
+                  SizedBox(height: 2),
+                  Text(subtitle, style: TextStyle(color: LvsColors.text3, fontSize: 9)),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: color, size: 14),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _downloadCloudBackup() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Descargando respaldo desde la nube...'),
+        backgroundColor: LvsColors.teal,
+      ),
+    );
+    // TODO: Implementar descarga desde Supabase
+  }
+
+  void _uploadCloudBackup() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Subiendo respaldo a la nube...'),
+        backgroundColor: LvsColors.pink,
+      ),
+    );
+    // TODO: Implementar subida a Supabase
+  }
+
+  void _syncCloudBackup() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Sincronizando con la nube...'),
+        backgroundColor: LvsColors.amber,
+      ),
+    );
+    // TODO: Implementar sincronización bidireccional
   }
 }
