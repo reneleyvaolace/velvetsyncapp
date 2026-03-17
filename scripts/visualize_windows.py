@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 
 PROJECT_PATH = r"c:\Projects\velvetsync\velvetsyncapp"
-BRAIN_DIR = r"C:\Users\renel\.gemini\antigravity\brain\b7af1595-bbaa-40a3-b534-d82b9447d536"
+BRAIN_DIR = r"C:\Users\renel\.gemini\antigravity\brain\e8ba3fb2-d90c-49b2-998a-af4beaac3204"
 
 def kill_app():
     logging.info("Deteniendo procesos previos de lvs_control...")

@@ -52,25 +52,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Cargar variables de entorno (Secretos)
-  lvsLog('Cargando .env...', tag: 'INIT');
-  try {
-    await dotenv.load(fileName: ".env");
-    lvsLog('.env cargado', tag: 'INIT');
-  } catch (e) {
-    lvsLog('⚠️ Error cargando .env: $e', tag: 'INIT');
-    // Continuamos con defaults si falla
-  }
+  await dotenv.load(fileName: ".env");
 
-  lvsLog('Inicializando Supabase...', tag: 'INIT');
   final supabase = SupabaseService();
   await supabase.initialize();
-  lvsLog('Supabase listo', tag: 'INIT');
 
   // Inicializar Deep Linking
-  lvsLog('Inicializando Deep Linking...', tag: 'INIT');
   final linkService = LinkService();
   await linkService.init();
-  lvsLog('Deep Linking listo', tag: 'INIT');
 
   // Inicializar Sincronización en Tiempo Real
   final syncService = SyncService();
