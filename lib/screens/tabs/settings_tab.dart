@@ -6,11 +6,22 @@ import 'package:lvs_control/screens/debug_screen.dart';
 import 'package:lvs_control/screens/web_catalog_screen.dart';
 import 'package:flutter/services.dart';
 
-class SettingsTab extends ConsumerWidget {
+class SettingsTab extends ConsumerStatefulWidget {
   const SettingsTab({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsTab> createState() => _SettingsTabState();
+}
+
+class _SettingsTabState extends ConsumerState<SettingsTab> {
+  int _sessionDuration = 30;
+  bool _autoDisconnect = false;
+  bool _hiddenTimer = false;
+  int _hiddenTimerMin = 5;
+  int _hiddenTimerMax = 30;
+
+  @override
+  Widget build(BuildContext context) {
     final ble = ref.watch(bleProvider);
 
     return CustomScrollView(
@@ -185,6 +196,7 @@ class SettingsTab extends ConsumerWidget {
             icon: 'assets/icons/icon_timer.png',
             title: 'TEMPORIZADOR DE SESIÓN',
             subtitle: 'Auto-desconexión de seguridad',
+            onTap: _showTimerDialog,
           ),
           const Divider(height: 32, color: Colors.white10),
           _buildProOption(
@@ -209,23 +221,164 @@ class SettingsTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildProOption({required String icon, required String title, required String subtitle}) {
-    return Row(
-      children: [
-        Image.asset(icon, width: 38, height: 38),
-        const SizedBox(width: 16),
-        Expanded(
+  Widget _buildProOption({required String icon, required String title, required String subtitle, VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Image.asset(icon, width: 38, height: 38),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: const TextStyle(fontSize: 9, color: LvsColors.text3)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showTimerDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: LvsColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.timer_outlined, color: LvsColors.pink, size: 24),
+            SizedBox(width: 8),
+            Text('TEMPORIZADOR', style: TextStyle(color: LvsColors.text1)),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-              const SizedBox(height: 2),
-              Text(subtitle, style: const TextStyle(fontSize: 9, color: LvsColors.text3)),
+              // Auto-desconexión
+              const Text('AUTO-DESCONEXIÓN', style: TextStyle(color: LvsColors.teal, fontWeight: FontWeight.bold, fontSize: 11)),
+              const SizedBox(height: 8),
+              SwitchListTile(
+                title: Text('Activar ($_sessionDuration min)', style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
+                value: _autoDisconnect,
+                onChanged: (v) => setState(() => _autoDisconnect = v),
+                activeColor: LvsColors.teal,
+                contentPadding: EdgeInsets.zero,
+              ),
+              Slider(
+                value: _sessionDuration.toDouble(),
+                min: 5, max: 120, divisions: 23,
+                label: '$_sessionDuration min',
+                onChanged: _autoDisconnect ? (v) => setState(() => _sessionDuration = v.round()) : null,
+                activeColor: LvsColors.teal,
+              ),
+              const Divider(height: 32, color: Colors.white10),
+              // Temporizador oculto
+              const Text('MODO DESAFÍO', style: TextStyle(color: LvsColors.red, fontWeight: FontWeight.bold, fontSize: 11)),
+              const SizedBox(height: 8),
+              SwitchListTile(
+                title: Text('Oculto ($_hiddenTimerMin-$_hiddenTimerMax min)', style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
+                value: _hiddenTimer,
+                onChanged: (v) => setState(() => _hiddenTimer = v),
+                activeColor: LvsColors.red,
+                contentPadding: EdgeInsets.zero,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Mín: $_hiddenTimerMin', style: TextStyle(color: LvsColors.text2, fontSize: 10)),
+                        Slider(
+                          value: _hiddenTimerMin.toDouble(),
+                          min: 1, max: _hiddenTimerMax - 1,
+                          onChanged: _hiddenTimer ? (v) => setState(() => _hiddenTimerMin = v.round()) : null,
+                          activeColor: LvsColors.red,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Máx: $_hiddenTimerMax', style: TextStyle(color: LvsColors.text2, fontSize: 10)),
+                        Slider(
+                          value: _hiddenTimerMax.toDouble(),
+                          min: _hiddenTimerMin + 1, max: 60,
+                          onChanged: _hiddenTimer ? (v) => setState(() => _hiddenTimerMax = v.round()) : null,
+                          activeColor: LvsColors.red,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: LvsColors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: LvsColors.red.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber, color: LvsColors.red, size: 14),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Ráfaga máxima aleatoria sin aviso',
+                        style: TextStyle(color: LvsColors.red, fontSize: 9),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
-        const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
-      ],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('CANCELAR', style: TextStyle(color: LvsColors.text3)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: LvsColors.pink),
+            onPressed: () {
+              Navigator.pop(ctx);
+              _saveTimerSettings();
+            },
+            child: const Text('GUARDAR'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _saveTimerSettings() {
+    String msg;
+    if (_autoDisconnect) {
+      msg = 'Auto-desconexión en $_sessionDuration min';
+    } else if (_hiddenTimer) {
+      msg = 'Modo desafío: $_hiddenTimerMin-$_hiddenTimerMax min';
+    } else {
+      msg = 'Temporizadores desactivados';
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: LvsColors.teal),
     );
   }
 }
