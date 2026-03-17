@@ -137,6 +137,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
 
   void _showSettingsDialog() {
     final nameController = TextEditingController(text: _settings.name);
+    CompanionGender selectedGender = _settings.gender;
     CompanionPersonality selectedPersonality = _settings.personality;
     bool saveConversations = _settings.saveConversations;
     bool syncWithSupabase = _settings.syncWithSupabase;
@@ -190,6 +191,22 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
                   ),
                   onChanged: (v) => setDialogState(() {}),
                 ),
+                const SizedBox(height: 20),
+                // Género
+                const Text('GÉNERO', style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ...CompanionGender.values.map((g) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: RadioListTile<CompanionGender>(
+                    title: Text(g.displayName, style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
+                    subtitle: Text(g.description, style: TextStyle(color: LvsColors.text3, fontSize: 9)),
+                    value: g,
+                    groupValue: selectedGender,
+                    onChanged: (v) => setDialogState(() => selectedGender = v!),
+                    activeColor: LvsColors.violet,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                )),
                 const SizedBox(height: 20),
                 // Personalidad
                 const Text('PERSONALIDAD', style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold)),
@@ -272,6 +289,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
               onPressed: () async {
                 final newSettings = CompanionSettings(
                   name: nameController.text.trim().isEmpty ? 'Velvet' : nameController.text.trim(),
+                  gender: selectedGender,
                   personality: selectedPersonality,
                   saveConversations: saveConversations,
                   syncWithSupabase: syncWithSupabase,
@@ -281,7 +299,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
                 setState(() => _settings = newSettings);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Companion configurado como "${newSettings.name}"'),
+                    content: Text('Companion configurado como "${newSettings.name}" (${newSettings.gender.displayName})'),
                     backgroundColor: LvsColors.teal,
                   ),
                 );

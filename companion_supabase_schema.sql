@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS companion_settings (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id TEXT NOT NULL UNIQUE,
     name TEXT DEFAULT 'Velvet',
+    gender TEXT DEFAULT 'female',
     personality TEXT DEFAULT 'neutral',
     save_conversations BOOLEAN DEFAULT true,
     sync_with_supabase BOOLEAN DEFAULT false,
