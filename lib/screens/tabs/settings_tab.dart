@@ -251,8 +251,11 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
   void _showTimerDialog() {
     showDialog(
       context: context,
+      barrierColor: Colors.black87,
       builder: (ctx) => AlertDialog(
-        backgroundColor: LvsColors.bgCard,
+        backgroundColor: const Color(0xFF1A1A2E),
+        elevation: 8,
+        shadowColor: Colors.black54,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
