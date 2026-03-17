@@ -257,54 +257,58 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
         elevation: 8,
         shadowColor: Colors.black54,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
-          children: [
-            Icon(Icons.timer_outlined, color: LvsColors.pink, size: 24),
-            SizedBox(width: 8),
-            Text('TEMPORIZADOR', style: TextStyle(color: LvsColors.text1)),
-          ],
-        ),
+        contentPadding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
         content: SizedBox(
           width: double.maxFinite,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Auto-desconexión
-              const Text('AUTO-DESCONEXIÓN', style: TextStyle(color: LvsColors.teal, fontWeight: FontWeight.bold, fontSize: 11)),
-              const SizedBox(height: 8),
-              SwitchListTile(
-                title: Text('Activar ($_sessionDuration min)', style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
-                value: _autoDisconnect,
-                onChanged: (v) => setState(() => _autoDisconnect = v),
-                activeColor: LvsColors.teal,
-                contentPadding: EdgeInsets.zero,
-              ),
-              Slider(
-                value: _sessionDuration.toDouble(),
-                min: 5, max: 120, divisions: 23,
-                label: '$_sessionDuration min',
-                onChanged: _autoDisconnect ? (v) => setState(() => _sessionDuration = v.round()) : null,
-                activeColor: LvsColors.teal,
-              ),
-              const Divider(height: 32, color: Colors.white10),
-              // Temporizador oculto
-              const Text('MODO DESAFÍO', style: TextStyle(color: LvsColors.red, fontWeight: FontWeight.bold, fontSize: 11)),
-              const SizedBox(height: 8),
-              SwitchListTile(
-                title: Text('Oculto ($_hiddenTimerMin-$_hiddenTimerMax min)', style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
-                value: _hiddenTimer,
-                onChanged: (v) => setState(() => _hiddenTimer = v),
-                activeColor: LvsColors.red,
-                contentPadding: EdgeInsets.zero,
-              ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Título
+                const Row(
+                  children: [
+                    Icon(Icons.timer_outlined, color: LvsColors.pink, size: 22),
+                    SizedBox(width: 8),
+                    Text('TEMPORIZADOR', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Auto-desconexión
+                const Text('AUTO-DESCONEXIÓN', style: TextStyle(color: LvsColors.teal, fontWeight: FontWeight.bold, fontSize: 11)),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text('Activar ($_sessionDuration min)', style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
+                  value: _autoDisconnect,
+                  onChanged: (v) => setState(() => _autoDisconnect = v),
+                  activeColor: LvsColors.teal,
+                ),
+                Slider(
+                  value: _sessionDuration.toDouble(),
+                  min: 5, max: 120, divisions: 23,
+                  label: '$_sessionDuration min',
+                  onChanged: _autoDisconnect ? (v) => setState(() => _sessionDuration = v.round()) : null,
+                  activeColor: LvsColors.teal,
+                ),
+                const Divider(height: 32, color: Colors.white10),
+                // Temporizador oculto
+                const Text('MODO DESAFÍO', style: TextStyle(color: LvsColors.red, fontWeight: FontWeight.bold, fontSize: 11)),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text('Oculto ($_hiddenTimerMin-$_hiddenTimerMax min)', style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
+                  value: _hiddenTimer,
+                  onChanged: (v) => setState(() => _hiddenTimer = v),
+                  activeColor: LvsColors.red,
+                ),
               Row(
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Mín: $_hiddenTimerMin', style: TextStyle(color: LvsColors.text2, fontSize: 10)),
+                        Text('Mín: $_hiddenTimerMin', style: TextStyle(color: LvsColors.text2, fontSize: 9)),
                         Slider(
                           value: _hiddenTimerMin.toDouble(),
                           min: 1, max: _hiddenTimerMax - 1,
@@ -318,7 +322,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Máx: $_hiddenTimerMax', style: TextStyle(color: LvsColors.text2, fontSize: 10)),
+                        Text('Máx: $_hiddenTimerMax', style: TextStyle(color: LvsColors.text2, fontSize: 9)),
                         Slider(
                           value: _hiddenTimerMax.toDouble(),
                           min: _hiddenTimerMin + 1, max: 60,
@@ -331,6 +335,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                 ],
               ),
               Container(
+                margin: const EdgeInsets.only(top: 8),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: LvsColors.red.withOpacity(0.1),
