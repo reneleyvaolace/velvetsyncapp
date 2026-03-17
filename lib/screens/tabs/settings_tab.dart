@@ -143,38 +143,42 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     final ble = ref.read(bleProvider);
 
     return CardGlass(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SectionLabel('MODO AVANZADO'),
-          const SizedBox(height: 12),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: double.infinity),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SectionLabel('MODO AVANZADO'),
+            const SizedBox(height: 12),
 
-          // ═══════════════════════════════════════════════════════════════
-          // 1. TEMPORIZADOR DE SESIÓN (IMPLEMENTADO)
-          // ═══════════════════════════════════════════════════════════════
-          _buildTimerOption(timerState, timerService, ble),
+            // ═══════════════════════════════════════════════════════════════
+            // 1. TEMPORIZADOR DE SESIÓN (IMPLEMENTADO)
+            // ═══════════════════════════════════════════════════════════════
+            _buildTimerOption(timerState, timerService, ble),
 
-          const Divider(height: 32, color: Colors.white10),
+            const Divider(height: 32, color: Colors.white10),
 
-          // ═══════════════════════════════════════════════════════════════
-          // 2. BLOQUEO DE VIAJE (PRÓXIMAMENTE)
-          // ═══════════════════════════════════════════════════════════════
-          _buildTravelLockOption(),
+            // ═══════════════════════════════════════════════════════════════
+            // 2. BLOQUEO DE VIAJE (PRÓXIMAMENTE)
+            // ═══════════════════════════════════════════════════════════════
+            _buildTravelLockOption(),
 
-          const Divider(height: 32, color: Colors.white10),
+            const Divider(height: 32, color: Colors.white10),
 
-          // ═══════════════════════════════════════════════════════════════
-          // 3. RESPALDO EN NUBE (PRÓXIMAMENTE)
-          // ═══════════════════════════════════════════════════════════════
-          _buildCloudBackupOption(),
+            // ═══════════════════════════════════════════════════════════════
+            // 3. RESPALDO EN NUBE (PRÓXIMAMENTE)
+            // ═══════════════════════════════════════════════════════════════
+            _buildCloudBackupOption(),
 
-          const Divider(height: 32, color: Colors.white10),
+            const Divider(height: 32, color: Colors.white10),
 
-          // ═══════════════════════════════════════════════════════════════
-          // 4. ACTUALIZACIÓN FIRMWARE (PRÓXIMAMENTE)
-          // ═══════════════════════════════════════════════════════════════
-          _buildFirmwareUpdateOption(),
-        ],
+            // ═══════════════════════════════════════════════════════════════
+            // 4. ACTUALIZACIÓN FIRMWARE (PRÓXIMAMENTE)
+            // ═══════════════════════════════════════════════════════════════
+            _buildFirmwareUpdateOption(),
+          ],
+        ),
       ),
     );
   }
@@ -187,65 +191,64 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
       onTap: () => _handleTimerAction(timerService, ble),
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           children: [
-            // Ícono con animación si está activo
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isActive
-                    ? (isWarning ? const Color(0xFFFF1493).withOpacity(0.2) : const Color(0xFFFF1493).withOpacity(0.1))
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                isActive ? Icons.timer : Icons.timer_outlined,
-                color: isWarning ? const Color(0xFFFF4444) : const Color(0xFFFF1493),
-                size: 28,
+            // Ícono de la app (restaurado)
+            SizedBox(
+              width: 38,
+              height: 38,
+              child: Image.asset(
+                'assets/icons/icon_timer.png',
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(Icons.timer_outlined, size: 24, color: Color(0xFFFF1493));
+                },
               ),
             ),
-            const SizedBox(width: 16),
-            Expanded(
+            const SizedBox(width: 12),
+            Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const Text(
-                        'TEMPORIZADOR DE SESIÓN',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                      Flexible(
+                        child: Text(
+                          'TEMPORIZADOR',
+                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       if (isActive) ...[
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 4),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                           decoration: BoxDecoration(
                             color: isWarning ? const Color(0xFFFF4444) : const Color(0xFF00C853),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
                             isWarning ? '⚠️' : '●',
-                            style: const TextStyle(fontSize: 8, color: Colors.white),
+                            style: const TextStyle(fontSize: 6, color: Colors.white),
                           ),
                         ),
                       ],
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   if (isActive) ...[
                     // Tiempo restante grande
                     Text(
                       timerState.formattedRemaining,
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: isWarning ? const Color(0xFFFF4444) : const Color(0xFFFF1493),
                         fontFamily: 'monospace',
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     // Barra de progreso
                     ClipRRect(
                       borderRadius: BorderRadius.circular(2),
@@ -255,25 +258,31 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                         valueColor: AlwaysStoppedAnimation<Color>(
                           isWarning ? const Color(0xFFFF4444) : const Color(0xFFFF1493),
                         ),
-                        minHeight: 4,
+                        minHeight: 3,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
-                      'Auto-desconexión en ${timerState.formattedRemaining}',
-                      style: const TextStyle(fontSize: 9, color: LvsColors.text3),
+                      'Auto-stop: ${timerState.formattedRemaining}',
+                      style: const TextStyle(fontSize: 8, color: LvsColors.text3),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ] else ...[
                     const Text(
                       'Auto-desconexión de seguridad',
-                      style: TextStyle(fontSize: 9, color: LvsColors.text3),
+                      style: TextStyle(fontSize: 8, color: LvsColors.text3),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       timerState.durationSeconds > 0
                           ? 'Configurado: ${timerState.formattedDuration}'
                           : 'No configurado',
-                      style: const TextStyle(fontSize: 9, color: LvsColors.text3),
+                      style: const TextStyle(fontSize: 8, color: LvsColors.text3),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ],
@@ -282,7 +291,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
             Icon(
               isActive ? Icons.stop : Icons.chevron_right,
               color: isActive ? const Color(0xFFFF4444) : Colors.white24,
-              size: 24,
+              size: 20,
             ),
           ],
         ),
