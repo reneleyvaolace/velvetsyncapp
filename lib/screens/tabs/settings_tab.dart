@@ -19,6 +19,8 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
   bool _hiddenTimer = false;
   int _hiddenTimerMin = 5;
   int _hiddenTimerMax = 30;
+  bool _travelLock = false;
+  String _travelLockPin = '0000';
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +204,8 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           _buildProOption(
             icon: 'assets/icons/icon_travel_lock.png',
             title: 'BLOQUEO DE VIAJE',
-            subtitle: 'Evita encendidos accidentales',
+            subtitle: _travelLock ? 'Activado • PIN requerido' : 'Evita encendidos accidentales',
+            onTap: _showTravelLockDialog,
           ),
           const Divider(height: 32, color: Colors.white10),
            _buildProOption(
@@ -405,6 +408,147 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(msg), backgroundColor: LvsColors.teal),
+    );
+  }
+
+  void _showTravelLockDialog() {
+    bool localTravelLock = _travelLock;
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1A2E),
+          elevation: 8,
+          shadowColor: Colors.black54,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          contentPadding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: LvsColors.amber.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.lock_outline, color: LvsColors.amber, size: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('BLOQUEO DE VIAJE', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.bold, fontSize: 14)),
+                        Text('Seguridad para transporte', style: TextStyle(color: LvsColors.text3, fontSize: 10)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: LvsColors.amber.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: LvsColors.amber.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline, color: LvsColors.amber, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Cuando está activado, el dispositivo no responderá a botones físicos. Útil para transporte en maletas o mochilas.',
+                        style: TextStyle(color: LvsColors.text2, fontSize: 10, height: 1.4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text('ESTADO DEL BLOQUEO', style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  localTravelLock ? 'ACTIVADO' : 'DESACTIVADO',
+                  style: TextStyle(
+                    color: localTravelLock ? LvsColors.red : LvsColors.teal,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Text(
+                  localTravelLock ? 'Requiere PIN para usar el dispositivo' : 'El dispositivo opera normalmente',
+                  style: const TextStyle(color: LvsColors.text3, fontSize: 10),
+                ),
+                value: localTravelLock,
+                onChanged: (v) => setDialogState(() => localTravelLock = v),
+                activeColor: localTravelLock ? LvsColors.red : LvsColors.teal,
+              ),
+              if (localTravelLock) ...[
+                const SizedBox(height: 16),
+                const Text('PIN DE SEGURIDAD', style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: LvsColors.amber.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.password, color: LvsColors.amber, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'PIN: $_travelLockPin',
+                          style: const TextStyle(color: LvsColors.text1, fontSize: 14, letterSpacing: 3),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.refresh, color: LvsColors.teal, size: 18),
+                        tooltip: 'Cambiar PIN',
+                        onPressed: () {
+                          setDialogState(() {
+                            _travelLockPin = (DateTime.now().millisecondsSinceEpoch % 10000).toString().padLeft(4, '0');
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('CANCELAR', style: TextStyle(color: LvsColors.text3)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: LvsColors.amber),
+              onPressed: () {
+                setState(() => _travelLock = localTravelLock);
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(localTravelLock ? 'Bloqueo de viaje ACTIVADO' : 'Bloqueo de viaje DESACTIVADO'),
+                    backgroundColor: localTravelLock ? LvsColors.red : LvsColors.teal,
+                  ),
+                );
+              },
+              child: const Text('GUARDAR', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
