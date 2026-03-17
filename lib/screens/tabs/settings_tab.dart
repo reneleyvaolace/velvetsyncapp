@@ -249,23 +249,27 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
   }
 
   void _showTimerDialog() {
+    bool localAutoDisconnect = _autoDisconnect;
+    int localSessionDuration = _sessionDuration;
+    bool localHiddenTimer = _hiddenTimer;
+    int localHiddenTimerMin = _hiddenTimerMin;
+    int localHiddenTimerMax = _hiddenTimerMax;
+
     showDialog(
       context: context,
       barrierColor: Colors.black87,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A2E),
-        elevation: 8,
-        shadowColor: Colors.black54,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1A2E),
+          elevation: 8,
+          shadowColor: Colors.black54,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Título
                 const Row(
                   children: [
                     Icon(Icons.timer_outlined, color: LvsColors.pink, size: 20),
@@ -276,35 +280,33 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                // Auto-desconexión
                 const Text('AUTO-DESCONEXIÓN', style: TextStyle(color: LvsColors.teal, fontWeight: FontWeight.bold, fontSize: 10)),
                 const SizedBox(height: 4),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text('Activar ($_sessionDuration min)', style: const TextStyle(color: LvsColors.text1, fontSize: 11)),
-                  value: _autoDisconnect,
-                  onChanged: (v) => setState(() => _autoDisconnect = v),
+                  title: Text('Activar (${localSessionDuration} min)', style: const TextStyle(color: LvsColors.text1, fontSize: 11)),
+                  value: localAutoDisconnect,
+                  onChanged: (v) => setDialogState(() => localAutoDisconnect = v),
                   activeColor: LvsColors.teal,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 12),
                   child: Slider(
-                    value: _sessionDuration.toDouble(),
+                    value: localSessionDuration.toDouble(),
                     min: 5, max: 120, divisions: 23,
-                    label: '$_sessionDuration min',
-                    onChanged: _autoDisconnect ? (v) => setState(() => _sessionDuration = v.round()) : null,
+                    label: '$localSessionDuration min',
+                    onChanged: localAutoDisconnect ? (v) => setDialogState(() => localSessionDuration = v.round()) : null,
                     activeColor: LvsColors.teal,
                   ),
                 ),
                 const Divider(height: 28, color: Colors.white10),
-                // Temporizador oculto
                 const Text('MODO DESAFÍO', style: TextStyle(color: LvsColors.red, fontWeight: FontWeight.bold, fontSize: 10)),
                 const SizedBox(height: 4),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text('Oculto ($_hiddenTimerMin-$_hiddenTimerMax min)', style: const TextStyle(color: LvsColors.text1, fontSize: 11)),
-                  value: _hiddenTimer,
-                  onChanged: (v) => setState(() => _hiddenTimer = v),
+                  title: Text('Oculto (${localHiddenTimerMin}-${localHiddenTimerMax} min)', style: const TextStyle(color: LvsColors.text1, fontSize: 11)),
+                  value: localHiddenTimer,
+                  onChanged: (v) => setDialogState(() => localHiddenTimer = v),
                   activeColor: LvsColors.red,
                 ),
                 Padding(
@@ -315,11 +317,11 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Mín: $_hiddenTimerMin', style: TextStyle(color: LvsColors.text2, fontSize: 9)),
+                            Text('Mín: $localHiddenTimerMin', style: TextStyle(color: LvsColors.text2, fontSize: 9)),
                             Slider(
-                              value: _hiddenTimerMin.toDouble(),
-                              min: 1, max: _hiddenTimerMax - 1,
-                              onChanged: _hiddenTimer ? (v) => setState(() => _hiddenTimerMin = v.round()) : null,
+                              value: localHiddenTimerMin.toDouble(),
+                              min: 1, max: localHiddenTimerMax - 1,
+                              onChanged: localHiddenTimer ? (v) => setDialogState(() => localHiddenTimerMin = v.round()) : null,
                               activeColor: LvsColors.red,
                             ),
                           ],
@@ -329,11 +331,11 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Máx: $_hiddenTimerMax', style: TextStyle(color: LvsColors.text2, fontSize: 9)),
+                            Text('Máx: $localHiddenTimerMax', style: TextStyle(color: LvsColors.text2, fontSize: 9)),
                             Slider(
-                              value: _hiddenTimerMax.toDouble(),
-                              min: _hiddenTimerMin + 1, max: 60,
-                              onChanged: _hiddenTimer ? (v) => setState(() => _hiddenTimerMax = v.round()) : null,
+                              value: localHiddenTimerMax.toDouble(),
+                              min: localHiddenTimerMin + 1, max: 60,
+                              onChanged: localHiddenTimer ? (v) => setDialogState(() => localHiddenTimerMax = v.round()) : null,
                               activeColor: LvsColors.red,
                             ),
                           ],
@@ -366,21 +368,28 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
               ],
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('CANCELAR', style: TextStyle(color: LvsColors.text3)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: LvsColors.pink),
+              onPressed: () {
+                setState(() {
+                  _autoDisconnect = localAutoDisconnect;
+                  _sessionDuration = localSessionDuration;
+                  _hiddenTimer = localHiddenTimer;
+                  _hiddenTimerMin = localHiddenTimerMin;
+                  _hiddenTimerMax = localHiddenTimerMax;
+                });
+                Navigator.pop(ctx);
+                _saveTimerSettings();
+              },
+              child: const Text('GUARDAR'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('CANCELAR', style: TextStyle(color: LvsColors.text3)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: LvsColors.pink),
-            onPressed: () {
-              Navigator.pop(ctx);
-              _saveTimerSettings();
-            },
-            child: const Text('GUARDAR'),
-          ),
-        ],
       ),
     );
   }

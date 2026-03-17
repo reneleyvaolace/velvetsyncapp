@@ -231,6 +231,10 @@ class BleService extends ChangeNotifier {
         Permission.locationWhenInUse,
         Permission.notification,
       ].request();
+      
+      // Solicitar ignorar optimizaciones de batería (requerido para BLE en segundo plano)
+      await Permission.ignoreBatteryOptimization.request();
+      
       // En Android 12+, la ubicación se puede denegar y aún así el BLE escanea
       // gracias a neverForLocation. Por lo que toleramos que location falle
       // siempre y cuando tengamos bluetoothScan y Connect.
