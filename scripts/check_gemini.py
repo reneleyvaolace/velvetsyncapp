@@ -1,7 +1,15 @@
 import os
 import google.generativeai as genai
 
-api_key = "AIzaSyAmsRcX80BzbDheOReSIPgeDZks1NKZQog"
+# Get API key from environment variable (never hardcode!)
+api_key = os.environ.get('GOOGLE_API_KEY')
+
+if not api_key:
+    print("Error: GOOGLE_API_KEY environment variable not set")
+    print("Set it with: export GOOGLE_API_KEY='your-key-here' (Linux/Mac)")
+    print("Or: set GOOGLE_API_KEY=your-key-here (Windows)")
+    exit(1)
+
 genai.configure(api_key=api_key)
 
 print("Listing models...")
