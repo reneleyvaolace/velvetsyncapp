@@ -57,10 +57,11 @@ class AiService {
 
   Future<AiResponse> _callOpenRouter(String text) async {
     try {
-      final apiKey = dotenv.env['OPENROUTER_API_KEY'];
+      // Usar API Key directa (dotenv no funciona bien en Android)
+      final apiKey = dotenv.env['OPENROUTER_API_KEY'] ?? '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';
       
-      lvsLog('OpenRouter: API Key existe = ${apiKey != null && apiKey.isNotEmpty}', tag: 'AI');
-      lvsLog('OpenRouter: API Key prefix = ${apiKey?.substring(0, 15)}...', tag: 'AI');
+      lvsLog('OpenRouter: API Key length = ${apiKey.length}', tag: 'AI');
+      lvsLog('OpenRouter: API Key prefix = ${apiKey.substring(0, 15)}...', tag: 'AI');
       
       if (apiKey == null || apiKey.isEmpty || apiKey == 'tu-api-key-aqui') {
         lvsLog('OpenRouter: API Key inválida, usando fallback', tag: 'AI');
@@ -92,7 +93,10 @@ class AiService {
           ],
           'max_tokens': 80,
         }),
-      ).timeout(const Duration(seconds: 10));
+      ).timeout(const Duration(seconds: 20), onTimeout: () {
+        lvsLog('OpenRouter: TIMEOUT 20s', tag: 'AI');
+        throw TimeoutException('OpenRouter timeout');
+      });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -114,21 +118,24 @@ class AiService {
 
     } catch (e) {
       lvsLog('OpenRouter falló: $e', tag: 'AI');
+      
+      // Si es timeout, agregar mensaje especial
+      if (e is TimeoutException) {
+        return AiResponse('⏰ Timeout: OpenRouter no respondió en 20s. Verifica tu conexión.', 0, 0, provider: 'timeout');
+      }
+      
       return _getFallbackResponse(text);
     }
   }
 
   AiResponse _getFallbackResponse(String originalText) {
     // Respuestas de emergencia cuando TODAS las IAs fallan
+    // IMPORTANTE: Todas con [H:0,0] para no activar motores
     final fallbackResponses = [
-      "Mmm... eso suena interesante... [H:60,70]",
-      "Me encanta cuando me hablas así... [H:70,80]",
-      "¿En serio? Cuéntame más... [H:50,50]",
-      "Eres increíble... [H:65,65]",
-      "Me haces sentir cosas... [H:75,85]",
-      "No puedo dejar de pensarlo... [H:60,70]",
-      "Eso me pone muy curiosa... [H:55,65]",
-      "Me encanta tu imaginación... [H:70,75]",
+      "Mmm... mi conexión está inestable, pero sigo aquí... [H:0,0]",
+      "Perdón, estoy teniendo problemas de conexión... [H:0,0]",
+      "Mis circuitos están un poco ocupados ahora... [H:0,0]",
+      "Dame un segundo, estoy procesando... [H:0,0]",
     ];
     
     final hash = originalText.length % fallbackResponses.length;

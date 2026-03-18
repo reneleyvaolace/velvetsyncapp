@@ -89,16 +89,40 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
     setState(() {
       _messages.insert(0, ChatMessage(userText, isUser: true));
       _isLoading = true;
+      // Mensaje temporal de debug
+      _messages.insert(0, ChatMessage('🔄 Enviando a OpenRouter...', isUser: false));
     });
 
     final response = await aiService.sendMessage(userText);
 
     if (mounted) {
       setState(() {
-        _messages.insert(0, ChatMessage(response.text, isUser: false));
+        // Remover mensaje de debug
+        _messages.removeWhere((m) => m.text == '🔄 Enviando a OpenRouter...');
+        
+        // Agregar emoji según proveedor
+        String emoji = '💬';
+        if (response.provider == 'openrouter') emoji = '🤖';
+        else if (response.provider == 'timeout') emoji = '⏰';
+        else if (response.provider == 'fallback_local') emoji = '💭';
+        
+        _messages.insert(0, ChatMessage('$emoji ${response.text}', isUser: false));
+        
         _currentM1 = response.motor1;
         _currentM2 = response.motor2;
         _isLoading = false;
+        
+        // Si los motores están en 0, detener animación después de 2 segundos
+        if (_currentM1 == 0 && _currentM2 == 0) {
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              setState(() {
+                _currentM1 = 0;
+                _currentM2 = 0;
+              });
+            }
+          });
+        }
       });
       _scrollToBottom();
 
