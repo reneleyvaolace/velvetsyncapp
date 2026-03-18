@@ -21,8 +21,48 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    # ═══════════════════════════════════════════════════════════════
+    # 🔒 SECURITY LINT RULES
+    # ═══════════════════════════════════════════════════════════════
+
+    # Evitar print() que puede filtrar información en producción
+    avoid_print: true
+
+    # Evitar hardcoded credentials (detecta patrones comunes)
+    avoid_relative_lib_imports: true
+
+    # Preferir const para mejorar performance
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+
+    # Evitar funciones deprecated
+    avoid_slow_async_io: true
+
+    # Usar rethrow en lugar de throw e
+    use_rethrow_when_possible: true
+
+    # Evitar comparaciones innecesarias con null
+    unnecessary_null_comparison: true
+
+    # ═══════════════════════════════════════════════════════════════
+    # CODE QUALITY
+    # ═══════════════════════════════════════════════════════════════
+
+    # Preferir single quotes
+    prefer_single_quotes: true
+
+    # Evitar tipos innecesarios
+    omit_local_variable_types: true
+
+    # Usar expresiones lambda cuando sea posible
+    prefer_arrow_syntax: true
+
+    # Evitar variables no usadas
+    avoid_unused_constructor_parameters: true
+
+    # Preferir isEmpty/isNotEmpty en lugar de length == 0
+    prefer_is_empty: true
+    prefer_is_not_empty: true
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

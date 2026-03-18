@@ -1,0 +1,31 @@
+# ═══════════════════════════════════════════════════════════════
+# Velvet Sync · Build Flavors Configuration
+# 🔒 SECURITY: Separate development and production builds
+# ═══════════════════════════════════════════════════════════════
+
+# Usage:
+#   flutter run --flavor dev
+#   flutter run --flavor prod
+#   flutter build apk --flavor prod --release
+#   flutter build ios --flavor prod --release
+
+flavors:
+  # Development flavor
+  dev:
+    app:
+      name: "Velvet Sync Dev"
+      bundle: "com.velvetsync.app.dev"
+    android:
+      applicationId: "com.velvetsync.app.dev"
+    ios:
+      bundleId: "com.velvetsync.app.dev"
+
+  # Production flavor
+  prod:
+    app:
+      name: "Velvet Sync"
+      bundle: "com.velvetsync.app"
+    android:
+      applicationId: "com.velvetsync.app"
+    ios:
+      bundleId: "com.velvetsync.app"

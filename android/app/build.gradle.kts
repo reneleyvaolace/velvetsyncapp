@@ -43,6 +43,24 @@ android {
         }
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // 🔒 BUILD FLAVORS - Development & Production
+    // ═══════════════════════════════════════════════════════════════
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix "-dev"
+            resValue("string", "app_name", "Velvet Sync Dev")
+        }
+        create("prod") {
+            dimension = "environment"
+            applicationId = "com.velvetsync.app"
+            resValue("string", "app_name", "Velvet Sync")
+        }
+    }
+
     defaultConfig {
         applicationId = "com.velvetsync.app"
         // You can update the following values to match your application needs.
@@ -64,6 +82,10 @@ android {
             // ✅ FIRMA DE RELEASE CONFIGURADA (P1 COMPLETADO)
             // ═══════════════════════════════════════════════════════════════
             signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+            // Debug build configuration
+            isDebuggable = true
         }
     }
 }
