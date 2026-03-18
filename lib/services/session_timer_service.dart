@@ -4,9 +4,10 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/logger.dart';
 
 // ═══════════════════════════════════════════════════════════════
@@ -165,18 +166,23 @@ class SessionTimerService extends ChangeNotifier {
     _onExpired = callback;
   }
 
-  /// Cargar estado desde SharedPreferences
+  // Storage seguro para datos sensibles
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
+  /// Cargar estado desde FlutterSecureStorage (más seguro que SharedPreferences)
   Future<void> loadFromPrefs() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      _durationSeconds = prefs.getInt(_prefsKeyDuration) ?? 0;
-      _remainingSeconds = prefs.getInt(_prefsKeyRemaining) ?? _durationSeconds;
-      _isActive = prefs.getBool(_prefsKeyActive) ?? false;
+      final durationStr = await _secureStorage.read(key: _prefsKeyDuration);
+      final remainingStr = await _secureStorage.read(key: _prefsKeyRemaining);
+      final activeStr = await _secureStorage.read(key: _prefsKeyActive);
+
+      _durationSeconds = int.tryParse(durationStr ?? '0') ?? 0;
+      _remainingSeconds = int.tryParse(remainingStr ?? '$_durationSeconds') ?? _durationSeconds;
+      _isActive = activeStr == 'true';
 
       lvsLog('Timer cargado: ${_durationSeconds}s, restante: ${_remainingSeconds}s, activo: $_isActive', tag: 'TIMER');
 
-      // Si estaba activo, continuar (opcional - podría ser riesgoso)
-      // Por seguridad, no auto-iniciamos al cargar
+      // Si estaba activo, no auto-iniciamos por seguridad
       _isActive = false;
 
       notifyListeners();
@@ -185,13 +191,14 @@ class SessionTimerService extends ChangeNotifier {
     }
   }
 
-  /// Guardar estado en SharedPreferences
+  /// Guardar estado en FlutterSecureStorage (encriptado)
   Future<void> _saveToPrefs() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(_prefsKeyDuration, _durationSeconds);
-      await prefs.setInt(_prefsKeyRemaining, _remainingSeconds);
-      await prefs.setBool(_prefsKeyActive, _isActive);
+      await _secureStorage.write(key: _prefsKeyDuration, value: _durationSeconds.toString());
+      await _secureStorage.write(key: _prefsKeyRemaining, value: _remainingSeconds.toString());
+      await _secureStorage.write(key: _prefsKeyActive, value: _isActive.toString());
+
+      lvsLog('Timer guardado de forma segura', tag: 'TIMER');
     } catch (e) {
       lvsLog('Error guardando timer: $e', tag: 'TIMER');
     }

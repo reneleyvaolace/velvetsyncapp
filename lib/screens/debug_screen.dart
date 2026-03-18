@@ -2,13 +2,17 @@
 // Velvet Sync · lib/screens/debug_screen.dart · v2.0.0
 // Pantalla de depuración rediseñada con estética Velvet
 // ═══════════════════════════════════════════════════════════════
+
+// 🔒 SECURITY: Debug screen solo disponible en modo debug
+import 'package:flutter/foundation.dart';
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
-import '../main.dart'; 
+import '../main.dart';
 import '../theme.dart';
 
 class DebugMark {
@@ -169,6 +173,27 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
   // ─────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    // 🔒 SECURITY: Prevenir uso en producción
+    if (!kDebugMode) {
+      return Scaffold(
+        backgroundColor: LvsColors.bg,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.lock_outline, size: 64, color: LvsColors.text3),
+              const SizedBox(height: 16),
+              const Text('DEBUG SCREEN', style: TextStyle(
+                fontSize: 16, fontWeight: FontWeight.bold, color: LvsColors.text3)),
+              const SizedBox(height: 8),
+              const Text('No disponible en producción', style: TextStyle(
+                fontSize: 12, color: LvsColors.text3)),
+            ],
+          ),
+        ),
+      );
+    }
+
     final ble = ref.watch(bleProvider);
 
     return Scaffold(

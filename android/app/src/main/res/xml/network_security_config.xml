@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ═══════════════════════════════════════════════════════════════
+     Velvet Sync · Network Security Configuration
+     🔒 SECURITY: Enforce HTTPS and restrict cleartext traffic
+     ═══════════════════════════════════════════════════════════════ -->
+<network-security-config>
+    <!-- Default: Block all cleartext (HTTP) traffic -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- Trust system certificates only -->
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Domain-specific configurations -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- OpenRouter API -->
+        <domain includeSubdomains="true">openrouter.ai</domain>
+        
+        <!-- Supabase -->
+        <domain includeSubdomains="true">supabase.co</domain>
+        <domain includeSubdomains="true">supabase.in</domain>
+        
+        <!-- Vercel (Catalog) -->
+        <domain includeSubdomains="true">vercel.app</domain>
+        
+        <!-- Google (for Gemini/ML Kit if needed) -->
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">google.com</domain>
+    </domain-config>
+
+    <!-- 🔒 DEBUG: Allow cleartext traffic only in debug builds for local development -->
+    <debug-overrides cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <!-- Trust user certificates for debugging (e.g., Charles Proxy) -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

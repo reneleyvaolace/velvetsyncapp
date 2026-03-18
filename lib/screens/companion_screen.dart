@@ -9,6 +9,7 @@ import '../ble/ble_service.dart';
 import '../services/ai_service.dart';
 import '../services/companion_settings.dart';
 import '../theme.dart';
+import '../utils/logger.dart';
 
 class ChatMessage {
   final String text;
@@ -71,11 +72,55 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
   Future<void> _pickAvatar() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      await _storage.write(key: 'companion_avatar', value: pickedFile.path);
+
+    if (pickedFile == null) return;
+
+    // 🔒 SECURITY: Validate avatar path to prevent path traversal attacks
+    final path = pickedFile.path;
+
+    // Validate path doesn't contain suspicious patterns
+    if (path.contains('..') ||
+        path.contains('/') && path.startsWith('/') ||
+        path.contains('\\\\') ||
+        path.contains('%') ||
+        path.contains(';')) {
+      lvsLog('⚠️ Invalid avatar path detected: possible path traversal attack', tag: 'COMPANION');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Imagen inválida'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Validate file extension
+    final validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    final fileExt = path.substring(path.lastIndexOf('.')).toLowerCase();
+    if (!validExtensions.contains(fileExt)) {
+      lvsLog('⚠️ Invalid avatar file type: $fileExt', tag: 'COMPANION');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Formato de imagen no válido'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Store only the file name, not the full path (more secure)
+    final fileName = path.split('/').last.split('\\').last;
+    await _storage.write(key: 'companion_avatar', value: fileName);
+
+    if (mounted) {
       setState(() {
-        _avatarPath = pickedFile.path;
+        _avatarPath = fileName;
       });
+      lvsLog('Avatar updated: $fileName', tag: 'COMPANION');
     }
   }
 
