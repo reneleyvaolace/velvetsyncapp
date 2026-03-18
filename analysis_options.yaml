@@ -42,7 +42,7 @@ linter:
     use_rethrow_when_possible: true
 
     # Evitar comparaciones innecesarias con null
-    unnecessary_null_comparison: true
+    # unnecessary_null_comparison: true  # No es un lint rule válido
 
     # ═══════════════════════════════════════════════════════════════
     # CODE QUALITY
@@ -55,7 +55,7 @@ linter:
     omit_local_variable_types: true
 
     # Usar expresiones lambda cuando sea posible
-    prefer_arrow_syntax: true
+    # prefer_arrow_syntax: true  # No es un lint rule válido
 
     # Evitar variables no usadas
     avoid_unused_constructor_parameters: true
