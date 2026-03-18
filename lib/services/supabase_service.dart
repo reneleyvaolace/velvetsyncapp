@@ -62,11 +62,13 @@ class SupabaseService {
     try {
       // ✨ Optimización: Solo pedimos las columnas necesarias para la UI del catálogo
       // Evitamos traer 'raw_json_data' y otros campos pesados en la lista general
+      // 🔒 PERFORMANCE: Timeout de 10 segundos para prevenir cuelgues en redes pobres
       final response = await client
           .from('device_catalog')
           .select('id, factory_model, model_name, usage_type, target_anatomy, stimulation_type, motor_logic, image_url, qr_code_url, supported_funcs, is_precise_new, broadcast_prefix')
-          .limit(limit);
-      
+          .limit(limit)
+          .timeout(const Duration(seconds: 10), onTimeout: () => []);
+
       return (response as List).map((data) => ToyModel.fromSupabase(data)).toList();
     } catch (e) {
       lvsLog('Error fetchCatalog: $e', tag: 'SUPABASE');
@@ -78,12 +80,14 @@ class SupabaseService {
   Future<ToyModel?> fetchDeviceById(String id) async {
     if (!_isInitialized) return null;
     try {
+      // 🔒 PERFORMANCE: Timeout de 8 segundos
       final response = await client
           .from('device_catalog')
           .select()
           .or('id.eq.$id,model_name.ilike.%$id%')
           .limit(1)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(const Duration(seconds: 8), onTimeout: null);
       if (response == null) {
         lvsLog('No se encontró match para "$id"', tag: 'SUPABASE');
         return null;
@@ -101,11 +105,13 @@ class SupabaseService {
   Future<String?> getTroubleshooting(String errorCode) async {
     if (!_isInitialized) return null;
     try {
+      // 🔒 PERFORMANCE: Timeout de 5 segundos
       final data = await client
           .from('hardware_troubleshooting_steps')
           .select('steps')
           .eq('error_code', errorCode)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(const Duration(seconds: 5), onTimeout: null);
       return data?['steps'];
     } catch (e) {
       return null;
@@ -118,15 +124,17 @@ class SupabaseService {
     try {
       final now = DateTime.now();
       final timeStr = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:00";
-      
+
+      // 🔒 PERFORMANCE: Timeout de 5 segundos
       final data = await client
           .from('stealth_policies')
           .select('max_intensity_cap')
           .filter('start_time', 'lte', timeStr)
           .filter('end_time', 'gte', timeStr)
-          .maybeSingle();
-      
-      return data != null; // Si hay una política para esta hora, está activa.
+          .maybeSingle()
+          .timeout(const Duration(seconds: 5), onTimeout: null);
+
+      return data != null;
     } catch (e) {
       return false;
     }
@@ -137,14 +145,16 @@ class SupabaseService {
     try {
       final now = DateTime.now();
       final timeStr = "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:00";
-      
+
+      // 🔒 PERFORMANCE: Timeout de 5 segundos
       final data = await client
           .from('stealth_policies')
           .select('max_intensity_cap')
           .filter('start_time', 'lte', timeStr)
           .filter('end_time', 'gte', timeStr)
-          .maybeSingle();
-      
+          .maybeSingle()
+          .timeout(const Duration(seconds: 5), onTimeout: null);
+
       if (data == null) return 1.0;
       return (data['max_intensity_cap'] as num).toDouble() / 100.0;
     } catch (e) {

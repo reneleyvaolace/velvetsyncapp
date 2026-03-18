@@ -199,8 +199,9 @@ class BleService extends ChangeNotifier {
     return 0;
   }
 
-  // Log
-  final List<LogEntry> logs = [];
+  // Log - 🔒 PERFORMANCE: Limitado a 100 entradas para prevenir memory growth
+  final List<LogEntry> _logs = [];
+  List<LogEntry> get logs => _logs.skip(_logs.length.clamp(0, _logs.length - 100)).toList();
 
   // ── Secuenciador Asíncrono ─────────────────────────────────
   WaveType activeWaveCh1 = WaveType.none;
@@ -825,7 +826,7 @@ class BleService extends ChangeNotifier {
 
   /// Limpia el log de actividad
   void clearLogs() {
-    logs.clear();
+    _logs.clear();
     notifyListeners();
   }
 
@@ -870,8 +871,11 @@ class BleService extends ChangeNotifier {
   }
 
   void _log(String msg, String type) {
-    logs.add(LogEntry(DateTime.now(), msg, type));
-    if (logs.length > 50) logs.removeAt(0);
+    _logs.add(LogEntry(DateTime.now(), msg, type));
+    // 🔒 PERFORMANCE: Eliminar entradas antiguas en bloques para eficiencia
+    if (_logs.length > 150) {
+      _logs.removeRange(0, 50);  // Eliminar 50 entradas de una vez
+    }
     notifyListeners();
   }
 
@@ -883,6 +887,10 @@ class BleService extends ChangeNotifier {
 
   @override
   void dispose() {
+    // 🔒 PERFORMANCE: Cancel all timers to prevent memory leaks
+    _cooldownTimer?.cancel();
+    _sequenceTimer?.cancel();
+    _burstTimer?.cancel();
     _stopBurst();
     _connSub?.cancel();
     _batterySub?.cancel();

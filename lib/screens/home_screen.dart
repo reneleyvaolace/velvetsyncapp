@@ -240,7 +240,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               child: const Icon(Icons.show_chart, color: Colors.white, size: 42),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 12), // ✓ const
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

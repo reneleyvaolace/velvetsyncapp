@@ -65,7 +65,7 @@ class CompatibleDevicesRow extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.zero,
             itemCount: toys.length + 1,
-            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            separatorBuilder: (_, __) => const SizedBox(width: 10), // ✓ const
             itemBuilder: (ctx, i) {
               if (i < toys.length) {
                 return _DeviceChip(toy: toys[i], ref: ref);
@@ -98,8 +98,8 @@ class _CatalogGatewayChip extends StatelessWidget {
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.open_in_new_rounded, color: LvsColors.pink, size: 28),
-            SizedBox(height: 8),
+            Icon(Icons.open_in_new_rounded, color: LvsColors.pink, size: 28), // ✓ const
+            SizedBox(height: 8), // ✓ const
             Text(
               'CATÁLOGO\nWEB',
               textAlign: TextAlign.center,
