@@ -64,15 +64,14 @@ class AiService {
 
   Future<AiResponse> _callOpenRouter(String text) async {
     try {
-      // Usar API Key directa (dotenv no funciona bien en Android)
-      final apiKey = dotenv.env['OPENROUTER_API_KEY'] ?? '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';
-      
-      lvsLog('OpenRouter: API Key length = ${apiKey.length}', tag: 'AI');
-      lvsLog('OpenRouter: API Key prefix = ${apiKey.substring(0, 15)}...', tag: 'AI');
-      
+      final apiKey = dotenv.env['OPENROUTER_API_KEY'];
+
+      lvsLog('OpenRouter: API Key length = ${apiKey?.length ?? 0}', tag: 'AI');
+      lvsLog('OpenRouter: API Key prefix = ${apiKey != null && apiKey.length >= 15 ? apiKey.substring(0, 15) : 'null'}...', tag: 'AI');
+
       if (apiKey == null || apiKey.isEmpty || apiKey == 'tu-api-key-aqui') {
-        lvsLog('OpenRouter: API Key inválida, usando fallback', tag: 'AI');
-        return _getFallbackResponse(text);
+        lvsLog('OpenRouter: API Key inválida o no configurada. Agrega OPENROUTER_API_KEY en .env', tag: 'AI');
+        return AiResponse('⚠️ API Key no configurada. Agrega OPENROUTER_API_KEY en tu archivo .env', 0, 0, provider: 'no_key');
       }
 
       lvsLog('OpenRouter: Enviando petición...', tag: 'AI');
