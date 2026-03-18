@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lvs_control/ble/ble_service.dart';
 import 'package:lvs_control/theme.dart';
 import 'package:lvs_control/screens/debug_screen.dart';
+import 'package:lvs_control/screens/web_catalog_screen.dart';
 import 'package:flutter/services.dart';
 import '../../services/session_timer_service.dart';
 import '../../ble/ble_service.dart' as ble_service;
@@ -15,6 +16,14 @@ class SettingsTab extends ConsumerStatefulWidget {
 }
 
 class _SettingsTabState extends ConsumerState<SettingsTab> {
+  int _sessionDuration = 30;
+  bool _autoDisconnect = false;
+  bool _hiddenTimer = false;
+  int _hiddenTimerMin = 5;
+  int _hiddenTimerMax = 30;
+  bool _travelLock = false;
+  String _travelLockPin = '0000';
+
   @override
   Widget build(BuildContext context) {
     final timerState = ref.watch(sessionTimerStateProvider);
@@ -27,7 +36,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           expandedHeight: 80,
           backgroundColor: Colors.transparent,
           flexibleSpace: FlexibleSpaceBar(
-            title: const Text('SISTEMA Y CONFIGURACIÓN', style: TextStyle(
+            title: const Text('SISTEMA Y CONFIGURACIÃ“N', style: TextStyle(
               fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.text3
             )),
             centerTitle: true,
@@ -37,6 +46,8 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
+              _buildWebCatalogCard(context),
+              const SizedBox(height: 20),
               _buildSettingsCard(ble),
               const SizedBox(height: 20),
               _buildSystemProCard(timerState),
@@ -52,17 +63,58 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     );
   }
 
+  Widget _buildWebCatalogCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const WebCatalogScreen()),
+        );
+      },
+      child: CardGlass(
+        borderColor: LvsColors.violet.withOpacity(0.3),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: LvsColors.violet.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: LvsColors.violet.withOpacity(0.3)),
+              ),
+              child: const Icon(Icons.language, color: LvsColors.violet, size: 24),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('CATÃLOGO WEB', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.violet)),
+                  SizedBox(height: 4),
+                  Text('Explorar catÃ¡logo online en Vercel', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, color: LvsColors.violet, size: 14),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSettingsCard(BleService ble) {
     return CardGlass(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionLabel('PARÁMETROS TÉCNICOS'),
+          const SectionLabel('PARÃMETROS TÃ‰CNICOS'),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Frecuencia de Ráfaga', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              const Text('Frecuencia de RÃ¡faga', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
               Text('${ble.burstIntervalMs}ms', style: const TextStyle(fontSize: 12, color: LvsColors.pink, fontWeight: FontWeight.bold)),
             ],
           ),
@@ -74,7 +126,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           const SizedBox(height: 12),
           SwitchListTile(
             title: const Text('DEEP SCAN', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-            subtitle: const Text('Ignorar filtros estándar rMesh', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+            subtitle: const Text('Ignorar filtros estÃ¡ndar rMesh', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
             value: ble.isDeepScan,
             onChanged: (v) => ble.toggleDeepScan(),
             activeColor: LvsColors.pink,
@@ -95,7 +147,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           children: [
             Image.asset('assets/icons/icon_tab_settings.png', width: 32, height: 32),
             const SizedBox(width: 14),
-            const Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
+            const Expanded(child: Text('CONSOLA DE DEPURACIÃ“N', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
             const Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
           ],
         ),
@@ -152,30 +204,30 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
             const SectionLabel('MODO AVANZADO'),
             const SizedBox(height: 12),
 
-            // ═══════════════════════════════════════════════════════════════
-            // 1. TEMPORIZADOR DE SESIÓN (IMPLEMENTADO)
-            // ═══════════════════════════════════════════════════════════════
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // 1. TEMPORIZADOR DE SESIÃ“N (IMPLEMENTADO)
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
             _buildTimerOption(timerState, timerService, ble),
 
             const Divider(height: 32, color: Colors.white10),
 
-            // ═══════════════════════════════════════════════════════════════
-            // 2. BLOQUEO DE VIAJE (PRÓXIMAMENTE)
-            // ═══════════════════════════════════════════════════════════════
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // 2. BLOQUEO DE VIAJE (PRÃ“XIMAMENTE)
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
             _buildTravelLockOption(),
 
             const Divider(height: 32, color: Colors.white10),
 
-            // ═══════════════════════════════════════════════════════════════
-            // 3. RESPALDO EN NUBE (PRÓXIMAMENTE)
-            // ═══════════════════════════════════════════════════════════════
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // 3. RESPALDO EN NUBE (PRÃ“XIMAMENTE)
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
             _buildCloudBackupOption(),
 
             const Divider(height: 32, color: Colors.white10),
 
-            // ═══════════════════════════════════════════════════════════════
-            // 4. ACTUALIZACIÓN FIRMWARE (PRÓXIMAMENTE)
-            // ═══════════════════════════════════════════════════════════════
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // 4. ACTUALIZACIÃ“N FIRMWARE (PRÃ“XIMAMENTE)
+            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
             _buildFirmwareUpdateOption(),
           ],
         ),
@@ -194,7 +246,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           children: [
-            // Ícono de la app (restaurado)
+            // Ãcono de la app (restaurado)
             SizedBox(
               width: 38,
               height: 38,
@@ -229,7 +281,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                             borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
-                            isWarning ? '⚠️' : '●',
+                            isWarning ? 'âš ï¸' : 'â—',
                             style: const TextStyle(fontSize: 6, color: Colors.white),
                           ),
                         ),
@@ -270,7 +322,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                     ),
                   ] else ...[
                     const Text(
-                      'Auto-desconexión de seguridad',
+                      'Auto-desconexiÃ³n de seguridad',
                       style: TextStyle(fontSize: 8, color: LvsColors.text3),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -310,7 +362,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           backgroundColor: const Color(0xFF0A0A14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: const Text('TEMPORIZADOR ACTIVO', style: TextStyle(color: Colors.white)),
-          content: const Text('¿Qué deseas hacer?', style: TextStyle(color: Color(0xFF888899))),
+          content: const Text('Â¿QuÃ© deseas hacer?', style: TextStyle(color: Color(0xFF888899))),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, 'pause'),
@@ -333,16 +385,16 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
       // Mostrar dialog para configurar
       final minutes = await showSessionTimerDialog(context);
       if (minutes != null && minutes > 0) {
-        // Configurar callback de expiración (auto-stop)
+        // Configurar callback de expiraciÃ³n (auto-stop)
         timerService.onExpired = () {
           // Detener dispositivo BLE cuando expira
           ble.emergencyStop();
 
-          // Mostrar notificación
+          // Mostrar notificaciÃ³n
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('⏰ TIEMPO EXPIRADO - Sesión finalizada'),
+                content: Text('â° TIEMPO EXPIRADO - SesiÃ³n finalizada'),
                 backgroundColor: Color(0xFFFF1493),
                 duration: Duration(seconds: 5),
               ),
@@ -356,16 +408,16 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // PLACEHOLDERS - PRÓXIMAMENTE
-  // ═══════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // PLACEHOLDERS - PRÃ“XIMAMENTE
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
   Widget _buildTravelLockOption() {
     return InkWell(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('🔒 BLOQUEO DE VIAJE - Próximamente'),
+            content: Text('ðŸ”’ BLOQUEO DE VIAJE - PrÃ³ximamente'),
             backgroundColor: Color(0xFF888899),
           ),
         );
@@ -405,7 +457,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('☁️ RESPALDO EN NUBE - Próximamente'),
+            content: Text('â˜ï¸ RESPALDO EN NUBE - PrÃ³ximamente'),
             backgroundColor: Color(0xFF888899),
           ),
         );
@@ -445,7 +497,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('🔄 ACTUALIZAR FIRMWARE - Próximamente'),
+            content: Text('ðŸ”„ ACTUALIZAR FIRMWARE - PrÃ³ximamente'),
             backgroundColor: Color(0xFF888899),
           ),
         );
@@ -477,26 +529,6 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildProOption({required String icon, required String title, required String subtitle}) {
-    return Row(
-      children: [
-        Image.asset(icon, width: 38, height: 38),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-              const SizedBox(height: 2),
-              Text(subtitle, style: const TextStyle(fontSize: 9, color: LvsColors.text3)),
-            ],
-          ),
-        ),
-        const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
-      ],
     );
   }
 }

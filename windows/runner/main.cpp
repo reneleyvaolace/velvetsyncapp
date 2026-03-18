@@ -26,7 +26,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
 
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
-  Win32Window::Size size(1280, 720);
+  // Tamaño celular moderno: 390x844 (iPhone 12/13/14) o 412x915 (Android grande)
+  Win32Window::Size size(390, 844);
   if (!window.Create(L"lvs_control", origin, size)) {
     return EXIT_FAILURE;
   }

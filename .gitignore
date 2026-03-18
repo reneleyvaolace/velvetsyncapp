@@ -28,10 +28,16 @@ migrate_working_dir/
 **/ios/Flutter/.last_build_id
 .dart_tool/
 .flutter-plugins-dependencies
+.flutter-plugins
 .pub-cache/
 .pub/
 /build/
 /coverage/
+
+# Windows specific - ephemeral files get corrupted
+/windows/flutter/ephemeral/
+/windows/runner/Debug/
+/windows/runner/Release/
 
 # Symbolication related
 app.*.symbols
@@ -49,3 +55,5 @@ app.*.map.json
 /android/key.properties
 /android/app/*.keystore
 
+\"*.apk\"  
+*.apk  

@@ -4,8 +4,11 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
 import '../utils/logger.dart';
@@ -27,59 +30,142 @@ class AiService {
 
   AiService(this.bleService);
 
-  /// Envía un mensaje a la IA principal (Supabase Edge Function)
-  /// con failover automático a una respuesta predefinida si hay error.
+  /// Envía un mensaje a la IA
+  /// Usa OpenRouter como proveedor principal
   Future<AiResponse> sendMessage(String text) async {
     try {
-      lvsLog('Iniciando petición IA: "$text"', tag: 'AI');
+      lvsLog('OpenRouter: Iniciando petición: "$text"', tag: 'AI');
+      // Usar DIRECTAMENTE OpenRouter (sin Supabase)
+      return await _callOpenRouter(text);
+
+    } catch (e) {
+      lvsLog('OpenRouter error: $e', tag: 'AI');
       
-      // 1. Intentar con el Proxy de Supabase (Gemini)
-      final response = await supabase.functions.invoke(
-        'gemini-proxy',
-        body: {'prompt': text},
-      ).timeout(const Duration(seconds: 10));
-
-      lvsLog('Respuesta IA recibida: ${response.data}', tag: 'AI');
-
-      if (response.status == 200 && response.data != null) {
-        final data = response.data as Map<String, dynamic>;
-        
-        // ✨ Log extra para debuggear la estructura
-        lvsLog('Data keys: ${data.keys.toList()}', tag: 'AI');
-        
-        final aiText = data['text'] ?? data['message'] ?? '';
-        return _handleSuccess(aiText, 'supabase');
+      // Si es timeout, mostrar mensaje especial
+      if (e is TimeoutException) {
+        return AiResponse('⏰ Timeout: OpenRouter no respondió en 20s. Verifica tu conexión.', 0, 0, provider: 'timeout');
       }
       
-      throw Exception('Status ${response.status}');
-      
-    } catch (e) {
-      lvsLog('Failover AI Activado: $e', tag: 'AI');
-      return _handleFailover(text);
+      // Fallback local
+      return _getFallbackResponse(text);
     }
   }
 
   AiResponse _handleSuccess(String rawText, String provider) {
     final parsed = _parseHardwareTags(rawText);
-    
+
     // Sincronización de hardware si está conectado
     if (bleService.isConnected) {
       _dispatchHardwareDual(parsed.motor1, parsed.motor2);
     }
-    
+
     return AiResponse(parsed.text, parsed.motor1, parsed.motor2, provider: provider);
   }
 
-  AiResponse _handleFailover(String originalText) {
-    // Respuesta de emergencia "Offline" o "Failover"
-    const fallbackText = "Parece que mi conexión está un poco inestable... pero aún puedo sentirte. [H:80,100]";
-    final parsed = _parseHardwareTags(fallbackText);
+  Future<AiResponse> _callOpenRouter(String text) async {
+    try {
+      // Usar API Key directa (dotenv no funciona bien en Android)
+      final apiKey = dotenv.env['OPENROUTER_API_KEY'] ?? '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';
+      
+      lvsLog('OpenRouter: API Key length = ${apiKey.length}', tag: 'AI');
+      lvsLog('OpenRouter: API Key prefix = ${apiKey.substring(0, 15)}...', tag: 'AI');
+      
+      if (apiKey == null || apiKey.isEmpty || apiKey == 'tu-api-key-aqui') {
+        lvsLog('OpenRouter: API Key inválida, usando fallback', tag: 'AI');
+        return _getFallbackResponse(text);
+      }
+
+      lvsLog('OpenRouter: Enviando petición...', tag: 'AI');
+      lvsLog('OpenRouter: Mensaje = "$text"', tag: 'AI');
+      lvsLog('OpenRouter: URL = openrouter.ai/api/v1/chat/completions', tag: 'AI');
+
+      final response = await http.post(
+        Uri.parse('https://openrouter.ai/api/v1/chat/completions'),
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://velvetsync.app',
+          'X-Title': 'Velvet Sync Companion',
+        },
+        body: json.encode({
+          // Probar con modelo gratuito disponible (Google Gemma)
+          'model': 'google/gemma-7b-it:free',
+          'messages': [
+            {
+              'role': 'system',
+              'content': 'Eres Velvet, una compañera digital cariñosa y juguetona. Responde de forma breve (1-2 frases), coqueta y sugerente. IMPORTANTE: Siempre incluye tags [H:m1,m2] al final donde m1 y m2 son valores 0-255 para intensidad de motores según la emoción. Ejemplos: "Me encanta... [H:80,90]" o "Qué travieso... [H:60,70]" o "Mmm... [H:0,0]" si es suave.',
+            },
+            {
+              'role': 'user',
+              'content': text,
+            },
+          ],
+          'max_tokens': 80,
+        }),
+      ).timeout(const Duration(seconds: 20), onTimeout: () {
+        lvsLog('OpenRouter: TIMEOUT 20s', tag: 'AI');
+        throw TimeoutException('OpenRouter timeout');
+      });
+
+      lvsLog('OpenRouter: HTTP Status = ${response.statusCode}', tag: 'AI');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final aiText = data['choices']?[0]?['message']?['content'] ?? '';
+
+        lvsLog('OpenRouter: Respuesta raw = "$aiText"', tag: 'AI');
+
+        if (aiText.isEmpty) {
+          lvsLog('OpenRouter: Respuesta vacía', tag: 'AI');
+          return _getFallbackResponse(text);
+        }
+
+        lvsLog('OpenRouter: Éxito', tag: 'AI');
+        return _handleSuccess(aiText, 'openrouter');
+      }
+
+      // Log del error completo
+      lvsLog('OpenRouter: Error ${response.statusCode}', tag: 'AI');
+      lvsLog('OpenRouter: Body = ${response.body}', tag: 'AI');
+      throw Exception('OpenRouter error ${response.statusCode}');
+
+    } catch (e) {
+      lvsLog('OpenRouter falló: $e', tag: 'AI');
+      
+      // Si es timeout, agregar mensaje especial
+      if (e is TimeoutException) {
+        return AiResponse('⏰ Timeout: OpenRouter no respondió en 20s. Verifica tu conexión.', 0, 0, provider: 'timeout');
+      }
+      
+      // Si es error HTTP, mostrar código
+      if (e.toString().contains('404')) {
+        return AiResponse('❌ Error 404: API Key inválida o endpoint no existe. Verifica tu API Key en openrouter.ai', 0, 0, provider: 'error_404');
+      }
+      
+      // Fallback local
+      return _getFallbackResponse(text);
+    }
+  }
+
+  AiResponse _getFallbackResponse(String originalText) {
+    // Respuestas de emergencia cuando TODAS las IAs fallan
+    // IMPORTANTE: Todas con [H:0,0] para no activar motores
+    final fallbackResponses = [
+      "Mmm... mi conexión está inestable, pero sigo aquí... [H:0,0]",
+      "Perdón, estoy teniendo problemas de conexión... [H:0,0]",
+      "Mis circuitos están un poco ocupados ahora... [H:0,0]",
+      "Dame un segundo, estoy procesando... [H:0,0]",
+    ];
     
+    final hash = originalText.length % fallbackResponses.length;
+    final fallbackText = fallbackResponses[hash];
+    final parsed = _parseHardwareTags(fallbackText);
+
     if (bleService.isConnected) {
       _dispatchHardwareDual(parsed.motor1, parsed.motor2);
     }
-    
-    return AiResponse(parsed.text, parsed.motor1, parsed.motor2, provider: 'failover_local');
+
+    return AiResponse(parsed.text, parsed.motor1, parsed.motor2, provider: 'fallback_local');
   }
 
   /// Procesa tags [H:m1,m2] en el texto
@@ -113,9 +199,12 @@ class AiService {
 
     // Auto-stop tras N segundos para seguridad
     final duration = _calcDuration(m1, m2);
+    lvsLog('Hardware: M1=$m1, M2=$m2, Duration=${duration}s', tag: 'AI');
+    
     _autoStopTimer = Timer(Duration(seconds: duration), () {
       if (bleService.isConnected) {
         bleService.emergencyStop();
+        lvsLog('Hardware: Auto-stop ejecutado', tag: 'AI');
       }
     });
   }

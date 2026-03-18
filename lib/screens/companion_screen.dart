@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../ble/ble_service.dart';
 import '../services/ai_service.dart';
+import '../services/companion_settings.dart';
 import '../theme.dart';
 
 class ChatMessage {
@@ -26,28 +27,38 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
-  
+
   late AnimationController _shakeController;
-  
+
   bool _isLoading = false;
   String? _avatarPath;
-  
+  CompanionSettings _settings = CompanionSettings();
+
   // Variables sensoriales
   int _currentM1 = 0;
   int _currentM2 = 0;
-  
+
   final _storage = const FlutterSecureStorage();
+  final _companionService = CompanionService();
 
   @override
   void initState() {
     super.initState();
     _loadAvatar();
-    
-    // Controlador de Shake que fluye continuamente 
+    _loadSettings();
+
+    // Controlador de Shake que fluye continuamente
     _shakeController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     )..repeat();
+  }
+
+  Future<void> _loadSettings() async {
+    final settings = await _companionService.getSettings();
+    if (mounted) {
+      setState(() => _settings = settings);
+    }
   }
 
   Future<void> _loadAvatar() async {
@@ -78,16 +89,41 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
     setState(() {
       _messages.insert(0, ChatMessage(userText, isUser: true));
       _isLoading = true;
+      // Mensaje temporal de debug
+      _messages.insert(0, ChatMessage('🔄 Enviando a OpenRouter...', isUser: false));
     });
 
     final response = await aiService.sendMessage(userText);
 
     if (mounted) {
       setState(() {
-        _messages.insert(0, ChatMessage(response.text, isUser: false));
+        // Remover mensaje de debug
+        _messages.removeWhere((m) => m.text == '🔄 Enviando a OpenRouter...');
+        
+        // Agregar emoji según proveedor
+        String emoji = '💬';
+        if (response.provider == 'openrouter') emoji = '🤖';
+        else if (response.provider == 'timeout') emoji = '⏰';
+        else if (response.provider == 'error_404') emoji = '❌';
+        else if (response.provider == 'fallback_local') emoji = '💭';
+        
+        _messages.insert(0, ChatMessage('$emoji ${response.text}', isUser: false));
+        
         _currentM1 = response.motor1;
         _currentM2 = response.motor2;
         _isLoading = false;
+        
+        // Si los motores están en 0, detener animación después de 2 segundos
+        if (_currentM1 == 0 && _currentM2 == 0) {
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              setState(() {
+                _currentM1 = 0;
+                _currentM2 = 0;
+              });
+            }
+          });
+        }
       });
       _scrollToBottom();
 
@@ -124,6 +160,183 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
     super.dispose();
   }
 
+  void _showSettingsDialog() {
+    final nameController = TextEditingController(text: _settings.name);
+    CompanionGender selectedGender = _settings.gender;
+    CompanionPersonality selectedPersonality = _settings.personality;
+    bool saveConversations = _settings.saveConversations;
+    bool syncWithSupabase = _settings.syncWithSupabase;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1A2E),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          contentPadding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: LvsColors.violet.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.person_rounded, color: LvsColors.violet, size: 24),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text('CONFIGURAR COMPANION', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.bold, fontSize: 14)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                // Nombre
+                const Text('NOMBRE', style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: nameController,
+                  style: const TextStyle(color: LvsColors.text1, fontSize: 14),
+                  decoration: InputDecoration(
+                    hintText: 'Ej: Velvet, Luna, AI...',
+                    hintStyle: TextStyle(color: LvsColors.text3.withOpacity(0.5)),
+                    filled: true,
+                    fillColor: Colors.black.withOpacity(0.3),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: LvsColors.violet.withOpacity(0.3)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: LvsColors.violet, width: 2),
+                    ),
+                  ),
+                  onChanged: (v) => setDialogState(() {}),
+                ),
+                const SizedBox(height: 20),
+                // Género
+                const Text('GÉNERO', style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ...CompanionGender.values.map((g) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: RadioListTile<CompanionGender>(
+                    title: Text(g.displayName, style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
+                    subtitle: Text(g.description, style: TextStyle(color: LvsColors.text3, fontSize: 9)),
+                    value: g,
+                    groupValue: selectedGender,
+                    onChanged: (v) => setDialogState(() => selectedGender = v!),
+                    activeColor: LvsColors.violet,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                )),
+                const SizedBox(height: 20),
+                // Personalidad
+                const Text('PERSONALIDAD', style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ...CompanionPersonality.values.map((p) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: RadioListTile<CompanionPersonality>(
+                    title: Text(p.displayName, style: const TextStyle(color: LvsColors.text1, fontSize: 12)),
+                    subtitle: Text(p.description, style: TextStyle(color: LvsColors.text3, fontSize: 9)),
+                    value: p,
+                    groupValue: selectedPersonality,
+                    onChanged: (v) => setDialogState(() => selectedPersonality = v!),
+                    activeColor: LvsColors.violet,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                )),
+                const SizedBox(height: 20),
+                const Divider(height: 32, color: Colors.white10),
+                // Privacidad
+                const Text('PRIVACIDAD', style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                SwitchListTile(
+                  title: const Text('Guardar conversaciones', style: TextStyle(color: LvsColors.text1, fontSize: 12)),
+                  subtitle: const Text('Almacenar historial localmente', style: TextStyle(color: LvsColors.text3, fontSize: 9)),
+                  value: saveConversations,
+                  onChanged: (v) => setDialogState(() => saveConversations = v),
+                  activeColor: LvsColors.teal,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                SwitchListTile(
+                  title: Row(
+                    children: [
+                      const Text('Sincronizar con nube', style: TextStyle(color: LvsColors.text1, fontSize: 12)),
+                      const SizedBox(width: 6),
+                      Icon(Icons.cloud, size: 14, color: syncWithSupabase ? LvsColors.pink : LvsColors.text3),
+                    ],
+                  ),
+                  subtitle: Text(
+                    syncWithSupabase ? 'Activado en Supabase' : 'Solo almacenamiento local',
+                    style: TextStyle(color: LvsColors.text3, fontSize: 9),
+                  ),
+                  value: syncWithSupabase,
+                  onChanged: saveConversations
+                      ? (v) => setDialogState(() => syncWithSupabase = v)
+                      : null,
+                  activeColor: LvsColors.pink,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: LvsColors.amber.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: LvsColors.amber.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline, color: LvsColors.amber, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Tu privacidad es importante. Puedes desactivar el guardado en cualquier momento.',
+                          style: TextStyle(color: LvsColors.text2, fontSize: 9, height: 1.4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('CANCELAR', style: TextStyle(color: LvsColors.text3)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: LvsColors.violet),
+              onPressed: () async {
+                final newSettings = CompanionSettings(
+                  name: nameController.text.trim().isEmpty ? 'Velvet' : nameController.text.trim(),
+                  gender: selectedGender,
+                  personality: selectedPersonality,
+                  saveConversations: saveConversations,
+                  syncWithSupabase: syncWithSupabase,
+                );
+                await _companionService.saveSettings(newSettings);
+                Navigator.pop(ctx);
+                setState(() => _settings = newSettings);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Companion configurado como "${newSettings.name}" (${newSettings.gender.displayName})'),
+                    backgroundColor: LvsColors.teal,
+                  ),
+                );
+              },
+              child: const Text('GUARDAR', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Calculadora de Shake (Vibración Visual Reactiva)
@@ -134,8 +347,13 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Compañía Digital'),
+        title: Text(_settings.name.toUpperCase()),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.person_outline_rounded, color: LvsColors.violet),
+            tooltip: 'Configurar Companion',
+            onPressed: _showSettingsDialog,
+          ),
           IconButton(
             icon: Icon(Icons.power_settings_new_rounded, color: LvsColors.red),
             tooltip: 'Parada de Emergencia',

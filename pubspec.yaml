@@ -48,6 +48,7 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_dotenv: ^5.1.0
   shared_preferences: ^2.3.3  # Persistencia de configuración
+  webview_flutter: ^4.8.0     # WebView para catálogo web (Android/iOS)
 
 flutter_launcher_icons:
   android: "launcher_icon"
