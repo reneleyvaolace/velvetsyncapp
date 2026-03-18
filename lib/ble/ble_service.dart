@@ -705,12 +705,8 @@ class BleService extends ChangeNotifier {
     activeIntensityCh2 = null;
 
     final cmd = LvsCommands.commandFor(level);
-    final sent = await _startBurst(cmd, level.name);
-
-    // 🔒 PERFORMANCE: Solo notificar si el comando se envió exitosamente
-    if (sent) {
-      notifyListeners();
-    }
+    _startBurst(cmd, level.name);
+    notifyListeners();
   }
 
   Future<void> selectPattern(LvsPattern pattern) async {
@@ -725,12 +721,8 @@ class BleService extends ChangeNotifier {
     activeIntensityCh2 = null;
 
     final cmd = LvsCommands.patternFor(pattern);
-    final sent = await _startBurst(cmd, pattern.name.toUpperCase());
-
-    // 🔒 PERFORMANCE: Solo notificar si se envió exitosamente
-    if (sent) {
-      notifyListeners();
-    }
+    _startBurst(cmd, pattern.name.toUpperCase());
+    notifyListeners();
   }
 
   Future<void> setProportionalIntensity(int intensity) async {
@@ -750,9 +742,9 @@ class BleService extends ChangeNotifier {
       emergencyStop();
     } else {
       final cmd = LvsCommands.proportional(capped);
-      final sent = await _startBurst(cmd, 'LVL:$capped');
-      if (sent) notifyListeners();
+      _startBurst(cmd, 'LVL:$capped');
     }
+    notifyListeners();
   }
 
   Future<void> setProportionalChannel1(int intensity) async {

@@ -4,7 +4,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:path_provider/path_provider.dart';
 
 /// Cache manager personalizado para el catálogo de dispositivos
 /// - Almacena hasta 100 imágenes
@@ -21,7 +20,6 @@ class VelvetCacheManager {
       maxNrOfCacheObjects: 100,
       repo: JsonCacheInfoRepository(databaseName: 'velvetsync_catalog'),
       fileService: HttpFileService(),
-      directory: getTemporaryDirectory(),
     ),
   );
 
@@ -33,7 +31,6 @@ class VelvetCacheManager {
       maxNrOfCacheObjects: 20,
       repo: JsonCacheInfoRepository(databaseName: 'velvetsync_avatars'),
       fileService: HttpFileService(),
-      directory: getTemporaryDirectory(),
     ),
   );
 }

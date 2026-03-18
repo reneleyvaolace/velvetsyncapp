@@ -88,20 +88,20 @@ void main() async {
   try {
     await Future.wait([
       // Deep Linking - crítico para links entrantes
-      Future(() async {
+      () async {
         lvsLog('Inicializando Deep Linking...', tag: 'INIT');
         final linkService = LinkService();
         await linkService.init();
         lvsLog('✅ Deep Linking listo', tag: 'INIT');
-      }()),
+      }(),
 
       // Sync Service - crítico para P2P
-      Future(() async {
+      () async {
         lvsLog('Inicializando Sync Service...', tag: 'INIT');
         final syncService = SyncService();
         await syncService.init();
         lvsLog('✅ Sync Service listo', tag: 'INIT');
-      }()),
+      }(),
     ]);
   } catch (e) {
     lvsLog('❌ Error en inicialización paralela: $e', tag: 'INIT');
