@@ -4,7 +4,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -160,7 +159,7 @@ class SupabaseService {
     if (!_isInitialized) return null;
 
     // 🔒 SECURITY: Validate token format before querying
-    if (token == null || token.isEmpty) {
+    if (token.isEmpty) {
       lvsLog('Session token is empty', tag: 'SUPABASE');
       return null;
     }
@@ -247,7 +246,7 @@ class SupabaseService {
           return retryResponse;
         } catch (e2) {
           lvsLog('❌ Error fatal en reintento: $e2', tag: 'SUPABASE');
-          throw e2; // Propagar el error para que la UI lo muestre
+          rethrow;
         }
       }
       rethrow;
