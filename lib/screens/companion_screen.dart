@@ -196,6 +196,18 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 🔒 PERFORMANCE: Solo animar cuando esta ruta está visible
+    final isActive = ModalRoute.of(context)?.isCurrent == true;
+    if (isActive && !_shakeController.isAnimating) {
+      _shakeController.repeat();
+    } else if (!isActive && _shakeController.isAnimating) {
+      _shakeController.stop();
+    }
+  }
+
+  @override
   void dispose() {
     _shakeController.dispose();
     _textController.dispose();

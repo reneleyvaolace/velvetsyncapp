@@ -286,8 +286,26 @@ class BleService extends ChangeNotifier {
   // ══════════════════════════════════════════════════════════════
   // ESCANEO Y CONEXIÓN
   // ══════════════════════════════════════════════════════════════
+
+  // 🔒 PERFORMANCE: Throttling para prevenir escaneos repetitivos
+  DateTime? _lastScanTime;
+  static const Duration _scanCooldown = Duration(seconds: 5);
+
   Future<void> connectToDevice({List<ToyModel>? catalog}) async {
     if (state == BleState.scanning || state == BleState.connecting) return;
+
+    // 🔒 PERFORMANCE: Throttling - evitar escaneos muy seguidos
+    final now = DateTime.now();
+    if (_lastScanTime != null) {
+      final elapsed = now.difference(_lastScanTime!);
+      if (elapsed < _scanCooldown) {
+        final waitTime = (_scanCooldown - elapsed).inMilliseconds;
+        _log('Scan throttled: esperar ${waitTime}ms', 'debug');
+        await Future.delayed(Duration(milliseconds: waitTime));
+      }
+    }
+    _lastScanTime = now;
+
     if (!await requestPermissions()) return;
 
     if (!await FlutterBluePlus.isSupported) {
