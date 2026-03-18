@@ -66,11 +66,9 @@ class AiService {
     try {
       final apiKey = dotenv.env['OPENROUTER_API_KEY'];
 
-      lvsLog('OpenRouter: API Key length = ${apiKey?.length ?? 0}', tag: 'AI');
-      lvsLog('OpenRouter: API Key prefix = ${apiKey != null && apiKey.length >= 15 ? apiKey.substring(0, 15) : 'null'}...', tag: 'AI');
-
-      if (apiKey == null || apiKey.isEmpty || apiKey == 'tu-api-key-aqui') {
-        lvsLog('OpenRouter: API Key inválida o no configurada. Agrega OPENROUTER_API_KEY en .env', tag: 'AI');
+      // 🔒 SECURITY: Validate API key without logging sensitive information
+      if (apiKey == null || apiKey.isEmpty) {
+        lvsLog('OpenRouter: API Key no configurada en .env', tag: 'AI');
         return AiResponse('⚠️ API Key no configurada. Agrega OPENROUTER_API_KEY en tu archivo .env', 0, 0, provider: 'no_key');
       }
 

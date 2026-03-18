@@ -76,8 +76,10 @@ void main() async {
     await dotenv.load(fileName: ".env");
     lvsLog('✅ .env cargado', tag: 'INIT');
   } catch (e) {
-    lvsLog('⚠️ Error cargando .env: $e', tag: 'INIT');
-    // Continuamos con defaults si falla
+    lvsLog('❌ Error crítico cargando .env: $e', tag: 'INIT');
+    lvsLog('🔒 La aplicación no puede iniciar sin configuración válida', tag: 'INIT');
+    // 🔒 SECURITY: Fail fast - don't continue without secrets
+    rethrow;
   }
 
   try {
@@ -86,8 +88,9 @@ void main() async {
     await supabase.initialize();
     lvsLog('✅ Supabase listo', tag: 'INIT');
   } catch (e) {
-    lvsLog('❌ Error inicializando Supabase: $e', tag: 'INIT');
-    // No bloqueamos la app si Supabase falla
+    lvsLog('❌ Error crítico inicializando Supabase: $e', tag: 'INIT');
+    // 🔒 SECURITY: Fail fast - Supabase is required for core functionality
+    rethrow;
   }
 
   try {

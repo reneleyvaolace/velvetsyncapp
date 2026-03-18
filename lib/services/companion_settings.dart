@@ -99,7 +99,18 @@ class CompanionService {
 
   Future<void> _syncToSupabase(CompanionSettings settings) async {
     try {
-      final userId = await _storage.read(key: 'user_id') ?? 'anonymous';
+      // 🔒 SECURITY: Require proper authentication - reject anonymous sync
+      final userId = await _storage.read(key: 'user_id');
+
+      if (userId == null || userId.isEmpty || userId == 'anonymous') {
+        throw StateError('Cannot sync companion settings: User not authenticated. Please log in first.');
+      }
+
+      // Validate userId format (prevent injection attacks)
+      if (!RegExp(r'^[a-zA-Z0-9_-]{1,255}$').hasMatch(userId)) {
+        throw FormatException('Invalid user_id format: User ID contains invalid characters');
+      }
+
       await supabase.from('companion_settings').upsert({
         'user_id': userId,
         'name': settings.name,
@@ -109,8 +120,11 @@ class CompanionService {
         'sync_with_supabase': settings.syncWithSupabase,
         'updated_at': DateTime.now().toIso8601String(),
       });
+
+      lvsLog('Companion settings synced for user: $userId', tag: 'COMPANION');
     } catch (e) {
-      print('Error sync Companion: $e');
+      lvsLog('Error syncing Companion to Supabase: $e', tag: 'COMPANION');
+      rethrow;
     }
   }
 }

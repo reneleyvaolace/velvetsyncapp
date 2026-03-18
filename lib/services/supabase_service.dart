@@ -26,12 +26,19 @@ class SupabaseService {
 
   Future<void> initialize() async {
     if (_isInitialized) return;
-    
-    const String defaultUrl = 'https://baeclricgedhxdtmirid.supabase.co';
-    const String defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
 
-    final String url = dotenv.env['SUPABASE_URL'] ?? defaultUrl;
-    final String anonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? defaultKey;
+    // 🔒 SECURITY: Credentials MUST come from .env file - no hardcoded fallbacks
+    final String? url = dotenv.env['SUPABASE_URL'];
+    final String? anonKey = dotenv.env['SUPABASE_ANON_KEY'];
+
+    // Validate credentials are present
+    if (url == null || url.isEmpty) {
+      throw StateError('SUPABASE_URL not found in .env file. Application cannot start without Supabase configuration.');
+    }
+
+    if (anonKey == null || anonKey.isEmpty) {
+      throw StateError('SUPABASE_ANON_KEY not found in .env file. Application cannot start without Supabase configuration.');
+    }
 
     try {
       await Supabase.initialize(
@@ -147,26 +154,69 @@ class SupabaseService {
   }
 
   // 5. Sesiones Compartidas (Link Remoto)
+  /// Fetch session by token with expiration validation
+  /// Returns null if session is expired or invalid
   Future<Map<String, dynamic>?> fetchSessionByToken(String token) async {
     if (!_isInitialized) return null;
+
+    // 🔒 SECURITY: Validate token format before querying
+    if (token == null || token.isEmpty) {
+      lvsLog('Session token is empty', tag: 'SUPABASE');
+      return null;
+    }
+
+    // Validate token format (alphanumeric, reasonable length)
+    if (!RegExp(r'^[a-zA-Z0-9_-]{16,255}$').hasMatch(token)) {
+      lvsLog('Invalid session token format', tag: 'SUPABASE');
+      return null;
+    }
+
     try {
-      // Consultar directamente la tabla base (la vista compartida fue eliminada en esta versión)
+      final now = DateTime.now().toIso8601String();
+
+      // 🔒 SECURITY: Check expiration timestamp
       final response = await client
           .from('shared_sessions')
           .select()
           .eq('access_token', token)
+          .eq('is_active', true)
+          // Only return session if it hasn't expired
+          .filter('expires_at', 'gt', now)
           .maybeSingle();
-      
+
+      if (response == null) {
+        lvsLog('Session not found, expired, or inactive', tag: 'SUPABASE');
+        return null;
+      }
+
       return response;
     } catch (e) {
-      debugPrint('❌ Error fetchSessionByToken: $e');
+      lvsLog('Error fetchSessionByToken: $e', tag: 'SUPABASE');
       return null;
     }
   }
 
+  // ── Rate Limiting para Sesiones Compartidas ──────────────────
+  DateTime? _lastSessionCreationTime;
+  static const Duration _sessionCreationCooldown = Duration(seconds: 5); // 5 segundos entre creaciones
+
   /// Crea una nueva sesión compartida en la DB y retorna sus datos (ID, Token)
+  /// Incluye rate limiting para prevenir abuso
   Future<Map<String, dynamic>?> createSharedSession(String deviceId) async {
     if (!_isInitialized) return null;
+
+    // 🔒 SECURITY: Rate limiting - prevent session creation abuse
+    final now = DateTime.now();
+    if (_lastSessionCreationTime != null) {
+      final elapsed = now.difference(_lastSessionCreationTime!);
+      if (elapsed < _sessionCreationCooldown) {
+        final waitTime = (_sessionCreationCooldown - elapsed).inSeconds;
+        lvsLog('Rate limit: Wait $waitTime seconds before creating another session', tag: 'SUPABASE');
+        throw StateError('Please wait $waitTime seconds before creating another session');
+      }
+    }
+    _lastSessionCreationTime = now;
+
     try {
       // 1. Intentar insertar con el ID del dispositivo
       final response = await client
@@ -181,7 +231,7 @@ class SupabaseService {
       return response;
     } catch (e) {
       lvsLog('⚠️ Fallo inicial en createSharedSession ($deviceId): $e', tag: 'SUPABASE');
-      
+
       // 2. Reintento con ID genérico (por si el deviceId no existe en el catálogo remoto y hay FK)
       if (deviceId != '8154') {
         try {
