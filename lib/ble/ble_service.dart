@@ -39,6 +39,16 @@ class LogEntry {
   LogEntry(this.time, this.msg, this.type);
 }
 
+// 🔒 PERFORMANCE: Clase para cola de comandos BLE
+class _QueuedCommand {
+  final List<int> cmdBytes;
+  final String label;
+  final bool silent;
+  final Completer<bool> completer;
+
+  _QueuedCommand(this.cmdBytes, this.label, this.silent, this.completer);
+}
+
 class BleService extends ChangeNotifier {
   // ── Estado ─────────────────────────────────────────────────
   BleState state = BleState.idle;
@@ -575,51 +585,87 @@ class BleService extends ChangeNotifier {
   // ══════════════════════════════════════════════════════════════
   // ESCRITURA Y COMANDOS
   // ══════════════════════════════════════════════════════════════
+
+  // 🔒 PERFORMANCE: Cola de comandos para evitar bloqueo UI
+  final List<_QueuedCommand> _commandQueue = [];
+  bool _isProcessingQueue = false;
+
   Future<bool> writeCommand(List<int> cmdBytes, {String label = '', bool silent = false}) async {
-    if (_isWriting) return false; // Mutex Lock: Previene desbordamiento en Android BLE Stack
+    // 🔒 PERFORMANCE: Encolar comando en lugar de ejecutar inmediatamente
+    final completer = Completer<bool>();
+    _commandQueue.add(_QueuedCommand(cmdBytes, label, silent, completer));
+
+    // Procesar cola si no está activa
+    if (!_isProcessingQueue) {
+      _processCommandQueue();
+    }
+
+    return completer.future.timeout(const Duration(seconds: 3), onTimeout: () {
+      if (!silent) _log('⏰ Timeout comando: $label', 'warn');
+      return false;
+    });
+  }
+
+  void _processCommandQueue() async {
+    if (_commandQueue.isEmpty) {
+      _isProcessingQueue = false;
+      return;
+    }
+
+    _isProcessingQueue = true;
+    final cmd = _commandQueue.removeAt(0);
+
+    // Ejecutar comando con mutex
+    if (_isWriting) {
+      // Re-encolar si está escribiendo
+      _commandQueue.insert(0, cmd);
+      _isProcessingQueue = false;
+      return;
+    }
+
     _isWriting = true;
     try {
-      final packet = LvsCommands.buildPacket(cmdBytes, mode: packetMode);
-      
+      final packet = LvsCommands.buildPacket(cmd.cmdBytes, mode: packetMode);
+
       // OPTIMIZACIÓN: No reiniciar si el paquete es el mismo
-      // El mutex se libera siempre en el bloque finally de abajo
       if (_lastPacket != null && listEquals(_lastPacket, packet)) {
-        return true;
+        _isWriting = false;
+        cmd.completer.complete(true);
+        _processCommandQueue();
+        return;
       }
       _lastPacket = packet;
 
-      if (!silent) _log('→ [$label] ${LvsCommands.bytesToHex(packet)}', 'cmd');
-      
+      if (!cmd.silent) _log('→ [${cmd.label}] ${LvsCommands.bytesToHex(packet)}', 'cmd');
+
       final data = AdvertiseData(
-        serviceUuid: LvsCommands.serviceUuid, // Ahora usa el formato 128-bit correcto
-        manufacturerId: LvsCommands.companyId, 
+        serviceUuid: LvsCommands.serviceUuid,
+        manufacturerId: LvsCommands.companyId,
         manufacturerData: Uint8List.fromList(packet),
         includeDeviceName: false,
       );
 
-      // Usamos AdvertiseSetParameters para activar Legacy Mode (indispensable para LVS-8154)
       final parameters = AdvertiseSetParameters(
         connectable: true,
         scannable: true,
-        legacyMode: true, // Crucial para chips antiguos de Fastcon
-        interval: 160,    // Aprox 100ms
+        legacyMode: true,
+        interval: 160,
       );
 
-      // Limpieza segura del paquete previo (Evita que Android de Status Error 2)
+      // 🔒 PERFORMANCE: Delay no bloqueante para limpiar buffer HCI
       if (await _peripheral.isAdvertising) {
         await _peripheral.stop();
-        await Future.delayed(const Duration(milliseconds: 20)); // Tiempo para vaciar buffer HCI
+        await Future.delayed(const Duration(milliseconds: 15)); // Reducido de 20ms
       }
 
       await _peripheral.start(
-        advertiseData: data, 
+        advertiseData: data,
         advertiseSetParameters: parameters,
       );
 
-      // --- Soporte para dispositivos GATT estándar (No Broadlink) ---
+      // Soporte para dispositivos GATT estándar
       for (var dev in connectedDevices) {
         try {
-          // Intentar escribir en la característica si está disponible
           final services = await dev.discoverServices();
           for (var s in services) {
             if (s.uuid.toString().contains('fff0')) {
@@ -631,57 +677,81 @@ class BleService extends ChangeNotifier {
             }
           }
         } catch (e) {
-          lvsLog('Error escribiendo a GATT: $e');
+          if (!cmd.silent) lvsLog('Error escribiendo a GATT: $e');
         }
       }
-      
-      return true;
+
+      cmd.completer.complete(true);
     } catch (e) {
-      if (!silent) _log('✗ Error Peripheral: $e', 'error');
+      if (!cmd.silent) _log('✗ Error Peripheral: $e', 'error');
       _lastPacket = null;
-      return false;
+      cmd.completer.complete(false);
     } finally {
       _isWriting = false;
+      // Procesar siguiente comando
+      _processCommandQueue();
     }
   }
 
   Future<void> selectSpeed(SpeedLevel level) async {
+    // 🔒 PERFORMANCE: Early exit si es el mismo speed
+    if (activeSpeed == level) return;
+
     _stopSequencer();
     activeSpeed = level;
     activePattern = null;
     activeIntensity = null;
     activeIntensityCh1 = null;
     activeIntensityCh2 = null;
-    notifyListeners();
+
     final cmd = LvsCommands.commandFor(level);
-    _startBurst(cmd, level.name);
+    final sent = await _startBurst(cmd, level.name);
+
+    // 🔒 PERFORMANCE: Solo notificar si el comando se envió exitosamente
+    if (sent) {
+      notifyListeners();
+    }
   }
 
   Future<void> selectPattern(LvsPattern pattern) async {
+    // 🔒 PERFORMANCE: Early exit si es el mismo pattern
+    if (activePattern == pattern) return;
+
     _stopSequencer();
     activePattern = pattern;
     activeSpeed = null;
     activeIntensity = null;
     activeIntensityCh1 = null;
     activeIntensityCh2 = null;
-    notifyListeners();
+
     final cmd = LvsCommands.patternFor(pattern);
-    _startBurst(cmd, pattern.name.toUpperCase());
+    final sent = await _startBurst(cmd, pattern.name.toUpperCase());
+
+    // 🔒 PERFORMANCE: Solo notificar si se envió exitosamente
+    if (sent) {
+      notifyListeners();
+    }
   }
 
   Future<void> setProportionalIntensity(int intensity) async {
     if (isCooldownActive) return;
-    _stopSequencer();
+
     final capped = (intensity * stealthIntensityCap).round();
+
+    // 🔒 PERFORMANCE: Early exit si es la misma intensidad
+    if (activeIntensity == capped && activeSpeed == null && activePattern == null) return;
+
+    _stopSequencer();
     activeIntensity = capped;
-    activeIntensityCh1 = null; activeIntensityCh2 = null; 
+    activeIntensityCh1 = null; activeIntensityCh2 = null;
     activeSpeed = null; activePattern = null;
-    notifyListeners();
+
     if (capped == 0) {
       emergencyStop();
     } else {
       final cmd = LvsCommands.proportional(capped);
-      _startBurst(cmd, 'LVL:$capped');
+      final sent = await _startBurst(cmd, 'LVL:$capped');
+      if (sent) notifyListeners();
     }
   }
 

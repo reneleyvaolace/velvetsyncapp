@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:rxdart/rxdart.dart'; // 🔒 PERFORMANCE: Para debounce de streams
 import '../providers/media_sync_provider.dart';
 import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
@@ -106,14 +107,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   void _toggleShake(BleService ble) {
     setState(() => _shakeMode = !_shakeMode);
     if (_shakeMode) {
-      _accelSub = accelerometerEventStream().listen((event) {
+      // 🔒 PERFORMANCE: Cancel existing subscription first
+      _accelSub?.cancel();
+
+      // 🔒 PERFORMANCE: Debounce accelerometer stream (400ms)
+      // Previene CPU alto por eventos continuos
+      _accelSub = accelerometerEventStream()
+          .debounceTime(const Duration(milliseconds: 400))
+          .listen((event) {
         final g = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
         if (g > 15) { // Umbral de agitación
           final now = DateTime.now();
           if (now.difference(_lastShake).inMilliseconds > 400) {
             _lastShake = now;
             HapticFeedback.lightImpact();
-            // Enviar pulso de alta intensidad aleatorio o fijo
             ble.writeCommand(LvsCommands.cmdHigh, label: 'SHAKE', silent: true);
           }
         }

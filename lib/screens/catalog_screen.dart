@@ -10,6 +10,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../services/catalog_service.dart';
 import '../models/toy_model.dart';
 import '../theme.dart';
+import '../utils/cache_manager.dart';
 
 // ══════════════════════════════════════════════════════════════
 // Pantalla principal del Catálogo
@@ -134,8 +135,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                             mainAxisSpacing: 12,
                           ),
                           itemCount: filteredToys.length,
-                          itemBuilder: (context, index) =>
-                              _buildToyCard(filteredToys[index], toys),
+                          itemBuilder: (context, index) => KeyedSubtree(
+                            key: ValueKey('toy_${filteredToys[index].id}'),
+                            child: _buildToyCard(filteredToys[index], toys),
+                          ),
                         );
                       },
                     );
@@ -258,6 +261,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                           ? CachedNetworkImage(
                               imageUrl: toy.imageUrl,
                               fit: BoxFit.contain,
+                              cacheManager: VelvetCacheManager.instance.catalogCache,
                               placeholder: (_, __) => Center(
                                 child: _buildToyIcon(toy),
                               ),

@@ -102,15 +102,6 @@ void main() async {
         await syncService.init();
         lvsLog('✅ Sync Service listo', tag: 'INIT');
       }()),
-
-      // AI Bridge - opcional en emuladores
-      if (!kEmulatorMode)
-        Future(() async {
-          lvsLog('Inicializando AI Bridge (BLE)...', tag: 'INIT');
-          final aiBridge = AIHardwareBridge();
-          await aiBridge.init();
-          lvsLog('✅ AI Bridge listo', tag: 'INIT');
-        }()),
     ]);
   } catch (e) {
     lvsLog('❌ Error en inicialización paralela: $e', tag: 'INIT');
@@ -131,6 +122,10 @@ void main() async {
       // No hacemos rethrow - la app puede funcionar sin Supabase temporalmente
     }
   });
+
+  // 🔒 PERFORMANCE: AI Bridge se inicializa LAZY (solo cuando se usa)
+  // No es necesario inicializar al startup - se crea bajo demanda
+  lvsLog('🔧 AI Bridge: Lazy load (se inicializa al primer uso)', tag: 'INIT');
 
   lvsLog('════════════════════════════════════════', tag: 'INIT');
   lvsLog('✅ TODOS LOS SERVICIOS LISTOS', tag: 'INIT');

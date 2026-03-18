@@ -131,49 +131,35 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
     final userText = _textController.text.trim();
     _textController.clear();
 
-    setState(() {
-      _messages.insert(0, ChatMessage(userText, isUser: true));
-      _isLoading = true;
-      // Mensaje temporal de debug
-      _messages.insert(0, ChatMessage('🔄 Enviando a OpenRouter...', isUser: false));
-    });
+    // 🔒 PERFORMANCE: Single setState - batch all changes
+    if (mounted) {
+      setState(() {
+        _messages.insert(0, ChatMessage(userText, isUser: true));
+        _messages.insert(0, ChatMessage('🔄 Enviando...', isUser: false));
+        _isLoading = true;
+      });
+    }
 
     final response = await aiService.sendMessage(userText);
 
     if (mounted) {
+      // 🔒 PERFORMANCE: Single setState - batch all changes
       setState(() {
-        // Remover mensaje de debug
-        _messages.removeWhere((m) => m.text == '🔄 Enviando a OpenRouter...');
-        
+        _messages.removeWhere((m) => m.text == '🔄 Enviando...');
+
         // Agregar emoji según proveedor
         String emoji = '💬';
         if (response.provider == 'openrouter') emoji = '🤖';
         else if (response.provider == 'timeout') emoji = '⏰';
         else if (response.provider == 'error_404') emoji = '❌';
         else if (response.provider == 'fallback_local') emoji = '💭';
-        
+
         _messages.insert(0, ChatMessage('$emoji ${response.text}', isUser: false));
-        
         _currentM1 = response.motor1;
         _currentM2 = response.motor2;
         _isLoading = false;
-        
-        // Si los motores están en 0, detener animación después de 2 segundos
-        if (_currentM1 == 0 && _currentM2 == 0) {
-          Future.delayed(const Duration(seconds: 2), () {
-            if (mounted) {
-              setState(() {
-                _currentM1 = 0;
-                _currentM2 = 0;
-              });
-            }
-          });
-        }
       });
       _scrollToBottom();
-
-      // ✨ ACTIVAR HARDWARE REAL (Ya gestionado por AiService, pero aseguramos sync local si es necesario)
-      // Nota: AiService ya hace el despacho hardware, pero podemos forzarlo aquí si queremos feedback inmediato
     }
   }
 
