@@ -104,6 +104,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
         String emoji = '💬';
         if (response.provider == 'openrouter') emoji = '🤖';
         else if (response.provider == 'timeout') emoji = '⏰';
+        else if (response.provider == 'error_404') emoji = '❌';
         else if (response.provider == 'fallback_local') emoji = '💭';
         
         _messages.insert(0, ChatMessage('$emoji ${response.text}', isUser: false));

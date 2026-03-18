@@ -34,12 +34,19 @@ class AiService {
   /// Usa OpenRouter como proveedor principal
   Future<AiResponse> sendMessage(String text) async {
     try {
-      lvsLog('Iniciando petición OpenRouter: "$text"', tag: 'AI');
-      // Usar directamente OpenRouter
+      lvsLog('OpenRouter: Iniciando petición: "$text"', tag: 'AI');
+      // Usar DIRECTAMENTE OpenRouter (sin Supabase)
       return await _callOpenRouter(text);
 
     } catch (e) {
-      lvsLog('Error IA: $e', tag: 'AI');
+      lvsLog('OpenRouter error: $e', tag: 'AI');
+      
+      // Si es timeout, mostrar mensaje especial
+      if (e is TimeoutException) {
+        return AiResponse('⏰ Timeout: OpenRouter no respondió en 20s. Verifica tu conexión.', 0, 0, provider: 'timeout');
+      }
+      
+      // Fallback local
       return _getFallbackResponse(text);
     }
   }
@@ -70,6 +77,7 @@ class AiService {
 
       lvsLog('OpenRouter: Enviando petición...', tag: 'AI');
       lvsLog('OpenRouter: Mensaje = "$text"', tag: 'AI');
+      lvsLog('OpenRouter: URL = openrouter.ai/api/v1/chat/completions', tag: 'AI');
 
       final response = await http.post(
         Uri.parse('https://openrouter.ai/api/v1/chat/completions'),
@@ -80,7 +88,8 @@ class AiService {
           'X-Title': 'Velvet Sync Companion',
         },
         body: json.encode({
-          'model': 'mistralai/mistral-7b-instruct:free',
+          // Probar con modelo gratuito disponible (Google Gemma)
+          'model': 'google/gemma-7b-it:free',
           'messages': [
             {
               'role': 'system',
@@ -98,23 +107,27 @@ class AiService {
         throw TimeoutException('OpenRouter timeout');
       });
 
+      lvsLog('OpenRouter: HTTP Status = ${response.statusCode}', tag: 'AI');
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final aiText = data['choices']?[0]?['message']?['content'] ?? '';
-        
+
         lvsLog('OpenRouter: Respuesta raw = "$aiText"', tag: 'AI');
-        
+
         if (aiText.isEmpty) {
           lvsLog('OpenRouter: Respuesta vacía', tag: 'AI');
           return _getFallbackResponse(text);
         }
-        
+
         lvsLog('OpenRouter: Éxito', tag: 'AI');
         return _handleSuccess(aiText, 'openrouter');
       }
 
+      // Log del error completo
       lvsLog('OpenRouter: Error ${response.statusCode}', tag: 'AI');
-      throw Exception('OpenRouter error');
+      lvsLog('OpenRouter: Body = ${response.body}', tag: 'AI');
+      throw Exception('OpenRouter error ${response.statusCode}');
 
     } catch (e) {
       lvsLog('OpenRouter falló: $e', tag: 'AI');
@@ -124,6 +137,12 @@ class AiService {
         return AiResponse('⏰ Timeout: OpenRouter no respondió en 20s. Verifica tu conexión.', 0, 0, provider: 'timeout');
       }
       
+      // Si es error HTTP, mostrar código
+      if (e.toString().contains('404')) {
+        return AiResponse('❌ Error 404: API Key inválida o endpoint no existe. Verifica tu API Key en openrouter.ai', 0, 0, provider: 'error_404');
+      }
+      
+      // Fallback local
       return _getFallbackResponse(text);
     }
   }
