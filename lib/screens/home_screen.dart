@@ -12,7 +12,6 @@ import 'package:rxdart/rxdart.dart'; // 🔒 PERFORMANCE: Para debounce de strea
 import '../providers/media_sync_provider.dart';
 import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
-import '../main.dart'; 
 import '../theme.dart';
 import '../widgets/preregister_widget.dart';
 import '../widgets/compatible_devices_row.dart';
@@ -25,7 +24,7 @@ import 'reader_screen.dart';
 import 'catalog_screen.dart';
 import 'remote_session_screen.dart';
 import '../services/catalog_service.dart';
-import '../services/supabase_service.dart';
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
   @override
@@ -136,7 +135,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     // Rendimiento: Solo reconstruir el scaffold si cambia el ESTADO GLOBAL de conexión
-    final bleState = ref.watch(bleProvider.select((p) => p.state));
     final ble = ref.read(bleProvider); // Acceso directo para callbacks sin disparar rebuilds
 
     return Scaffold(
@@ -247,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               child: const Icon(Icons.show_chart, color: Colors.white, size: 42),
             ),
           ),
-          const SizedBox(width: 12), // ✓ const
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1163,9 +1161,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     );
   }
 
-
-
-
   // ── Tarjeta de Patrones Ecualizador ─────────────────────────
   Widget _buildPatternsCard(BleService ble) {
     if (ble.state != BleState.connected) return const SizedBox.shrink();
@@ -1716,39 +1711,6 @@ class _ModeSwitcher extends StatelessWidget {
   }
 }
 
-class _BurstIndicator extends StatelessWidget {
-  final AnimationController anim;
-  final int ms;
-  const _BurstIndicator({required this.anim, required this.ms});
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: anim,
-      builder: (_, __) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: LvsColors.green.withOpacity(0.08 + anim.value * 0.06),
-          borderRadius: BorderRadius.circular(99),
-          border: Border.all(color: LvsColors.green.withOpacity(0.3)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(width: 8, height: 8, decoration: BoxDecoration(
-              color: LvsColors.green.withOpacity(0.4 + anim.value * 0.6),
-              shape: BoxShape.circle,
-              boxShadow: [BoxShadow(color: LvsColors.green.withOpacity(anim.value * 0.5), blurRadius: 6)],
-            )),
-            const SizedBox(width: 8),
-            Text('STREAMING ${ms}ms', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.green)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _PatternSelectorRow extends StatelessWidget {
   final int? activePattern;
   final Color color;
@@ -1846,30 +1808,6 @@ class _PatternBtnV2 extends StatelessWidget {
   }
 }
 
-class _SmallPatternBtn extends StatelessWidget {
-  final String label;
-  final bool active;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _SmallPatternBtn({required this.label, required this.active, required this.color, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: active ? color.withOpacity(0.15) : Colors.transparent,
-          border: Border.all(color: active ? color : LvsColors.borderH, width: 1),
-        ),
-        child: Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: active ? color : LvsColors.text3)),
-      ),
-    );
-  }
-}
 class _LvsCanvas extends StatefulWidget {
   final BleService ble;
   const _LvsCanvas({required this.ble});

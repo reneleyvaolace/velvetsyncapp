@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lvs_control/ble/ble_service.dart';
+import 'package:lvs_control/models/toy_model.dart';
 import 'package:lvs_control/theme.dart';
 import 'package:lvs_control/widgets/preregister_widget.dart';
 import 'package:lvs_control/services/catalog_service.dart';
@@ -146,57 +147,105 @@ class ControlTab extends ConsumerWidget {
                 ),
               ],
             ),
-          ] else ...[  
+          // ═══════════════════════════════════════════════════════════════
+          // ESTADO: DISPOSITIVO VINCULADO
+          // ═══════════════════════════════════════════════════════════════
           const Divider(height: 24, color: Colors.white10),
-          Row(
-            children: [
-              Container(
-                width: 42, height: 42,
-                decoration: BoxDecoration(
+          
+          // Tarjeta del dispositivo
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  LvsColors.teal.withOpacity(0.15),
+                  LvsColors.bgCard.withOpacity(0.5),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: LvsColors.teal.withOpacity(0.3)),
+              boxShadow: [
+                BoxShadow(
                   color: LvsColors.teal.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  blurRadius: 20,
+                  spreadRadius: 2,
                 ),
-                child: const Icon(Icons.bluetooth_connected, color: LvsColors.teal, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      ble.activeToy?.name.toUpperCase() ?? ble.connectedDeviceName.toUpperCase(),
-                      style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Icono grande del dispositivo
+                Container(
+                  width: 80, height: 80,
+                  decoration: BoxDecoration(
+                    color: LvsColors.teal.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: LvsColors.teal.withOpacity(0.5), width: 2),
+                  ),
+                  child: Icon(
+                    _getDeviceIcon(ble.activeToy),
+                    color: LvsColors.teal,
+                    size: 50,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Nombre del dispositivo
+                Text(
+                  ble.activeToy?.name.toUpperCase() ?? ble.connectedDeviceName.toUpperCase(),
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 6),
+                
+                // ID y tipo
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: LvsColors.bgCardH.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'ID: ${ble.activeToy?.id ?? ble.toyProfile?.identifier ?? "---"}',
+                    style: const TextStyle(color: LvsColors.teal, fontSize: 11, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Botón de renombrar
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _showRenameDialog(ref, ble),
+                    icon: const Icon(Icons.edit, size: 16),
+                    label: const Text('RENOMBRAR', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: LvsColors.teal,
+                      side: BorderSide(color: LvsColors.teal.withOpacity(0.5)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    Text(
-                      'ID: ${ble.activeToy?.id ?? ble.toyProfile?.identifier ?? "---"}',
-                      style: const TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.w500),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () => _showRenameDialog(ref, ble),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: LvsColors.bgCardH,
-                  minimumSize: const Size(40, 32),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text('EDITAR', style: TextStyle(fontSize: 10)),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 16),
+          
+          // Botón desvincular
           ElevatedButton.icon(
             onPressed: () => ble.disconnect(),
-            icon: const Icon(Icons.link_off, size: 16),
-            label: const Text('DESVINCULAR DISPOSITIVO', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+            icon: const Icon(Icons.link_off, size: 18),
+            label: const Text('DESVINCULAR DISPOSITIVO', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.withOpacity(0.15),
               foregroundColor: Colors.redAccent,
               elevation: 0,
               side: BorderSide(color: Colors.red.withOpacity(0.3)),
-              minimumSize: const Size(double.infinity, 42),
+              minimumSize: const Size(double.infinity, 48),
+              padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
@@ -460,6 +509,31 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return widget.pulse ? AnimatedBuilder(animation: _c, builder: (_, __) => Container(width: 6, height: 6, decoration: BoxDecoration(color: widget.color.withOpacity(_c.value), shape: BoxShape.circle))) : Container(width: 6, height: 6, decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle));
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Helper para obtener ícono del dispositivo
+// ═══════════════════════════════════════════════════════════════
+IconData _getDeviceIcon(ToyModel? toy) {
+  if (toy == null) return Icons.devices;
+  
+  final name = toy.name.toLowerCase();
+  final anatomy = toy.targetAnatomy.toLowerCase();
+  final type = toy.usageType.toLowerCase();
+  
+  // Por anatomía
+  if (anatomy.contains('anal') || name.contains('zen')) return Icons.spa;
+  if (anatomy.contains('clitor') || name.contains('luna')) return Icons.local_florist;
+  if (anatomy.contains('prostat')) return Icons.favorite;
+  if (anatomy.contains('penian') || name.contains('ring')) return Icons.electric_bolt;
+  if (anatomy.contains('kegel')) return Icons.self_improvement;
+  
+  // Por tipo
+  if (type.contains('insertable')) return Icons.water_drop;
+  if (type.contains('wearable')) return Icons.brightness_1;
+  
+  // Default
+  return Icons.devices;
 }
 
 class _NeonPresetBtn extends StatelessWidget {

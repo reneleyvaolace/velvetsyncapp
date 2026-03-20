@@ -11,7 +11,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'services/supabase_service.dart';
 import 'services/link_service.dart';
 import 'services/sync_service.dart';
-import 'services/ai_hardware_bridge_service.dart';
 import 'screens/splash_screen.dart';
 import 'screens/screenshot_gallery.dart';
 import 'theme.dart';
@@ -73,7 +72,7 @@ void main() async {
   try {
     // Cargar variables de entorno (Secretos)
     lvsLog('Cargando .env...', tag: 'INIT');
-    await dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: '.env');
     lvsLog('✅ .env cargado', tag: 'INIT');
   } catch (e) {
     lvsLog('❌ Error crítico cargando .env: $e', tag: 'INIT');

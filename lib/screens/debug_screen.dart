@@ -8,11 +8,9 @@ import 'package:flutter/foundation.dart';
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
-import '../main.dart';
 import '../theme.dart';
 
 class DebugMark {
@@ -22,7 +20,6 @@ class DebugMark {
       : key = '${b0.toRadixString(16)}-${b1.toRadixString(16)}-$b2';
 
   String get hexStr => [b0, b1, b2].map((b) => b.toRadixString(16).padLeft(2,'0').toUpperCase()).join(' ');
-  String get b2hex  => b2.toRadixString(16).padLeft(2,'0').toUpperCase();
 }
 
 class DebugScreen extends ConsumerStatefulWidget {
@@ -44,7 +41,6 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
   int _sweepFrom = 0x00, _sweepTo = 0xFF;
   int _sweepCurrent = 0;
   int _sweepDelayMs = 1000;
-  double _sweepProgress = 0;
 
   // ── Marcadores ──────────────────────────────────────────
   final List<DebugMark> _marks = [];
@@ -85,11 +81,6 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
     if (_burstActive) _restartBurst();
   }
 
-  void _sendOnce(BleService ble) {
-    ble.writeDebugCommand(_b0, _b1, _b2);
-    HapticFeedback.selectionClick();
-  }
-
   void _toggleBurst(BleService ble) {
     setState(() => _burstActive = !_burstActive);
     if (_burstActive) {
@@ -120,18 +111,15 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
     _sweepFrom = _sweepFrom.clamp(0, 255);
     _sweepTo   = _sweepTo.clamp(0, 255);
 
-    final total = (_sweepTo - _sweepFrom).abs() + 1;
     final step  = _sweepTo >= _sweepFrom ? 1 : -1;
     _sweepCurrent = _sweepFrom;
 
-    setState(() { _sweepActive = true; _sweepProgress = 0; });
+    setState(() { _sweepActive = true; });
 
     void advance() {
       setState(() {
         _b2 = _sweepCurrent;
         _activePreset = null;
-        final done = (_sweepCurrent - _sweepFrom).abs() + 1;
-        _sweepProgress = done / total;
       });
       ble.writeDebugCommand(_b0, _b1, _sweepCurrent);
 
@@ -160,7 +148,6 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
       return;
     }
     setState(() => _marks.add(mark));
-    HapticFeedback.mediumImpact();
   }
 
   void _loadMark(DebugMark m) {

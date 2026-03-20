@@ -7,10 +7,8 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/particles.dart';
-import 'package:flame/palette.dart';
 import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
-import '../main.dart'; // Para bleProvider
 import '../theme.dart';
 
 class LocalGameScreen extends ConsumerStatefulWidget {
@@ -389,8 +387,8 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
   }
 
   @override
-  // ignore: must_call_super
   void update(double dt) {
+    super.update(dt);
     if (isDragged) return; // Si lo tengo agarrado, la física se pausa
 
     velocity.y += gravity * dt;

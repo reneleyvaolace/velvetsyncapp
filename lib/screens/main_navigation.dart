@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lvs_control/theme.dart';
-import 'package:lvs_control/screens/home_screen.dart'; // Mantendremos HomeScreen como la base por ahora y la refactorizaremos
 import 'package:lvs_control/screens/tabs/control_tab.dart';
 import 'package:lvs_control/screens/tabs/modes_tab.dart';
 import 'package:lvs_control/screens/tabs/network_tab.dart';

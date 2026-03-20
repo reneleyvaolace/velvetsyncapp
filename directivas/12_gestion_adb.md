@@ -16,6 +16,7 @@ Gestionar el ciclo de vida del servidor ADB (Android Debug Bridge) para liberar 
 ### Restricciones/Historial de Aprendizaje
 - **Limitación de PATH:** Es posible que el comando `adb` no esté en el PATH del sistema, aunque el proceso esté corriendo.
 - **Terminación Forzada:** Si `adb kill-server` falla, se debe intentar terminar el proceso `adb` por nombre de sistema (ej. `taskkill /F /IM adb.exe` o `Stop-Process`).
+- **Fallo de Instalación (Xiaomi/Poco):** El error `INSTALL_FAILED_USER_RESTRICTED` ocurre si la opción "Instalar vía USB" está desactivada o si el usuario no acepta el diálogo en el teléfono. (Ver [adb_troubleshooting.md](../documentacion/ayuda/adb_troubleshooting.md)).
 - **Registro:** Siempre verificar si el proceso sigue vivo tras el intento de cierre.
 
 ### Skills Usadas

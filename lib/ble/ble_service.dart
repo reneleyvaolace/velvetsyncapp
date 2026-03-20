@@ -212,7 +212,7 @@ class BleService extends ChangeNotifier {
   // Log - 🔒 PERFORMANCE: Limitado a 100 entradas para prevenir memory growth
   final List<LogEntry> _logs = [];
   List<LogEntry> get logs {
-    final maxLogs = 100;
+    const maxLogs = 100;
     if (_logs.length <= maxLogs) return List.from(_logs);
     return _logs.sublist(_logs.length - maxLogs);
   }
@@ -447,7 +447,7 @@ class BleService extends ChangeNotifier {
     _log('🔐 Handshake: Verificando hardware activo...', 'info');
 
     // ── NUEVO: Timeout estricto para handshake (3 segundos máx) ──
-    final handshakeTimeout = const Duration(seconds: 3);
+    const handshakeTimeout = Duration(seconds: 3);
 
     try {
       // HANDSHAKE ACTIVO REAL con timeout
@@ -578,11 +578,8 @@ class BleService extends ChangeNotifier {
       label: 'AI SYNC (F6)',
       silent: false,
     );
-    
-    _lastCh1Val = ch1Val;
   }
 
-  int _lastCh1Val = 0;
   bool _isWriting = false;
   List<int>? _lastPacket;
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lvs_control/ble/ble_service.dart';
-import 'package:lvs_control/theme.dart';
+import '../ble/ble_service.dart';
+import '../theme.dart';
 
 enum KegelPhase { ready, contract, relax, finished }
 
@@ -36,7 +36,6 @@ class KegelScreen extends ConsumerStatefulWidget {
 }
 
 class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _progressController;
   Timer? _timer;
 
   KegelLevel? _selectedLevel;
@@ -49,10 +48,6 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
   @override
   void initState() {
     super.initState();
-    _progressController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-    );
     // Inicializar con el primer nivel si existe
     if (kegelLevels.isNotEmpty) {
       _selectedLevel = kegelLevels.first;
@@ -62,9 +57,8 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
   @override
   void dispose() {
     _timer?.cancel();
-    _progressController.dispose();
     _stopDevice();
-    super.initState();
+    super.dispose();
   }
 
   void _startExercise() {
