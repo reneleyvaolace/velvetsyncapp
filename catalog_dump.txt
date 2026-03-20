@@ -1,337 +1,2502 @@
-Row 0: ['ID', 'Barcode', 'Nombre', 'UsageType (Masculino/Femenino/Universal)', 'TargetAnatomy (Prostata/Clitoris/Vaginal/Anal/Universal)', 'StimulationType (Vibracion/Succion/Empuje/Calentamiento/Interactivo)', 'MotorLogic (Single Channel/Dual Channel)', 'DB_Id', 'RealTitle', 'Pics', 'CateId', 'Qrcode', 'SupportedFuncs', 'Wireless', 'FactoryId', 'IsEncrypt', 'IsPrecise', 'BroadcastPrefix', 'BleName']
-Row 1: ['8001', '8001', 'SJH-011', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'SJH-011', 'https://image.zlmicro.com/images/product/20230610/20230610114525834.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8001.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 2: ['8004', '8004', 'AP29', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'AP29', 'https://image.zlmicro.com/images/product/20220902/20220902110232083.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8004.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '132', 'No', '0-255', '77 62 4d 53 45', '']
-Row 3: ['8005', '8005', 'Dispositivo 8005', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', ' ', 'https://image.zlmicro.com/images/product/20221024/20221024165444991.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8005.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '143', 'No', '0-255', '77 62 4d 53 45', '']
-Row 4: ['8008', '8008', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251104/20251104112711977.png', '3', 'https://image.zlmicro.com/images/product/20251104/202511041127266688008.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '6', 'No', '0-255', '77 62 4d 53 45', '']
-Row 5: ['8009', '8009', '若拉2代', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '若拉2代', 'https://image.zlmicro.com/images/product/20221124/20221124105909735.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8009.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '20', 'No', '0-255', '77 62 4d 53 45', '']
-Row 6: ['8010', '8010', 'ZAZD048', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240611/20240611140342404.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8010.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '27', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 7: ['8017', '8017', 'AAFJ066', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231219/20231219110545268.png', '1', 'https://image.zlmicro.com/images/product/qrcode/8017.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '265', 'No', '0-255', '77 62 4d 53 45', '']
-Row 8: ['8021', '8021', 'ZACD004', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250806/20250806173115870.png', '7', 'https://image.zlmicro.com/images/product/20250806/202508061731213588021.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '371', 'No', '0-255', '77 62 4d 53 45', '']
-Row 9: ['8028', '8028', 'A01-034A', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'A01-034A', 'https://image.zlmicro.com/images/product/20230111/20230111160000224.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8028.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '129', 'No', '0-255', '77 62 4d 53 45', '']
-Row 10: ['8029', '8029', 'MM003', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'MM003', 'https://image.zlmicro.com/images/product/20230302/20230302110402552.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8029.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '149', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 11: ['8032', '8032', 'HB-1816', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'HB-1816', 'https://image.zlmicro.com/images/product/20220429/20220429142859777.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8032.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '107', 'No', '0-255', '77 62 4d 53 45', '']
-Row 12: ['8033', '8033', 'MNSJ001', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250415/20250415165418519.jpg', '10', 'https://image.zlmicro.com/images/product/20250415/202504151654260098033.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '107', 'No', '0-255', '77 62 4d 53 45', '']
-Row 13: ['8035', '8035', 'AAZD173', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250519/20250519165851065.jpg', '2', 'https://image.zlmicro.com/images/product/20250519/202505191658580838035.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '93', 'No', '0-255', '77 62 4d 53 45', '']
-Row 14: ['8037', '8037', 'AATD293', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230428/20230428115836136.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8037.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '93', 'No', '0-255', '77 62 4d 53 45', '']
-Row 15: ['8039', '8039', 'AAGS023', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230307/20230307154359518.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8039.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '149', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 16: ['8040', '8040', 'XMan030(CD-C2)-M', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'XMan030(CD-C2)-M', 'https://image.zlmicro.com/images/product/20240102/20240102103929114.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8040.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '77', 'No', '0-255', '77 62 4d 53 45', '']
-Row 17: ['8041', '8041', 'RAHT007', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230629/20230629092716312.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8041.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '35', 'No', '0-255', '77 62 4d 53 45', '']
-Row 18: ['8042', '8042', 'GM006', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'GM006', 'https://image.zlmicro.com/images/product/20230208/20230208114816961.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8042.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '110', 'No', '0-255', '77 62 4d 53 45', '']
-Row 19: ['8044', '8044', 'AASJ232', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250307/20250307172833813.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8044.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '82', 'No', '0-255', '77 62 4d 53 45', '']
-Row 20: ['8045', '8045', 'AASJ258', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250604/20250604135852055.png', '10', 'https://image.zlmicro.com/images/product/20250604/202506041359002258045.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '253', 'No', '0-255', '77 62 4d 53 45', '']
-Row 21: ['8053', '8053', 'JY021', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'JY021', 'https://image.zlmicro.com/images/product/20220517/20220517142552998.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8053.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '53', 'No', '0-255', '77 62 4d 53 45', '']
-Row 22: ['8055', '8055', 'AATD546', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240418/20240418093551537.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8055.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '290', 'No', '0-255', '77 62 4d 53 45', '']
-Row 23: ['8070', '8070', 'YCTD017', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231107/20231107133406487.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8070.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '48', 'No', '0-255', '77 62 4d 53 45', '']
-Row 24: ['8071', '8071', 'WB-0822B', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'WB-0822B', 'https://image.zlmicro.com/images/product/20230914/20230914093715613.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8071.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '77', 'No', '0-255', '77 62 4d 53 45', '']
-Row 25: ['8073', '8073', 'ROCKET', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'ROCKET', 'https://image.zlmicro.com/images/product/20230331/20230331105244845.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8073.png', 'classic|explore|finger|game|intera|music|shake|video', 'BLE', '192', 'No', '0-255', '77 62 4d 53 45', 'ROCKET']
-Row 26: ['8075', '8075', 'AATD652', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240827/20240827103203952.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8075.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '169', 'No', '0-255', '77 62 4d 53 45', '']
-Row 27: ['8078', '8078', 'Osito', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '小熊', 'https://image.zlmicro.com/images/product/20230609/20230609113530617.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8078.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '131', 'No', '0-255', '77 62 4d 53 45', '']
-Row 28: ['8080', '8080', 'AAGS036', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230512/20230512103145744.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8080.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '149', 'No', '0-255', '77 62 4d 53 45', '']
-Row 29: ['8083', '8083', 'YEHT022', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231114/20231114094845723.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8083.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '14', 'No', '0-255', '77 62 4d 53 45', '']
-Row 30: ['8084', '8084', 'RC-APP-04', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'RC-APP-04', 'https://image.zlmicro.com/images/product/20220331/20220331133706317.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8084.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '65', 'No', '0-255', '77 62 4d 53 45', '']
-Row 31: ['8088', '8088', 'S5玫瑰花', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'S5玫瑰花', 'https://image.zlmicro.com/images/product/20220304/20220304143428741.png', '1', 'https://image.zlmicro.com/images/product/qrcode/8088.png', 'classic|explore|finger|game|intera|music|shake|video', 'BLE', '0', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 32: ['8089', '8089', '艾余CL1910', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '艾余CL1910', 'https://image.zlmicro.com/images/product/20211014/20211014113241303.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8089.png', 'classic|explore|finger|game|intera|music|video', '2.4G', '50', 'No', '0-255', '77 62 4b 96 65', '']
-Row 33: ['8093', '8093', 'AAFJ098', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241121/20241121143314998.png', '1', 'https://image.zlmicro.com/images/product/qrcode/8093.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 34: ['8095', '8095', 'ZAHT095', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250403/20250403161404187.png', '4', 'https://image.zlmicro.com/images/product/20250403/202504031614175868095.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '22', 'No', '0-255', '77 62 4d 53 45', '']
-Row 35: ['8097', '8097', 'ZAGS024', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241210/20241210094448475.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8097.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '32', 'No', '0-255', '77 62 4d 53 45', '']
-Row 36: ['8099', '8099', 'AAFJ102', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241206/20241206162818125.png', '1', 'https://image.zlmicro.com/images/product/qrcode/8099.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '116', 'No', '0-255', '77 62 4d 53 45', '']
-Row 37: ['8100', '8100', 'AASJ267', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250626/20250626102454180.png', '10', 'https://image.zlmicro.com/images/product/20250626/202506261025022518100.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '362', 'No', '0-255', '77 62 4d 53 45', '']
-Row 38: ['8101', '8101', 'ZAGS013', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240111/20240111161022392.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8101.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '118', 'No', '0-255', '77 62 4d 53 45', '']
-Row 39: ['8104', '8104', 'AATD616', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240807/20240807103904768.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8104.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '48', 'No', '0-255', '77 62 4d 53 45', '']
-Row 40: ['8107', '8107', 'AAZD023', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230311/20230311095510137.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8107.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '177', 'No', '0-255', '77 62 4d 53 45', '']
-Row 41: ['8109', '8109', '谦度TD001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260202/20260202173859650.jpg', '3', 'https://zlmicro.oss-cn-shenzhen.aliyuncs.com/images/qrcode/8109.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '0', 'No', '0-255', '77 62 4d 53 45', '']
-Row 42: ['8110', '8110', 'R3', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'R3', 'https://image.zlmicro.com/images/product/20230608/20230608145117967.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8110.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '8', 'No', '0-255', '77 62 4d 53 45', '']
-Row 43: ['8111', '8111', 'AAPJ008', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251222/20251222094659715.png', '9', 'https://image.zlmicro.com/images/product/20251222/202512220948003008111.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '227', 'No', '0-255', '77 62 4d 53 45', '']
-Row 44: ['8112', '8112', 'AAFJ105', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250306/20250306113100870.jpg', '1', 'https://image.zlmicro.com/images/product/qrcode/8112.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '176', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 45: ['8114', '8114', 'AAQLX003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260106/20260106101513114.png', '16', 'https://image.zlmicro.com/images/product/20260105/202601051410567208114.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '255', 'No', '0-255', '77 62 4d 53 45', '']
-Row 46: ['8122', '8122', 'MATD021', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241008/20241008161751291.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8122.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '8', 'No', '0-255', '77 62 4d 53 45', '']
-Row 47: ['8124', '8124', 'AASJ103', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230712/20230712101148350.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8124.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '202', 'No', '0-255', '77 62 4d 53 45', '']
-Row 48: ['8125', '8125', 'AAHT126', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230426/20230426170804578.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8125.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '207', 'No', '0-255', '77 62 4d 53 45', '']
-Row 49: ['8127', '8127', 'AATD465', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231202/20231202153011885.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8127.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '20', 'No', '0-255', '77 62 4d 53 45', '']
-Row 50: ['8129', '8129', 'AASJ077', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230202/20230202093704921.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8129.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '0', 'No', '0-255', '77 62 4d 53 45', '']
-Row 51: ['8131', '8131', 'YCGS001', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230203/20230203100705391.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8131.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '149', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 52: ['8144', '8144', 'TD001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250625/20250625111638817.jpg', '3', 'https://image.zlmicro.com/images/product/20250623/202506231432454398144.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '132', 'No', '0-255', '77 62 4d 53 45', '']
-Row 53: ['8148', '8148', 'HCTC-SJH011', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'HCTC-SJH011', 'https://image.zlmicro.com/images/product/20230519/20230519114325370.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8148.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 54: ['8153', '8153', 'AATD734', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241213/20241213113841945.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8153.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '257', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 55: ['8154', '8154', '骑士3号', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '骑士3号', 'https://image.zlmicro.com/images/product/20240920/20240920102355033.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8154.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '253', 'No', '0-255', '77 62 4d 53 45', '']
-Row 56: ['8155', '8155', '0067', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '0067', 'https://image.zlmicro.com/images/product/20230327/20230327133739797.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8155.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '0', 'No', '0-255', '77 62 4d 53 45', '']
-Row 57: ['8157', '8157', 'AAHT187', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230829/20230829104414163.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8157.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '167', 'No', '0-255', '77 62 4d 53 45', '']
-Row 58: ['8158', '8158', 'AAHT002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251117/20251117163911011.jpg', '4', 'https://image.zlmicro.com/images/product/20251117/202511171639148708158.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '389', 'No', '0-255', '77 62 4d 53 45', '']
-Row 59: ['8159', '8159', 'AAHT002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260227/20260227173737375.png', '4', 'https://image.zlmicro.com/images/product/20260227/202602271736194718159.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '158', 'No', '0-255', '77 62 4d 53 45', '']
-Row 60: ['8170', '8170', 'ZAYJ030', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240806/20240806154235582.png', '8', 'https://image.zlmicro.com/images/product/qrcode/8170.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '221', 'No', '0-255', '77 62 4d 53 45', '']
-Row 61: ['8172', '8172', 'ZAZD005', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230801/20230801163828567.jpg', '2', 'https://image.zlmicro.com/images/product/qrcode/8172.png', 'classic|customer_game|explore|finger|game|intera|music|shake|video', '2.4G', '221', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 62: ['8182', '8182', '186', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '186', 'https://image.zlmicro.com/images/product/20221208/20221208103433221.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8182.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '165', 'No', '0-255', '77 62 4d 53 45', '']
-Row 63: ['8185', '8185', 'ZAHT071', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240814/20240814094356486.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8185.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '221', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 64: ['8187', '8187', 'AAZD170', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250509/20250509155057123.jpg', '2', 'https://image.zlmicro.com/images/product/20250509/202505091551011238187.png', 'classic|finger|game|intera|music|shake|video|voice', '2.4G', '348', 'No', '0-255', '77 62 4d 53 45', '']
-Row 65: ['8188', '8188', 'AASJ209', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241028/20241028150156909.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8188.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '325', 'No', '0-255', '77 62 4d 53 45', '']
-Row 66: ['8190', '8190', '谦度TD001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260120/20260120140140963.jpg', '3', 'https://image.zlmicro.com/images/product/20260120/202601201401479888190.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '0', 'No', '0-255', '77 62 4d 53 45', '']
-Row 67: ['8191', '8191', 'AAZD210', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251202/20251202103449357.png', '2', 'https://image.zlmicro.com/images/product/20251202/202512021034592058191.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '274', 'No', '0-255', '77 62 4d 53 45', '']
-Row 68: ['8193', '8193', 'BCTD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230927/20230927094752875.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8193.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '243', 'No', '0-255', '77 62 4d 53 45', '']
-Row 69: ['8195', '8195', 'Pequeño Cohete', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '小火箭', 'https://image.zlmicro.com/images/product/20220110/20220110155651817.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8195.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '28', 'No', '0-255', '77 62 4d 53 45', '']
-Row 70: ['8201', '8201', 'ZBTD021', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230728/20230728104807954.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8201.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '48', 'No', '0-255', '77 62 4d 53 45', '']
-Row 71: ['8202', '8202', 'NBQ-G209', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'NBQ-G209', 'https://image.zlmicro.com/images/product/20230407/20230407163028982.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8202.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '93', 'No', '0-255', '77 62 4d 53 45', '']
-Row 72: ['8203', '8203', 'AATD224', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230307/20230307160712575.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8203.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '145', 'No', '0-255', '77 62 4d 53 45', '']
-Row 73: ['8205', '8205', 'YEHT017', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240119/20240119113714082.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8205.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '14', 'No', '0-255', '77 62 4d 53 45', '']
-Row 74: ['8208', '8208', 'LBTYHT001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260128/20260128144059083.jpg', '4', 'https://image.zlmicro.com/images/product/20260128/202601281441055228208.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '107', 'No', '0-255', '77 62 4d 53 45', '']
-Row 75: ['8211', '8211', 'ZBZD006', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240322/20240322142850294.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8211.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '48', 'No', '0-255', '77 62 4d 53 45', '']
-Row 76: ['8214', '8214', 'YEGS005', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231114/20231114094735414.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8214.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '14', 'No', '0-255', '77 62 4d 53 45', '']
-Row 77: ['8215', '8215', '20宫格测试', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '20宫格测试', '', '0', 'https://image.zlmicro.com/images/product/qrcode/8215.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '192', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 78: ['8218', '8218', 'G204', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'G204', 'https://image.zlmicro.com/images/product/20220414/20220414100912546.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8218.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '93', 'No', '0-255', '77 62 4d 53 45', '']
-Row 79: ['8219', '8219', 'YJ-013', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'YJ-013', 'https://image.zlmicro.com/images/product/20230609/20230609135709864.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8219.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 80: ['8221', '8221', 'AATD608', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240725/20240725145840412.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8221.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '303', 'No', '0-255', '77 62 4d 53 45', '']
-Row 81: ['8223', '8223', 'AAGS123', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240527/20240527155150046.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8223.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '104', 'No', '0-255', '77 62 4d 53 45', '']
-Row 82: ['8225', '8225', 'YAI707S-004', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'YAI707S-004', 'https://image.zlmicro.com/images/product/20230308/20230308151902295.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8225.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '14', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 83: ['8231', '8231', 'Mariposa Soñada', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '梦蝶', 'https://image.zlmicro.com/images/product/20250925/20250925171434779.jpg', '3', 'https://image.zlmicro.com/images/product/20250925/202509251714392438231.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '303', 'No', '0-255', '77 62 4d 53 45', '']
-Row 84: ['8239', '8239', 'AAYJ081', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260109/20260109112203894.jpg', '8', 'https://image.zlmicro.com/images/product/20260109/202601091122081628239.png', 'classic|finger|game|heating|intera|music|shake|video', '2.4G', '402', 'No', '0-255', '77 62 4d 53 45', '']
-Row 85: ['8240', '8240', 'BCTD005', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240111/20240111170140523.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8240.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '19', 'No', '0-255', '77 62 4d 53 45', '']
-Row 86: ['8241', '8241', 'EW900', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'EW900', 'https://image.zlmicro.com/images/product/20230828/20230828115210211.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8241.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '143', 'No', '0-255', '77 62 4d 53 45', '']
-Row 87: ['8244', '8244', 'ZASJ039', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240801/20240801092957141.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8244.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '20', 'No', '0-255', '77 62 4d 53 45', '']
-Row 88: ['8245', '8245', 'YJ-012', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'YJ-012', 'https://image.zlmicro.com/images/product/20230609/20230609134644244.png', '8', 'https://image.zlmicro.com/images/product/qrcode/8245.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 89: ['8247', '8247', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260106/20260106153459668.png', '3', 'https://image.zlmicro.com/images/product/20260106/202601061535032448247.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '132', 'No', '0-255', '77 62 4d 53 45', '']
-Row 90: ['8248', '8248', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250624/20250624101413560.png', '3', 'https://image.zlmicro.com/images/product/20250624/202506241014201688248.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '6', 'No', '0-255', '77 62 4d 53 45', '']
-Row 91: ['8249', '8249', 'AASJ147', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231206/20231206144213392.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8249.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '19', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 92: ['8252', '8252', 'AAZD123', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240926/20240926164132898.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8252.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '77', 'No', '0-255', '77 62 4d 53 45', '']
-Row 93: ['8253', '8253', 'AAGS016', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20221123/20221123181749935.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8253.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '32', 'No', '0-255', '77 62 4d 53 45', '']
-Row 94: ['8257', '8257', 'ZATD084', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250304/20250304101744669.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8257.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '35', 'No', '0-255', '77 62 4d 53 45', '']
-Row 95: ['8258', '8258', 'AATD704', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241031/20241031110308215.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8258.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '300', 'No', '0-255', '77 62 4d 53 45', '']
-Row 96: ['8259', '8259', 'AATD409', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230906/20230906143619772.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8259.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '104', 'No', '0-255', '77 62 4d 53 45', '']
-Row 97: ['8271', '8271', 'YAI707W-007    ', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'YAI707W-007    ', 'https://image.zlmicro.com/images/product/20230413/20230413102024393.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8271.png', 'classic|explore|finger|game|intera|music|shake|video', '', '14', 'No', '0-255', '77 62 4d 53 45', '']
-Row 98: ['8274', '8274', 'JASJ001', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240911/20240911143108908.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8274.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '316', 'No', '0-255', '77 62 4d 53 45', '']
-Row 99: ['8275', '8275', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250523/20250523161940284.png', '3', 'https://image.zlmicro.com/images/product/20250523/202505231619446738275.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '93', 'No', '0-255', '77 62 4d 53 45', '']
-Row 100: ['8279', '8279', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250529/20250529103903985.png', '3', 'https://image.zlmicro.com/images/product/20250529/202505291039153708279.png', 'classic|explore|finger|game|intera|music|shake|video|voice_control', '2.4G', '58', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 101: ['8282', '8282', 'HETD010', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230901/20230901093134323.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8282.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 102: ['8283', '8283', 'MATD022', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250603/20250603152630505.png', '3', 'https://image.zlmicro.com/images/product/20250603/202506031526354468283.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '8', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 103: ['8287', '8287', 'YEGS014', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240112/20240112125133820.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8287.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '14', 'No', '0-255', '77 62 4d 53 45', '']
-Row 104: ['8288', '8288', 'YG029', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'YG029', 'https://image.zlmicro.com/images/product/20230207/20230207091357587.png', '8', 'https://image.zlmicro.com/images/product/qrcode/8288.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '19', 'No', '0-255', '77 62 4d 53 45', '']
-Row 105: ['8289', '8289', 'AAFJ114', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250616/20250616095028050.png', '1', 'https://image.zlmicro.com/images/product/20250616/202506160950336628289.png', 'classic|finger|game|heating|intera|music|shake|video', '2.4G', '156', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 106: ['8292', '8292', 'AAFJ108', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250414/20250414111505318.png', '1', 'https://image.zlmicro.com/images/product/20250414/202504141115099308292.png', 'classic|finger|game|intera|music|shake|video|voice', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 107: ['8295', '8295', 'AASJ295', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250911/20250911140542969.png', '10', 'https://image.zlmicro.com/images/product/20250911/202509111405479598295.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '307', 'No', '0-255', '77 62 4d 53 45', '']
-Row 108: ['8298', '8298', 'AIS384', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'AIS384', 'https://image.zlmicro.com/images/product/20220825/20220825114934262.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8298.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '27', 'No', '0-255', '77 62 4d 53 45', '']
-Row 109: ['8299', '8299', 'AAGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260109/20260109155209709.jpg', '13', 'https://image.zlmicro.com/images/product/20260109/202601091552133898299.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '311', 'No', '0-255', '77 62 4d 53 45', '']
-Row 110: ['8301', '8301', 'AATD460', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231127/20231127150034647.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8301.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '55', 'No', '0-255', '77 62 4d 53 45', '']
-Row 111: ['8304', '8304', '277', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '277', 'https://image.zlmicro.com/images/product/20230215/20230215114101342.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8304.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '27', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 112: ['8309', '8309', 'WEYJ001', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230306/20230306162142007.jpg', '8', 'https://image.zlmicro.com/images/product/qrcode/8309.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '19', 'No', '0-255', '77 62 4d 53 45', '']
-Row 113: ['8311', '8311', 'AAZD183', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250623/20250623141443756.jpg', '2', 'https://image.zlmicro.com/images/product/20250623/202506231414511448311.png', 'classic|finger|game|intera|music|shake|video|voice_control', '2.4G', '170', 'No', '0-255', '77 62 4d 53 45', '']
-Row 114: ['8312', '8312', 'AACD006', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250514/20250514112738485.png', '7', 'https://image.zlmicro.com/images/product/20250514/202505141127418378312.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '20', 'No', '0-255', '77 62 4d 53 45', '']
-Row 115: ['8313', '8313', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260202/20260202160139597.jpg', '3', 'https://image.zlmicro.com/images/product/20260202/202602021601461658313.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '13', 'No', '0-255', '77 62 4d 53 45', '']
-Row 116: ['8314', '8314', 'AAHT002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250423/20250423150133153.png', '4', 'https://image.zlmicro.com/images/product/20250423/202504231501401038314.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '292', 'No', '0-255', '77 62 4d 53 45', '']
-Row 117: ['8315', '8315', 'AATD464', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231202/20231202113741404.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8315.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '129', 'No', '0-255', '77 62 4d 53 45', '']
-Row 118: ['8318', '8318', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251017/20251017152224611.png', '3', 'https://image.zlmicro.com/images/product/20250528/202505281420579678318.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '27', 'No', '0-255', '77 62 4d 53 45', '']
-Row 119: ['8320', '8320', 'Huevo Saltarín Ballenita', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', ' 小鲸鱼跳蛋', 'https://image.zlmicro.com/images/product/20221110/20221110113842857.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8320.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '48', 'No', '0-255', '77 62 4d 53 45', '']
-Row 120: ['8321', '8321', 'LG-383', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'LG-383', 'https://image.zlmicro.com/images/product/20230607/20230607103757960.jpg', '1', 'https://image.zlmicro.com/images/product/qrcode/8321.png', 'classic|discharge|explore|finger|game|heating|intera|music|shake|tot|video', 'BLE', '264', 'No', '0-255', '77 62 4d 53 45', 'LG-383']
-Row 121: ['8322', '8322', 'AATD749', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250107/20250107140745719.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8322.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '18', 'No', '0-255', '77 62 4d 53 45', '']
-Row 122: ['8323', '8323', 'ZATD058', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240619/20240619154330607.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8323.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '222', 'No', '0-255', '77 62 4d 53 45', '']
-Row 123: ['8327', '8327', 'BLE KGL', 'Masculino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'BLE KGL', 'https://image.zlmicro.com/images/product/20230322/20230322154925908.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8327.png', 'classic|explore|finger|game|intera|kegel|music|shake|video', 'BLE', '192', 'No', '0-255', '77 62 4d 53 45', 'WB-KGL']
-Row 124: ['8328', '8328', 'ZBSJ005', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20221201/20221201160135009.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8328.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '162', 'No', '0-255', '77 62 4d 53 45', '']
-Row 125: ['8329', '8329', 'AASJ219', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241206/20241206094249528.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8329.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '329', 'No', '0-255', '77 62 4d 53 45', '']
-Row 126: ['8330', '8330', 'AAZD207', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251028/20251028141930826.png', '2', 'https://image.zlmicro.com/images/product/20251028/202510281419390638330.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '118', 'No', '0-255', '77 62 4d 53 45', '']
-Row 127: ['8331', '8331', 'AATD723', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241128/20241128092659562.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8331.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 128: ['8335', '8335', 'AASJ355', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260304/20260304162940094.png', '10', 'https://image.zlmicro.com/images/product/20260304/202603041629466978335.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '152', 'No', '0-255', '77 62 4d 53 45', '']
-Row 129: ['8338', '8338', 'ZAYJ031', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240624/20240624190042424.png', '8', 'https://image.zlmicro.com/images/product/qrcode/8338.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '284', 'No', '0-255', '77 62 4d 53 45', '']
-Row 130: ['8340', '8340', 'AATD512', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230418/20230418140012675.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8340.png', 'classic|custom_mode|explore|finger|game|intera|music|shake|tot|video', 'BLE', '45', 'No', '0-255', '77 62 4d 53 45', 'UFO-TW']
-Row 131: ['8341', '8341', 'JCYJ001', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240620/20240620113110190.png', '8', 'https://image.zlmicro.com/images/product/qrcode/8341.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '213', 'No', '0-255', '77 62 4d 53 45', '']
-Row 132: ['8344', '8344', 'AAHT197', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230816/20230816133440849.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8344.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '180', 'No', '0-255', '77 62 4d 53 45', '']
-Row 133: ['8348', '8348', '18宫格测试公版-穿戴', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '18宫格测试公版-穿戴', 'https://image.zlmicro.com/images/product/20240410/20240410153847385.png', '0', 'https://image.zlmicro.com/images/product/qrcode/8348.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '192', 'No', '0-255', '77 62 4d 53 45', '']
-Row 134: ['8350', '8350', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250624/20250624101347603.png', '3', 'https://image.zlmicro.com/images/product/20250624/202506241013599008350.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '6', 'No', '0-255', '77 62 4d 53 45', '']
-Row 135: ['8351', '8351', 'JASJ006', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230207/20230207153634737.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8351.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '103', 'No', '0-255', '77 62 4d 53 45', '']
-Row 136: ['8354', '8354', 'Alegría del Agua', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '水之欢', 'https://image.zlmicro.com/images/product/20220921/20220921134940227.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8354.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '112', 'No', '0-255', '77 62 16 23 43', '']
-Row 137: ['8355', '8355', 'AASJ266', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250621/20250621103540734.png', '10', 'https://image.zlmicro.com/images/product/20250621/202506211035452408355.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '228', 'No', '0-255', '77 62 4d 53 45', '']
-Row 138: ['8359', '8359', 'AATD306', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230516/20230516151611808.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8359.png', 'classic|explore|finger|game|intera|music|shake|tot|video', 'BLE', '192', 'No', '0-255', '77 62 4d 53 45', 'LUOS-F002']
-Row 139: ['8370', '8370', 'AAHT111', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230325/20230325095630183.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8370.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '172', 'No', '0-255', '77 62 4d 53 45', '']
-Row 140: ['8374', '8374', '0822D', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '0822D', 'https://image.zlmicro.com/images/product/20240410/20240410134443926.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8374.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '253', 'No', '0-255', '77 62 4d 53 45', '']
-Row 141: ['8375', '8375', 'WB-0822D', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'WB-0822D', 'https://image.zlmicro.com/images/product/20231027/20231027094227811.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8375.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '63', 'No', '0-255', '77 62 4d 53 45', '']
-Row 142: ['8380', '8380', 'AAZD090', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240523/20240523120406053.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8380.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '292', 'No', '0-255', '77 62 4d 53 45', '']
-Row 143: ['8381', '8381', 'XDHT001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231121/20231121105651292.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8381.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '82', 'No', '0-255', '77 62 4d 53 45', '']
-Row 144: ['8384', '8384', 'AATD762', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250220/20250220160741153.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8384.png', 'classic|finger|game|intera|music|shake|video|voice', '2.4G', '22', 'No', '0-255', '77 62 4d 53 45', '']
-Row 145: ['8385', '8385', 'AAZD212', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251203/20251203150414883.png', '2', 'https://image.zlmicro.com/images/product/20251203/202512031504188008385.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '390', 'No', '0-255', '77 62 4d 53 45', '']
-Row 146: ['8388', '8388', 'AB0236', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'AB0236', 'https://image.zlmicro.com/images/product/20240122/20240122140816655.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8388.png', 'classic|explore|finger|game|intera|music|shake|video|voice_control', 'BLE', '58', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 147: ['8390', '8390', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250519/20250519113640233.png', '3', 'https://image.zlmicro.com/images/product/20250519/202505191136435458390.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '75', 'No', '0-255', '77 62 4d 53 45', '']
-Row 148: ['8391', '8391', 'AATD744', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241230/20241230143112986.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8391.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '329', 'No', '0-255', '77 62 4d 53 45', '']
-Row 149: ['8392', '8392', 'Por Definir', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '待定', 'https://image.zlmicro.com/images/product/20220809/20220809202256534.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8392.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '27', 'No', '0-255', '77 62 4d 53 45', '']
-Row 150: ['8395', '8395', 'RAGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230626/20230626111750430.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8395.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '6', 'No', '0-255', '77 62 4d 53 45', '']
-Row 151: ['8399', '8399', 'AAHT002', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260115/20260115173155718.jpg', '4', 'https://image.zlmicro.com/images/product/20260115/202601151732022448399.png', 'classic|finger|game|heating|intera|music|shake|video', '2.4G', '170', 'No', '0-255', '77 62 4d 53 45', '']
-Row 152: ['8400', '8400', 'PBHT009', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231102/20231102172540791.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8400.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '250', 'No', '0-255', '77 62 4d 53 45', '']
-Row 153: ['8401', '8401', 'AASJ325', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251208/20251208101728171.png', '10', 'https://image.zlmicro.com/images/product/20251208/202512081017326458401.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '12', 'No', '0-255', '77 62 4d 53 45', '']
-Row 154: ['8402', '8402', 'AASJ347', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260116/20260116161326165.png', '10', 'https://image.zlmicro.com/images/product/20260116/202601161613368068402.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '384', 'No', '0-255', '77 62 4d 53 45', '']
-Row 155: ['8403', '8403', 'WLS-001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'WLS-001', 'https://image.zlmicro.com/images/product/20230406/20230406173221865.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8403.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '178', 'No', '0-255', '77 62 4d 53 45', '']
-Row 156: ['8414', '8414', 'TD001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240801/20240801092514725.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8414.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '253', 'No', '0-255', '77 62 4d 53 45', '']
-Row 157: ['8415', '8415', 'LY-007B', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'LY-007B', 'https://image.zlmicro.com/images/product/20231102/20231102155439617.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8415.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '240', 'No', '0-255', '77 62 4d 53 45', '']
-Row 158: ['8417', '8417', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251031/20251031135533319.jpg', '3', 'https://image.zlmicro.com/images/product/20251031/202510311355367918417.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '8', 'No', '0-255', '77 62 4d 53 45', '']
-Row 159: ['8420', '8420', 'ZAYJ017', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240330/20240330100734639.jpg', '8', 'https://image.zlmicro.com/images/product/qrcode/8420.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '27', 'No', '0-255', '77 62 4d 53 45', '']
-Row 160: ['8422', '8422', 'AATD523', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240321/20240321102830761.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8422.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '131', 'No', '0-255', '77 62 4d 53 45', '']
-Row 161: ['8425', '8425', 'AAHT002', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250715/20250715094008207.png', '4', 'https://image.zlmicro.com/images/product/20250715/202507150940429628425.png', 'classic|finger|game|heating|intera|music|shake|video', '2.4G', '368', 'No', '0-255', '77 62 4d 53 45', '']
-Row 162: ['8431', '8431', 'AATD697', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241028/20241028145759902.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8431.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '325', 'No', '0-255', '77 62 4d 53 45', '']
-Row 163: ['8437', '8437', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251114/20251114113018720.jpg', '3', 'https://image.zlmicro.com/images/product/20251114/202511141130286638437.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '149', 'No', '0-255', '77 62 4d 53 45', '']
-Row 164: ['8438', '8438', 'AAHT319', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241206/20241206094452389.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8438.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 165: ['8439', '8439', 'AASJ343', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260108/20260108163556196.png', '10', 'https://image.zlmicro.com/images/product/20260108/202601081636022828439.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '153', 'No', '0-255', '77 62 4d 53 45', '']
-Row 166: ['8440', '8440', 'Xie Yong Pendiente', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '谢勇待定', 'https://image.zlmicro.com/images/product/20220607/20220607142320889.jpg', '8', 'https://image.zlmicro.com/images/product/qrcode/8440.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '110', 'No', '0-255', '77 62 4d 53 45', '']
-Row 167: ['8442', '8442', 'ZASJ079', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251023/20251023101756415.png', '10', 'https://image.zlmicro.com/images/product/20251023/202510231018015438442.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '362', 'No', '0-255', '77 62 4d 53 45', '']
-Row 168: ['8443', '8443', 'AASJ137', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231128/20231128111458824.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8443.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '20', 'No', '0-255', '77 62 4d 53 45', '']
-Row 169: ['8444', '8444', 'AASJ038', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230516/20230516152808891.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8444.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '211', 'No', '0-255', '77 62 4d 53 45', '']
-Row 170: ['8447', '8447', 'YDTD002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230310/20230310165828251.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8447.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '188', 'No', '0-255', '77 62 4d 53 45', '']
-Row 171: ['8448', '8448', 'SCHT001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231123/20231123115230153.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8448.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 172: ['8449', '8449', 'AAFJ111', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250603/20250603092635745.png', '1', 'https://image.zlmicro.com/images/product/20250603/202506030926431718449.png', 'classic|finger|game|intera|music|shake|video|voice', '2.4G', '357', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 173: ['8450', '8450', 'AAHT205', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231007/20231007114316784.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8450.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '127', 'No', '0-255', '77 62 4d 53 45', '']
-Row 174: ['8452', '8452', 'AAZD211', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251203/20251203111704706.png', '2', 'https://image.zlmicro.com/images/product/20251203/202512031117339898452.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '323', 'No', '0-255', '77 62 4d 53 45', '']
-Row 175: ['8454', '8454', 'Fei Tian Run', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '飞天润', 'https://image.zlmicro.com/images/product/20240722/20240722104328860.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8454.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '90', 'No', '0-255', '77 62 4d 53 45', '']
-Row 176: ['8455', '8455', 'ZATD078', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250225/20250225165556379.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8455.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '32', 'No', '0-255', '77 62 4d 53 45', '']
-Row 177: ['8459', '8459', 'AAGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251213/20251213150337320.jpg', '13', 'https://image.zlmicro.com/images/product/20251213/202512131503429588459.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '19', 'No', '0-255', '77 62 4d 53 45', '']
-Row 178: ['8472', '8472', 'ZAZD058', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250315/20250315100843681.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8472.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '221', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 179: ['8473', '8473', 'KJ005B', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'KJ005B', 'https://image.zlmicro.com/images/product/20221008/20221008160020552.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8473.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '91', 'No', '0-255', '77 62 4d 53 45', '']
-Row 180: ['8474', '8474', 'JY021', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'JY021', 'https://image.zlmicro.com/images/product/20220517/20220517142034508.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8474.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '53', 'No', '0-255', '77 62 4d 53 45', '']
-Row 181: ['8475', '8475', '悦蕾CD20-APP', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '悦蕾CD20-APP', 'https://image.zlmicro.com/images/product/20230408/20230408141103081.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8475.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '52', 'No', '0-255', '77 62 4d 53 45', '']
-Row 182: ['8477', '8477', 'ZD001', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241014/20241014114642649.jpg', '2', 'https://image.zlmicro.com/images/product/qrcode/8477.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '198', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 183: ['8481', '8481', 'AAFJ128', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251111/20251111133819317.jpg', '1', 'https://image.zlmicro.com/images/product/20250913/202509131545563958481.png', 'classic|finger|game|intera|music|shake|video|voice', '2.4G', '176', 'No', '0-255', '77 62 4d 53 45', '']
-Row 184: ['8487', '8487', 'AAGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251119/20251119094808229.png', '13', 'https://image.zlmicro.com/images/product/20251119/202511190948134268487.png', 'classic|finger|game|heating|intera|music|shake|video', '2.4G', '366', 'No', '0-255', '77 62 4d 53 45', '']
-Row 185: ['8493', '8493', 'XDTD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230919/20230919113007298.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8493.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '110', 'No', '0-255', '77 62 4d 53 45', '']
-Row 186: ['8495', '8495', 'YCTD020', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241107/20241107113321572.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8495.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '253', 'No', '0-255', '77 62 4d 53 45', '']
-Row 187: ['8497', '8497', '2DAA', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', ' 2DAA ', 'https://image.zlmicro.com/images/product/20230818/20230818143214121.jpg', '8', 'https://image.zlmicro.com/images/product/qrcode/8497.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '125', 'No', '0-255', '77 62 4d 53 45', '']
-Row 188: ['8499', '8499', 'AASJ076', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230216/20230216154837201.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8499.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '0', 'No', '0-255', '77 62 4d 53 45', '']
-Row 189: ['8500', '8500', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251125/20251125115533284.png', '3', 'https://image.zlmicro.com/images/product/20251125/202511251155449688500.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '366', 'No', '0-255', '77 62 4d 53 45', '']
-Row 190: ['8503', '8503', 'AATD657', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240906/20240906134441078.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8503.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '313', 'No', '0-255', '77 62 4d 53 45', '']
-Row 191: ['8509', '8509', 'Cici Magnético Vestible', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '茜茜磁吸穿戴', 'https://image.zlmicro.com/images/product/20211029/20211029134451290.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8509.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '64', 'No', '0-255', '77 62 4d 53 45', '']
-Row 192: ['8510', '8510', 'HB-2112', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'HB-2112', 'https://image.zlmicro.com/images/product/20220429/20220429143009110.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8510.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '107', 'No', '0-255', '77 62 4d 53 45', '']
-Row 193: ['8512', '8512', 'AAZD056', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230825/20230825092508430.jpg', '2', 'https://image.zlmicro.com/images/product/qrcode/8512.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '216', 'No', '0-255', '77 62 4d 53 45', '']
-Row 194: ['8513', '8513', 'ZDTD024', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240829/20240829145415787.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8513.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 195: ['8514', '8514', 'AATD548', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240423/20240423094501618.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8514.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '6', 'No', '0-255', '77 62 4d 53 45', '']
-Row 196: ['8519', '8519', '170', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '170', 'https://image.zlmicro.com/images/product/20220426/20220426104556463.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8519.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '92', 'No', '0-255', '77 62 4d 53 45', '']
-Row 197: ['8520', '8520', 'AAHT084', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230206/20230206160456769.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8520.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '32', 'No', '0-255', '77 62 4d 53 45', '']
-Row 198: ['8525', '8525', '042', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '042', 'https://image.zlmicro.com/images/product/20230225/20230225122020039.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8525.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '75', 'No', '0-255', '77 62 4d 53 45', '']
-Row 199: ['8527', '8527', 'AAHT002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260107/20260107143415249.png', '4', 'https://image.zlmicro.com/images/product/20260107/202601071434202358527.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '22', 'No', '0-255', '77 62 4d 53 45', '']
-Row 200: ['8530', '8530', 'ZATD095', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250527/20250527103137016.png', '3', 'https://image.zlmicro.com/images/product/20250527/202505271031508198530.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '102', 'No', '0-255', '77 62 4d 53 45', '']
-Row 201: ['8533', '8533', 'AASJ335', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251222/20251222093104133.png', '10', 'https://image.zlmicro.com/images/product/20251222/202512220931088048533.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '118', 'No', '0-255', '77 62 4d 53 45', '']
-Row 202: ['8534', '8534', 'AATD764', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250226/20250226150128460.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8534.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '297', 'No', '0-255', '77 62 4d 53 45', '']
-Row 203: ['8535', '8535', 'AATD421', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230918/20230918154446501.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8535.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '55', 'No', '0-255', '77 62 4d 53 45', '']
-Row 204: ['8538', '8538', 'AASJ204', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241009/20241009162441570.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8538.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '282', 'No', '0-255', '77 62 4d 53 45', '']
-Row 205: ['8540', '8540', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250616/20250616092111465.png', '3', 'https://image.zlmicro.com/images/product/20250616/202506160921365288540.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '93', 'No', '0-255', '77 62 4d 53 45', '']
-Row 206: ['8542', '8542', 'AAHT282', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240708/20240708094815534.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8542.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 207: ['8547', '8547', '20DH', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '20DH', 'https://image.zlmicro.com/images/product/20230227/20230227142545682.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8547.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '86', 'No', '0-255', '77 62 4d 53 45', '']
-Row 208: ['8548', '8548', 'ZESJ001', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231023/20231023142112720.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8548.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 209: ['8549', '8549', '兔子锁精环APP版', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '兔子锁精环APP版', 'https://image.zlmicro.com/images/product/20221216/20221216111154349.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8549.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '79', 'No', '0-255', '77 62 4d 53 45', '']
-Row 210: ['8551', '8551', 'AATD231', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230310/20230310094644447.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8551.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '48', 'No', '0-255', '77 62 4d 53 45', '']
-Row 211: ['8554', '8554', 'AAZD167', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250424/20250424161436394.png', '2', 'https://image.zlmicro.com/images/product/20250424/202504241614430548554.png', 'classic|finger|game|intera|music|shake|video|voice', '2.4G', '19', 'No', '0-255', '77 62 4d 53 45', '']
-Row 212: ['8558', '8558', 'ZATD089', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250311/20250311155856958.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8558.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '76', 'No', '0-255', '77 62 4d 53 45', '']
-Row 213: ['8559', '8559', 'AASJ315', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251029/20251029095557664.png', '10', 'https://image.zlmicro.com/images/product/20251029/202510290956116508559.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '342', 'No', '0-255', '77 62 4d 53 45', '']
-Row 214: ['8571', '8571', 'AACD008', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250709/20250709165631299.png', '7', 'https://image.zlmicro.com/images/product/20250709/202507091656359868571.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '52', 'No', '0-255', '77 62 4d 53 45', '']
-Row 215: ['8577', '8577', 'YCTD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230223/20230223115438914.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8577.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '48', 'No', '0-255', '77 62 4d 53 45', '']
-Row 216: ['8578', '8578', 'TD001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240618/20240618112431922.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8578.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '169', 'No', '0-255', '77 62 4d 53 45', '']
-Row 217: ['8579', '8579', 'B05', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'B05', 'https://image.zlmicro.com/images/product/20230630/20230630114711246.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8579.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '118', 'No', '0-255', '77 62 4d 53 45', '']
-Row 218: ['8587', '8587', 'O25', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'O25', 'https://image.zlmicro.com/images/product/20221008/20221008142528055.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8587.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '35', 'No', '0-255', '77 62 4d 53 45', '']
-Row 219: ['8588', '8588', '左拉测试8+8+8', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '左拉测试8+8+8', '', '0', 'https://image.zlmicro.com/images/product/qrcode/8588.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '192', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 220: ['8589', '8589', 'LBTYSJ001', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251031/20251031155531354.jpg', '10', 'https://image.zlmicro.com/images/product/20251031/202510311555392108589.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '107', 'No', '0-255', '77 62 4d 53 45', '']
-Row 221: ['8591', '8591', 'Bola Eléctrica', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '电击球', 'https://image.zlmicro.com/images/product/20230306/20230306160843919.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8591.png', 'classic|discharge|explore|finger|game|intera|music|shake|video', '2.4G', '162', 'No', '0-255', '77 62 4d 53 45', '']
-Row 222: ['8594', '8594', 'AAGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250825/20250825134125544.png', '13', 'https://image.zlmicro.com/images/product/20250825/202508251341311968594.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '253', 'No', '0-255', '77 62 4d 53 45', '']
-Row 223: ['8595', '8595', 'Tren de Potencia', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '动力火车', 'https://image.zlmicro.com/images/product/20230904/20230904130924551.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8595.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '82', 'No', '0-255', '77 62 4d 53 45', '']
-Row 224: ['8597', '8597', 'JCSJ002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241113/20241113172951688.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8597.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '82', 'No', '0-255', '77 62 4d 53 45', '']
-Row 225: ['8598', '8598', 'GM002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'GM002', 'https://image.zlmicro.com/images/product/20230408/20230408150656823.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8598.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '63', 'No', '0-255', '77 62 4d 53 45', '']
-Row 226: ['8599', '8599', 'ZATD068', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240902/20240902110406168.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8599.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '118', 'No', '0-255', '77 62 4d 53 45', '']
-Row 227: ['8700', '8700', 'HEGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230830/20230830140958158.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8700.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 228: ['8703', '8703', 'AAFJ110', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250117/20250117145536815.png', '1', 'https://image.zlmicro.com/images/product/qrcode/8703.png', 'classic|explore|finger|game|intera|music|shake|switch_voice|video|voice', '2.4G', '210', 'No', '0-255', '77 62 4d 53 45', '']
-Row 229: ['8704', '8704', 'AAGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241030/20241030100150388.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8704.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '19', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 230: ['8708', '8708', 'AAZD136', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241115/20241115101255847.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8708.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '57', 'No', '0-255', '77 62 4d 53 45', '']
-Row 231: ['8710', '8710', 'AATD656', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240905/20240905151559791.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8710.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '10', 'No', '0-255', '77 62 4d 53 45', '']
-Row 232: ['8711', '8711', 'AATD539', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240407/20240407144653047.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8711.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '93', 'No', '0-255', '77 62 4d 53 45', '']
-Row 233: ['8713', '8713', 'AASJ281', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250728/20250728161649257.png', '10', 'https://image.zlmicro.com/images/product/20250728/202507281616541608713.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '22', 'No', '0-255', '77 62 4d 53 45', '']
-Row 234: ['8715', '8715', 'ZAYJ018', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240330/20240330095137015.jpg', '8', 'https://image.zlmicro.com/images/product/qrcode/8715.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '284', 'No', '0-255', '77 62 4d 53 45', '']
-Row 235: ['8717', '8717', 'AATD004', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250430/20250430112750813.png', '3', 'https://image.zlmicro.com/images/product/20250430/202504301127589688717.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '158', 'No', '0-255', '77 62 4d 53 45', '']
-Row 236: ['8721', '8721', 'AAZD061', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230921/20230921171155434.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8721.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '216', 'No', '0-255', '77 62 4d 53 45', '']
-Row 237: ['8722', '8722', 'AR-043', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'AR-043', 'https://image.zlmicro.com/images/product/20230807/20230807160440935.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8722.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '28', 'No', '0-255', '77 62 4d 53 45', '']
-Row 238: ['8724', '8724', 'AASJ316', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251031/20251031110723950.png', '10', 'https://image.zlmicro.com/images/product/20251031/202510311107324928724.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '306', 'No', '0-255', '77 62 4d 53 45', '']
-Row 239: ['8728', '8728', '佩蒂JX035', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '佩蒂JX035', 'https://image.zlmicro.com/images/product/20211222/20211222111116994.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8728.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '28', 'No', '0-255', '77 62 4d 53 45', '']
-Row 240: ['8729', '8729', '贝挺3代', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '贝挺3代', 'https://image.zlmicro.com/images/product/20230223/20230223165935740.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8729.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '20', 'No', '0-255', '77 62 4d 53 45', '']
-Row 241: ['8731', '8731', 'BCHT003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231016/20231016111211010.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8731.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '243', 'No', '0-255', '77 62 4d 53 45', '']
-Row 242: ['8732', '8732', 'YCTD012', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230313/20230313151842024.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8732.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 243: ['8738', '8738', 'Xiao Lang Vestible', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '小浪扣动穿戴', 'https://image.zlmicro.com/images/product/20230728/20230728110119973.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8738.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '79', 'No', '0-255', '77 62 4d 53 45', '']
-Row 244: ['8740', '8740', 'Bola Mágica', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '魔法球', 'https://image.zlmicro.com/images/product/20211208/20211208110336317.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8740.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '32', 'No', '0-255', '77 62 4d 53 45', '']
-Row 245: ['8742', '8742', 'ZAZD056', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250303/20250303155210268.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8742.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '221', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 246: ['8745', '8745', 'ZAGS032', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260304/20260304113353334.png', '13', 'https://image.zlmicro.com/images/product/20260304/202603041134001368745.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '387', 'No', '0-255', '77 62 4d 53 45', '']
-Row 247: ['8747', '8747', 'AIS206', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'AIS206', 'https://image.zlmicro.com/images/product/20230407/20230407163309491.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8747.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '27', 'No', '0-255', '77 62 4d 53 45', '']
-Row 248: ['8749', '8749', 'PCBA-ZX-ZDT602(TD-C2)-M', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'PCBA-ZX-ZDT602(TD-C2)-M', 'https://image.zlmicro.com/images/product/20220730/20220730115549492.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8749.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '36', 'No', '0-255', '77 62 4d 53 45', '']
-Row 249: ['8754', '8754', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250526/20250526134750338.jpg', '3', 'https://image.zlmicro.com/images/product/20250526/202505261347595488754.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '356', 'No', '0-255', '77 62 4d 53 45', '']
-Row 250: ['8757', '8757', 'AAHT340', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250410/20250410173131879.png', '4', 'https://image.zlmicro.com/images/product/20250410/202504101731363368757.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '167', 'No', '0-255', '77 62 4d 53 45', '']
-Row 251: ['8759', '8759', 'Lao Sun Pendiente', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '老孙待定', 'https://image.zlmicro.com/images/product/20220826/20220826172922635.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8759.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '0', 'No', '0-255', '77 62 4d 53 45', '']
-Row 252: ['8770', '8770', 'AAFJ132', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251217/20251217094746290.jpg', '1', 'https://image.zlmicro.com/images/product/20251217/202512170947510328770.png', 'classic|finger|game|heating|intera|music|shake|video', '2.4G', '381', 'No', '0-255', '77 62 4d 53 45', '']
-Row 253: ['8772', '8772', 'ZATD081', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250303/20250303154559651.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8772.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '40', 'No', '0-255', '77 62 4d 53 45', '']
-Row 254: ['8773', '8773', 'Anal Retráctil Negro', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '中德黑色伸缩肛塞', 'https://image.zlmicro.com/images/product/20221115/20221115101531761.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8773.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '79', 'No', '0-255', '77 62 4d 53 45', '']
-Row 255: ['8777', '8777', 'AATD745', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241231/20241231110359401.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8777.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '335', 'No', '0-255', '77 62 4d 53 45', '']
-Row 256: ['8779', '8779', 'AAHT066', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20221201/20221201111133936.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8779.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '160', 'No', '0-255', '77 62 4d 53 45', '']
-Row 257: ['8780', '8780', '8+8+8加热', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '8+8+8加热', 'https://image.zlmicro.com/images/product/20241231/20241231161413269.jpg', '0', 'https://image.zlmicro.com/images/product/qrcode/8780.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '192', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 258: ['8783', '8783', 'ZAGS017', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240316/20240316105449128.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8783.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '277', 'No', '0-255', '77 62 4d 53 45', '']
-Row 259: ['8784', '8784', 'ZAHT102', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250715/20250715110514895.jpg', '4', 'https://image.zlmicro.com/images/product/20250715/202507151105205138784.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '158', 'No', '0-255', '77 62 4d 53 45', '']
-Row 260: ['8785', '8785', 'YEHT021', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231114/20231114095034101.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8785.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '14', 'No', '0-255', '77 62 4d 53 45', '']
-Row 261: ['8788', '8788', 'AASJ274', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250718/20250718110200147.png', '10', 'https://image.zlmicro.com/images/product/20250718/202507181102123458788.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '170', 'No', '0-255', '77 62 4d 53 45', '']
-Row 262: ['8791', '8791', 'ZAHT052', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231208/20231208135849620.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8791.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '92', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 263: ['8794', '8794', '23009', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', ' 23009', 'https://image.zlmicro.com/images/product/20230830/20230830141329895.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8794.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '24', 'No', '0-255', '77 62 4d 53 45', '']
-Row 264: ['8798', '8798', 'AATD337', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230612/20230612110502671.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8798.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '132', 'No', '0-255', '77 62 4d 53 45', '']
-Row 265: ['8800', '8800', 'AAZD031', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230407/20230407133606140.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8800.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '149', 'No', '0-255', '77 62 4d 53 45', '']
-Row 266: ['8802', '8802', 'AASJ328', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251210/20251210135213521.jpg', '10', 'https://image.zlmicro.com/images/product/20251210/202512101352204698802.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '149', 'No', '0-255', '77 62 4d 53 45', '']
-Row 267: ['8804', '8804', 'CAYJ008', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240708/20240708171324894.png', '8', 'https://image.zlmicro.com/images/product/qrcode/8804.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '299', 'No', '0-255', '77 62 4d 53 45', '']
-Row 268: ['8809', '8809', 'AAGS143', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241115/20241115101341682.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8809.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '57', 'No', '0-255', '77 62 4d 53 45', '']
-Row 269: ['8811', '8811', 'LCHT005', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230822/20230822134726908.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8811.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '162', 'No', '0-255', '77 62 4d 53 45', '']
-Row 270: ['8815', '8815', 'AATD593', 'Masculino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230310/20230310161219226.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8815.png', 'classic|explore|finger|game|intera|kegel|music|shake|trends|video', 'BLE', '45', 'No', '0-255', '77 62 4d 53 45', '']
-Row 271: ['8819', '8819', 'ZBZD005', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240625/20240625113855077.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8819.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '124', 'No', '0-255', '77 62 4d 53 45', '']
-Row 272: ['8820', '8820', 'AATD586', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240621/20240621173151761.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8820.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '78', 'No', '0-255', '77 62 4d 53 45', '']
-Row 273: ['8823', '8823', 'AAHT148', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230626/20230626114808261.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8823.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '220', 'No', '0-255', '77 62 4d 53 45', '']
-Row 274: ['8824', '8824', 'WFGS001', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230306/20230306154030510.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8824.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '184', 'No', '0-255', '77 62 4d 53 45', '']
-Row 275: ['8825', '8825', 'Código Prueba Doble Motor Estándar', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '标准双马达打样测试码', 'https://image.zlmicro.com/images/product/20220829/20220829120601099.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8825.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '45', 'No', '0-255', '77 62 4d 53 45', '']
-Row 276: ['8828', '8828', 'AAGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251201/20251201140634726.png', '13', 'https://image.zlmicro.com/images/product/20251201/202512011406425618828.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '104', 'No', '0-255', '77 62 4d 53 45', '']
-Row 277: ['8830', '8830', 'PN005', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'PN005', 'https://image.zlmicro.com/images/product/20220727/20220727095642946.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8830.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '110', 'No', '0-255', '77 62 4d 53 45', '']
-Row 278: ['8831', '8831', '优利卡-APP', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '优利卡-APP', 'https://image.zlmicro.com/images/product/20230506/20230506105440192.png', '8', 'https://image.zlmicro.com/images/product/qrcode/8831.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '125', 'No', '0-255', '77 62 4d 53 45', '']
-Row 279: ['8834', '8834', 'LATD008', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231114/20231114114303297.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8834.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '117', 'No', '0-255', '77 62 4d 53 45', '']
-Row 280: ['8837', '8837', 'AATD581', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240619/20240619092114836.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8837.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 281: ['8838', '8838', 'AATD373', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230613/20230613150134190.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8838.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '99', 'No', '0-255', '77 62 4d 53 45', '']
-Row 282: ['8842', '8842', 'Huevo Saltarín Cabeza Gato', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', ' 猫头跳蛋', 'https://image.zlmicro.com/images/product/20240417/20240417143816224.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8842.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '8', 'No', '0-255', '77 62 4d 53 45', '']
-Row 283: ['8848', '8848', 'AAZD209', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251111/20251111092407772.png', '2', 'https://image.zlmicro.com/images/product/20251111/202511110924133488848.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '104', 'No', '0-255', '77 62 4d 53 45', '']
-Row 284: ['8849', '8849', '0067', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '0067', 'https://image.zlmicro.com/images/product/20220426/20220426113539880.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8849.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '92', 'No', '0-255', '77 62 4d 53 45', '']
-Row 285: ['8852', '8852', 'ZASJ078', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251023/20251023101712350.png', '10', 'https://image.zlmicro.com/images/product/20251023/202510231017297668852.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '362', 'No', '0-255', '77 62 4d 53 45', '']
-Row 286: ['8853', '8853', 'AAHT231', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230410/20230410105523857.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8853.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '193', 'No', '0-255', '77 62 4d 53 45', '']
-Row 287: ['8854', '8854', 'AASJ207', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241017/20241017102613838.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8854.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '322', 'No', '0-255', '77 62 4d 53 45', '']
-Row 288: ['8857', '8857', 'AASJ272', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250718/20250718105258979.png', '10', 'https://image.zlmicro.com/images/product/20250718/202507181053047328857.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '228', 'No', '0-255', '77 62 4d 53 45', '']
-Row 289: ['8870', '8870', 'Rey del Ano', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '后庭王者', 'https://image.zlmicro.com/images/product/20220228/20220228145604612.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8870.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '91', 'No', '0-255', '77 62 4d 53 45', '']
-Row 290: ['8873', '8873', 'JBTD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250320/20250320113824762.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8873.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '19', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 291: ['8874', '8874', 'AAHT002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250814/20250814153846963.png', '4', 'https://image.zlmicro.com/images/product/20250814/202508141538586078874.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '158', 'No', '0-255', '77 62 4d 53 45', '']
-Row 292: ['8875', '8875', 'ZAHT058', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231123/20231123115058182.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8875.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 293: ['8880', '8880', 'AKSM-Xman023', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'AKSM-Xman023', 'https://image.zlmicro.com/images/product/20240316/20240316095909360.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8880.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '234', 'No', '0-255', '77 62 4d 53 45', '']
-Row 294: ['8884', '8884', '舌舔QZ-001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '舌舔QZ-001', 'https://image.zlmicro.com/images/product/20230106/20230106105522931.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8884.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '173', 'No', '0-255', '77 62 4d 53 45', '']
-Row 295: ['8885', '8885', 'AATD534', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240407/20240407101400055.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8885.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '170', 'No', '0-255', '77 62 4d 53 45', '']
-Row 296: ['8887', '8887', 'RPSJ004', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250619/20250619115914256.jpg', '10', 'https://image.zlmicro.com/images/product/20250619/202506191046255308887.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '107', 'No', '0-255', '77 62 4d 53 45', '']
-Row 297: ['8888', '8888', 'AAGS098', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20231214/20231214094616211.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8888.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '104', 'No', '0-255', '77 62 4d 53 45', '']
-Row 298: ['8889', '8889', 'ZASJ059', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250310/20250310141254575.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8889.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '118', 'No', '0-255', '77 62 4d 53 45', '']
-Row 299: ['8891', '8891', 'MQ-005', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'MQ-005', 'https://image.zlmicro.com/images/product/20230706/20230706133308305.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8891.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '20', 'No', '0-255', '77 62 4d 53 45', '']
-Row 300: ['8892', '8892', 'AS-AS433', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'AS-AS433', 'https://image.zlmicro.com/images/product/20230529/20230529113545324.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8892.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '27', 'No', '0-255', '77 62 4d 53 45', '']
-Row 301: ['8893', '8893', 'AATD564', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240521/20240521110039286.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8893.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '170', 'No', '0-255', '77 62 4d 53 45', '']
-Row 302: ['8894', '8894', 'AAHT312', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241112/20241112092120466.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8894.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '327', 'No', '0-255', '77 62 4d 53 45', '']
-Row 303: ['8895', '8895', 'XCM-202', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'XCM-202', 'https://image.zlmicro.com/images/product/20230608/20230608115035210.jpg', '2', 'https://image.zlmicro.com/images/product/qrcode/8895.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '76', 'No', '0-255', '77 62 4d 53 45', '']
-Row 304: ['8897', '8897', 'ZAHT082', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250224/20250224110238042.jpg', '4', 'https://image.zlmicro.com/images/product/qrcode/8897.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '110', 'No', '0-255', '77 62 4d 53 45', '']
-Row 305: ['8898', '8898', 'Doble Bola', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '双球', 'https://image.zlmicro.com/images/product/20211014/20211014112825593.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8898.png', 'classic|explore|finger|game|intera|music|video', '2.4G', '50', 'No', '0-255', '77 62 4b 96 65', '']
-Row 306: ['8899', '8899', 'AATD222', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230228/20230228173015785.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8899.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '177', 'No', '0-255', '77 62 4d 53 45', '']
-Row 307: ['8900', '8900', 'CD35', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'CD35', 'https://image.zlmicro.com/images/product/20230216/20230216164655458.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8900.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '76', 'No', '0-255', '77 62 4d 53 45', '']
-Row 308: ['8901', '8901', 'HESJ017', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230713/20230713164251961.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8901.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 309: ['8903', '8903', 'YDTD005', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230811/20230811133815220.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8903.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '117', 'No', '0-255', '77 62 4d 53 45', '']
-Row 310: ['8909', '8909', 'YDGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230816/20230816115114798.jpg', '13', 'https://image.zlmicro.com/images/product/qrcode/8909.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '145', 'No', '0-255', '77 62 4d 53 45', '']
-Row 311: ['8912', '8912', 'AAZD028', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230329/20230329174857722.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8912.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '22', 'No', '0-255', '77 62 4d 53 45', '']
-Row 312: ['8915', '8915', 'ZATD022', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20221110/20221110113934848.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8915.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '48', 'No', '0-255', '77 62 4d 53 45', '']
-Row 313: ['8923', '8923', 'AAZD105', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240614/20240614095032736.jpg', '2', 'https://image.zlmicro.com/images/product/qrcode/8923.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '291', 'No', '0-255', '77 62 4d 53 45', '']
-Row 314: ['8925', '8925', 'XMAN022', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'XMAN022', 'https://image.zlmicro.com/images/product/20231106/20231106111559084.jpg', '10', 'https://image.zlmicro.com/images/product/qrcode/8925.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '234', 'No', '0-255', '77 62 4d 53 45', '']
-Row 315: ['8929', '8929', 'AASJ261', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250606/20250606161135094.png', '10', 'https://image.zlmicro.com/images/product/20250606/202506061611421458929.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '158', 'No', '0-255', '77 62 4d 53 45', '']
-Row 316: ['8934', '8934', 'XDTD002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230919/20230919112946108.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8934.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '24', 'No', '0-255', '77 62 4d 53 45', '']
-Row 317: ['8935', '8935', 'Pequeño Delfín', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '小海豚', 'https://image.zlmicro.com/images/product/20230417/20230417110241382.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8935.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '151', 'No', '0-255', '77 62 4d 53 45', '']
-Row 318: ['8937', '8937', 'AAGS142', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241101/20241101115108549.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8937.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '303', 'No', '0-255', '77 62 4d 53 45', '']
-Row 319: ['8939', '8939', 'AAGS002', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20251112/20251112111343951.jpg', '13', 'https://image.zlmicro.com/images/product/20251112/202511121114044878939.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '370', 'No', '0-255', '77 62 4d 53 45', '']
-Row 320: ['8940', '8940', 'RASJ006', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230724/20230724141204238.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8940.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '157', 'No', '0-255', '77 62 4d 53 45', '']
-Row 321: ['8941', '8941', 'PCBA-FYX-LV610(CD-C2)-M', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', 'PCBA-FYX-LV610(CD-C2)-M', 'https://image.zlmicro.com/images/product/20221221/20221221143035153.png', '4', 'https://image.zlmicro.com/images/product/qrcode/8941.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '169', 'No', '0-255', '77 62 4d 53 45', '']
-Row 322: ['8942', '8942', 'AAZD118', 'Femenino', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240914/20240914163429563.png', '2', 'https://image.zlmicro.com/images/product/qrcode/8942.png', 'classic|explore|finger|game|heating|intera|music|shake|video', '2.4G', '8', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 323: ['8945', '8945', 'Xi Bao', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '喜宝', 'https://image.zlmicro.com/images/product/20260303/20260303145346387.png', '3', 'https://image.zlmicro.com/images/product/20260303/202603031453533798945.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '253', 'No', '0-255', '77 62 4d 53 45', '']
-Row 324: ['8947', '8947', 'ZASJ040', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240814/20240814094256402.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8947.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '158', 'No', '0-255', '77 62 4d 53 45', '']
-Row 325: ['8949', '8949', 'AATD343', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230619/20230619145958848.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8949.png', 'classic|explore|finger|game|intera|music|shake|tot|video', 'BLE', '192', 'No', '0-255', '77 62 4d 53 45', 'WB-FJB']
-Row 326: ['8952', '8952', 'B05', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', 'B05', 'https://image.zlmicro.com/images/product/20230629/20230629144842811.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8952.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '118', 'No', '0-255', '77 62 4d 53 45', '']
-Row 327: ['8958', '8958', 'AAGS104', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240221/20240221094311312.png', '13', 'https://image.zlmicro.com/images/product/qrcode/8958.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '228', 'No', '0-255', '77 62 4d 53 45', '']
-Row 328: ['8971', '8971', 'AATD003', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250718/20250718105322894.png', '3', 'https://image.zlmicro.com/images/product/20250718/202507181053304518971.png', 'classic|finger|game|intera|music|shake|video|voice', '2.4G', '124', 'No', '0-255', '77 62 4d 53 45', '']
-Row 329: ['8980', '8980', 'AAAA106', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', '', '0', 'https://image.zlmicro.com/images/product/qrcode/8980.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '192', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 330: ['8981', '8981', 'AAHT002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20260121/20260121100638742.png', '4', 'https://image.zlmicro.com/images/product/20260121/202601211006512968981.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '303', 'No', '0-255', '77 62 4d 53 45', '']
-Row 331: ['8984', '8984', 'AATD233', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230310/20230310162124714.jpg', '3', 'https://image.zlmicro.com/images/product/qrcode/8984.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '189', 'No', '0-255', '77 62 4d 53 45', '']
-Row 332: ['8987', '8987', 'AATD320', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20230531/20230531103500991.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8987.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '55', 'No', '0-255', '77 62 4d 53 45', '']
-Row 333: ['8988', '8988', 'FJ001', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240813/20240813155551572.png', '1', 'https://image.zlmicro.com/images/product/qrcode/8988.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '30', 'No', 'Estándar', '77 62 4d 53 45', '']
-Row 334: ['8989', '8989', 'AATD686', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20241011/20241011092616240.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8989.png', 'classic|explore|finger|game|intera|music|shake|video', '2.4G', '132', 'No', '0-255', '77 62 4d 53 45', '']
-Row 335: ['8995', '8995', 'YCSJ007', 'Universal', 'Anal', 'Vibración', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20240830/20240830172854562.png', '10', 'https://image.zlmicro.com/images/product/qrcode/8995.png', 'classic|explore|finger|game|intera|music|shake|video|voice', '2.4G', '30', 'No', '0-255', '77 62 4d 53 45', '']
-Row 336: ['8998', '8998', 'JBTD002', 'Universal', 'Anal', 'Interactivo', 'Dual Channel (0xD + 0xA)', '0', '', 'https://image.zlmicro.com/images/product/20250320/20250320113847554.png', '3', 'https://image.zlmicro.com/images/product/qrcode/8998.png', 'classic|finger|game|intera|music|shake|video', '2.4G', '19', 'No', 'Estándar', '77 62 4d 53 45', '']
+[
+  {
+    "id": "2510",
+    "model_name": "ZAGS016",
+    "usage_type": "external"
+  },
+  {
+    "id": "8589",
+    "model_name": "LBTYSJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "3541",
+    "model_name": "AAYJ031",
+    "usage_type": "internal"
+  },
+  {
+    "id": "4179",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "7719",
+    "model_name": "AAAA089",
+    "usage_type": "external"
+  },
+  {
+    "id": "2509",
+    "model_name": "ZATD018",
+    "usage_type": "external"
+  },
+  {
+    "id": "3082",
+    "model_name": "ZDHT014",
+    "usage_type": "external"
+  },
+  {
+    "id": "4000",
+    "model_name": "AASJ338",
+    "usage_type": "external"
+  },
+  {
+    "id": "8505",
+    "model_name": "AAZD221",
+    "usage_type": "external"
+  },
+  {
+    "id": "7718",
+    "model_name": "ZDHT015",
+    "usage_type": "external"
+  },
+  {
+    "id": "2195",
+    "model_name": "ZAZD050",
+    "usage_type": "external"
+  },
+  {
+    "id": "8249",
+    "model_name": "AASJ147",
+    "usage_type": "external"
+  },
+  {
+    "id": "7929",
+    "model_name": "YNHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "7492",
+    "model_name": "AAZD086",
+    "usage_type": "external"
+  },
+  {
+    "id": "4007",
+    "model_name": "AASJ292",
+    "usage_type": "external"
+  },
+  {
+    "id": "1010",
+    "model_name": "ZAZD053",
+    "usage_type": "external"
+  },
+  {
+    "id": "2505",
+    "model_name": "AATD435",
+    "usage_type": "external"
+  },
+  {
+    "id": "2521",
+    "model_name": "ZBTD023",
+    "usage_type": "external"
+  },
+  {
+    "id": "8509",
+    "model_name": "ZBTD002",
+    "usage_type": "external"
+  },
+  {
+    "id": "2538",
+    "model_name": "AATD462",
+    "usage_type": "external"
+  },
+  {
+    "id": "2548",
+    "model_name": "EATD006",
+    "usage_type": "external"
+  },
+  {
+    "id": "2549",
+    "model_name": "AATD713",
+    "usage_type": "external"
+  },
+  {
+    "id": "8530",
+    "model_name": "ZATD095",
+    "usage_type": "external"
+  },
+  {
+    "id": "8525",
+    "model_name": "AASJ017",
+    "usage_type": "external"
+  },
+  {
+    "id": "2529",
+    "model_name": "AAZD039",
+    "usage_type": "external"
+  },
+  {
+    "id": "7491",
+    "model_name": "ZDTD022",
+    "usage_type": "external"
+  },
+  {
+    "id": "8533",
+    "model_name": "AASJ335",
+    "usage_type": "external"
+  },
+  {
+    "id": "2553",
+    "model_name": "AAZD080",
+    "usage_type": "external"
+  },
+  {
+    "id": "3227",
+    "model_name": "AASJ025",
+    "usage_type": "external"
+  },
+  {
+    "id": "8548",
+    "model_name": "ZESJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8547",
+    "model_name": "JASJ007",
+    "usage_type": "external"
+  },
+  {
+    "id": "2581",
+    "model_name": "YEHT008",
+    "usage_type": "external"
+  },
+  {
+    "id": "8588",
+    "model_name": "AAAA094",
+    "usage_type": "external"
+  },
+  {
+    "id": "2535",
+    "model_name": "AASJ172",
+    "usage_type": "external"
+  },
+  {
+    "id": "4005",
+    "model_name": "GAYJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8512",
+    "model_name": "AAZD056",
+    "usage_type": "external"
+  },
+  {
+    "id": "2593",
+    "model_name": "AATD644",
+    "usage_type": "external"
+  },
+  {
+    "id": "8559",
+    "model_name": "AASJ315",
+    "usage_type": "external"
+  },
+  {
+    "id": "2508",
+    "model_name": "AAHT088",
+    "usage_type": "external"
+  },
+  {
+    "id": "2523",
+    "model_name": "RAHT006",
+    "usage_type": "external"
+  },
+  {
+    "id": "8538",
+    "model_name": "AASJ204",
+    "usage_type": "external"
+  },
+  {
+    "id": "2571",
+    "model_name": "AAZD055",
+    "usage_type": "external"
+  },
+  {
+    "id": "2589",
+    "model_name": "ZASJ007",
+    "usage_type": "external"
+  },
+  {
+    "id": "2513",
+    "model_name": "AAAA055",
+    "usage_type": "external"
+  },
+  {
+    "id": "4022",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "1442",
+    "model_name": "AAFJ008",
+    "usage_type": "external"
+  },
+  {
+    "id": "1444",
+    "model_name": "ZAZD043",
+    "usage_type": "external"
+  },
+  {
+    "id": "3774",
+    "model_name": "AATD348",
+    "usage_type": "external"
+  },
+  {
+    "id": "2248",
+    "model_name": "AAFJ131",
+    "usage_type": "external"
+  },
+  {
+    "id": "2321",
+    "model_name": "AAZD125",
+    "usage_type": "external"
+  },
+  {
+    "id": "3835",
+    "model_name": "ZDTD025",
+    "usage_type": "external"
+  },
+  {
+    "id": "4018",
+    "model_name": "ZASJ067",
+    "usage_type": "external"
+  },
+  {
+    "id": "3502",
+    "model_name": "BCHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "1415",
+    "model_name": "ZAYJ003",
+    "usage_type": "external"
+  },
+  {
+    "id": "8742",
+    "model_name": "ZAZD056",
+    "usage_type": "external"
+  },
+  {
+    "id": "9001",
+    "model_name": "AATD193",
+    "usage_type": "external"
+  },
+  {
+    "id": "4045",
+    "model_name": "AASJ139",
+    "usage_type": "external"
+  },
+  {
+    "id": "4055",
+    "model_name": "AAHT230",
+    "usage_type": "external"
+  },
+  {
+    "id": "2152",
+    "model_name": "AAZD074",
+    "usage_type": "external"
+  },
+  {
+    "id": "3737",
+    "model_name": "AATD340",
+    "usage_type": "external"
+  },
+  {
+    "id": "8780",
+    "model_name": "AAAA119",
+    "usage_type": "external"
+  },
+  {
+    "id": "3725",
+    "model_name": "ZAHT083",
+    "usage_type": "external"
+  },
+  {
+    "id": "8540",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4084",
+    "model_name": "YCSJ006",
+    "usage_type": "external"
+  },
+  {
+    "id": "8554",
+    "model_name": "AAZD167",
+    "usage_type": "external"
+  },
+  {
+    "id": "3522",
+    "model_name": "WGTD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8549",
+    "model_name": "CDSJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8571",
+    "model_name": "AACD008",
+    "usage_type": "external"
+  },
+  {
+    "id": "4083",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4092",
+    "model_name": "AAGS126",
+    "usage_type": "external"
+  },
+  {
+    "id": "2528",
+    "model_name": "AASJ061",
+    "usage_type": "external"
+  },
+  {
+    "id": "2550",
+    "model_name": "AAYJ007",
+    "usage_type": "internal"
+  },
+  {
+    "id": "4093",
+    "model_name": "HESJ009",
+    "usage_type": "external"
+  },
+  {
+    "id": "4021",
+    "model_name": "AAZD072",
+    "usage_type": "external"
+  },
+  {
+    "id": "3708",
+    "model_name": "AATD216",
+    "usage_type": "external"
+  },
+  {
+    "id": "8873",
+    "model_name": "JBTD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "8510",
+    "model_name": "HAHT003",
+    "usage_type": "external"
+  },
+  {
+    "id": "3878",
+    "model_name": "ZBSJ004",
+    "usage_type": "external"
+  },
+  {
+    "id": "4130",
+    "model_name": "AAHT054",
+    "usage_type": "external"
+  },
+  {
+    "id": "8895",
+    "model_name": "AAZD043",
+    "usage_type": "external"
+  },
+  {
+    "id": "8731",
+    "model_name": "BCHT003",
+    "usage_type": "external"
+  },
+  {
+    "id": "3575",
+    "model_name": "AATD145",
+    "usage_type": "external"
+  },
+  {
+    "id": "4033",
+    "model_name": "AAYJ016",
+    "usage_type": "external"
+  },
+  {
+    "id": "8320",
+    "model_name": "ZBTD012",
+    "usage_type": "external"
+  },
+  {
+    "id": "8885",
+    "model_name": "AATD534",
+    "usage_type": "external"
+  },
+  {
+    "id": "2545",
+    "model_name": "ZAHT043",
+    "usage_type": "external"
+  },
+  {
+    "id": "8715",
+    "model_name": "ZAYJ018",
+    "usage_type": "external"
+  },
+  {
+    "id": "4029",
+    "model_name": "AAGS154",
+    "usage_type": "external"
+  },
+  {
+    "id": "8520",
+    "model_name": "AAHT084",
+    "usage_type": "external"
+  },
+  {
+    "id": "8754",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "2594",
+    "model_name": "ZBGS005",
+    "usage_type": "external"
+  },
+  {
+    "id": "3721",
+    "model_name": "ZAHT011",
+    "usage_type": "external"
+  },
+  {
+    "id": "2547",
+    "model_name": "ZAHT014",
+    "usage_type": "external"
+  },
+  {
+    "id": "2575",
+    "model_name": "AAYJ066",
+    "usage_type": "internal"
+  },
+  {
+    "id": "8770",
+    "model_name": "AAFJ132",
+    "usage_type": "external"
+  },
+  {
+    "id": "8527",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "2534",
+    "model_name": "LCHT004",
+    "usage_type": "external"
+  },
+  {
+    "id": "8800",
+    "model_name": "AAZD031",
+    "usage_type": "external"
+  },
+  {
+    "id": "8802",
+    "model_name": "AASJ328",
+    "usage_type": "external"
+  },
+  {
+    "id": "4221",
+    "model_name": "AAAA092",
+    "usage_type": "external"
+  },
+  {
+    "id": "3717",
+    "model_name": "AAFJ048",
+    "usage_type": "external"
+  },
+  {
+    "id": "8729",
+    "model_name": "AAHT090",
+    "usage_type": "external"
+  },
+  {
+    "id": "8542",
+    "model_name": "AAHT282",
+    "usage_type": "external"
+  },
+  {
+    "id": "2592",
+    "model_name": "AAHT277",
+    "usage_type": "external"
+  },
+  {
+    "id": "8887",
+    "model_name": "RPSJ004",
+    "usage_type": "external"
+  },
+  {
+    "id": "4032",
+    "model_name": "EAHT014",
+    "usage_type": "external"
+  },
+  {
+    "id": "4039",
+    "model_name": "NAHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4050",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "3953",
+    "model_name": "YETD031",
+    "usage_type": "external"
+  },
+  {
+    "id": "8888",
+    "model_name": "AAGS098",
+    "usage_type": "external"
+  },
+  {
+    "id": "4071",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4082",
+    "model_name": "LAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4115",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4118",
+    "model_name": "MNHT005",
+    "usage_type": "external"
+  },
+  {
+    "id": "4500",
+    "model_name": "AAHT268",
+    "usage_type": "external"
+  },
+  {
+    "id": "4501",
+    "model_name": "AAHT271",
+    "usage_type": "external"
+  },
+  {
+    "id": "4330",
+    "model_name": "JAZD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "3823",
+    "model_name": "AAHT276",
+    "usage_type": "external"
+  },
+  {
+    "id": "4010",
+    "model_name": "ZAZD035",
+    "usage_type": "external"
+  },
+  {
+    "id": "8925",
+    "model_name": "AASJ131",
+    "usage_type": "external"
+  },
+  {
+    "id": "8947",
+    "model_name": "ZASJ040",
+    "usage_type": "external"
+  },
+  {
+    "id": "8929",
+    "model_name": "AASJ261",
+    "usage_type": "external"
+  },
+  {
+    "id": "8738",
+    "model_name": "ZBHT024",
+    "usage_type": "external"
+  },
+  {
+    "id": "8749",
+    "model_name": "AAHT041",
+    "usage_type": "external"
+  },
+  {
+    "id": "4015",
+    "model_name": "AASJ289",
+    "usage_type": "external"
+  },
+  {
+    "id": "2453",
+    "model_name": "AATD645",
+    "usage_type": "external"
+  },
+  {
+    "id": "8785",
+    "model_name": "YEHT021",
+    "usage_type": "external"
+  },
+  {
+    "id": "3592",
+    "model_name": "ZBTD009",
+    "usage_type": "external"
+  },
+  {
+    "id": "4023",
+    "model_name": "AAAA051",
+    "usage_type": "external"
+  },
+  {
+    "id": "4019",
+    "model_name": "AATD396",
+    "usage_type": "external"
+  },
+  {
+    "id": "4030",
+    "model_name": "AASJ300",
+    "usage_type": "external"
+  },
+  {
+    "id": "4031",
+    "model_name": "JATD002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4037",
+    "model_name": "ZAZD014",
+    "usage_type": "external"
+  },
+  {
+    "id": "4042",
+    "model_name": "ZASJ034",
+    "usage_type": "external"
+  },
+  {
+    "id": "3552",
+    "model_name": "AAHT233",
+    "usage_type": "external"
+  },
+  {
+    "id": "3923",
+    "model_name": "SCHTSJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4058",
+    "model_name": "HBZD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4048",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4049",
+    "model_name": "AASJ167",
+    "usage_type": "external"
+  },
+  {
+    "id": "4054",
+    "model_name": "KBSJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8811",
+    "model_name": "LCHT005",
+    "usage_type": "external"
+  },
+  {
+    "id": "4051",
+    "model_name": "AATD274",
+    "usage_type": "external"
+  },
+  {
+    "id": "4057",
+    "model_name": "AASJ253",
+    "usage_type": "external"
+  },
+  {
+    "id": "2489",
+    "model_name": "AAAA056",
+    "usage_type": "external"
+  },
+  {
+    "id": "8824",
+    "model_name": "WFGS001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8870",
+    "model_name": "EAHT004",
+    "usage_type": "external"
+  },
+  {
+    "id": "8872",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "3788",
+    "model_name": "EAHT009",
+    "usage_type": "external"
+  },
+  {
+    "id": "7579",
+    "model_name": "YCTD011",
+    "usage_type": "external"
+  },
+  {
+    "id": "4144",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "3758",
+    "model_name": "YCTD016",
+    "usage_type": "internal"
+  },
+  {
+    "id": "3570",
+    "model_name": "AATD071",
+    "usage_type": "external"
+  },
+  {
+    "id": "3874",
+    "model_name": "AAGS022",
+    "usage_type": "external"
+  },
+  {
+    "id": "1453",
+    "model_name": "AATD675",
+    "usage_type": "external"
+  },
+  {
+    "id": "4059",
+    "model_name": "AAGS096",
+    "usage_type": "external"
+  },
+  {
+    "id": "3743",
+    "model_name": "AATD165",
+    "usage_type": "external"
+  },
+  {
+    "id": "4704",
+    "model_name": "AAHT059",
+    "usage_type": "external"
+  },
+  {
+    "id": "4078",
+    "model_name": "AAZD075",
+    "usage_type": "external"
+  },
+  {
+    "id": "8745",
+    "model_name": "ZAGS032",
+    "usage_type": "external"
+  },
+  {
+    "id": "1579",
+    "model_name": "LCHT003",
+    "usage_type": "external"
+  },
+  {
+    "id": "3755",
+    "model_name": "CAHT007",
+    "usage_type": "internal"
+  },
+  {
+    "id": "4778",
+    "model_name": "AAHT154",
+    "usage_type": "external"
+  },
+  {
+    "id": "1045",
+    "model_name": "AATD302",
+    "usage_type": "external"
+  },
+  {
+    "id": "4781",
+    "model_name": "AAHT175",
+    "usage_type": "external"
+  },
+  {
+    "id": "4810",
+    "model_name": "AAHT317",
+    "usage_type": "external"
+  },
+  {
+    "id": "8700",
+    "model_name": "HEGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "1005",
+    "model_name": "ZBSJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "1009",
+    "model_name": "AATD640",
+    "usage_type": "external"
+  },
+  {
+    "id": "4094",
+    "model_name": "AAZD005",
+    "usage_type": "external"
+  },
+  {
+    "id": "3791",
+    "model_name": "ZBHT025",
+    "usage_type": "external"
+  },
+  {
+    "id": "4829",
+    "model_name": "AAZD133",
+    "usage_type": "external"
+  },
+  {
+    "id": "3822",
+    "model_name": "YCTD022",
+    "usage_type": "external"
+  },
+  {
+    "id": "4210",
+    "model_name": "SBYJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4214",
+    "model_name": "AAGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4104",
+    "model_name": "YFZD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4117",
+    "model_name": "MASJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4110",
+    "model_name": "ZBTD024",
+    "usage_type": "external"
+  },
+  {
+    "id": "4120",
+    "model_name": "ZAGS014",
+    "usage_type": "external"
+  },
+  {
+    "id": "4122",
+    "model_name": "AATD394",
+    "usage_type": "external"
+  },
+  {
+    "id": "1752",
+    "model_name": "AAFJ038",
+    "usage_type": "external"
+  },
+  {
+    "id": "4273",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "8892",
+    "model_name": "ZBZD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4284",
+    "model_name": "EASJ004",
+    "usage_type": "external"
+  },
+  {
+    "id": "3741",
+    "model_name": "XASJ004",
+    "usage_type": "external"
+  },
+  {
+    "id": "8354",
+    "model_name": "AATD153",
+    "usage_type": "external"
+  },
+  {
+    "id": "1088",
+    "model_name": "AAAA105",
+    "usage_type": "external"
+  },
+  {
+    "id": "8724",
+    "model_name": "AASJ316",
+    "usage_type": "external"
+  },
+  {
+    "id": "4129",
+    "model_name": "WBTD004",
+    "usage_type": "external"
+  },
+  {
+    "id": "4024",
+    "model_name": "WEZD006",
+    "usage_type": "external"
+  },
+  {
+    "id": "4072",
+    "model_name": "AAAA108",
+    "usage_type": "external"
+  },
+  {
+    "id": "8594",
+    "model_name": "AAGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8595",
+    "model_name": "AASJ122",
+    "usage_type": "external"
+  },
+  {
+    "id": "8597",
+    "model_name": "JCSJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4329",
+    "model_name": "RAGS005",
+    "usage_type": "external"
+  },
+  {
+    "id": "4507",
+    "model_name": "ZATD015",
+    "usage_type": "external"
+  },
+  {
+    "id": "4322",
+    "model_name": "AATD223",
+    "usage_type": "external"
+  },
+  {
+    "id": "4331",
+    "model_name": "AAZD204",
+    "usage_type": "external"
+  },
+  {
+    "id": "4334",
+    "model_name": "AASJ203",
+    "usage_type": "external"
+  },
+  {
+    "id": "4339",
+    "model_name": "AACD013",
+    "usage_type": "external"
+  },
+  {
+    "id": "8703",
+    "model_name": "AAFJ110",
+    "usage_type": "external"
+  },
+  {
+    "id": "1915",
+    "model_name": "AATD671",
+    "usage_type": "external"
+  },
+  {
+    "id": "4355",
+    "model_name": "ZAYJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8704",
+    "model_name": "AAGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "3845",
+    "model_name": "AATD743",
+    "usage_type": "external"
+  },
+  {
+    "id": "8708",
+    "model_name": "AAZD136",
+    "usage_type": "external"
+  },
+  {
+    "id": "2719",
+    "model_name": "EAZD006",
+    "usage_type": "external"
+  },
+  {
+    "id": "4272",
+    "model_name": "MAFJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4358",
+    "model_name": "AAZD196",
+    "usage_type": "external"
+  },
+  {
+    "id": "4375",
+    "model_name": "EAYJ005",
+    "usage_type": "external"
+  },
+  {
+    "id": "8713",
+    "model_name": "AASJ281",
+    "usage_type": "external"
+  },
+  {
+    "id": "1055",
+    "model_name": "EAHT005",
+    "usage_type": "external"
+  },
+  {
+    "id": "3702",
+    "model_name": "ZAHT073",
+    "usage_type": "external"
+  },
+  {
+    "id": "9023",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "8721",
+    "model_name": "AAZD061",
+    "usage_type": "external"
+  },
+  {
+    "id": "8908",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "8722",
+    "model_name": "ACGS001",
+    "usage_type": "external"
+  },
+  {
+    "id": "1144",
+    "model_name": "CBTD002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8909",
+    "model_name": "YDGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8773",
+    "model_name": "CDZD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "8783",
+    "model_name": "ZAGS017",
+    "usage_type": "external"
+  },
+  {
+    "id": "4379",
+    "model_name": "ZASJ041",
+    "usage_type": "external"
+  },
+  {
+    "id": "4509",
+    "model_name": "AAZD113",
+    "usage_type": "external"
+  },
+  {
+    "id": "8788",
+    "model_name": "AASJ274",
+    "usage_type": "external"
+  },
+  {
+    "id": "4398",
+    "model_name": "AAZD157",
+    "usage_type": "external"
+  },
+  {
+    "id": "8815",
+    "model_name": "AATD593",
+    "usage_type": "external"
+  },
+  {
+    "id": "8728",
+    "model_name": "ACTD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "3703",
+    "model_name": "AATD596",
+    "usage_type": "external"
+  },
+  {
+    "id": "8732",
+    "model_name": "YCTD012",
+    "usage_type": "external"
+  },
+  {
+    "id": "4432",
+    "model_name": "AAZD163",
+    "usage_type": "external"
+  },
+  {
+    "id": "4442",
+    "model_name": "BFGS001",
+    "usage_type": "external"
+  },
+  {
+    "id": "3527",
+    "model_name": "DAHT011",
+    "usage_type": "external"
+  },
+  {
+    "id": "3532",
+    "model_name": "AAHT206",
+    "usage_type": "external"
+  },
+  {
+    "id": "2251",
+    "model_name": "AAZD021",
+    "usage_type": "external"
+  },
+  {
+    "id": "3747",
+    "model_name": "AAAA104",
+    "usage_type": "internal"
+  },
+  {
+    "id": "4510",
+    "model_name": "XAGS003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4512",
+    "model_name": "AAYJ053",
+    "usage_type": "external"
+  },
+  {
+    "id": "3821",
+    "model_name": "XBHT002",
+    "usage_type": "internal"
+  },
+  {
+    "id": "3819",
+    "model_name": "AAFJ088",
+    "usage_type": "internal"
+  },
+  {
+    "id": "3595",
+    "model_name": "DAHT009",
+    "usage_type": "external"
+  },
+  {
+    "id": "8740",
+    "model_name": "EATD008",
+    "usage_type": "external"
+  },
+  {
+    "id": "4517",
+    "model_name": "BCZD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "3715",
+    "model_name": "AASJ066",
+    "usage_type": "external"
+  },
+  {
+    "id": "3581",
+    "model_name": "AAFJ059",
+    "usage_type": "external"
+  },
+  {
+    "id": "4840",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4848",
+    "model_name": "HT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4871",
+    "model_name": "AAHT038",
+    "usage_type": "external"
+  },
+  {
+    "id": "4872",
+    "model_name": "RAHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "1479",
+    "model_name": "YEHT009",
+    "usage_type": "external"
+  },
+  {
+    "id": "4941",
+    "model_name": "AAHT313",
+    "usage_type": "external"
+  },
+  {
+    "id": "4133",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "3547",
+    "model_name": "ZAHT015",
+    "usage_type": "external"
+  },
+  {
+    "id": "4983",
+    "model_name": "XAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "5003",
+    "model_name": "CDHT003",
+    "usage_type": "external"
+  },
+  {
+    "id": "3511",
+    "model_name": "AATD672",
+    "usage_type": "external"
+  },
+  {
+    "id": "5198",
+    "model_name": "AAAA121",
+    "usage_type": "external"
+  },
+  {
+    "id": "1401",
+    "model_name": "ZAHT018",
+    "usage_type": "external"
+  },
+  {
+    "id": "5723",
+    "model_name": "HAAA001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4702",
+    "model_name": "ZAGS011",
+    "usage_type": "external"
+  },
+  {
+    "id": "2587",
+    "model_name": "AATD124",
+    "usage_type": "external"
+  },
+  {
+    "id": "4708",
+    "model_name": "AASJ149",
+    "usage_type": "external"
+  },
+  {
+    "id": "8794",
+    "model_name": "AATD400",
+    "usage_type": "external"
+  },
+  {
+    "id": "4712",
+    "model_name": "ZDSJ008",
+    "usage_type": "external"
+  },
+  {
+    "id": "4824",
+    "model_name": "AAGS099",
+    "usage_type": "external"
+  },
+  {
+    "id": "8804",
+    "model_name": "CAYJ008",
+    "usage_type": "external"
+  },
+  {
+    "id": "3925",
+    "model_name": "RBHT001",
+    "usage_type": "internal"
+  },
+  {
+    "id": "8809",
+    "model_name": "AAGS143",
+    "usage_type": "external"
+  },
+  {
+    "id": "4832",
+    "model_name": "AAGS132",
+    "usage_type": "external"
+  },
+  {
+    "id": "8131",
+    "model_name": "YCGS001",
+    "usage_type": "external"
+  },
+  {
+    "id": "3955",
+    "model_name": "BFHT001",
+    "usage_type": "internal"
+  },
+  {
+    "id": "9042",
+    "model_name": "AATD110",
+    "usage_type": "external"
+  },
+  {
+    "id": "4859",
+    "model_name": "AATD288",
+    "usage_type": "external"
+  },
+  {
+    "id": "1473",
+    "model_name": "JAYJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "1001",
+    "model_name": "AAAA048",
+    "usage_type": "external"
+  },
+  {
+    "id": "1998",
+    "model_name": "AAZD010",
+    "usage_type": "external"
+  },
+  {
+    "id": "4923",
+    "model_name": "AAGS079",
+    "usage_type": "external"
+  },
+  {
+    "id": "8819",
+    "model_name": "ZBZD005",
+    "usage_type": "external"
+  },
+  {
+    "id": "4327",
+    "model_name": "AEHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4922",
+    "model_name": "MNTD006",
+    "usage_type": "external"
+  },
+  {
+    "id": "3872",
+    "model_name": "AAHT109",
+    "usage_type": "external"
+  },
+  {
+    "id": "3855",
+    "model_name": "YAZD002",
+    "usage_type": "external"
+  },
+  {
+    "id": "2853",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8831",
+    "model_name": "EAYJ004",
+    "usage_type": "external"
+  },
+  {
+    "id": "1429",
+    "model_name": "AAHT136",
+    "usage_type": "external"
+  },
+  {
+    "id": "4959",
+    "model_name": "HESJ024",
+    "usage_type": "external"
+  },
+  {
+    "id": "8848",
+    "model_name": "AAZD209",
+    "usage_type": "external"
+  },
+  {
+    "id": "5001",
+    "model_name": "TD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "5008",
+    "model_name": "AAAA054",
+    "usage_type": "external"
+  },
+  {
+    "id": "5011",
+    "model_name": "AATD573",
+    "usage_type": "external"
+  },
+  {
+    "id": "4589",
+    "model_name": "CBHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "5015",
+    "model_name": "AAGS109",
+    "usage_type": "external"
+  },
+  {
+    "id": "2759",
+    "model_name": "AAAA113",
+    "usage_type": "external"
+  },
+  {
+    "id": "7044",
+    "model_name": "AATD004",
+    "usage_type": "external"
+  },
+  {
+    "id": "7050",
+    "model_name": "AAZD088",
+    "usage_type": "external"
+  },
+  {
+    "id": "2731",
+    "model_name": "AAZD015",
+    "usage_type": "external"
+  },
+  {
+    "id": "1324",
+    "model_name": "AAHT032",
+    "usage_type": "external"
+  },
+  {
+    "id": "8820",
+    "model_name": "AATD586",
+    "usage_type": "external"
+  },
+  {
+    "id": "3809",
+    "model_name": "HT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "2588",
+    "model_name": "ZAHT024",
+    "usage_type": "external"
+  },
+  {
+    "id": "2557",
+    "model_name": "AATD468",
+    "usage_type": "external"
+  },
+  {
+    "id": "5111",
+    "model_name": "CBSJ003",
+    "usage_type": "external"
+  },
+  {
+    "id": "8032",
+    "model_name": "HATD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4320",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4288",
+    "model_name": "MATD005",
+    "usage_type": "external"
+  },
+  {
+    "id": "5114",
+    "model_name": "RPZD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "5500",
+    "model_name": "AATD168",
+    "usage_type": "external"
+  },
+  {
+    "id": "4453",
+    "model_name": "PBHT006",
+    "usage_type": "external"
+  },
+  {
+    "id": "3334",
+    "model_name": "AAZD008",
+    "usage_type": "external"
+  },
+  {
+    "id": "5208",
+    "model_name": "ZASJ046",
+    "usage_type": "external"
+  },
+  {
+    "id": "8825",
+    "model_name": "AATD148",
+    "usage_type": "external"
+  },
+  {
+    "id": "5214",
+    "model_name": "AAGS110",
+    "usage_type": "external"
+  },
+  {
+    "id": "1107",
+    "model_name": "PBHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8828",
+    "model_name": "AAGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "5225",
+    "model_name": "AASJ248",
+    "usage_type": "external"
+  },
+  {
+    "id": "5230",
+    "model_name": "AAFJ089",
+    "usage_type": "external"
+  },
+  {
+    "id": "5987",
+    "model_name": "AAFJ095",
+    "usage_type": "external"
+  },
+  {
+    "id": "5004",
+    "model_name": "ACZD005",
+    "usage_type": "external"
+  },
+  {
+    "id": "5305",
+    "model_name": "ZATD067",
+    "usage_type": "external"
+  },
+  {
+    "id": "5319",
+    "model_name": "AAFJ117",
+    "usage_type": "external"
+  },
+  {
+    "id": "1799",
+    "model_name": "AAZD153",
+    "usage_type": "external"
+  },
+  {
+    "id": "5339",
+    "model_name": "AATD517",
+    "usage_type": "external"
+  },
+  {
+    "id": "5351",
+    "model_name": "BFSJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "5390",
+    "model_name": "AASJ306",
+    "usage_type": "external"
+  },
+  {
+    "id": "8852",
+    "model_name": "ZASJ078",
+    "usage_type": "external"
+  },
+  {
+    "id": "1417",
+    "model_name": "KAHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8849",
+    "model_name": "AATD109",
+    "usage_type": "external"
+  },
+  {
+    "id": "8854",
+    "model_name": "AASJ207",
+    "usage_type": "external"
+  },
+  {
+    "id": "5391",
+    "model_name": "AAGS082",
+    "usage_type": "external"
+  },
+  {
+    "id": "8759",
+    "model_name": "AAHT047",
+    "usage_type": "external"
+  },
+  {
+    "id": "7002",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4820",
+    "model_name": "AAHT310",
+    "usage_type": "external"
+  },
+  {
+    "id": "7003",
+    "model_name": "AAFJ015",
+    "usage_type": "external"
+  },
+  {
+    "id": "5410",
+    "model_name": "AAZD024",
+    "usage_type": "external"
+  },
+  {
+    "id": "3910",
+    "model_name": "AAYJ060",
+    "usage_type": "external"
+  },
+  {
+    "id": "5413",
+    "model_name": "AATD255",
+    "usage_type": "external"
+  },
+  {
+    "id": "5447",
+    "model_name": "AAYJ035",
+    "usage_type": "external"
+  },
+  {
+    "id": "9412",
+    "model_name": "ZBTD011",
+    "usage_type": "external"
+  },
+  {
+    "id": "8857",
+    "model_name": "AASJ272",
+    "usage_type": "external"
+  },
+  {
+    "id": "8880",
+    "model_name": "AATD519",
+    "usage_type": "external"
+  },
+  {
+    "id": "8884",
+    "model_name": "LCTD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4175",
+    "model_name": "DAHT004",
+    "usage_type": "external"
+  },
+  {
+    "id": "5454",
+    "model_name": "ZASJ033",
+    "usage_type": "external"
+  },
+  {
+    "id": "5130",
+    "model_name": "FJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "2803",
+    "model_name": "AAZD084",
+    "usage_type": "external"
+  },
+  {
+    "id": "1040",
+    "model_name": "AAHT244",
+    "usage_type": "external"
+  },
+  {
+    "id": "5497",
+    "model_name": "AADM001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8889",
+    "model_name": "ZASJ059",
+    "usage_type": "external"
+  },
+  {
+    "id": "8891",
+    "model_name": "NASJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "1043",
+    "model_name": "AAHT124",
+    "usage_type": "external"
+  },
+  {
+    "id": "7080",
+    "model_name": "ZAYJ020",
+    "usage_type": "external"
+  },
+  {
+    "id": "7581",
+    "model_name": "PBTD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4571",
+    "model_name": "LCYJ005",
+    "usage_type": "external"
+  },
+  {
+    "id": "8893",
+    "model_name": "AATD564",
+    "usage_type": "external"
+  },
+  {
+    "id": "8901",
+    "model_name": "HESJ017",
+    "usage_type": "external"
+  },
+  {
+    "id": "8899",
+    "model_name": "AATD222",
+    "usage_type": "external"
+  },
+  {
+    "id": "8912",
+    "model_name": "AAZD028",
+    "usage_type": "external"
+  },
+  {
+    "id": "4371",
+    "model_name": "AAAA067",
+    "usage_type": "external"
+  },
+  {
+    "id": "4378",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "3997",
+    "model_name": "AATD731",
+    "usage_type": "external"
+  },
+  {
+    "id": "5511",
+    "model_name": "AACD011",
+    "usage_type": "external"
+  },
+  {
+    "id": "4170",
+    "model_name": "ZDFJ002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8923",
+    "model_name": "AAZD105",
+    "usage_type": "external"
+  },
+  {
+    "id": "5509",
+    "model_name": "AATD361",
+    "usage_type": "external"
+  },
+  {
+    "id": "3932",
+    "model_name": "ZBYJ001",
+    "usage_type": "internal"
+  },
+  {
+    "id": "8937",
+    "model_name": "AAGS142",
+    "usage_type": "external"
+  },
+  {
+    "id": "5529",
+    "model_name": "AASJ280",
+    "usage_type": "external"
+  },
+  {
+    "id": "3297",
+    "model_name": "AAZD151",
+    "usage_type": "external"
+  },
+  {
+    "id": "8939",
+    "model_name": "AAGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "5530",
+    "model_name": "AAAA132",
+    "usage_type": "external"
+  },
+  {
+    "id": "3308",
+    "model_name": "WEZD007",
+    "usage_type": "external"
+  },
+  {
+    "id": "8940",
+    "model_name": "RASJ006",
+    "usage_type": "external"
+  },
+  {
+    "id": "8942",
+    "model_name": "AAZD118",
+    "usage_type": "external"
+  },
+  {
+    "id": "3811",
+    "model_name": "AASJ180",
+    "usage_type": "external"
+  },
+  {
+    "id": "3827",
+    "model_name": "AASJ098",
+    "usage_type": "external"
+  },
+  {
+    "id": "5583",
+    "model_name": "WEPJ001",
+    "usage_type": "external"
+  },
+  {
+    "id": "5585",
+    "model_name": "YLZD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "3990",
+    "model_name": "AAHT002",
+    "usage_type": "internal"
+  },
+  {
+    "id": "3957",
+    "model_name": "JBFJ001",
+    "usage_type": "internal"
+  },
+  {
+    "id": "8757",
+    "model_name": "AAHT340",
+    "usage_type": "external"
+  },
+  {
+    "id": "3473",
+    "model_name": "AATD642",
+    "usage_type": "external"
+  },
+  {
+    "id": "5773",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4441",
+    "model_name": "AAFJ074",
+    "usage_type": "external"
+  },
+  {
+    "id": "5778",
+    "model_name": "AAGS063",
+    "usage_type": "external"
+  },
+  {
+    "id": "5802",
+    "model_name": "AATD466",
+    "usage_type": "external"
+  },
+  {
+    "id": "3005",
+    "model_name": "ACHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "5255",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "3528",
+    "model_name": "ZAHT086",
+    "usage_type": "external"
+  },
+  {
+    "id": "3504",
+    "model_name": "AATD705",
+    "usage_type": "external"
+  },
+  {
+    "id": "3517",
+    "model_name": "AATD570",
+    "usage_type": "external"
+  },
+  {
+    "id": "3529",
+    "model_name": "YETD024",
+    "usage_type": "external"
+  },
+  {
+    "id": "3500",
+    "model_name": "AAZD049",
+    "usage_type": "external"
+  },
+  {
+    "id": "8779",
+    "model_name": "AAHT066",
+    "usage_type": "external"
+  },
+  {
+    "id": "5270",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "5508",
+    "model_name": "CAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8823",
+    "model_name": "AAHT148",
+    "usage_type": "external"
+  },
+  {
+    "id": "5522",
+    "model_name": "AAHT269",
+    "usage_type": "external"
+  },
+  {
+    "id": "7071",
+    "model_name": "ZASJ050",
+    "usage_type": "external"
+  },
+  {
+    "id": "7913",
+    "model_name": "AAYJ013",
+    "usage_type": "external"
+  },
+  {
+    "id": "8853",
+    "model_name": "AAHT231",
+    "usage_type": "external"
+  },
+  {
+    "id": "5572",
+    "model_name": "AAHT048",
+    "usage_type": "external"
+  },
+  {
+    "id": "5588",
+    "model_name": "ZBHT017",
+    "usage_type": "external"
+  },
+  {
+    "id": "8874",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "8894",
+    "model_name": "AAHT312",
+    "usage_type": "external"
+  },
+  {
+    "id": "1398",
+    "model_name": "AAHT051",
+    "usage_type": "external"
+  },
+  {
+    "id": "3770",
+    "model_name": "AAZD083",
+    "usage_type": "internal"
+  },
+  {
+    "id": "4534",
+    "model_name": "AASJ326",
+    "usage_type": "external"
+  },
+  {
+    "id": "8042",
+    "model_name": "WFTD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "5977",
+    "model_name": "AAHT261",
+    "usage_type": "external"
+  },
+  {
+    "id": "5984",
+    "model_name": "MNHT003",
+    "usage_type": "external"
+  },
+  {
+    "id": "5995",
+    "model_name": "AAHT227",
+    "usage_type": "external"
+  },
+  {
+    "id": "1395",
+    "model_name": "AATD649",
+    "usage_type": "external"
+  },
+  {
+    "id": "1397",
+    "model_name": "LATD007",
+    "usage_type": "external"
+  },
+  {
+    "id": "1402",
+    "model_name": "ACZD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "3853",
+    "model_name": "TD001",
+    "usage_type": "internal"
+  },
+  {
+    "id": "7087",
+    "model_name": "YEHT012",
+    "usage_type": "external"
+  },
+  {
+    "id": "4582",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4879",
+    "model_name": "AAHT224",
+    "usage_type": "external"
+  },
+  {
+    "id": "4880",
+    "model_name": "ABHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "7048",
+    "model_name": "AAHT099",
+    "usage_type": "external"
+  },
+  {
+    "id": "2720",
+    "model_name": "AAHT344",
+    "usage_type": "external"
+  },
+  {
+    "id": "7085",
+    "model_name": "AATD693",
+    "usage_type": "external"
+  },
+  {
+    "id": "1034",
+    "model_name": "HETD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "2839",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "7782",
+    "model_name": "AAFJ025",
+    "usage_type": "external"
+  },
+  {
+    "id": "3580",
+    "model_name": "AAGS091",
+    "usage_type": "external"
+  },
+  {
+    "id": "7851",
+    "model_name": "AAZD096",
+    "usage_type": "external"
+  },
+  {
+    "id": "4207",
+    "model_name": "AAHT190",
+    "usage_type": "external"
+  },
+  {
+    "id": "4155",
+    "model_name": "AAAA040",
+    "usage_type": "external"
+  },
+  {
+    "id": "1497",
+    "model_name": "AASJ099",
+    "usage_type": "external"
+  },
+  {
+    "id": "3477",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "3481",
+    "model_name": "AAHT263",
+    "usage_type": "external"
+  },
+  {
+    "id": "1042",
+    "model_name": "AAFJ044",
+    "usage_type": "external"
+  },
+  {
+    "id": "3924",
+    "model_name": "AAHT036",
+    "usage_type": "internal"
+  },
+  {
+    "id": "1049",
+    "model_name": "AAZD132",
+    "usage_type": "external"
+  },
+  {
+    "id": "5059",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "1050",
+    "model_name": "EAHT008",
+    "usage_type": "external"
+  },
+  {
+    "id": "7313",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "7327",
+    "model_name": "AAHT324",
+    "usage_type": "external"
+  },
+  {
+    "id": "4217",
+    "model_name": "EAHT006",
+    "usage_type": "external"
+  },
+  {
+    "id": "7330",
+    "model_name": "AAHT105",
+    "usage_type": "external"
+  },
+  {
+    "id": "8111",
+    "model_name": "AAPJ008",
+    "usage_type": "external"
+  },
+  {
+    "id": "1039",
+    "model_name": "AATD175",
+    "usage_type": "external"
+  },
+  {
+    "id": "3892",
+    "model_name": "LCYJ006",
+    "usage_type": "external"
+  },
+  {
+    "id": "5178",
+    "model_name": "AAHT204",
+    "usage_type": "external"
+  },
+  {
+    "id": "5735",
+    "model_name": "JBZD001",
+    "usage_type": "external"
+  },
+  {
+    "id": "4593",
+    "model_name": "ZBHT004",
+    "usage_type": "external"
+  },
+  {
+    "id": "4591",
+    "model_name": "AAGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "2020",
+    "model_name": "AAFJ009",
+    "usage_type": "external"
+  },
+  {
+    "id": "4782",
+    "model_name": "AASJ109",
+    "usage_type": "external"
+  },
+  {
+    "id": "7443",
+    "model_name": "AAHT293",
+    "usage_type": "external"
+  },
+  {
+    "id": "7497",
+    "model_name": "AAHT177",
+    "usage_type": "external"
+  },
+  {
+    "id": "4418",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4443",
+    "model_name": "AAHT150",
+    "usage_type": "external"
+  },
+  {
+    "id": "7527",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "7530",
+    "model_name": "AAHT029",
+    "usage_type": "external"
+  },
+  {
+    "id": "4184",
+    "model_name": "AASJ244",
+    "usage_type": "external"
+  },
+  {
+    "id": "4185",
+    "model_name": "AAGS145",
+    "usage_type": "external"
+  },
+  {
+    "id": "7944",
+    "model_name": "AAHT127",
+    "usage_type": "external"
+  },
+  {
+    "id": "1580",
+    "model_name": "DATD010",
+    "usage_type": "external"
+  },
+  {
+    "id": "4714",
+    "model_name": "AAHT297",
+    "usage_type": "external"
+  },
+  {
+    "id": "1854",
+    "model_name": "AATD240",
+    "usage_type": "external"
+  },
+  {
+    "id": "4731",
+    "model_name": "AAHT039",
+    "usage_type": "external"
+  },
+  {
+    "id": "4737",
+    "model_name": "AAHT045",
+    "usage_type": "external"
+  },
+  {
+    "id": "4819",
+    "model_name": "AAHT272",
+    "usage_type": "external"
+  },
+  {
+    "id": "1013",
+    "model_name": "AAGS002",
+    "usage_type": "external"
+  },
+  {
+    "id": "2782",
+    "model_name": "TEFJ012",
+    "usage_type": "external"
+  },
+  {
+    "id": "8041",
+    "model_name": "RAHT007",
+    "usage_type": "external"
+  },
+  {
+    "id": "1017",
+    "model_name": "AAYJ020",
+    "usage_type": "external"
+  },
+  {
+    "id": "8083",
+    "model_name": "YEHT022",
+    "usage_type": "external"
+  },
+  {
+    "id": "8298",
+    "model_name": "ZBHT010",
+    "usage_type": "external"
+  },
+  {
+    "id": "1021",
+    "model_name": "AAFJ133",
+    "usage_type": "external"
+  },
+  {
+    "id": "3797",
+    "model_name": "ZDZD006",
+    "usage_type": "external"
+  },
+  {
+    "id": "3815",
+    "model_name": "ZBTD018",
+    "usage_type": "external"
+  },
+  {
+    "id": "4743",
+    "model_name": "AADM014",
+    "usage_type": "external"
+  },
+  {
+    "id": "3825",
+    "model_name": "AAAA125",
+    "usage_type": "external"
+  },
+  {
+    "id": "7941",
+    "model_name": "ZASJ069",
+    "usage_type": "external"
+  },
+  {
+    "id": "8370",
+    "model_name": "AAHT111",
+    "usage_type": "external"
+  },
+  {
+    "id": "4201",
+    "model_name": "AAYJ011",
+    "usage_type": "external"
+  },
+  {
+    "id": "4208",
+    "model_name": "GS001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8381",
+    "model_name": "XDHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "3537",
+    "model_name": "AAGS105",
+    "usage_type": "external"
+  },
+  {
+    "id": "3573",
+    "model_name": "AAGS111",
+    "usage_type": "external"
+  },
+  {
+    "id": "8448",
+    "model_name": "SCHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "8450",
+    "model_name": "AAHT205",
+    "usage_type": "external"
+  },
+  {
+    "id": "9084",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4244",
+    "model_name": "AASJ210",
+    "usage_type": "external"
+  },
+  {
+    "id": "4250",
+    "model_name": "AAGS008",
+    "usage_type": "external"
+  },
+  {
+    "id": "9085",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4310",
+    "model_name": "ZASJ038",
+    "usage_type": "external"
+  },
+  {
+    "id": "2253",
+    "model_name": "ACHT004",
+    "usage_type": "external"
+  },
+  {
+    "id": "7577",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  },
+  {
+    "id": "4314",
+    "model_name": "AASJ049",
+    "usage_type": "external"
+  },
+  {
+    "id": "4318",
+    "model_name": "HEZD002",
+    "usage_type": "external"
+  },
+  {
+    "id": "7771",
+    "model_name": "ACZD010",
+    "usage_type": "external"
+  },
+  {
+    "id": "9431",
+    "model_name": "ACHT001",
+    "usage_type": "external"
+  },
+  {
+    "id": "7351",
+    "model_name": "AAHT192",
+    "usage_type": "external"
+  },
+  {
+    "id": "4807",
+    "model_name": "AATD003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4347",
+    "model_name": "AAGS013",
+    "usage_type": "external"
+  },
+  {
+    "id": "4352",
+    "model_name": "CBYJ003",
+    "usage_type": "external"
+  },
+  {
+    "id": "4220",
+    "model_name": "AAHT020",
+    "usage_type": "external"
+  },
+  {
+    "id": "4224",
+    "model_name": "AAHT002",
+    "usage_type": "external"
+  }
+]

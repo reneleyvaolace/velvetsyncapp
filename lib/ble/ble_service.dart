@@ -211,7 +211,11 @@ class BleService extends ChangeNotifier {
 
   // Log - 🔒 PERFORMANCE: Limitado a 100 entradas para prevenir memory growth
   final List<LogEntry> _logs = [];
-  List<LogEntry> get logs => _logs.skip(_logs.length.clamp(0, _logs.length - 100)).toList();
+  List<LogEntry> get logs {
+    final maxLogs = 100;
+    if (_logs.length <= maxLogs) return List.from(_logs);
+    return _logs.sublist(_logs.length - maxLogs);
+  }
 
   // ── Secuenciador Asíncrono ─────────────────────────────────
   WaveType activeWaveCh1 = WaveType.none;

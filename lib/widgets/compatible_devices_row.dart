@@ -22,7 +22,10 @@ class CompatibleDevicesRow extends ConsumerWidget {
     final toys = ref.watch(serverCatalogProvider);
     final isLoading = ref.watch(catalogLoadingProvider);
 
-    // ✨ FIX: Siempre hay dispositivos disponibles inmediatamente
+    // ✨ FIX: Validar que haya dispositivos antes de renderizar
+    if (toys.isEmpty) {
+      return const SizedBox.shrink(); // Evitar errores si está vacío
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -237,20 +237,21 @@ class SessionTimerService extends ChangeNotifier {
     _saveToPrefs();
     notifyListeners();
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
-        notifyListeners();
-        _saveToPrefs();
 
-        // Notificación de advertencia (último minuto)
+        if (_remainingSeconds % 10 == 0) {
+          await _saveToPrefs();
+        }
+        notifyListeners();
+
         if (_remainingSeconds == 60) {
           lvsLog('⚠️ ADVERTENCIA: Queda 1 minuto de sesión', tag: 'TIMER');
         } else if (_remainingSeconds == 10) {
           lvsLog('⚠️ ATENCIÓN: Quedan 10 segundos', tag: 'TIMER');
         }
       } else {
-        // Tiempo expirado
         timer.cancel();
         _onTimeExpired();
       }
@@ -338,90 +339,95 @@ Future<int?> showSessionTimerDialog(BuildContext context) async {
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Color(0xFF1A1A2E), width: 1),
         ),
-        title: const Row(
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.timer_outlined, color: Color(0xFFFF1493), size: 28),
-            SizedBox(width: 12),
-            Text(
-              'TEMPORIZADOR DE SESIÓN',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2,
-                color: Colors.white,
+            const Icon(Icons.timer_outlined, color: Color(0xFFFF1493), size: 20),
+            const SizedBox(width: 8),
+            const Expanded(
+              child: Text(
+                'TEMPORIZADOR DE SESIÓN',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                  color: Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Selecciona la duración de la sesión',
-              style: TextStyle(color: Color(0xFF888899), fontSize: 11),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            // Selector de minutos
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF12121F),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF1A1A2E)),
+        content: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+            maxHeight: 250, // Finite height for safety
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Selecciona la duración de la sesión',
+                style: TextStyle(color: Color(0xFF888899), fontSize: 10),
+                textAlign: TextAlign.center,
               ),
-              child: ListWheelScrollView.useDelegate(
-                itemExtent: 40,
-                physics: const FixedExtentScrollPhysics(),
-                onSelectedItemChanged: (index) {
-                  setDialogState(() {
-                    selectedMinutes = (index + 1) * 5;
-                  });
-                },
-                childDelegate: ListWheelChildBuilderDelegate(
-                  builder: (context, index) {
-                    final minutes = (index + 1) * 5;
-                    final isSelected = minutes == selectedMinutes;
-                    return Center(
-                      child: Text(
-                        '$minutes min',
-                        style: TextStyle(
-                          fontSize: isSelected ? 20 : 14,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          color: isSelected ? const Color(0xFFFF1493) : const Color(0xFF888899),
-                        ),
-                      ),
-                    );
+              const SizedBox(height: 12),
+              // Selector de minutos
+              Container(
+                height: 120,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF12121F),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF1A1A2E)),
+                ),
+                child: ListWheelScrollView.useDelegate(
+                  itemExtent: 32,
+                  physics: const FixedExtentScrollPhysics(),
+                  onSelectedItemChanged: (index) {
+                    setDialogState(() {
+                      selectedMinutes = (index + 1) * 5;
+                    });
                   },
-                  childCount: 24, // 5 a 120 minutos
+                  childDelegate: ListWheelChildBuilderDelegate(
+                    builder: (context, index) {
+                      final minutes = (index + 1) * 5;
+                      final isSelected = minutes == selectedMinutes;
+                      return Center(
+                        child: Text(
+                          '$minutes min',
+                          style: TextStyle(
+                            fontSize: isSelected ? 16 : 12,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected ? const Color(0xFFFF1493) : const Color(0xFF888899),
+                          ),
+                        ),
+                      );
+                    },
+                    childCount: 24, // 5 a 120 minutos
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            // Vista previa
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF12121F).withOpacity(0.5),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'Duración: $selectedMinutes minutos',
+              const SizedBox(height: 8),
+              // Vista previa
+              Text(
+                '$selectedMinutes min',
                 style: const TextStyle(
                   color: Color(0xFFFF1493),
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, null),
             child: const Text(
               'CANCELAR',
-              style: TextStyle(color: Color(0xFF888899), fontSize: 12),
+              style: TextStyle(color: Color(0xFF888899), fontSize: 11),
             ),
           ),
           ElevatedButton(
@@ -432,13 +438,13 @@ Future<int?> showSessionTimerDialog(BuildContext context) async {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
             ),
             child: const Text(
               'INICIAR',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 11,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1,
               ),
             ),
           ),

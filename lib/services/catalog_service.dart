@@ -108,6 +108,10 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
   // v3.2.0: Ahora el estado del proveedor SOLO muestra los pre-registrados
   // para cumplir con la petición de "no cargar ninguno hasta que se dé de alta".
   List<ToyModel> _merged() {
+    // Si no hay pre-registrados, retornar al menos el fallback local
+    if (_preregisteredList.isEmpty) {
+      return lvsLocalFallback;
+    }
     return _preregisteredList;
   }
 
@@ -117,12 +121,15 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
     // FASE 1: Usar catálogo local inmediato
     final fallback = List<ToyModel>.from(lvsLocalFallback)..shuffle();
     final sample = fallback.take(5).toList();
-    
+
     _serverCatalog = fallback;
     // Usamos microtask para no interferir con el ciclo de construcción de Riverpod
     Future.microtask(() => _ref.read(serverCatalogProvider.notifier).updateCatalog(sample));
-    
+
     state = AsyncValue.data(_merged());
+
+    // Asegurar que el loading se resetee antes de cargar desde Supabase
+    _ref.read(catalogLoadingProvider.notifier).state = false;
 
     // FASE 2: Cargar desde Supabase en segundo plano
     _loadFromSupabaseInBackground();
@@ -164,16 +171,17 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
           } catch (_) {}
         }
         if (changed) await _savePreregistered();
-        
+
         lvsLog('✅ Catálogo actualizado: ${toys.length} dispositivos, mostrando 5 aleatorios', tag: 'CATALOG');
       } else {
         lvsLog('⚠️ Supabase devolvió vacío, manteniendo fallback local', tag: 'CATALOG');
       }
-      
-      // Carga completada
+
+      // Carga completada - siempre asegurar que loading sea false
       _ref.read(catalogLoadingProvider.notifier).state = false;
     } catch (e) {
       lvsLog('❌ Error cargando catálogo: $e', tag: 'CATALOG');
+      // En caso de error, también asegurar que loading sea false
       _ref.read(catalogLoadingProvider.notifier).state = false;
     }
   }

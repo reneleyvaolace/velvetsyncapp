@@ -38,10 +38,10 @@ class KegelScreen extends ConsumerStatefulWidget {
 class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProviderStateMixin {
   late AnimationController _progressController;
   Timer? _timer;
-  
-  KegelLevel _selectedLevel = kegelLevels[0];
+
+  KegelLevel? _selectedLevel;
   KegelPhase _currentPhase = KegelPhase.ready;
-  
+
   int _currentRep = 0;
   int _secondsRemaining = 0;
   bool _isRunning = false;
@@ -53,6 +53,10 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
+    // Inicializar con el primer nivel si existe
+    if (kegelLevels.isNotEmpty) {
+      _selectedLevel = kegelLevels.first;
+    }
   }
 
   @override
@@ -64,10 +68,11 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
   }
 
   void _startExercise() {
+    if (_selectedLevel == null) return;
     setState(() {
       _currentPhase = KegelPhase.contract;
       _currentRep = 1;
-      _secondsRemaining = _selectedLevel.contractSeconds;
+      _secondsRemaining = _selectedLevel!.contractSeconds;
       _isRunning = true;
     });
     _runPhase();
@@ -97,14 +102,15 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
   }
 
   void _nextPhase() {
+    if (_selectedLevel == null) return;
     if (_currentPhase == KegelPhase.contract) {
       _currentPhase = KegelPhase.relax;
-      _secondsRemaining = _selectedLevel.relaxSeconds;
+      _secondsRemaining = _selectedLevel!.relaxSeconds;
     } else if (_currentPhase == KegelPhase.relax) {
-      if (_currentRep < _selectedLevel.repetitions) {
+      if (_currentRep < _selectedLevel!.repetitions) {
         _currentRep++;
         _currentPhase = KegelPhase.contract;
-        _secondsRemaining = _selectedLevel.contractSeconds;
+        _secondsRemaining = _selectedLevel!.contractSeconds;
       } else {
         _finishExercise();
         return;
@@ -213,15 +219,15 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
     Color color = LvsColors.teal;
     double progress = 1.0;
 
-    if (_isRunning) {
+    if (_isRunning && _selectedLevel != null) {
       if (_currentPhase == KegelPhase.contract) {
         text = "CONTRAE";
         color = LvsColors.pink;
-        progress = _secondsRemaining / _selectedLevel.contractSeconds;
+        progress = _secondsRemaining / _selectedLevel!.contractSeconds;
       } else {
         text = "RELAJA";
         color = LvsColors.teal;
-        progress = _secondsRemaining / _selectedLevel.relaxSeconds;
+        progress = _secondsRemaining / _selectedLevel!.relaxSeconds;
       }
     } else if (_currentPhase == KegelPhase.finished) {
       text = "¡HECHO!";
@@ -275,9 +281,9 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (_isRunning)
+                    if (_isRunning && _selectedLevel != null)
                       Text(
-                        '$_currentRep / ${_selectedLevel.repetitions}',
+                        '$_currentRep / ${_selectedLevel!.repetitions}',
                         style: const TextStyle(color: LvsColors.text3, fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                     const SizedBox(height: 8),

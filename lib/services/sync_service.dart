@@ -164,12 +164,18 @@ class SyncService extends ChangeNotifier {
         lvsLog('Canal public:device_sync suscrito', tag: 'SYNC');
         _setState(SyncChannelState.receiving);
       } else if (status == RealtimeSubscribeStatus.channelError) {
-        debugPrint('[SyncService] Error en el canal: $error');
-        lvsLog('Error en canal realtime: $error', tag: 'SYNC');
+        // ⚠️ NO LOGUEAR ERRORES DE RED PARA NO SATURAR
+        // debugPrint('[SyncService] Error en el canal: $error');
+        final isNetworkError = error.toString().contains('SocketException') || 
+                               error.toString().contains('Failed host lookup');
+        if (!isNetworkError) {
+          debugPrint('[SyncService] Error en el canal: $error');
+          lvsLog('Error en canal realtime: $error', tag: 'SYNC');
+        }
         _setState(SyncChannelState.error);
       } else if (status == RealtimeSubscribeStatus.timedOut) {
-        debugPrint('[SyncService] Timeout al suscribir');
-        lvsLog('Timeout al suscribir canal', tag: 'SYNC');
+        // ⚠️ TIMEOUTS DE RED SON NORMALES SIN INTERNET
+        // debugPrint('[SyncService] Timeout al suscribir');
         _setState(SyncChannelState.error);
       }
     });
@@ -235,8 +241,9 @@ class SyncService extends ChangeNotifier {
   void _startHeartbeat() {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      // ⚠️ SOLO LOGUEAR SI EL CANAL ESTÁ ACTIVO
       if (_channel != null && _state == SyncChannelState.receiving) {
-        debugPrint('[SyncService] Heartbeat - Canal activo');
+        // debugPrint('[SyncService] Heartbeat - Canal activo');
       }
     });
   }
