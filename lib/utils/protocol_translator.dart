@@ -3,7 +3,7 @@
 // Traductor de Protocolo Universal para dispositivos BLE
 // ═══════════════════════════════════════════════════════════════
 
-import '../models/toy_model.dart';
+import '../devices/models/toy_model.dart';
 
 /// Resultado de la traducción de protocolo
 class ProtocolCommand {
@@ -71,24 +71,15 @@ class ChannelPrefix {
 class WbMSEPrefix {
   static const String standard = '77 62 4d 53 45';  // "wbMSE" en hex
   static const List<int> standardBytes = [0x77, 0x62, 0x4D, 0x53, 0x45];
-  
+
   // Prefijos de modelos específicos
   static const String model8154 = '77 62 4d 53 45';  // Love Spouse 8154
   static const String model8039 = '77 62 4d 53 45';  // Love Spouse 8039
 }
 
 /// Traductor de Protocolo Universal
-/// 
-/// Convierte comandos de alto nivel (intensidad, patrón) en bytes
-/// específicos para cada dispositivo según su metadata del catálogo.
 class ProtocolTranslator {
   /// Traduce una intensidad deseada a bytes BLE para un dispositivo específico
-  /// 
-  /// [toy] - Modelo del dispositivo con metadata del catálogo
-  /// [intensity] - Intensidad deseada (0-100 o 0-255)
-  /// [channel] - Canal opcional (1 = Empuje, 2 = Vibración, null = Ambos)
-  /// 
-  /// Retorna [ProtocolCommand] con los bytes listos para enviar
   static ProtocolCommand translate({
     required ToyModel toy,
     required int intensity,
@@ -104,16 +95,16 @@ class ProtocolTranslator {
     switch (protocolType) {
       case ProtocolType.wbMSE:
         return _translateWbMSE(toy, normalizedIntensity, channel);
-      
+
       case ProtocolType.wbMSECustom:
         return _translateWbMSECustom(toy, normalizedIntensity, channel);
-      
+
       case ProtocolType.wbMSEDual:
         return _translateWbMSEDual(toy, normalizedIntensity, channel);
-      
+
       case ProtocolType.precise:
         return _translatePrecise(toy, normalizedIntensity, channel);
-      
+
       case ProtocolType.generic:
       default:
         return _translateGeneric(toy, normalizedIntensity, channel);
@@ -126,7 +117,6 @@ class ProtocolTranslator {
     required int pattern,
     int? channel,
   }) {
-    // Los patrones wbMSE usan el mismo formato pero con valores específicos
     return translate(
       toy: toy,
       intensity: pattern,
@@ -148,20 +138,14 @@ class ProtocolTranslator {
   // ═══════════════════════════════════════════════════════════════
 
   /// Protocolo wbMSE Estándar (3 bytes)
-  /// Formato: [Prefijo, Intensidad, Checksum]
   static ProtocolCommand _translateWbMSE(
     ToyModel toy,
     int intensity,
     int? channel,
   ) {
-    // Obtener prefijo del modelo (primer byte)
     final prefixBytes = _parseHexPrefix(toy.broadcastPrefix);
     final prefix = prefixBytes.isNotEmpty ? prefixBytes.first : 0xE6;
-
-    // Calcular checksum (XOR de prefix e intensity)
     final checksum = prefix ^ intensity;
-
-    // Comando de 3 bytes: [Prefijo, Intensidad, Checksum]
     final bytes = [prefix, intensity, checksum];
 
     return ProtocolCommand(
@@ -180,12 +164,11 @@ class ProtocolTranslator {
     int? channel,
   ) {
     final prefixBytes = _parseHexPrefix(toy.broadcastPrefix);
-    
+
     if (prefixBytes.isEmpty) {
       return _translateWbMSE(toy, intensity, channel);
     }
 
-    // Usar todo el prefijo personalizado + intensidad + checksum
     final checksum = _calculateChecksum(prefixBytes, intensity);
     final bytes = [...prefixBytes, intensity, checksum];
 
@@ -199,42 +182,33 @@ class ProtocolTranslator {
   }
 
   /// Protocolo wbMSE Dual Channel
-  /// Permite enviar comandos independientes a cada canal
   static ProtocolCommand _translateWbMSEDual(
     ToyModel toy,
     int intensity,
     int? channel,
   ) {
-    // Si se especifica un canal, enviar solo a ese canal
     if (channel != null && channel != 0) {
       return _translateWbMSEDualChannel(toy, intensity, channel);
     }
 
-    // Si no se especifica canal, enviar a ambos (comando dual)
-    // El prefijo base se usa como referencia pero no se envía directamente
+    const ch1Prefix = ChannelPrefix.ch1Thrust;
+    const ch2Prefix = ChannelPrefix.ch2Vibration;
 
-    // Comandos separados para cada canal
-    final ch1Prefix = ChannelPrefix.ch1Thrust;
-    final ch2Prefix = ChannelPrefix.ch2Vibration;
-
-    // Si el dispositivo usa prefijos específicos del catálogo
     final customPrefixes = _parseCustomPrefixes(toy.supportedFuncs);
     final effectiveCh1Prefix = customPrefixes['ch1'] ?? ch1Prefix;
     final effectiveCh2Prefix = customPrefixes['ch2'] ?? ch2Prefix;
 
-    // Calcular checksums
     final ch1Checksum = effectiveCh1Prefix ^ intensity;
     final ch2Checksum = effectiveCh2Prefix ^ intensity;
 
-    // Bytes combinados para dual channel
     final bytes = [
-      effectiveCh1Prefix, intensity, ch1Checksum,  // Canal 1
-      effectiveCh2Prefix, intensity, ch2Checksum,  // Canal 2
+      effectiveCh1Prefix, intensity, ch1Checksum,
+      effectiveCh2Prefix, intensity, ch2Checksum,
     ];
 
     return ProtocolCommand(
       bytes: bytes,
-      channel: 0,  // Dual channel
+      channel: 0,
       intensity: intensity,
       protocolType: ProtocolType.wbMSEDual,
       description: 'wbMSE Dual: CH1=[0x${effectiveCh1Prefix.toRadixString(16)}, 0x${intensity.toRadixString(16)}, 0x${ch1Checksum.toRadixString(16)}] CH2=[0x${effectiveCh2Prefix.toRadixString(16)}, 0x${intensity.toRadixString(16)}, 0x${ch2Checksum.toRadixString(16)}]',
@@ -248,9 +222,8 @@ class ProtocolTranslator {
     int channel,
   ) {
     final customPrefixes = _parseCustomPrefixes(toy.supportedFuncs);
-    
-    // Seleccionar prefijo según canal
-    final prefix = channel == 1 
+
+    final prefix = channel == 1
         ? (customPrefixes['ch1'] ?? ChannelPrefix.ch1Thrust)
         : (customPrefixes['ch2'] ?? ChannelPrefix.ch2Vibration);
 
@@ -274,7 +247,6 @@ class ProtocolTranslator {
     int intensity,
     int? channel,
   ) {
-    // Dispositivos precisos aceptan intensidad directa
     final bytes = [intensity];
 
     return ProtocolCommand(
@@ -292,8 +264,6 @@ class ProtocolTranslator {
     int intensity,
     int? channel,
   ) {
-    // Para dispositivos genéricos, usar byte único
-    // Mapear 0-255 a niveles discretos si es necesario
     final genericByte = _mapToGenericLevel(intensity);
     final bytes = [genericByte];
 
@@ -317,64 +287,53 @@ class ProtocolTranslator {
     final motorLogic = toy.motorLogic.toLowerCase();
     final supportedFuncs = toy.supportedFuncs.toLowerCase();
 
-    // Verificar si es dispositivo preciso (0-255)
     if (toy.isPrecise) {
       return ProtocolType.precise;
     }
 
-    // Verificar si es Dual Channel
     if (motorLogic.contains('dual') || motorLogic.contains('doble')) {
       return ProtocolType.wbMSEDual;
     }
 
-    // Verificar prefijos wbMSE conocidos
-    if (prefix.contains('wbmse') || 
+    if (prefix.contains('wbmse') ||
         prefix.contains('77 62 4d 53 45') ||
-        modelId.contains('8154') || 
+        modelId.contains('8154') ||
         modelId.contains('8039')) {
-      
-      // Verificar si tiene prefijo personalizado
+
       if (prefix.isNotEmpty && !WbMSEPrefix.standard.contains(prefix)) {
         return ProtocolType.wbMSECustom;
       }
       return ProtocolType.wbMSE;
     }
 
-    // Verificar funciones específicas que indican protocolo especial
-    if (supportedFuncs.contains('dual') || 
-        supportedFuncs.contains('ch1') || 
+    if (supportedFuncs.contains('dual') ||
+        supportedFuncs.contains('ch1') ||
         supportedFuncs.contains('ch2')) {
       return ProtocolType.wbMSEDual;
     }
 
-    // Default: wbMSE estándar
     return ProtocolType.wbMSE;
   }
 
   /// Normaliza la intensidad a 0-255
   static int _normalizeIntensity(int intensity, bool isPrecise) {
-    // Si ya está en rango 0-255, retornar como está
     if (intensity >= 0 && intensity <= 255) {
       return intensity;
     }
 
-    // Si está en rango 0-100, escalar a 0-255
     if (intensity >= 0 && intensity <= 100) {
       return ((intensity / 100) * 255).round();
     }
 
-    // Si es mayor a 255, clamp a 255
     if (intensity > 255) {
       return 255;
     }
 
-    // Si es negativo, retornar 0
     return 0;
   }
 
   /// Mapea intensidad a niveles genéricos (0-9)
   static int _mapToGenericLevel(int intensity) {
-    // Mapear 0-255 a 0-9
     return (intensity / 255 * 9).round();
   }
 
@@ -382,15 +341,12 @@ class ProtocolTranslator {
   static List<int> _parseHexPrefix(String hexString) {
     if (hexString.isEmpty) return [];
 
-    // Remover espacios y convertir a mayúsculas
     final clean = hexString.replaceAll(' ', '').toUpperCase();
 
-    // Validar que sea hex válido
     if (!RegExp(r'^[0-9A-F]+$').hasMatch(clean)) {
       return [];
     }
 
-    // Parsear pares de hex
     final bytes = <int>[];
     for (var i = 0; i < clean.length; i += 2) {
       if (i + 1 < clean.length) {
@@ -406,7 +362,6 @@ class ProtocolTranslator {
   static Map<String, int> _parseCustomPrefixes(String supportedFuncs) {
     final prefixes = <String, int>{};
 
-    // Buscar patrones como "CH1:0xD5" o "CH1=0xD5"
     final ch1Regex = RegExp(r'CH1[:=]\s*0x([0-9A-Fa-f]{2})');
     final ch2Regex = RegExp(r'CH2[:=]\s*0x([0-9A-Fa-f]{2})');
 
@@ -425,8 +380,7 @@ class ProtocolTranslator {
 
   /// Calcula checksum XOR para un comando
   static int _calculateChecksum(List<int> prefixBytes, int intensity) {
-    // XOR de todos los bytes del prefijo con la intensidad
-    int checksum = 0;
+    var checksum = 0;
     for (final byte in prefixBytes) {
       checksum ^= byte;
     }
@@ -439,7 +393,7 @@ class ProtocolTranslator {
     return translateStop(toy: toy);
   }
 
-  /// Genera comando de emergencia (máxima intensidad por tiempo limitado)
+  /// Genera comando de emergencia
   static ProtocolCommand generateEmergencyCommand(ToyModel toy) {
     return translate(
       toy: toy,
@@ -460,12 +414,6 @@ class ProtocolTranslator {
 
 /// Extensión para envío directo vía flutter_blue_plus
 extension ProtocolCommandExtension on ProtocolCommand {
-  /// Convierte los bytes a Uint8List para flutter_blue_plus
-  // ignore: avoid_unused_constructor_parameters
-  // Uint8List toWriteCharacteristic() {
-  //   return Uint8List.fromList(bytes);
-  // }
-
   /// Verifica si el comando es válido
   bool get isValid => bytes.isNotEmpty && intensity >= 0;
 

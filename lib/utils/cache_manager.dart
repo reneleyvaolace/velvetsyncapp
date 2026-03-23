@@ -6,9 +6,6 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 /// Cache manager personalizado para el catálogo de dispositivos
-/// - Almacena hasta 100 imágenes
-/// - Renueva imágenes cada 7 días
-/// - Usa almacenamiento en caché del sistema
 class VelvetCacheManager {
   static final instance = VelvetCacheManager._internal();
   VelvetCacheManager._internal();

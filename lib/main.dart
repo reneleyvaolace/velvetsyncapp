@@ -1,171 +1,191 @@
 // ═══════════════════════════════════════════════════════════════
-// Velvet Sync · lib/main.dart · v2.1.1
-// Punto de entrada — inicializa el Splash Screen y la navegación
+// Velvet Sync · lib/main.dart
+// Entrypoint unificado de la plataforma (Refactored)
 // ═══════════════════════════════════════════════════════════════
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import 'services/supabase_service.dart';
-import 'services/link_service.dart';
-import 'services/sync_service.dart';
-import 'services/ai_hardware_bridge_service.dart';
-import 'screens/splash_screen.dart';
-import 'screens/screenshot_gallery.dart';
-import 'theme.dart';
+import 'services/ble/ble_service_platform.dart';
+import 'services/backend/sync_service.dart';
+import 'services/ai/ai_hardware_bridge_service.dart';
 import 'utils/logger.dart';
-
-// ═══════════════════════════════════════════════════════════════
-// MODO CAPTURA DE PANTALLA
-// Para generar capturas, cambia esto a true temporalmente
-// ═══════════════════════════════════════════════════════════════
-const bool kScreenshotMode = false;
-
-// ═══════════════════════════════════════════════════════════════
-// MODO EMULADOR
-// Si es true, omite la inicialización de servicios que requieren hardware físico (BLE)
-// Útil para testing en BlueStacks, Android Studio Emulator, etc.
-// ═══════════════════════════════════════════════════════════════
-const bool kEmulatorMode = false;
-
-// ── Handler del Foreground Task (se ejecuta en segundo plano) ──
-@pragma('vm:entry-point')
-void startCallback() {
-  FlutterForegroundTask.setTaskHandler(BleScanTaskHandler());
-}
-
-class BleScanTaskHandler extends TaskHandler {
-  @override
-  Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
-    lvsLog('Foreground task iniciado', tag: 'BG');
-  }
-
-  @override
-  void onRepeatEvent(DateTime timestamp) {
-    FlutterForegroundTask.updateService(
-      notificationText: 'Velvet Sync activo • High Performance',
-    );
-  }
-
-  @override
-  Future<void> onDestroy(DateTime timestamp, bool isTimeout) async {
-    lvsLog('Foreground task destruido', tag: 'BG');
-  }
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // 1. Inicializar Logger
+  final logger = Logger();
+  await logger.initFileLogging();
+  
+  lvsLog('Iniciando Velvet Sync App...', tag: 'APP');
 
-  // ═══════════════════════════════════════════════════════════════
-  // INICIALIZACIÓN CON MANEJO DE ERRORES
-  // Para debugging en emuladores y dispositivos reales
-  // ═══════════════════════════════════════════════════════════════
-  lvsLog('════════════════════════════════════════', tag: 'INIT');
-  lvsLog('🚀 Velvet Sync Iniciando...', tag: 'INIT');
-  lvsLog('════════════════════════════════════════', tag: 'INIT');
-
-  if (kEmulatorMode) {
-    lvsLog('⚠️ MODO EMULADOR ACTIVO - Omitiendo BLE', tag: 'INIT');
-  }
-
+  // 2. Cargar variables de entorno
   try {
-    // Cargar variables de entorno (Secretos)
-    lvsLog('Cargando .env...', tag: 'INIT');
     await dotenv.load(fileName: ".env");
-    lvsLog('✅ .env cargado', tag: 'INIT');
+    lvsLog('Variables de entorno cargadas', tag: 'APP');
   } catch (e) {
-    lvsLog('❌ Error crítico cargando .env: $e', tag: 'INIT');
-    lvsLog('🔒 La aplicación no puede iniciar sin configuración válida', tag: 'INIT');
-    // 🔒 SECURITY: Fail fast - don't continue without secrets
-    rethrow;
+    lvsError('Error cargando .env: $e', tag: 'APP');
   }
 
-  // 🔒 PERFORMANCE: Inicialización en PARALELO de servicios independientes
-  // Reduce startup time de 5-12s → 2-3s
-  lvsLog('Inicializando servicios en paralelo...', tag: 'INIT');
-  try {
-    await Future.wait([
-      // Deep Linking - crítico para links entrantes
-      () async {
-        lvsLog('Inicializando Deep Linking...', tag: 'INIT');
-        final linkService = LinkService();
-        await linkService.init();
-        lvsLog('✅ Deep Linking listo', tag: 'INIT');
-      }(),
-
-      // Sync Service - crítico para P2P
-      () async {
-        lvsLog('Inicializando Sync Service...', tag: 'INIT');
-        final syncService = SyncService();
-        await syncService.init();
-        lvsLog('✅ Sync Service listo', tag: 'INIT');
-      }(),
-    ]);
-  } catch (e) {
-    lvsLog('❌ Error en inicialización paralela: $e', tag: 'INIT');
-    rethrow;
-  }
-
-  // 🔒 PERFORMANCE: Supabase se inicializa DESPUÉS del primer frame
-  // Esto permite mostrar splash screen inmediatamente
-  // Supabase es necesario para catálogo pero no bloquea el inicio
-  lvsLog('Programando inicialización de Supabase...', tag: 'INIT');
-  WidgetsBinding.instance.addPostFrameCallback((_) async {
-    try {
-      final supabase = SupabaseService();
-      await supabase.initialize();
-      lvsLog('✅ Supabase listo (post-frame)', tag: 'INIT');
-    } catch (e) {
-      lvsLog('⚠️ Supabase falló (la app funciona offline): $e', tag: 'INIT');
-      // No hacemos rethrow - la app puede funcionar sin Supabase temporalmente
-    }
-  });
-
-  // 🔒 PERFORMANCE: AI Bridge se inicializa LAZY (solo cuando se usa)
-  // No es necesario inicializar al startup - se crea bajo demanda
-  lvsLog('🔧 AI Bridge: Lazy load (se inicializa al primer uso)', tag: 'INIT');
-
-  lvsLog('════════════════════════════════════════', tag: 'INIT');
-  lvsLog('✅ TODOS LOS SERVICIOS LISTOS', tag: 'INIT');
-  lvsLog('════════════════════════════════════════', tag: 'INIT');
-
-  lvsLog('════════════════════════════════════════', tag: 'INIT');
-  lvsLog('✨ Inicialización completada', tag: 'INIT');
-  lvsLog('════════════════════════════════════════', tag: 'INIT');
-
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Color(0xFF05050A),
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
-
-  FlutterForegroundTask.initCommunicationPort();
-
+  // 3. Iniciar el ProviderScope
   runApp(
     const ProviderScope(
       child: VelvetSyncApp(),
-    ),
+    )
   );
 }
 
-class VelvetSyncApp extends StatelessWidget {
+class VelvetSyncApp extends ConsumerWidget {
   const VelvetSyncApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Inicializar servicios necesarios al arranque
+    // ignore: unused_local_variable
+    final ble = ref.watch(bleProvider);
+
     return MaterialApp(
       title: 'Velvet Sync',
       debugShowCheckedModeBanner: false,
-      theme: LvsTheme.darkTheme,
-      home: kScreenshotMode ? const ScreenshotGallery() : const SplashScreen(),
+      theme: _buildTheme(Brightness.dark),
+      home: const SplashScreen(),
+    );
+  }
+
+  ThemeData _buildTheme(Brightness brightness) {
+    final baseTheme = ThemeData(brightness: brightness);
+    return baseTheme.copyWith(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFFE91E63), // Velvet Pink
+        brightness: brightness,
+      ),
+      textTheme: GoogleFonts.outfitTextTheme(baseTheme.textTheme),
+    );
+  }
+}
+
+class SplashScreen extends ConsumerStatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initApp();
+  }
+
+  Future<void> _initApp() async {
+    lvsLog('Inicializando core services...', tag: 'APP');
+    
+    // 1. Inicializar BleService
+    final bleService = ref.read(bleProvider);
+    // await bleService.init(); // Si tuviera un init async
+    
+    // 2. Inicializar SyncService
+    final syncService = ref.read(syncServiceProvider);
+    await syncService.init();
+    
+    // 3. Inicializar AI Hardware Bridge
+    final aiBridge = ref.read(aiHardwareBridgeProvider);
+    await aiBridge.init(
+      bleService: bleService,
+      syncService: syncService,
+    );
+
+    lvsLog('App inicializada correctamente', tag: 'APP');
+    
+    // Simular tiempo de splash
+    await Future.delayed(const Duration(seconds: 2));
+    
+    if (mounted) {
+      // Navegar a la pantalla principal (Dashboard) cuando esté lista
+      // Por ahora, una pantalla temporal de "AI Lab Ready"
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const DebugDashboard())
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.sync, size: 80, color: Color(0xFFE91E63)),
+            const SizedBox(height: 24),
+            Text(
+              'VELVET SYNC',
+              style: GoogleFonts.outfit(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const CircularProgressIndicator(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DebugDashboard extends ConsumerWidget {
+  const DebugDashboard({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bleState = ref.watch(bleProvider).state;
+    final bridgeState = ref.watch(aiBridgeStateProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Velvet Sync Debug')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _buildStatusCard('BLE Status', bleState.name, Icons.bluetooth),
+          _buildStatusCard('AI Bridge', bridgeState.name, Icons.psychology),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: () {
+              // Navegar al catálogo web o local
+            },
+            icon: const Icon(Icons.explore),
+            label: const Text('Open Device Catalog'),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            onPressed: () {
+              ref.read(aiHardwareBridgeProvider).executeAICommand(intensity: 128);
+            },
+            icon: const Icon(Icons.bolt),
+            label: const Text('Test AI Bridge (128)'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusCard(String title, String status, IconData icon) {
+    return Card(
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(title),
+        trailing: Text(
+          status.toUpperCase(),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+        ),
+      ),
     );
   }
 }

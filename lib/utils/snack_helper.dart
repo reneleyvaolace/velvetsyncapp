@@ -4,7 +4,11 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:flutter/material.dart';
-import '../theme.dart';
+
+class LvsColors {
+  static const Color teal = Color(0xFF00FFC2);
+  static const Color red = Color(0xFFFF1493);
+}
 
 class LvsSnack {
   static void show(
@@ -25,8 +29,8 @@ class LvsSnack {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: ok
-                  ? const Color(0xFF0D2A26) // verde oscuro premium
-                  : const Color(0xFF2A0D16), // rojo oscuro premium
+                  ? const Color(0xFF0D2A26)
+                  : const Color(0xFF2A0D16),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: ok ? LvsColors.teal : LvsColors.red,
@@ -34,7 +38,7 @@ class LvsSnack {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: (ok ? LvsColors.teal : LvsColors.red).withOpacity(0.35),
+                  color: (ok ? LvsColors.teal : LvsColors.red).withValues(alpha: 0.35),
                   blurRadius: 24,
                   offset: const Offset(0, 6),
                 ),

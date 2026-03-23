@@ -20,7 +20,7 @@ def run_flutter_web():
     logging.info("Iniciando Flutter Web para visualización...")
     try:
         # Usamos --web-port para fijar el puerto y --no-hot para evitar logs excesivos
-        cmd = ["flutter", "run", "-d", "web-server", "--web-port", "8080", "--web-hostname", "localhost", "--no-hot"]
+        cmd = ["flutter", "run", "-d", "web-server", "--web-port", "8081", "--web-hostname", "localhost", "--no-hot"]
         
         # Iniciar proceso en segundo plano
         with open("flutter_web.log", "w") as log_file:
