@@ -4,7 +4,10 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 088fb8ed6ede4304227d867f93ab56660b547fd3
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

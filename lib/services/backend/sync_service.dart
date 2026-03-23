@@ -166,7 +166,11 @@ class SyncService extends ChangeNotifier {
       } else if (status == RealtimeSubscribeStatus.channelError) {
         // ⚠️ NO LOGUEAR ERRORES DE RED PARA NO SATURAR
         // debugPrint('[SyncService] Error en el canal: $error');
+<<<<<<< HEAD:lib/services/backend/sync_service.dart
         final isNetworkError = error.toString().contains('SocketException') ||
+=======
+        final isNetworkError = error.toString().contains('SocketException') || 
+>>>>>>> 088fb8ed6ede4304227d867f93ab56660b547fd3:lib/services/sync_service.dart
                                error.toString().contains('Failed host lookup');
         if (!isNetworkError) {
           debugPrint('[SyncService] Error en el canal: $error');

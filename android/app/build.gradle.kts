@@ -27,8 +27,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -51,7 +53,7 @@ android {
         create("dev") {
             dimension = "environment"
             applicationIdSuffix = ".dev"
-            versionNameSuffix "-dev"
+            versionNameSuffix = "-dev"
             resValue("string", "app_name", "Velvet Sync Dev")
         }
         create("prod") {
@@ -84,8 +86,9 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
         debug {
-            // Debug build configuration
+            // Debug build configuration - usa signing config por defecto de Android
             isDebuggable = true
+            // No usar signingConfigs.release para debug para evitar errores si no existe el keystore
         }
     }
 }
