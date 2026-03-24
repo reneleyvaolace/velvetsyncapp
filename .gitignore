@@ -1,3 +1,8 @@
+# ═══════════════════════════════════════════════════════════════
+# Velvet Sync · .gitignore
+# Optimizado para Android-only
+# ═══════════════════════════════════════════════════════════════
+
 # Miscellaneous
 *.class
 *.log
@@ -18,14 +23,11 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
+# VS Code (descomentar si quieres incluir configuración)
 #.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
-**/ios/Flutter/.last_build_id
 .dart_tool/
 .flutter-plugins-dependencies
 .flutter-plugins
@@ -34,10 +36,30 @@ migrate_working_dir/
 /build/
 /coverage/
 
-# Windows specific - ephemeral files get corrupted
-/windows/flutter/ephemeral/
-/windows/runner/Debug/
-/windows/runner/Release/
+# ═══════════════════════════════════════════════════════════════
+# ANDROID ONLY - Otras plataformas ignoradas
+# ═══════════════════════════════════════════════════════════════
+
+# Android - Build artifacts
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# iOS - Ignorado (no se usa)
+/ios/
+/ios_old/
+
+# macOS - Ignorado (no se usa)
+/macos/
+
+# Linux - Ignorado (no se usa)
+/linux/
+
+# Web - Ignorado (no se usa)
+/web/
+
+# Windows - Ignorado (no se usa)
+/windows/
 
 # Symbolication related
 app.*.symbols
@@ -45,15 +67,16 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-
 # Secretos
 .env
 /android/key.properties
 /android/app/*.keystore
 
-\"*.apk\"  
-*.apk  
+# APKs (build artifacts)
+*.apk
+
+# Otros
+/imagenes-referencia/
+/.tmp/
+activity.log
+scripts/*.log

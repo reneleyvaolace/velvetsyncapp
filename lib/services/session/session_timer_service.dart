@@ -339,21 +339,12 @@ Future<int?> showSessionTimerDialog(BuildContext context) async {
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Color(0xFF1A1A2E), width: 1),
         ),
-<<<<<<< HEAD:lib/services/session/session_timer_service.dart
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.timer_outlined, color: Color(0xFFFF1493), size: 20),
             SizedBox(width: 8),
             Expanded(
-=======
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.timer_outlined, color: Color(0xFFFF1493), size: 20),
-            const SizedBox(width: 8),
-            const Expanded(
->>>>>>> 088fb8ed6ede4304227d867f93ab56660b547fd3:lib/services/session_timer_service.dart
               child: Text(
                 'TEMPORIZADOR DE SESIÓN',
                 style: TextStyle(

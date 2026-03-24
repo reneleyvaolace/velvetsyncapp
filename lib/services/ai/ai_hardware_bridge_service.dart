@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../devices/models/device_sync_model.dart';
 import '../../devices/models/toy_model.dart';
 import '../../utils/protocol_translator.dart';
-import '../ble/ble_service_platform.dart';
+import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
 import '../backend/sync_service.dart';
 import '../../utils/logger.dart';

@@ -1,10 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
-// Velvet Sync · lib/src/devices/parsers/lovespouse_optimizer.dart
+// Velvet Sync · lib/devices/parsers/lovespouse_optimizer.dart
 // Optimizador de datos LoveSpouse - Reduce 6.1 MB → 0.8 MB
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:convert';
 import 'dart:io';
+import '../../utils/logger.dart';
 
 /// Optimiza los archivos JSON de LoveSpouse
 /// Reduce el tamaño en 87% (6.1 MB → 0.8 MB)

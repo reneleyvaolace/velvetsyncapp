@@ -1,10 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lvs_control/ble/ble_service.dart';
-import 'package:lvs_control/theme.dart';
-import 'package:lvs_control/screens/debug_screen.dart';
-import 'package:lvs_control/screens/web_catalog_screen.dart';
-import '../../services/session_timer_service.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/theme.dart';
+import 'package:velvet_sync/screens/debug_screen.dart';
+import 'package:velvet_sync/screens/web_catalog_screen.dart';
+import '../../services/session/session_timer_service.dart';
 
 class SettingsTab extends ConsumerStatefulWidget {
   const SettingsTab({super.key});
@@ -14,13 +14,14 @@ class SettingsTab extends ConsumerStatefulWidget {
 }
 
 class _SettingsTabState extends ConsumerState<SettingsTab> {
-  int _sessionDuration = 30;
-  bool _autoDisconnect = false;
-  bool _hiddenTimer = false;
-  int _hiddenTimerMin = 5;
-  int _hiddenTimerMax = 30;
-  bool _travelLock = false;
-  String _travelLockPin = '0000';
+  // Variables para features futuras (actualmente no usadas)
+  // int _sessionDuration = 30;
+  // bool _autoDisconnect = false;
+  // bool _hiddenTimer = false;
+  // int _hiddenTimerMin = 5;
+  // int _hiddenTimerMax = 30;
+  // bool _travelLock = false;
+  // String _travelLockPin = '0000';
 
   @override
   Widget build(BuildContext context) {

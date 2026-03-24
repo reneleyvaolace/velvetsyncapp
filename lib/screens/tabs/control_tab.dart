@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lvs_control/ble/ble_service.dart';
-import 'package:lvs_control/models/toy_model.dart';
-import 'package:lvs_control/theme.dart';
-import 'package:lvs_control/widgets/preregister_widget.dart';
-import 'package:lvs_control/services/catalog_service.dart';
-import 'package:lvs_control/ble/lvs_commands.dart';
-import 'package:lvs_control/widgets/quick_add_control.dart';
-import 'package:lvs_control/widgets/compatible_devices_row.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
+import 'package:velvet_sync/theme.dart';
+import 'package:velvet_sync/services/catalog/catalog_service.dart';
+import 'package:velvet_sync/services/ble/lvs_commands.dart';
+import 'package:velvet_sync/widgets/compatible_devices_row.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:math';
 
@@ -17,7 +15,6 @@ class ControlTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bleState = ref.watch(bleProvider.select((p) => p.state));
     final ble = ref.watch(bleProvider);
 
     return CustomScrollView(
@@ -30,19 +27,12 @@ class ControlTab extends ConsumerWidget {
             delegate: SliverChildListDelegate([
               _buildConnectCard(ref, ble),
               const SizedBox(height: 16),
-              // Quick Add — fuera del card para evitar overflow
-              if (!ble.isConnected) ...([ 
-                CardGlass(
-                  padding: const EdgeInsets.all(20),
-                  child: QuickAddControl(ref: ref),
-                ),
-                const SizedBox(height: 16),
-                // Lista de dispositivos compatibles
+              // Lista de dispositivos compatibles
+              if (!ble.isConnected)
                 CardGlass(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                   child: const CompatibleDevicesRow(),
                 ),
-              ]),
               const SizedBox(height: 24),
               _buildControlCard(ref),
               const SizedBox(height: 40),

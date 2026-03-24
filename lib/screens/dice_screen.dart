@@ -8,7 +8,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../ble/ble_service.dart';
+import '../services/ble/ble_service.dart';
 import '../theme.dart';
 
 class DiceScreen extends ConsumerStatefulWidget {

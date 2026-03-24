@@ -1,10 +1,11 @@
 // ═══════════════════════════════════════════════════════════════
-// Velvet Sync · lib/src/devices/parsers/lovespouse_consolidator.dart
+// Velvet Sync · lib/devices/parsers/lovespouse_consolidator.dart
 // Consolida los 8 archivos JSON en 1 solo + índice de búsqueda
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:convert';
 import 'dart:io';
+import '../../utils/logger.dart';
 
 /// Consolida los archivos optimizados de LoveSpouse en 1 solo archivo
 class LovespouseConsolidator {

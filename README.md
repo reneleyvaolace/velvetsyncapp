@@ -1,7 +1,7 @@
-# LVS Control — Flutter App
+# Velvet Sync — Flutter App
 ## Guía de Instalación y Compilación
 
-> **Versión:** 1.3.0 | **Protocolo:** Love Spouse 8154 (wbMSE) | **BLE + Background**
+> **Versión:** 1.4.0 | **Plataforma:** Velvet Sync AI-Powered | **Protocolo:** Love Spouse 8154 (wbMSE) | **BLE + Background**
 
 ---
 

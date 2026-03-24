@@ -7,11 +7,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/toy_model.dart';
-import '../services/catalog_service.dart';
-import '../ble/ble_service.dart';
+import '../devices/models/toy_model.dart';
+import '../services/catalog/catalog_service.dart';
 import '../theme.dart';
-import '../utils/snack_helper.dart';
 
 class CompatibleDevicesRow extends ConsumerWidget {
   const CompatibleDevicesRow({super.key});
@@ -19,8 +17,15 @@ class CompatibleDevicesRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // ← USA el catálogo del servidor (inicializado con fallback local)
-    final toys = ref.watch(serverCatalogProvider);
+    final catalogAsync = ref.watch(catalogProvider);
     final isLoading = ref.watch(catalogLoadingProvider);
+
+    // Manejar estado asíncrono
+    final toys = catalogAsync.when(
+      data: (list) => list,
+      loading: () => [],
+      error: (_, __) => [],
+    );
 
     // ✨ FIX: Validar que haya dispositivos antes de renderizar
     if (toys.isEmpty) {
@@ -125,17 +130,6 @@ class _DeviceChip extends StatelessWidget {
   final ToyModel toy;
   final WidgetRef ref;
   const _DeviceChip({required this.toy, required this.ref});
-
-  /// Ícono Material representativo según tipo de dispositivo
-  IconData get _icon {
-    final s = toy.stimulationType.toLowerCase();
-    final n = toy.name.toLowerCase();
-    final u = toy.usageType.toLowerCase();
-    if (toy.hasDualChannel || s.contains('empuje')) return Icons.multiple_stop_rounded;
-    if (n.contains('egg') || n.contains('huevo') || u.contains('egg')) return Icons.egg_rounded;
-    if (n.contains('bullet') || n.contains('bala') || u.contains('bullet')) return Icons.bolt_rounded;
-    return Icons.vibration_rounded;
-  }
 
   /// Color temático
   Color get _color {

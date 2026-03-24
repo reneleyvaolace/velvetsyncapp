@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'services/ble/ble_service_platform.dart';
+import 'services/ble/ble_service.dart';
 import 'services/backend/sync_service.dart';
 import 'services/ai/ai_hardware_bridge_service.dart';
 import 'utils/logger.dart';

@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../ble/ble_service_platform.dart';
+import '../ble/ble_service.dart';
 import '../ble/lvs_commands.dart';
 import '../../utils/logger.dart';
 

@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../devices/models/toy_model.dart';
 import '../../devices/models/lovespouse_device.dart';
 import '../backend/supabase_service.dart';
-import '../ble/ble_service_platform.dart';
+import '../ble/ble_service.dart';
 import '../../utils/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../devices/parsers/lovespouse_parser_service.dart';
