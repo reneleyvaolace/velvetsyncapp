@@ -1,5 +1,7 @@
 import 'dart:async';
 
+export 'ble_service.dart';
+
 class BleServiceMobile {
   static final BleServiceMobile _instance = BleServiceMobile._internal();
   factory BleServiceMobile() => _instance;

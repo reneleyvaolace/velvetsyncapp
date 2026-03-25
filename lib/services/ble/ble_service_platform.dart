@@ -12,10 +12,6 @@
 //   await ble.initialize();
 // ═══════════════════════════════════════════════════════════════
 
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'ble_service_mobile.dart' as mobile;
-
 // Export condicional basado en la plataforma
 export 'ble_service_stub.dart'
   if (dart.library.io) 'ble_service.dart';
@@ -23,6 +19,12 @@ export 'ble_service_stub.dart'
 // ═══════════════════════════════════════════════════════════════
 // Función factory unificada
 // ═══════════════════════════════════════════════════════════════
+
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+
+import 'ble_service_mobile.dart' as mobile;
 
 /// Obtiene el servicio BLE apropiado para la plataforma actual.
 ///

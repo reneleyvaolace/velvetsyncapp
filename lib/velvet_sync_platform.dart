@@ -66,6 +66,7 @@ export 'devices/models/game_profile.dart';
 // ═══════════════════════════════════════════════════════════════
 
 // BLE Service
+export 'services/ble/ble_service.dart';
 export 'services/ble/ble_service_platform.dart' hide getBleService;
 export 'services/ble/ble_service_mobile.dart';
 export 'services/ble/lvs_commands.dart' hide PacketMode;

@@ -1,0 +1,105 @@
+
+  android_build_log_v2.txt:674:[        ] [        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
+  android_build_log_v2.txt:675:[        ] [        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
+  android_build_log_v2.txt:676:[        ] [  +42 ms] Initializing file store
+  android_build_log_v2.txt:677:[        ] [  +23 ms] Done initializing file store
+  android_build_log_v2.txt:678:[ +196 ms] [ +196 ms] Skipping target: gen_dart_plugin_registrant
+  android_build_log_v2.txt:679:[        ] [   +4 ms] Skipping target: dart_build
+  android_build_log_v2.txt:680:[        ] [        ] Skipping target: gen_localizations
+  android_build_log_v2.txt:681:[        ] [   +1 ms] Skipping target: install_code_assets
+  android_build_log_v2.txt:682:[+2401 ms] [+2384 ms] kernel_snapshot_program: Starting due to {InvalidatedReasonKind.outputSetAddition: The following outputs were added to the output set: C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill}
+  android_build_log_v2.txt:683:[  +92 ms] [  +39 ms] C:\src\flutter\bin\cache\dart-sdk\bin\dartaotruntime.exe C:\src\flutter\bin\cache\dart-sdk\bin\snapshots\frontend_server_aot.dart.snapshot --sdk-root C:\src\flutter\bin\cache\artifacts\engine\common\flutter_patched_sdk_product/ --target=flutter --no-print-incremental-dependencies -DFLUTTER_VERSION=3.41.4 -DFLUTTER_CHANNEL=stable -DFLUTTER_GIT_URL=https://github.com/flutter/flutter.git -DFLUTTER_FRAMEWORK_REVISION=ff37bef603 -DFLUTTER_ENGINE_REVISION=e4b8dca3f1 -DFLUTTER_DART_VERSION=3.11.1 -DFLUTTER_APP_FLAVOR=prod -Ddart.vm.profile=false -Ddart.vm.product=true --delete-tostring-package-uri=dart:ui --delete-tostring-package-uri=package:flutter --aot --tfa --target-os android --packages C:\Proyectos\lvs-flutter\.dart_tool\package_config.json --output-dill C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill --depfile C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\kernel_snapshot_program.d --source file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --source package:flutter/src/dart_plugin_registrant.dart -Dflutter.dart_plugin_registrant=file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --verbosity=error package:velvet_sync/main.dart
+> android_build_log_v2.txt:684:[+14399 ms] [+14386 ms] package:velvet_sync/main.dart: Error: No 'main' method found.
+  android_build_log_v2.txt:685:[   +1 ms] [   +3 ms] Try adding a method named 'main' to your program.
+  android_build_log_v2.txt:686:[ +106 ms] [ +100 ms] Persisting file store
+  android_build_log_v2.txt:687:[        ] [  +35 ms] Done persisting file store
+  android_build_log_v2.txt:688:[        ] [  +18 ms] Target kernel_snapshot_program failed: Exception
+  android_build_log_v2.txt:689:[        ]            #0      KernelSnapshot.build (package:flutter_tools/src/build_system/targets/common.dart:289:7)
+  android_build_log_v2.txt:690:[        ]            <asynchronous suspension>
+  android_build_log_v2.txt:691:[        ]            #1      _BuildInstance._invokeInternal (package:flutter_tools/src/build_system/build_system.dart:937:9)
+  android_build_log_v2.txt:692:[        ]            <asynchronous suspension>
+  android_build_log_v2.txt:693:[        ]            #2      Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
+  android_build_log_v2.txt:694:[        ]            <asynchronous suspension>
+  android_build_log_v3.txt:674:[        ] [        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
+  android_build_log_v3.txt:675:[        ] [        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
+  android_build_log_v3.txt:676:[        ] [  +57 ms] Initializing file store
+  android_build_log_v3.txt:677:[  +99 ms] [  +46 ms] Done initializing file store
+  android_build_log_v3.txt:678:[ +399 ms] [ +424 ms] Skipping target: gen_dart_plugin_registrant
+  android_build_log_v3.txt:679:[        ] [  +11 ms] Skipping target: dart_build
+  android_build_log_v3.txt:680:[        ] [        ] Skipping target: gen_localizations
+  android_build_log_v3.txt:681:[        ] [   +3 ms] Skipping target: install_code_assets
+  android_build_log_v3.txt:682:[+5602 ms] [+5573 ms] kernel_snapshot_program: Starting due to {InvalidatedReasonKind.outputSetAddition: The following outputs were added to the output set: C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill, InvalidatedReasonKind.inputChanged: The following inputs have updated contents: C:\Proyectos\lvs-flutter\lib\main.dart}
+  android_build_log_v3.txt:683:[        ] [  +33 ms] C:\src\flutter\bin\cache\dart-sdk\bin\dartaotruntime.exe C:\src\flutter\bin\cache\dart-sdk\bin\snapshots\frontend_server_aot.dart.snapshot --sdk-root C:\src\flutter\bin\cache\artifacts\engine\common\flutter_patched_sdk_product/ --target=flutter --no-print-incremental-dependencies -DFLUTTER_VERSION=3.41.4 -DFLUTTER_CHANNEL=stable -DFLUTTER_GIT_URL=https://github.com/flutter/flutter.git -DFLUTTER_FRAMEWORK_REVISION=ff37bef603 -DFLUTTER_ENGINE_REVISION=e4b8dca3f1 -DFLUTTER_DART_VERSION=3.11.1 -DFLUTTER_APP_FLAVOR=prod -Ddart.vm.profile=false -Ddart.vm.product=true --delete-tostring-package-uri=dart:ui --delete-tostring-package-uri=package:flutter --aot --tfa --target-os android --packages C:\Proyectos\lvs-flutter\.dart_tool\package_config.json --output-dill C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill --depfile C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\kernel_snapshot_program.d --source file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --source package:flutter/src/dart_plugin_registrant.dart -Dflutter.dart_plugin_registrant=file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --verbosity=error package:velvet_sync/main.dart
+> android_build_log_v3.txt:684:[+5601 ms] [+5524 ms] lib/main.dart:21:18: Error: Method not found: 'Logger'.
+  android_build_log_v3.txt:685:[   +2 ms] [   +2 ms]   final logger = Logger();
+  android_build_log_v3.txt:686:[        ] [        ]                  ^^^^^^
+> android_build_log_v3.txt:687:[        ] [        ] lib/main.dart:24:3: Error: Method not found: 'lvsLog'.
+  android_build_log_v3.txt:688:[        ] [        ]   lvsLog('Iniciando Velvet Sync App...', tag: 'APP');
+  android_build_log_v3.txt:689:[        ] [        ]   ^^^^^^
+> android_build_log_v3.txt:690:[        ] [        ] lib/main.dart:29:5: Error: Method not found: 'lvsLog'.
+  android_build_log_v3.txt:691:[        ] [        ]     lvsLog('Variables de entorno cargadas', tag: 'APP');
+  android_build_log_v3.txt:692:[        ] [        ]     ^^^^^^
+> android_build_log_v3.txt:693:[        ] [        ] lib/main.dart:31:5: Error: Method not found: 'lvsError'.
+  android_build_log_v3.txt:694:[        ] [        ]     lvsError('Error cargando .env: $e', tag: 'APP');
+  android_build_log_v3.txt:695:[        ] [        ]     ^^^^^^^^
+> android_build_log_v3.txt:696:[        ] [        ] lib/main.dart:49:27: Error: The getter 'bleProvider' isn't defined for the type 'VelvetSyncApp'.
+  android_build_log_v3.txt:697:[        ] [        ]  - 'VelvetSyncApp' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
+  android_build_log_v3.txt:698:[        ] [        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+  android_build_log_v3.txt:699:[        ] [        ]     final ble = ref.watch(bleProvider);
+  android_build_log_v3.txt:700:[        ] [        ]                           ^^^^^^^^^^^
+> android_build_log_v3.txt:701:[        ] [        ] lib/main.dart:110:49: Error: Not a constant expression.
+  android_build_log_v3.txt:702:[        ] [        ]         MaterialPageRoute(builder: (_) => const MainNavigation())
+  android_build_log_v3.txt:703:[        ] [        ]                                                 ^^^^^^^^^^^^^^
+> android_build_log_v3.txt:704:[        ] [        ] lib/main.dart:87:5: Error: The method 'lvsLog' isn't defined for the type '_SplashScreenState'.
+  android_build_log_v3.txt:705:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
+  android_build_log_v3.txt:706:[        ] [        ] Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+  android_build_log_v3.txt:707:[        ] [        ]     lvsLog('Inicializando core services...', tag: 'APP');
+  android_build_log_v3.txt:708:[        ] [        ]     ^^^^^^
+> android_build_log_v3.txt:709:[        ] [        ] lib/main.dart:90:33: Error: The getter 'bleProvider' isn't defined for the type '_SplashScreenState'.
+  android_build_log_v3.txt:710:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
+  android_build_log_v3.txt:711:[        ] [        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+  android_build_log_v3.txt:712:[        ] [        ]     final bleService = ref.read(bleProvider);
+  android_build_log_v3.txt:713:[        ] [        ]                                 ^^^^^^^^^^^
+> android_build_log_v3.txt:714:[        ] [        ] lib/main.dart:93:34: Error: The getter 'syncServiceProvider' isn't defined for the type '_SplashScreenState'.
+  android_build_log_v3.txt:715:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
+  android_build_log_v3.txt:716:[        ] [        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'syncServiceProvider'.
+  android_build_log_v3.txt:717:[        ] [        ]     final syncService = ref.read(syncServiceProvider);
+  android_build_log_v3.txt:718:[        ] [        ]                                  ^^^^^^^^^^^^^^^^^^^
+> android_build_log_v3.txt:719:[        ] [        ] lib/main.dart:97:31: Error: The getter 'aiHardwareBridgeProvider' isn't defined for the type '_SplashScreenState'.
+  android_build_log_v3.txt:720:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
+  android_build_log_v3.txt:721:[        ] [        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'aiHardwareBridgeProvider'.
+  android_build_log_v3.txt:722:[        ] [        ]     final aiBridge = ref.read(aiHardwareBridgeProvider);
+  android_build_log_v3.txt:723:[        ] [        ]                               ^^^^^^^^^^^^^^^^^^^^^^^^
+> android_build_log_v3.txt:724:[        ] [        ] lib/main.dart:103:5: Error: The method 'lvsLog' isn't defined for the type '_SplashScreenState'.
+  android_build_log_v3.txt:725:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
+  android_build_log_v3.txt:726:[        ] [        ] Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+  android_build_log_v3.txt:727:[        ] [        ]     lvsLog('App inicializada correctamente', tag: 'APP');
+  android_build_log_v3.txt:728:[        ] [        ]     ^^^^^^
+  android_build_log_v3.txt:729:[+10174 ms] [+10233 ms] Persisting file store
+  android_build_log_v3.txt:730:[        ] [  +29 ms] Done persisting file store
+  android_build_log_v3.txt:731:[        ] [   +5 ms] Target kernel_snapshot_program failed: Exception
+  android_build_log_v3.txt:732:[        ]            #0      KernelSnapshot.build (package:flutter_tools/src/build_system/targets/common.dart:289:7)
+  android_build_log_v3.txt:733:[        ]            <asynchronous suspension>
+  android_build_log_v3.txt:734:[        ]            #1      _BuildInstance._invokeInternal (package:flutter_tools/src/build_system/build_system.dart:937:9)
+  android_build_log_v4.txt:674:[        ] [        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
+  android_build_log_v4.txt:675:[        ] [        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
+  android_build_log_v4.txt:676:[        ] [  +38 ms] Initializing file store
+  android_build_log_v4.txt:677:[ +105 ms] [  +22 ms] Done initializing file store
+  android_build_log_v4.txt:678:[  +92 ms] [ +158 ms] Skipping target: gen_dart_plugin_registrant
+  android_build_log_v4.txt:679:[        ] [   +2 ms] Skipping target: dart_build
+  android_build_log_v4.txt:680:[        ] [        ] Skipping target: gen_localizations
+  android_build_log_v4.txt:681:[        ] [   +1 ms] Skipping target: install_code_assets
+  android_build_log_v4.txt:682:[ +809 ms] [ +779 ms] kernel_snapshot_program: Starting due to {InvalidatedReasonKind.outputSetAddition: The following outputs were added to the output set: C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill, InvalidatedReasonKind.inputChanged: The following inputs have updated contents: C:\Proyectos\lvs-flutter\lib\main.dart,C:\Proyectos\lvs-flutter\lib\screens\main_navigation.dart}
+  android_build_log_v4.txt:683:[   +4 ms] [  +16 ms] C:\src\flutter\bin\cache\dart-sdk\bin\dartaotruntime.exe C:\src\flutter\bin\cache\dart-sdk\bin\snapshots\frontend_server_aot.dart.snapshot --sdk-root C:\src\flutter\bin\cache\artifacts\engine\common\flutter_patched_sdk_product/ --target=flutter --no-print-incremental-dependencies -DFLUTTER_VERSION=3.41.4 -DFLUTTER_CHANNEL=stable -DFLUTTER_GIT_URL=https://github.com/flutter/flutter.git -DFLUTTER_FRAMEWORK_REVISION=ff37bef603 -DFLUTTER_ENGINE_REVISION=e4b8dca3f1 -DFLUTTER_DART_VERSION=3.11.1 -DFLUTTER_APP_FLAVOR=prod -Ddart.vm.profile=false -Ddart.vm.product=true --delete-tostring-package-uri=dart:ui --delete-tostring-package-uri=package:flutter --aot --tfa --target-os android --packages C:\Proyectos\lvs-flutter\.dart_tool\package_config.json --output-dill C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill --depfile C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\kernel_snapshot_program.d --source file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --source package:flutter/src/dart_plugin_registrant.dart -Dflutter.dart_plugin_registrant=file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --verbosity=error package:velvet_sync/main.dart
+> android_build_log_v4.txt:684:[+14793 ms] [+14771 ms] package:velvet_sync/main.dart: Error: No 'main' method found.
+  android_build_log_v4.txt:685:[   +1 ms] [   +2 ms] Try adding a method named 'main' to your program.
+  android_build_log_v4.txt:686:[  +93 ms] [  +89 ms] Persisting file store
+  android_build_log_v4.txt:687:[        ] [  +23 ms] Done persisting file store
+  android_build_log_v4.txt:688:[        ] [   +4 ms] Target kernel_snapshot_program failed: Exception
+  android_build_log_v4.txt:689:[        ]            #0      KernelSnapshot.build (package:flutter_tools/src/build_system/targets/common.dart:289:7)
+  android_build_log_v4.txt:690:[        ]            <asynchronous suspension>
+  android_build_log_v4.txt:691:[        ]            #1      _BuildInstance._invokeInternal (package:flutter_tools/src/build_system/build_system.dart:937:9)
+  android_build_log_v4.txt:692:[        ]            <asynchronous suspension>
+  android_build_log_v4.txt:693:[        ]            #2      Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
+  android_build_log_v4.txt:694:[        ]            <asynchronous suspension>
+
