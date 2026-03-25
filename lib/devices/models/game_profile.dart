@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 
-import '../../services/media/game_haptics_mapper.dart';
+import 'package:velvet_sync/services/media/game_haptics_mapper.dart';
 
 // ═══════════════════════════════════════════════════════════════
 // Game Profile Model

@@ -7,7 +7,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 /// Servicio de Deep Linking para Velvet Sync
 /// Escucha enlaces entrantes con el esquema velvetsync://

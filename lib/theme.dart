@@ -77,11 +77,14 @@ class CardGlass extends StatelessWidget {
   final Color? borderColor;
   final double borderRadius;
 
+  final Color? color;
+
   const CardGlass({
     super.key,
     required this.child,
     this.padding,
     this.borderColor,
+    this.color,
     this.borderRadius = 16,
   });
 
@@ -90,7 +93,7 @@ class CardGlass extends StatelessWidget {
     return Container(
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: LvsColors.bgCard.withOpacity(0.5),
+        color: color ?? LvsColors.bgCard.withOpacity(0.5),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
           color: borderColor ?? Colors.white.withOpacity(0.05),

@@ -1,0 +1,203 @@
+Resolving dependencies...
+Downloading packages...
+  app_links 6.4.1 (7.0.0 available)
+  audio_session 0.1.25 (0.2.3 available)
+  audio_waveforms 1.3.0 (2.0.2 available)
+  csv 6.0.0 (8.0.0 available)
+  cupertino_icons 1.0.8 (1.0.9 available)
+  dart_jsonwebtoken 3.3.2 (3.4.0 available)
+  file_picker 8.3.7 (10.3.10 available)
+  flutter_dotenv 5.2.1 (6.0.0 available)
+  flutter_launcher_icons 0.13.1 (0.14.4 available)
+  flutter_lints 4.0.0 (6.0.0 available)
+  flutter_plugin_android_lifecycle 2.0.33 (2.0.34 available)
+  flutter_riverpod 2.6.1 (3.3.1 available)
+  google_fonts 6.3.3 (8.0.2 available)
+  gotrue 2.18.0 (2.19.0 available)
+  image_picker_android 0.8.13+14 (0.8.13+15 available)
+  just_audio 0.9.46 (0.10.5 available)
+  lints 4.0.0 (6.1.0 available)
+  meta 1.17.0 (1.18.2 available)
+  native_toolchain_c 0.17.5 (0.17.6 available)
+  path_provider_android 2.2.22 (2.2.23 available)
+  realtime_client 2.7.0 (2.7.1 available)
+  riverpod 2.6.1 (3.2.1 available)
+  shared_preferences_android 2.4.21 (2.4.23 available)
+  storage_client 2.4.1 (2.5.1 available)
+  supabase 2.10.2 (2.10.4 available)
+  supabase_flutter 2.12.0 (2.12.2 available)
+  test_api 0.7.10 (0.7.11 available)
+  url_launcher_android 6.3.28 (6.3.29 available)
+  vector_math 2.2.0 (2.3.0 available)
+  wakelock_plus 1.4.0 (1.5.1 available)
+  wakelock_plus_platform_interface 1.3.0 (1.4.0 available)
+  webview_flutter_android 4.10.13 (4.10.14 available)
+  webview_flutter_platform_interface 2.14.0 (2.15.0 available)
+  webview_flutter_wkwebview 3.24.0 (3.24.1 available)
+  win32 5.15.0 (6.0.0 available)
+Got dependencies!
+35 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleProdRelease'...                    
+lib/services/ai/ai_hardware_bridge_service.dart:12:8: Error: Error when reading 'lib/services/services/ble/ble_service_platform.dart': El sistema no puede encontrar la ruta especificada
+import '../services/ble/ble_service_platform.dart';
+       ^
+lib/services/ai/ai_hardware_bridge_service.dart:13:8: Error: Error when reading 'lib/services/services/ble/lvs_commands.dart': El sistema no puede encontrar la ruta especificada
+import '../services/ble/lvs_commands.dart';
+       ^
+lib/screens/home_screen.dart:16:8: Error: Error when reading 'lib/widgets/preregister_widget.dart': El sistema no puede encontrar el archivo especificado
+import '../widgets/preregister_widget.dart';
+       ^
+lib/screens/home_screen.dart:20:8: Error: Error when reading 'lib/screens/companion_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'companion_screen.dart';
+       ^
+lib/screens/home_screen.dart:22:8: Error: Error when reading 'lib/screens/roulette_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'roulette_screen.dart';
+       ^
+lib/screens/home_screen.dart:23:8: Error: Error when reading 'lib/screens/reader_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'reader_screen.dart';
+       ^
+lib/screens/home_screen.dart:24:8: Error: Error when reading 'lib/screens/catalog_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'catalog_screen.dart';
+       ^
+lib/screens/home_screen.dart:25:8: Error: Error when reading 'lib/screens/remote_session_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'remote_session_screen.dart';
+       ^
+lib/screens/home_screen.dart:26:8: Error: Error when reading 'lib/services/catalog_service.dart': El sistema no puede encontrar el archivo especificado
+import '../services/catalog_service.dart';
+       ^
+lib/services/catalog/catalog_service.dart:14:8: Error: Error when reading 'lib/services/services/ble/ble_service_platform.dart': El sistema no puede encontrar la ruta especificada
+import '../services/ble/ble_service_platform.dart';
+       ^
+lib/services/ai/ai_hardware_bridge_service.dart:109:3: Error: Type 'BleService' not found.
+  BleService? _bleService;
+  ^^^^^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:134:5: Error: Type 'BleService' not found.
+    BleService? bleService,
+    ^^^^^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:109:3: Error: 'BleService' isn't a type.
+  BleService? _bleService;
+  ^^^^^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:134:5: Error: 'BleService' isn't a type.
+    BleService? bleService,
+    ^^^^^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:408:28: Error: The getter 'LvsCommands' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+    final patternCommand = LvsCommands.ch1PatternFor(pattern);
+                           ^^^^^^^^^^^
+lib/screens/home_screen.dart:65:36: Error: The getter 'preregisteredProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'preregisteredProvider'.
+    final preregistered = ref.read(preregisteredProvider);
+                                   ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:68:30: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+    final catalog = ref.read(catalogProvider).asData?.value;
+                             ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:84:30: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+        final cat = ref.read(catalogProvider).asData?.value;
+                             ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:141:34: Error: Member not found: 'background'.
+      backgroundColor: LvsColors.background, // #000000
+                                 ^^^^^^^^^^
+lib/screens/home_screen.dart:169:18: Error: Expected ']' before this.
+            child: CustomScrollView(
+                 ^
+lib/screens/home_screen.dart:169:13: Error: The getter 'child' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'child'.
+            child: CustomScrollView(
+            ^^^^^
+lib/screens/home_screen.dart:302:37: Error: The getter 'preregisteredProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'preregisteredProvider'.
+    final preregistered = ref.watch(preregisteredProvider);
+                                    ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:345:42: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+                final catalog = ref.read(catalogProvider).asData?.value;
+                                         ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:441:48: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+                      final catalog = ref.read(catalogProvider).asData?.value;
+                                               ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:472:13: Error: The method 'PreregisterPanel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'PreregisterPanel'.
+            PreregisterPanel(onAdded: _tryAutoConnect),
+            ^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:515:11: Error: The method 'PreregisterPanel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'PreregisterPanel'.
+          PreregisterPanel(onAdded: _tryAutoConnect),
+          ^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:524:42: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+                final catalog = ref.read(catalogProvider).asData?.value;
+                                         ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:999:83: Error: Not a constant expression.
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CompanionScreen()));
+                                                                                  ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:1105:83: Error: Not a constant expression.
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RouletteScreen()));
+                                                                                  ^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:1158:83: Error: Not a constant expression.
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ReaderScreen()));
+                                                                                  ^^^^^^^^^^^^
+lib/screens/home_screen.dart:1192:64: Error: Member not found: 'green'.
+              _PatternItem('STORM', LvsPattern.pat5, LvsColors.green),
+                                                               ^^^^^
+lib/screens/home_screen.dart:1379:86: Error: Not a constant expression.
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CatalogScreen())),
+                                                                                     ^^^^^^^^^^^^^
+lib/screens/home_screen.dart:1427:53: Error: Not a constant expression.
+            MaterialPageRoute(builder: (_) => const RemoteSessionScreen()),
+                                                    ^^^^^^^^^^^^^^^^^^^
+lib/screens/game_screen.dart:42:36: Error: Member not found: 'background'.
+        backgroundColor: LvsColors.background,
+                                   ^^^^^^^^^^
+lib/services/catalog/catalog_service.dart:135:31: Error: The getter 'bleProvider' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+        final ble = _ref.read(bleProvider);
+                              ^^^^^^^^^^^
+lib/services/catalog/catalog_service.dart:336:17: Error: The getter 'bleProvider' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+      _ref.read(bleProvider).setActiveToy(found);
+                ^^^^^^^^^^^
+lib/services/catalog/catalog_service.dart:356:15: Error: The getter 'bleProvider' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    _ref.read(bleProvider).setActiveToy(toy);
+              ^^^^^^^^^^^
+lib/services/catalog/catalog_service.dart:423:27: Error: The getter 'bleProvider' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = _ref.read(bleProvider);
+                          ^^^^^^^^^^^
+Target kernel_snapshot_program failed: Exception
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildProdRelease'.
+> Process 'command 'C:\src\flutter\bin\flutter.bat'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1m 14s
+Running Gradle task 'assembleProdRelease'...                       75.3s
+Gradle task assembleProdRelease failed with exit code 1

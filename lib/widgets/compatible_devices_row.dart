@@ -7,9 +7,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../devices/models/toy_model.dart';
-import '../services/catalog/catalog_service.dart';
-import '../theme.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
+import 'package:velvet_sync/services/catalog/catalog_service.dart';
+import 'package:velvet_sync/theme.dart';
 
 class CompatibleDevicesRow extends ConsumerWidget {
   const CompatibleDevicesRow({super.key});

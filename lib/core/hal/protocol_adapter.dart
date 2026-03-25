@@ -3,10 +3,10 @@
 // Adaptador que traduce comandos genéricos a protocolos específicos
 // ═══════════════════════════════════════════════════════════════
 
-import '../types/command_types.dart';
+import 'package:velvet_sync/types/command_types.dart';
 
-import '../types/result_types.dart';
-import '../protocols/protocol_base.dart';
+import 'package:velvet_sync/types/result_types.dart';
+import 'package:velvet_sync/protocols/protocol_base.dart';
 
 /// Adaptador de protocolos
 /// 

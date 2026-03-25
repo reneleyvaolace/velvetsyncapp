@@ -9,9 +9,9 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/ble/ble_service.dart';
-import '../services/ble/lvs_commands.dart';
-import '../theme.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/lvs_commands.dart';
+import 'package:velvet_sync/theme.dart';
 
 class DebugMark {
   final int b0, b1, b2;

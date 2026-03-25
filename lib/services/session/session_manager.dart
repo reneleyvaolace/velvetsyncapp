@@ -9,8 +9,8 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../devices/models/session_models.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/devices/models/session_models.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 // ═══════════════════════════════════════════════════════════════
 // Providers

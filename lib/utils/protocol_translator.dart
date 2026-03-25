@@ -3,7 +3,7 @@
 // Traductor de Protocolo Universal para dispositivos BLE
 // ═══════════════════════════════════════════════════════════════
 
-import '../devices/models/toy_model.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
 
 /// Resultado de la traducción de protocolo
 class ProtocolCommand {

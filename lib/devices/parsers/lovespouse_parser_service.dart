@@ -11,8 +11,8 @@
 
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../models/lovespouse_device.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/devices/models/lovespouse_device.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 /// Servicio optimizado para cargar dispositivos LoveSpouse
 ///

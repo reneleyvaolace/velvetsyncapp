@@ -3,7 +3,7 @@
 // Configuración de dispositivos
 // ═══════════════════════════════════════════════════════════════
 
-import '../types/device_types.dart';
+import 'package:velvet_sync/types/device_types.dart';
 
 
 /// Configuración de un dispositivo

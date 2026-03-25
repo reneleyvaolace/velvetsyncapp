@@ -7,8 +7,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../devices/models/device_sync_model.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/devices/models/device_sync_model.dart';
+import 'package:velvet_sync/utils/logger.dart';
 import 'supabase_service.dart';
 
 // ═══════════════════════════════════════════════════════════════

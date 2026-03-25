@@ -1,0 +1,432 @@
+Resolving dependencies...
+Downloading packages...
+  app_links 6.4.1 (7.0.0 available)
+  audio_session 0.1.25 (0.2.3 available)
+  audio_waveforms 1.3.0 (2.0.2 available)
+  csv 6.0.0 (8.0.0 available)
+  cupertino_icons 1.0.8 (1.0.9 available)
+  dart_jsonwebtoken 3.3.2 (3.4.0 available)
+  file_picker 8.3.7 (10.3.10 available)
+  flutter_dotenv 5.2.1 (6.0.0 available)
+  flutter_launcher_icons 0.13.1 (0.14.4 available)
+  flutter_lints 4.0.0 (6.0.0 available)
+  flutter_plugin_android_lifecycle 2.0.33 (2.0.34 available)
+  flutter_riverpod 2.6.1 (3.3.1 available)
+  google_fonts 6.3.3 (8.0.2 available)
+  gotrue 2.18.0 (2.19.0 available)
+  image_picker_android 0.8.13+14 (0.8.13+15 available)
+  just_audio 0.9.46 (0.10.5 available)
+  lints 4.0.0 (6.1.0 available)
+  meta 1.17.0 (1.18.2 available)
+  native_toolchain_c 0.17.5 (0.17.6 available)
+  path_provider_android 2.2.22 (2.2.23 available)
+  realtime_client 2.7.0 (2.7.1 available)
+  riverpod 2.6.1 (3.2.1 available)
+  shared_preferences_android 2.4.21 (2.4.23 available)
+  storage_client 2.4.1 (2.5.1 available)
+  supabase 2.10.2 (2.10.4 available)
+  supabase_flutter 2.12.0 (2.12.2 available)
+  test_api 0.7.10 (0.7.11 available)
+  url_launcher_android 6.3.28 (6.3.29 available)
+  vector_math 2.2.0 (2.3.0 available)
+  wakelock_plus 1.4.0 (1.5.1 available)
+  wakelock_plus_platform_interface 1.3.0 (1.4.0 available)
+  webview_flutter_android 4.10.13 (4.10.14 available)
+  webview_flutter_platform_interface 2.14.0 (2.15.0 available)
+  webview_flutter_wkwebview 3.24.0 (3.24.1 available)
+  win32 5.15.0 (6.0.0 available)
+Got dependencies!
+35 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleProdRelease'...                    
+lib/services/backend/sync_service.dart:11:8: Error: Error when reading 'lib/core/utils/logger.dart': El sistema no puede encontrar la ruta especificada
+import 'package:velvet_sync/core/hal/protocol_adapter.dart/../../utils/logger.dart';
+       ^
+lib/services/ai/ai_hardware_bridge_service.dart:15:8: Error: Error when reading 'lib/core/utils/logger.dart': El sistema no puede encontrar la ruta especificada
+import 'package:velvet_sync/core/hal/protocol_adapter.dart/../../utils/logger.dart';
+       ^
+lib/services/ble/ble_service.dart:27:8: Error: Error when reading 'lib/core/utils/logger.dart': El sistema no puede encontrar la ruta especificada
+import 'package:velvet_sync/core/hal/protocol_adapter.dart/../../utils/logger.dart';
+       ^
+lib/services/backend/supabase_service.dart:11:8: Error: Error when reading 'lib/core/utils/logger.dart': El sistema no puede encontrar la ruta especificada
+import 'package:velvet_sync/core/hal/protocol_adapter.dart/../../utils/logger.dart';
+       ^
+lib/services/ai/ai_hardware_bridge_service.dart:11:8: Error: Error when reading 'lib/core/utils/protocol_translator.dart': El sistema no puede encontrar la ruta especificada
+import 'package:velvet_sync/core/hal/protocol_adapter.dart/../../utils/protocol_translator.dart';
+       ^
+lib/services/catalog/catalog_service.dart:15:8: Error: Error when reading 'lib/core/utils/logger.dart': El sistema no puede encontrar la ruta especificada
+import 'package:velvet_sync/core/hal/protocol_adapter.dart/../../utils/logger.dart';
+       ^
+lib/devices/parsers/lovespouse_parser_service.dart:15:8: Error: Error when reading 'lib/core/utils/logger.dart': El sistema no puede encontrar la ruta especificada
+import 'package:velvet_sync/core/hal/protocol_adapter.dart/../../utils/logger.dart';
+       ^
+lib/services/backend/sync_service.dart:134:7: Error: The method 'lvsLog' isn't defined for the type 'SyncService'.
+ - 'SyncService' is from 'package:velvet_sync/services/backend/sync_service.dart' ('lib/services/backend/sync_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('SyncService inicializado - Canal: public:device_sync', tag: 'SYNC');
+      ^^^^^^
+lib/services/backend/sync_service.dart:138:7: Error: The method 'lvsLog' isn't defined for the type 'SyncService'.
+ - 'SyncService' is from 'package:velvet_sync/services/backend/sync_service.dart' ('lib/services/backend/sync_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error al iniciar SyncService: $e', tag: 'SYNC');
+      ^^^^^^
+lib/services/backend/sync_service.dart:164:9: Error: The method 'lvsLog' isn't defined for the type 'SyncService'.
+ - 'SyncService' is from 'package:velvet_sync/services/backend/sync_service.dart' ('lib/services/backend/sync_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('Canal public:device_sync suscrito', tag: 'SYNC');
+        ^^^^^^
+lib/services/backend/sync_service.dart:173:11: Error: The method 'lvsLog' isn't defined for the type 'SyncService'.
+ - 'SyncService' is from 'package:velvet_sync/services/backend/sync_service.dart' ('lib/services/backend/sync_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+          lvsLog('Error en canal realtime: $error', tag: 'SYNC');
+          ^^^^^^
+lib/services/backend/sync_service.dart:205:7: Error: The method 'lvsLog' isn't defined for the type 'SyncService'.
+ - 'SyncService' is from 'package:velvet_sync/services/backend/sync_service.dart' ('lib/services/backend/sync_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('SYNC: ${syncEvent.command} -> ${syncEvent.deviceId}', tag: 'SYNC');
+      ^^^^^^
+lib/services/backend/sync_service.dart:223:7: Error: The method 'lvsLog' isn't defined for the type 'SyncService'.
+ - 'SyncService' is from 'package:velvet_sync/services/backend/sync_service.dart' ('lib/services/backend/sync_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error procesando evento: $e', tag: 'SYNC');
+      ^^^^^^
+lib/services/backend/sync_service.dart:284:9: Error: The method 'lvsLog' isn't defined for the type 'SyncService'.
+ - 'SyncService' is from 'package:velvet_sync/services/backend/sync_service.dart' ('lib/services/backend/sync_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('Error en listener AI Profile: $e', tag: 'SYNC');
+        ^^^^^^
+lib/services/backend/sync_service.dart:345:5: Error: The method 'lvsLog' isn't defined for the type 'SyncService'.
+ - 'SyncService' is from 'package:velvet_sync/services/backend/sync_service.dart' ('lib/services/backend/sync_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('SyncService cerrado', tag: 'SYNC');
+    ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:153:7: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Puente IA-Hardware conectado', tag: 'AI_BRIDGE');
+      ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:159:7: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error al iniciar puente IA-Hardware: $e', tag: 'AI_BRIDGE');
+      ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:176:5: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('AI Profile: ${event.command} para ${event.deviceId}', tag: 'AI_BRIDGE');
+    ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:181:7: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('No hay juguete conectado para aplicar AI Profile', tag: 'AI_BRIDGE');
+      ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:188:7: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('BLE no est├í conectado', tag: 'AI_BRIDGE');
+      ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:216:7: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('AI Profile ejecutado exitosamente', tag: 'AI_BRIDGE');
+      ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:219:7: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error procesando AI Profile: $e', tag: 'AI_BRIDGE');
+      ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:316:7: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Guard bloque├│ AI: ${guardResult.reason}', tag: 'AI_BRIDGE');
+      ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:345:24: Error: The getter 'ProtocolTranslator' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'ProtocolTranslator'.
+    final ch1Command = ProtocolTranslator.translate(
+                       ^^^^^^^^^^^^^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:351:24: Error: The getter 'ProtocolTranslator' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'ProtocolTranslator'.
+    final ch2Command = ProtocolTranslator.translate(
+                       ^^^^^^^^^^^^^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:365:5: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('AI Dual: CH1=${ch1Command.description}, CH2=${ch2Command.description}', tag: 'AI_BRIDGE');
+    ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:388:21: Error: The getter 'ProtocolTranslator' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'ProtocolTranslator'.
+    final command = ProtocolTranslator.translate(
+                    ^^^^^^^^^^^^^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:399:5: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('AI Single: ${command.description}', tag: 'AI_BRIDGE');
+    ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:412:5: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('AI Pattern: $pattern', tag: 'AI_BRIDGE');
+    ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:428:7: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error enviando comando BLE: $e', tag: 'AI_BRIDGE');
+      ^^^^^^
+lib/services/ai/ai_hardware_bridge_service.dart:549:5: Error: The method 'lvsLog' isn't defined for the type 'AIHardwareBridge'.
+ - 'AIHardwareBridge' is from 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart' ('lib/services/ai/ai_hardware_bridge_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('Puente IA-Hardware cerrado', tag: 'AI_BRIDGE');
+    ^^^^^^
+lib/screens/home_screen.dart:223:11: Error: Expected an identifier, but got ')'.
+Try inserting an identifier before ')'.
+          ),
+          ^
+lib/screens/home_screen.dart:223:11: Error: Expected ']' before this.
+          ),
+          ^
+lib/screens/home_screen.dart:472:13: Error: The method 'PreregisterPanel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'PreregisterPanel'.
+            PreregisterPanel(onAdded: _tryAutoConnect),
+            ^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:515:11: Error: The method 'PreregisterPanel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'PreregisterPanel'.
+          PreregisterPanel(onAdded: _tryAutoConnect),
+          ^^^^^^^^^^^^^^^^
+lib/services/ble/ble_service.dart:342:5: Error: The method 'lvsLog' isn't defined for the type 'BleService'.
+ - 'BleService' is from 'package:velvet_sync/services/ble/ble_service.dart' ('lib/services/ble/ble_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('INICIANDO ESCANEO - Deep Scan: $isDeepScan', tag: 'BLE');
+    ^^^^^^
+lib/services/ble/ble_service.dart:677:28: Error: The method 'lvsLog' isn't defined for the type 'BleService'.
+ - 'BleService' is from 'package:velvet_sync/services/ble/ble_service.dart' ('lib/services/ble/ble_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+          if (!cmd.silent) lvsLog('Error escribiendo a GATT: $e');
+                           ^^^^^^
+lib/services/backend/supabase_service.dart:48:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Supabase Inicializado OK: $url', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:50:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ÔØî Error cr├¡tico inicializando Supabase: $e', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:74:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error fetchCatalog: $e', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:92:9: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('No se encontr├│ match para "$id"', tag: 'SUPABASE');
+        ^^^^^^
+lib/services/backend/supabase_service.dart:96:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Match encontrado para "$id" -> $matchName', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:99:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error fetchDeviceById: $e', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:173:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Session token is empty', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:179:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Invalid session token format', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:197:9: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('Session not found, expired, or inactive', tag: 'SUPABASE');
+        ^^^^^^
+lib/services/backend/supabase_service.dart:203:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error fetchSessionByToken: $e', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:223:9: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('Rate limit: Wait $waitTime seconds before creating another session', tag: 'SUPABASE');
+        ^^^^^^
+lib/services/backend/supabase_service.dart:239:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Sesi├│n creada: ID ${response['id']}', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:242:7: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ÔÜá´©Å Fallo inicial en createSharedSession ($deviceId): $e', tag: 'SUPABASE');
+      ^^^^^^
+lib/services/backend/supabase_service.dart:247:11: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+          lvsLog('­ƒöä Reintentando con ID gen├®rico...', tag: 'SUPABASE');
+          ^^^^^^
+lib/services/backend/supabase_service.dart:258:11: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+          lvsLog('ÔØî Error fatal en reintento: $e2', tag: 'SUPABASE');
+          ^^^^^^
+lib/services/backend/supabase_service.dart:278:9: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('Comando P2P (${isSelf ? 'M├¡o' : 'Socio'}): $payload', tag: 'SUPA');
+        ^^^^^^
+lib/services/backend/supabase_service.dart:283:5: Error: The method 'lvsLog' isn't defined for the type 'SupabaseService'.
+ - 'SupabaseService' is from 'package:velvet_sync/services/backend/supabase_service.dart' ('lib/services/backend/supabase_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('Unido a sala de control: session_$sessionId', tag: 'SUPA');
+    ^^^^^^
+lib/services/catalog/catalog_service.dart:45:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseCatalogNotifier'.
+ - 'LovespouseCatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Ô£à LoveSpouse: ${state.length} dispositivos cargados', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:47:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseCatalogNotifier'.
+ - 'LovespouseCatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ÔØî Error cargando LoveSpouse: $e', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:141:7: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error cargando almacenamiento seguro: $e', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:151:7: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error guardando en almacenamiento seguro: $e', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:194:7: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('­ƒöä Sincronizando cat├ílogo con Supabase...', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:223:9: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('Ô£à Cat├ílogo actualizado: ${toys.length} dispositivos, mostrando 5 aleatorios', tag: 'CATALOG');
+        ^^^^^^
+lib/services/catalog/catalog_service.dart:225:9: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('ÔÜá´©Å Supabase devolvi├│ vac├¡o, manteniendo fallback local', tag: 'CATALOG');
+        ^^^^^^
+lib/services/catalog/catalog_service.dart:231:7: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ÔØî Error cargando cat├ílogo: $e', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:240:7: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Iniciando limpieza profunda del cat├ílogo...', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:252:7: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Limpieza profunda completada.', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:254:7: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Error durante nuke: $e', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:306:7: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ID desconocido "$cleanId". Generando perfil gen├®rico...', tag: 'CATALOG');
+      ^^^^^^
+lib/services/catalog/catalog_service.dart:327:9: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('Nuevo dispositivo registrado: ${found.name}', tag: 'CATALOG');
+        ^^^^^^
+lib/services/catalog/catalog_service.dart:331:9: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+        lvsLog('Datos actualizados para dispositivo existente: ${found.name}', tag: 'CATALOG');
+        ^^^^^^
+lib/services/catalog/catalog_service.dart:419:5: Error: The method 'lvsLog' isn't defined for the type 'CatalogNotifier'.
+ - 'CatalogNotifier' is from 'package:velvet_sync/services/catalog/catalog_service.dart' ('lib/services/catalog/catalog_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('Dispositivo personalizado guardado: ${updatedToy.name} (${updatedToy.id})', tag: 'CATALOG');
+    ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:64:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Ô£à LoveSpouse: ${devices.length} dispositivos cargados (1 archivo, 528 KB)',
+      ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:69:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ÔØî Error cargando dispositivos LoveSpouse: $e',
+      ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:89:11: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+          lvsLog('ÔÜá´©Å Error parseando dispositivo: ${e.toString().substring(0, 100)}...',
+          ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:94:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ÔØî Error parseando archivo consolidado: ${e.toString().substring(0, 100)}...',
+      ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:116:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Ô£à ├ìndice cargado: ${_indexCache!.length} entradas (157 KB)',
+      ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:121:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ÔÜá´©Å Error cargando ├¡ndice, usando b├║squeda lineal: $e',
+      ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:147:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('ÔÜá´©Å ├ìndice vac├¡o, usando b├║squeda lineal', tag: 'LVS_PARSER');
+      ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:170:7: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+      lvsLog('Ô£à Barcode $barcode encontrado en ├¡ndice (posici├│n $deviceIndex)',
+      ^^^^^^
+lib/devices/parsers/lovespouse_parser_service.dart:242:5: Error: The method 'lvsLog' isn't defined for the type 'LovespouseParserService'.
+ - 'LovespouseParserService' is from 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart' ('lib/devices/parsers/lovespouse_parser_service.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
+    lvsLog('­ƒùæ´©Å Cach├®s de LoveSpouse limpiadas (devices + index)', tag: 'LVS_PARSER');
+    ^^^^^^
+Target kernel_snapshot_program failed: Exception
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildProdRelease'.
+> Process 'command 'C:\src\flutter\bin\flutter.bat'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1m 56s
+Running Gradle task 'assembleProdRelease'...                      118.6s
+Gradle task assembleProdRelease failed with exit code 1

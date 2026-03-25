@@ -9,21 +9,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:rxdart/rxdart.dart'; // 🔒 PERFORMANCE: Para debounce de streams
-import '../providers/media_sync_provider.dart';
-import '../ble/ble_service.dart';
-import '../ble/lvs_commands.dart';
-import '../theme.dart';
-import '../widgets/preregister_widget.dart';
-import '../widgets/compatible_devices_row.dart';
+import 'package:velvet_sync/providers/media_sync_provider.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/lvs_commands.dart';
+import 'package:velvet_sync/theme.dart';
+// import 'preregister_widget.dart'; // FALTANTE EN DISCO
+import 'package:velvet_sync/widgets/compatible_devices_row.dart';
 import 'debug_screen.dart';
 import 'game_screen.dart';
-import 'companion_screen.dart';
+// import 'companion_screen.dart'; // FALTANTE EN DISCO
 import 'dice_screen.dart';
-import 'roulette_screen.dart';
-import 'reader_screen.dart';
-import 'catalog_screen.dart';
-import 'remote_session_screen.dart';
-import '../services/catalog_service.dart';
+// import 'roulette_screen.dart'; // FALTANTE EN DISCO
+// import 'reader_screen.dart'; // FALTANTE EN DISCO
+// import 'catalog_screen.dart'; // FALTANTE EN DISCO
+// import 'remote_session_screen.dart'; // FALTANTE EN DISCO
+import 'package:velvet_sync/services/catalog/catalog_service.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -138,7 +138,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     final ble = ref.read(bleProvider); // Acceso directo para callbacks sin disparar rebuilds
 
     return Scaffold(
-      backgroundColor: LvsColors.background, // #000000
+      backgroundColor: LvsColors.bg, // #000000
       body: Stack(
         children: [
           // Fondo con gradiente sutil (Mesh Gradient)
@@ -166,7 +166,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ),
             ),
           ),
-            child: CustomScrollView(
+            CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
                 _buildAppBar(ref),
@@ -220,7 +220,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ),
               ],
             ),
-          ),
         ],
       ),
     );
@@ -469,7 +468,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             const SizedBox(height: 14),
 
             // Pre-registro (chips de dispositivos + agregar más)
-            PreregisterPanel(onAdded: _tryAutoConnect),
+            // PreregisterPanel(onAdded: _tryAutoConnect), // FALTANTE
           ],
         ),
       );
@@ -512,7 +511,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           const SizedBox(height: 20),
 
           // Pre-registro
-          PreregisterPanel(onAdded: _tryAutoConnect),
+          // PreregisterPanel(onAdded: _tryAutoConnect), // FALTANTE
           const SizedBox(height: 16),
 
           // Botón de escaneo manual
@@ -996,7 +995,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ElevatedButton(
                 onPressed: () {
                   HapticFeedback.heavyImpact();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CompanionScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => /* const CompanionScreen() FALTANTE */ Container()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: LvsColors.amber,
@@ -1102,7 +1101,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ElevatedButton(
                 onPressed: () {
                   HapticFeedback.heavyImpact();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RouletteScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => /* const RouletteScreen() FALTANTE */ Container()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: LvsColors.red,
@@ -1155,7 +1154,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ElevatedButton(
                 onPressed: () {
                   HapticFeedback.heavyImpact();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ReaderScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => /* const ReaderScreen() FALTANTE */ Container()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: LvsColors.teal,
@@ -1189,7 +1188,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               _PatternItem('OLA',   LvsPattern.pat2, LvsColors.violet),
               _PatternItem('RAMPA', LvsPattern.pat3, LvsColors.teal),
               _PatternItem('FLIP',  LvsPattern.pat4, LvsColors.amber),
-              _PatternItem('STORM', LvsPattern.pat5, LvsColors.green),
+              _PatternItem('STORM', LvsPattern.pat5, LvsColors.teal),
               _PatternItem('CHAOS', LvsPattern.pat6, LvsColors.red),
             ],
             active: ble.activePattern,
@@ -1376,7 +1375,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return CardGlass(
       padding: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CatalogScreen())),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => /* const CatalogScreen() FALTANTE */ Container())),
         borderRadius: BorderRadius.circular(24),
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -1424,7 +1423,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const RemoteSessionScreen()),
+            MaterialPageRoute(builder: (_) => /* const RemoteSessionScreen() FALTANTE */ Container()),
           );
         },
         borderRadius: BorderRadius.circular(24),

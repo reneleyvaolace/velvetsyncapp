@@ -11,8 +11,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import '../../devices/models/funscript.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/devices/models/funscript.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 // ═══════════════════════════════════════════════════════════════
 // Funscript Loader Service

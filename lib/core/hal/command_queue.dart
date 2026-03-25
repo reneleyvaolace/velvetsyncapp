@@ -5,8 +5,8 @@
 
 import 'dart:async';
 
-import '../types/command_types.dart';
-import '../types/result_types.dart';
+import 'package:velvet_sync/types/command_types.dart';
+import 'package:velvet_sync/types/result_types.dart';
 
 
 /// Cola de comandos para ejecución ordenada y asíncrona

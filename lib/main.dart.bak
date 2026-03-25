@@ -12,7 +12,6 @@ import 'services/ble/ble_service_platform.dart';
 import 'services/backend/sync_service.dart';
 import 'services/ai/ai_hardware_bridge_service.dart';
 import 'utils/logger.dart';
-import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -107,9 +106,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
     
     if (mounted) {
-      // Navegar a la pantalla principal (HomeScreen)
+      // Navegar a la pantalla principal (Dashboard) cuando esté lista
+      // Por ahora, una pantalla temporal de "AI Lab Ready"
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen())
+        MaterialPageRoute(builder: (_) => const DebugDashboard())
       );
     }
   }

@@ -4,9 +4,9 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:math' as math;
-import '../types/device_types.dart';
-import '../types/command_types.dart';
-import '../types/result_types.dart';
+import 'package:velvet_sync/types/device_types.dart';
+import 'package:velvet_sync/types/command_types.dart';
+import 'package:velvet_sync/types/result_types.dart';
 
 /// Interfaz común para todos los dispositivos
 /// 

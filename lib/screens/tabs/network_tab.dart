@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lvs_control/theme.dart';
-import 'package:lvs_control/screens/remote_session_screen.dart';
-import 'package:lvs_control/screens/catalog_screen.dart';
-import 'package:lvs_control/services/supabase_service.dart';
-import 'package:lvs_control/ble/ble_service.dart';
+import 'package:velvet_sync/theme.dart';
+import 'package:velvet_sync/screens/remote_session_screen.dart';
+import 'package:velvet_sync/screens/catalog_screen.dart';
+import 'package:velvet_sync/services/supabase_service.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
 
 class NetworkTab extends ConsumerWidget {
   const NetworkTab({super.key});

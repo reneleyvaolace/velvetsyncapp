@@ -4,9 +4,9 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
-import '../types/device_types.dart';
-import '../types/event_types.dart';
-import '../types/result_types.dart';
+import 'package:velvet_sync/types/device_types.dart';
+import 'package:velvet_sync/types/event_types.dart';
+import 'package:velvet_sync/types/result_types.dart';
 import 'device_interface.dart';
 
 /// Gestor de conexiones para múltiples dispositivos

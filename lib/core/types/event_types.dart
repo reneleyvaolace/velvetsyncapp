@@ -3,8 +3,8 @@
 // Eventos del sistema para comunicación asíncrona
 // ═══════════════════════════════════════════════════════════════
 
-import '../types/device_types.dart';
-import '../types/command_types.dart';
+import 'package:velvet_sync/types/device_types.dart';
+import 'package:velvet_sync/types/command_types.dart';
 
 /// Evento base para todos los eventos del sistema
 abstract class PlatformEvent {

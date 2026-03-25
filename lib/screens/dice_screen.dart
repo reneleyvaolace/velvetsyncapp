@@ -8,8 +8,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/ble/ble_service.dart';
-import '../theme.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/theme.dart';
 
 class DiceScreen extends ConsumerStatefulWidget {
   const DiceScreen({super.key});

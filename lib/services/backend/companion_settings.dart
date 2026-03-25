@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 enum CompanionGender {
   female('Mujer', 'Femenino'),

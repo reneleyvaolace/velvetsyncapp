@@ -5,8 +5,8 @@
 
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../../devices/models/toy_model.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 // ═══════════════════════════════════════════════════════════════
 // Modelos de Configuración Buttplug

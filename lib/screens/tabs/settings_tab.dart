@@ -4,7 +4,7 @@ import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/screens/debug_screen.dart';
 import 'package:velvet_sync/screens/web_catalog_screen.dart';
-import '../../services/session/session_timer_service.dart';
+import 'package:velvet_sync/services/session/session_timer_service.dart';
 
 class SettingsTab extends ConsumerStatefulWidget {
   const SettingsTab({super.key});

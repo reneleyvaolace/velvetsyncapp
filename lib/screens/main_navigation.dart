@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lvs_control/theme.dart';
-import 'package:lvs_control/screens/tabs/control_tab.dart';
-import 'package:lvs_control/screens/tabs/modes_tab.dart';
-import 'package:lvs_control/screens/tabs/network_tab.dart';
-import 'package:lvs_control/screens/tabs/settings_tab.dart';
-import 'package:lvs_control/screens/web_catalog_screen.dart';
+import 'package:velvet_sync/theme.dart';
+import 'package:velvet_sync/screens/tabs/control_tab.dart';
+import 'package:velvet_sync/screens/tabs/modes_tab.dart';
+import 'package:velvet_sync/screens/tabs/network_tab.dart';
+import 'package:velvet_sync/screens/tabs/settings_tab.dart';
+import 'package:velvet_sync/screens/web_catalog_screen.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   final int initialIndex;

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lvs_control/ble/ble_service.dart';
-import 'package:lvs_control/theme.dart';
-import 'package:lvs_control/screens/dice_screen.dart';
-import 'package:lvs_control/screens/roulette_screen.dart';
-import 'package:lvs_control/screens/reader_screen.dart';
-import 'package:lvs_control/screens/companion_screen.dart';
-import 'package:lvs_control/screens/game_screen.dart';
-import 'package:lvs_control/widgets/lvs_modes.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/theme.dart';
+import 'package:velvet_sync/screens/dice_screen.dart';
+import 'package:velvet_sync/screens/roulette_screen.dart';
+import 'package:velvet_sync/screens/reader_screen.dart';
+import 'package:velvet_sync/screens/companion_screen.dart';
+import 'package:velvet_sync/screens/game_screen.dart';
+import 'package:velvet_sync/widgets/lvs_modes.dart';
 import 'package:flutter/services.dart';
-import 'package:lvs_control/screens/kegel_screen.dart';
+import 'package:velvet_sync/screens/kegel_screen.dart';
 
 class ModesTab extends ConsumerStatefulWidget {
   const ModesTab({super.key});
@@ -106,7 +106,7 @@ class _ModesTabState extends ConsumerState<ModesTab> {
       childAspectRatio: 0.7,
       children: [
         _GameTile(
-          title: 'FRUTAS', icon: Icons.animation, color: LvsColors.green,
+          title: 'FRUTAS', icon: Icons.animation, color: LvsColors.teal,
           assetPath: 'assets/icons/icon_fruit_game.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalGameScreen())),
         ),

@@ -8,13 +8,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../devices/models/toy_model.dart';
-import '../../devices/models/lovespouse_device.dart';
-import '../backend/supabase_service.dart';
-import '../ble/ble_service_platform.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
+import 'package:velvet_sync/devices/models/lovespouse_device.dart';
+import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/ble/ble_service_platform.dart';
+import 'package:velvet_sync/utils/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../devices/parsers/lovespouse_parser_service.dart';
+import 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart';
 
 // ── Clave de almacenamiento ─────────────────────────────────────
 const _kPreregisteredKey = 'lvs_preregistered_devices';

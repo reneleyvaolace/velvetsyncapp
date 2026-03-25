@@ -22,10 +22,10 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'lvs_commands.dart';
-import '../../devices/models/toy_model.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'toy_profile.dart';
-import '../../utils/logger.dart';
-import '../ai/ai_hardware_bridge_service.dart';
+import 'package:velvet_sync/utils/logger.dart';
+import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
 
 // ── Provider Global para Riverpod ──────────────────────────────
 final bleProvider = ChangeNotifierProvider((ref) => BleService());

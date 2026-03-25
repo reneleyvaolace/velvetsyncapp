@@ -3,7 +3,7 @@
 // Tipos de comandos para control de dispositivos
 // ═══════════════════════════════════════════════════════════════
 
-import '../types/device_types.dart';
+import 'package:velvet_sync/types/device_types.dart';
 
 /// Comando genérico para control de dispositivos
 /// 

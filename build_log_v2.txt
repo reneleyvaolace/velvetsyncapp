@@ -1,0 +1,693 @@
+Resolving dependencies...
+Downloading packages...
+  app_links 6.4.1 (7.0.0 available)
+  audio_session 0.1.25 (0.2.3 available)
+  audio_waveforms 1.3.0 (2.0.2 available)
+  csv 6.0.0 (8.0.0 available)
+  cupertino_icons 1.0.8 (1.0.9 available)
+  dart_jsonwebtoken 3.3.2 (3.4.0 available)
+  file_picker 8.3.7 (10.3.10 available)
+  flutter_dotenv 5.2.1 (6.0.0 available)
+  flutter_launcher_icons 0.13.1 (0.14.4 available)
+  flutter_lints 4.0.0 (6.0.0 available)
+  flutter_plugin_android_lifecycle 2.0.33 (2.0.34 available)
+  flutter_riverpod 2.6.1 (3.3.1 available)
+  google_fonts 6.3.3 (8.0.2 available)
+  gotrue 2.18.0 (2.19.0 available)
+  image_picker_android 0.8.13+14 (0.8.13+15 available)
+  just_audio 0.9.46 (0.10.5 available)
+  lints 4.0.0 (6.1.0 available)
+  meta 1.17.0 (1.18.2 available)
+  native_toolchain_c 0.17.5 (0.17.6 available)
+  path_provider_android 2.2.22 (2.2.23 available)
+  realtime_client 2.7.0 (2.7.1 available)
+  riverpod 2.6.1 (3.2.1 available)
+  shared_preferences_android 2.4.21 (2.4.23 available)
+  storage_client 2.4.1 (2.5.1 available)
+  supabase 2.10.2 (2.10.4 available)
+  supabase_flutter 2.12.0 (2.12.2 available)
+  test_api 0.7.10 (0.7.11 available)
+  url_launcher_android 6.3.28 (6.3.29 available)
+  vector_math 2.2.0 (2.3.0 available)
+  wakelock_plus 1.4.0 (1.5.1 available)
+  wakelock_plus_platform_interface 1.3.0 (1.4.0 available)
+  webview_flutter_android 4.10.13 (4.10.14 available)
+  webview_flutter_platform_interface 2.14.0 (2.15.0 available)
+  webview_flutter_wkwebview 3.24.0 (3.24.1 available)
+  win32 5.15.0 (6.0.0 available)
+Got dependencies!
+35 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleProdRelease'...                    
+lib/screens/home_screen.dart:13:8: Error: Error when reading 'lib/ble/ble_service.dart': El sistema no puede encontrar la ruta especificada
+import '../ble/ble_service.dart';
+       ^
+lib/providers/media_sync_provider.dart:14:8: Error: Error when reading 'lib/ble/ble_service.dart': El sistema no puede encontrar la ruta especificada
+import '../ble/ble_service.dart';
+       ^
+lib/screens/home_screen.dart:14:8: Error: Error when reading 'lib/ble/lvs_commands.dart': El sistema no puede encontrar la ruta especificada
+import '../ble/lvs_commands.dart';
+       ^
+lib/screens/home_screen.dart:16:8: Error: Error when reading 'lib/widgets/preregister_widget.dart': El sistema no puede encontrar el archivo especificado
+import '../widgets/preregister_widget.dart';
+       ^
+lib/screens/debug_screen.dart:12:8: Error: Error when reading 'lib/ble/ble_service.dart': El sistema no puede encontrar la ruta especificada
+import '../ble/ble_service.dart';
+       ^
+lib/screens/debug_screen.dart:13:8: Error: Error when reading 'lib/ble/lvs_commands.dart': El sistema no puede encontrar la ruta especificada
+import '../ble/lvs_commands.dart';
+       ^
+lib/screens/game_screen.dart:11:8: Error: Error when reading 'lib/ble/ble_service.dart': El sistema no puede encontrar la ruta especificada
+import '../ble/ble_service.dart';
+       ^
+lib/screens/game_screen.dart:12:8: Error: Error when reading 'lib/ble/lvs_commands.dart': El sistema no puede encontrar la ruta especificada
+import '../ble/lvs_commands.dart';
+       ^
+lib/screens/home_screen.dart:20:8: Error: Error when reading 'lib/screens/companion_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'companion_screen.dart';
+       ^
+lib/screens/dice_screen.dart:11:8: Error: Error when reading 'lib/ble/ble_service.dart': El sistema no puede encontrar la ruta especificada
+import '../ble/ble_service.dart';
+       ^
+lib/screens/home_screen.dart:22:8: Error: Error when reading 'lib/screens/roulette_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'roulette_screen.dart';
+       ^
+lib/screens/home_screen.dart:23:8: Error: Error when reading 'lib/screens/reader_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'reader_screen.dart';
+       ^
+lib/screens/home_screen.dart:24:8: Error: Error when reading 'lib/screens/catalog_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'catalog_screen.dart';
+       ^
+lib/screens/home_screen.dart:25:8: Error: Error when reading 'lib/screens/remote_session_screen.dart': El sistema no puede encontrar el archivo especificado
+import 'remote_session_screen.dart';
+       ^
+lib/screens/home_screen.dart:26:8: Error: Error when reading 'lib/services/catalog_service.dart': El sistema no puede encontrar el archivo especificado
+import '../services/catalog_service.dart';
+       ^
+lib/screens/home_screen.dart:106:21: Error: Type 'BleService' not found.
+  void _toggleShake(BleService ble) {
+                    ^^^^^^^^^^
+lib/screens/home_screen.dart:299:28: Error: Type 'BleService' not found.
+  Widget _buildConnectCard(BleService ble) {
+                           ^^^^^^^^^^
+lib/screens/home_screen.dart:809:30: Error: Type 'BleService' not found.
+  Widget _buildMediaSyncCard(BleService ble) {
+                             ^^^^^^^^^^
+lib/screens/home_screen.dart:912:51: Error: Type 'BleService' not found.
+  Widget _buildGameModeCard(BuildContext context, BleService ble) {
+                                                  ^^^^^^^^^^
+lib/screens/home_screen.dart:965:52: Error: Type 'BleService' not found.
+  Widget _buildCompanionCard(BuildContext context, BleService ble) {
+                                                   ^^^^^^^^^^
+lib/screens/home_screen.dart:1018:47: Error: Type 'BleService' not found.
+  Widget _buildDiceCard(BuildContext context, BleService ble) {
+                                              ^^^^^^^^^^
+lib/screens/home_screen.dart:1071:51: Error: Type 'BleService' not found.
+  Widget _buildRouletteCard(BuildContext context, BleService ble) {
+                                                  ^^^^^^^^^^
+lib/screens/home_screen.dart:1124:49: Error: Type 'BleService' not found.
+  Widget _buildReaderCard(BuildContext context, BleService ble) {
+                                                ^^^^^^^^^^
+lib/screens/home_screen.dart:1177:29: Error: Type 'BleService' not found.
+  Widget _buildPatternsCard(BleService ble) {
+                            ^^^^^^^^^^
+lib/screens/home_screen.dart:1205:27: Error: Type 'BleService' not found.
+  Widget _buildCanvasCard(BleService ble) {
+                          ^^^^^^^^^^
+lib/screens/home_screen.dart:1225:26: Error: Type 'BleService' not found.
+  Widget _buildShakeCard(BleService ble) {
+                         ^^^^^^^^^^
+lib/screens/home_screen.dart:1264:29: Error: Type 'BleService' not found.
+  Widget _buildSettingsCard(BleService ble) {
+                            ^^^^^^^^^^
+lib/screens/home_screen.dart:1345:24: Error: Type 'BleService' not found.
+  Widget _buildLogCard(BleService ble) {
+                       ^^^^^^^^^^
+lib/screens/home_screen.dart:1483:9: Error: Type 'BleState' not found.
+  final BleState state;
+        ^^^^^^^^
+lib/screens/home_screen.dart:1589:9: Error: Type 'LvsPattern' not found.
+  final LvsPattern? active;
+        ^^^^^^^^^^
+lib/screens/home_screen.dart:1591:22: Error: Type 'LvsPattern' not found.
+  final ValueChanged<LvsPattern> onTap;
+                     ^^^^^^^^^^
+lib/screens/home_screen.dart:1651:9: Error: Type 'LvsPattern' not found.
+  final LvsPattern pattern;
+        ^^^^^^^^^^
+lib/screens/home_screen.dart:1657:9: Error: Type 'LogEntry' not found.
+  final LogEntry entry;
+        ^^^^^^^^
+lib/screens/home_screen.dart:1686:9: Error: Type 'PacketMode' not found.
+  final PacketMode mode;
+        ^^^^^^^^^^
+lib/screens/home_screen.dart:1687:22: Error: Type 'PacketMode' not found.
+  final ValueChanged<PacketMode> onChanged;
+                     ^^^^^^^^^^
+lib/screens/home_screen.dart:1708:35: Error: Type 'PacketMode' not found.
+  Widget _buildChip(String label, PacketMode m, PacketMode current, ValueChanged<PacketMode> cb) {
+                                  ^^^^^^^^^^
+lib/screens/home_screen.dart:1708:49: Error: Type 'PacketMode' not found.
+  Widget _buildChip(String label, PacketMode m, PacketMode current, ValueChanged<PacketMode> cb) {
+                                                ^^^^^^^^^^
+lib/screens/home_screen.dart:1708:82: Error: Type 'PacketMode' not found.
+  Widget _buildChip(String label, PacketMode m, PacketMode current, ValueChanged<PacketMode> cb) {
+                                                                                 ^^^^^^^^^^
+lib/screens/home_screen.dart:1824:9: Error: Type 'BleService' not found.
+  final BleService ble;
+        ^^^^^^^^^^
+lib/screens/debug_screen.dart:34:3: Error: Type 'SpeedLevel' not found.
+  SpeedLevel? _activePreset = SpeedLevel.high;
+  ^^^^^^^^^^
+lib/screens/debug_screen.dart:69:19: Error: Type 'SpeedLevel' not found.
+  void _setPreset(SpeedLevel? level) {
+                  ^^^^^^^^^^
+lib/screens/debug_screen.dart:84:21: Error: Type 'BleService' not found.
+  void _toggleBurst(BleService ble) {
+                    ^^^^^^^^^^
+lib/screens/debug_screen.dart:108:20: Error: Type 'BleService' not found.
+  void _startSweep(BleService ble) {
+                   ^^^^^^^^^^
+lib/screens/game_screen.dart:155:9: Error: Type 'BleService' not found.
+  final BleService ble;
+        ^^^^^^^^^^
+lib/screens/home_screen.dart:62:26: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+lib/screens/home_screen.dart:65:36: Error: The getter 'preregisteredProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'preregisteredProvider'.
+    final preregistered = ref.read(preregisteredProvider);
+                                   ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:68:30: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+    final catalog = ref.read(catalogProvider).asData?.value;
+                             ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:78:31: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+      final bleNow = ref.read(bleProvider);
+                              ^^^^^^^^^^^
+lib/screens/home_screen.dart:84:30: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+        final cat = ref.read(catalogProvider).asData?.value;
+                             ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:93:26: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+lib/screens/home_screen.dart:106:21: Error: 'BleService' isn't a type.
+  void _toggleShake(BleService ble) {
+                    ^^^^^^^^^^
+lib/screens/home_screen.dart:123:30: Error: The getter 'LvsCommands' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+            ble.writeCommand(LvsCommands.cmdHigh, label: 'SHAKE', silent: true);
+                             ^^^^^^^^^^^
+lib/screens/home_screen.dart:141:34: Error: Member not found: 'background'.
+      backgroundColor: LvsColors.background, // #000000
+                                 ^^^^^^^^^^
+lib/screens/home_screen.dart:169:18: Error: Expected ']' before this.
+            child: CustomScrollView(
+                 ^
+lib/screens/home_screen.dart:138:26: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider); // Acceso directo para callbacks sin disparar rebuilds
+                         ^^^^^^^^^^^
+lib/screens/home_screen.dart:169:13: Error: The getter 'child' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'child'.
+            child: CustomScrollView(
+            ^^^^^
+lib/screens/home_screen.dart:231:26: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+lib/screens/home_screen.dart:232:32: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final bleState = ref.watch(bleProvider.select((p) => p.state));
+                               ^^^^^^^^^^^
+lib/screens/home_screen.dart:233:34: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final deviceName = ref.watch(bleProvider.select((p) => p.toyProfile?.name ?? p.connectedDeviceName));
+                                 ^^^^^^^^^^^
+lib/screens/home_screen.dart:268:33: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+                if (bleState == BleState.connected)
+                                ^^^^^^^^
+lib/screens/home_screen.dart:287:30: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+            if (ble.state == BleState.connected) {
+                             ^^^^^^^^
+lib/screens/home_screen.dart:299:28: Error: 'BleService' isn't a type.
+  Widget _buildConnectCard(BleService ble) {
+                           ^^^^^^^^^^
+lib/screens/home_screen.dart:300:38: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    final isConnected = ble.state == BleState.connected;
+                                     ^^^^^^^^
+lib/screens/home_screen.dart:301:38: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    final isScanning  = ble.state == BleState.scanning || ble.state == BleState.connecting;
+                                     ^^^^^^^^
+lib/screens/home_screen.dart:301:72: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    final isScanning  = ble.state == BleState.scanning || ble.state == BleState.connecting;
+                                                                       ^^^^^^^^
+lib/screens/home_screen.dart:302:37: Error: The getter 'preregisteredProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'preregisteredProvider'.
+    final preregistered = ref.watch(preregisteredProvider);
+                                    ^^^^^^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:345:42: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+                final catalog = ref.read(catalogProvider).asData?.value;
+                                         ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:441:48: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+                      final catalog = ref.read(catalogProvider).asData?.value;
+                                               ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:472:13: Error: The method 'PreregisterPanel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'PreregisterPanel'.
+            PreregisterPanel(onAdded: _tryAutoConnect),
+            ^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:515:11: Error: The method 'PreregisterPanel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing method, or defining a method named 'PreregisterPanel'.
+          PreregisterPanel(onAdded: _tryAutoConnect),
+          ^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:524:42: Error: The getter 'catalogProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'catalogProvider'.
+                final catalog = ref.read(catalogProvider).asData?.value;
+                                         ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:551:32: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final bleState = ref.watch(bleProvider.select((p) => p.state));
+                               ^^^^^^^^^^^
+lib/screens/home_screen.dart:552:21: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (bleState != BleState.connected) return const SizedBox.shrink();
+                    ^^^^^^^^
+lib/screens/home_screen.dart:554:26: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+lib/screens/home_screen.dart:555:40: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final int maxIntensity = ref.watch(bleProvider.select((p) => p.displayIntensity));
+                                       ^^^^^^^^^^^
+lib/screens/home_screen.dart:556:35: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final activeSpeed = ref.watch(bleProvider.select((p) => p.activeSpeed));
+                                  ^^^^^^^^^^^
+lib/screens/home_screen.dart:557:36: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final intensityCh1 = ref.watch(bleProvider.select((p) => p.activeIntensityCh1));
+                                   ^^^^^^^^^^^
+lib/screens/home_screen.dart:558:36: Error: The getter 'bleProvider' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final intensityCh2 = ref.watch(bleProvider.select((p) => p.activeIntensityCh2));
+                                   ^^^^^^^^^^^
+lib/screens/home_screen.dart:642:42: Error: The getter 'SpeedLevel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+                  active: activeSpeed == SpeedLevel.low,
+                                         ^^^^^^^^^^
+lib/screens/home_screen.dart:643:48: Error: The getter 'SpeedLevel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+                  onTap: () => ble.selectSpeed(SpeedLevel.low),
+                                               ^^^^^^^^^^
+lib/screens/home_screen.dart:652:42: Error: The getter 'SpeedLevel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+                  active: activeSpeed == SpeedLevel.medium,
+                                         ^^^^^^^^^^
+lib/screens/home_screen.dart:653:48: Error: The getter 'SpeedLevel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+                  onTap: () => ble.selectSpeed(SpeedLevel.medium),
+                                               ^^^^^^^^^^
+lib/screens/home_screen.dart:662:42: Error: The getter 'SpeedLevel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+                  active: activeSpeed == SpeedLevel.high,
+                                         ^^^^^^^^^^
+lib/screens/home_screen.dart:663:48: Error: The getter 'SpeedLevel' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+                  onTap: () => ble.selectSpeed(SpeedLevel.high),
+                                               ^^^^^^^^^^
+lib/screens/home_screen.dart:809:30: Error: 'BleService' isn't a type.
+  Widget _buildMediaSyncCard(BleService ble) {
+                             ^^^^^^^^^^
+lib/screens/home_screen.dart:810:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:912:51: Error: 'BleService' isn't a type.
+  Widget _buildGameModeCard(BuildContext context, BleService ble) {
+                                                  ^^^^^^^^^^
+lib/screens/home_screen.dart:913:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:965:52: Error: 'BleService' isn't a type.
+  Widget _buildCompanionCard(BuildContext context, BleService ble) {
+                                                   ^^^^^^^^^^
+lib/screens/home_screen.dart:999:83: Error: Not a constant expression.
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CompanionScreen()));
+                                                                                  ^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:966:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:1018:47: Error: 'BleService' isn't a type.
+  Widget _buildDiceCard(BuildContext context, BleService ble) {
+                                              ^^^^^^^^^^
+lib/screens/home_screen.dart:1019:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:1071:51: Error: 'BleService' isn't a type.
+  Widget _buildRouletteCard(BuildContext context, BleService ble) {
+                                                  ^^^^^^^^^^
+lib/screens/home_screen.dart:1105:83: Error: Not a constant expression.
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RouletteScreen()));
+                                                                                  ^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:1072:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:1124:49: Error: 'BleService' isn't a type.
+  Widget _buildReaderCard(BuildContext context, BleService ble) {
+                                                ^^^^^^^^^^
+lib/screens/home_screen.dart:1158:83: Error: Not a constant expression.
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ReaderScreen()));
+                                                                                  ^^^^^^^^^^^^
+lib/screens/home_screen.dart:1125:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:1177:29: Error: 'BleService' isn't a type.
+  Widget _buildPatternsCard(BleService ble) {
+                            ^^^^^^^^^^
+lib/screens/home_screen.dart:1192:64: Error: Member not found: 'green'.
+              _PatternItem('STORM', LvsPattern.pat5, LvsColors.green),
+                                                               ^^^^^
+lib/screens/home_screen.dart:1178:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:1188:37: Error: The getter 'LvsPattern' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsPattern'.
+              _PatternItem('PULSO', LvsPattern.pat1, LvsColors.pink),
+                                    ^^^^^^^^^^
+lib/screens/home_screen.dart:1189:37: Error: The getter 'LvsPattern' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsPattern'.
+              _PatternItem('OLA',   LvsPattern.pat2, LvsColors.violet),
+                                    ^^^^^^^^^^
+lib/screens/home_screen.dart:1190:37: Error: The getter 'LvsPattern' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsPattern'.
+              _PatternItem('RAMPA', LvsPattern.pat3, LvsColors.teal),
+                                    ^^^^^^^^^^
+lib/screens/home_screen.dart:1191:37: Error: The getter 'LvsPattern' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsPattern'.
+              _PatternItem('FLIP',  LvsPattern.pat4, LvsColors.amber),
+                                    ^^^^^^^^^^
+lib/screens/home_screen.dart:1192:37: Error: The getter 'LvsPattern' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsPattern'.
+              _PatternItem('STORM', LvsPattern.pat5, LvsColors.green),
+                                    ^^^^^^^^^^
+lib/screens/home_screen.dart:1193:37: Error: The getter 'LvsPattern' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsPattern'.
+              _PatternItem('CHAOS', LvsPattern.pat6, LvsColors.red),
+                                    ^^^^^^^^^^
+lib/screens/home_screen.dart:1196:35: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+            enabled: ble.state == BleState.connected && !_shakeMode,
+                                  ^^^^^^^^
+lib/screens/home_screen.dart:1205:27: Error: 'BleService' isn't a type.
+  Widget _buildCanvasCard(BleService ble) {
+                          ^^^^^^^^^^
+lib/screens/home_screen.dart:1206:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:1225:26: Error: 'BleService' isn't a type.
+  Widget _buildShakeCard(BleService ble) {
+                         ^^^^^^^^^^
+lib/screens/home_screen.dart:1226:22: Error: The getter 'BleState' isn't defined for the type '_HomeScreenState'.
+ - '_HomeScreenState' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state != BleState.connected) return const SizedBox.shrink();
+                     ^^^^^^^^
+lib/screens/home_screen.dart:1264:29: Error: 'BleService' isn't a type.
+  Widget _buildSettingsCard(BleService ble) {
+                            ^^^^^^^^^^
+lib/screens/home_screen.dart:1345:24: Error: 'BleService' isn't a type.
+  Widget _buildLogCard(BleService ble) {
+                       ^^^^^^^^^^
+lib/screens/home_screen.dart:1379:86: Error: Not a constant expression.
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CatalogScreen())),
+                                                                                     ^^^^^^^^^^^^^
+lib/screens/home_screen.dart:1427:53: Error: Not a constant expression.
+            MaterialPageRoute(builder: (_) => const RemoteSessionScreen()),
+                                                    ^^^^^^^^^^^^^^^^^^^
+lib/screens/home_screen.dart:1483:9: Error: 'BleState' isn't a type.
+  final BleState state;
+        ^^^^^^^^
+lib/screens/home_screen.dart:1489:7: Error: Not a constant expression.
+      BleState.connected  => ('Online',   LvsColors.teal),
+      ^^^^^^^^
+lib/screens/home_screen.dart:1490:7: Error: Not a constant expression.
+      BleState.scanning   => ('Scanning', LvsColors.amber),
+      ^^^^^^^^
+lib/screens/home_screen.dart:1491:7: Error: Not a constant expression.
+      BleState.connecting => ('Joining',  LvsColors.amber),
+      ^^^^^^^^
+lib/screens/home_screen.dart:1492:7: Error: Not a constant expression.
+      BleState.error      => ('Error',    LvsColors.red),
+      ^^^^^^^^
+lib/screens/home_screen.dart:1493:7: Error: Not a constant expression.
+      BleState.idle       => ('Offline',  LvsColors.text3),
+      ^^^^^^^^
+lib/screens/home_screen.dart:1505:46: Error: The getter 'BleState' isn't defined for the type '_BleStateBox'.
+ - '_BleStateBox' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+          _Dot(color: color, pulse: state == BleState.scanning || state == BleState.connecting),
+                                             ^^^^^^^^
+lib/screens/home_screen.dart:1505:76: Error: The getter 'BleState' isn't defined for the type '_BleStateBox'.
+ - '_BleStateBox' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+          _Dot(color: color, pulse: state == BleState.scanning || state == BleState.connecting),
+                                                                           ^^^^^^^^
+lib/screens/home_screen.dart:1589:9: Error: 'LvsPattern' isn't a type.
+  final LvsPattern? active;
+        ^^^^^^^^^^
+lib/screens/home_screen.dart:1591:22: Error: 'LvsPattern' isn't a type.
+  final ValueChanged<LvsPattern> onTap;
+                     ^^^^^^^^^^
+lib/screens/home_screen.dart:1651:9: Error: 'LvsPattern' isn't a type.
+  final LvsPattern pattern;
+        ^^^^^^^^^^
+lib/screens/home_screen.dart:1657:9: Error: 'LogEntry' isn't a type.
+  final LogEntry entry;
+        ^^^^^^^^
+lib/screens/home_screen.dart:1686:9: Error: 'PacketMode' isn't a type.
+  final PacketMode mode;
+        ^^^^^^^^^^
+lib/screens/home_screen.dart:1687:22: Error: 'PacketMode' isn't a type.
+  final ValueChanged<PacketMode> onChanged;
+                     ^^^^^^^^^^
+lib/screens/home_screen.dart:1701:29: Error: The getter 'PacketMode' isn't defined for the type '_ModeSwitcher'.
+ - '_ModeSwitcher' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'PacketMode'.
+          _buildChip('11B', PacketMode.b11, mode, onChanged),
+                            ^^^^^^^^^^
+lib/screens/home_screen.dart:1702:29: Error: The getter 'PacketMode' isn't defined for the type '_ModeSwitcher'.
+ - '_ModeSwitcher' is from 'package:velvet_sync/screens/home_screen.dart' ('lib/screens/home_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'PacketMode'.
+          _buildChip('18B', PacketMode.b18, mode, onChanged),
+                            ^^^^^^^^^^
+lib/screens/home_screen.dart:1708:35: Error: 'PacketMode' isn't a type.
+  Widget _buildChip(String label, PacketMode m, PacketMode current, ValueChanged<PacketMode> cb) {
+                                  ^^^^^^^^^^
+lib/screens/home_screen.dart:1708:49: Error: 'PacketMode' isn't a type.
+  Widget _buildChip(String label, PacketMode m, PacketMode current, ValueChanged<PacketMode> cb) {
+                                                ^^^^^^^^^^
+lib/screens/home_screen.dart:1708:82: Error: 'PacketMode' isn't a type.
+  Widget _buildChip(String label, PacketMode m, PacketMode current, ValueChanged<PacketMode> cb) {
+                                                                                 ^^^^^^^^^^
+lib/screens/home_screen.dart:1824:9: Error: 'BleService' isn't a type.
+  final BleService ble;
+        ^^^^^^^^^^
+lib/providers/media_sync_provider.dart:117:26: Error: The getter 'bleProvider' isn't defined for the type 'MediaSyncNotifier'.
+ - 'MediaSyncNotifier' is from 'package:velvet_sync/providers/media_sync_provider.dart' ('lib/providers/media_sync_provider.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+lib/providers/media_sync_provider.dart:118:22: Error: The getter 'BleState' isn't defined for the type 'MediaSyncNotifier'.
+ - 'MediaSyncNotifier' is from 'package:velvet_sync/providers/media_sync_provider.dart' ('lib/providers/media_sync_provider.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'BleState'.
+    if (ble.state == BleState.connected) {
+                     ^^^^^^^^
+lib/screens/debug_screen.dart:34:3: Error: 'SpeedLevel' isn't a type.
+  SpeedLevel? _activePreset = SpeedLevel.high;
+  ^^^^^^^^^^
+lib/screens/debug_screen.dart:34:31: Error: Undefined name 'SpeedLevel'.
+  SpeedLevel? _activePreset = SpeedLevel.high;
+                              ^^^^^^^^^^
+lib/screens/debug_screen.dart:69:19: Error: 'SpeedLevel' isn't a type.
+  void _setPreset(SpeedLevel? level) {
+                  ^^^^^^^^^^
+lib/screens/debug_screen.dart:72:15: Error: The getter 'LvsCommands' isn't defined for the type '_DebugScreenState'.
+ - '_DebugScreenState' is from 'package:velvet_sync/screens/debug_screen.dart' ('lib/screens/debug_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+    final p = LvsCommands.debugPresets[level]!;
+              ^^^^^^^^^^^
+lib/screens/debug_screen.dart:84:21: Error: 'BleService' isn't a type.
+  void _toggleBurst(BleService ble) {
+                    ^^^^^^^^^^
+lib/screens/debug_screen.dart:101:26: Error: The getter 'bleProvider' isn't defined for the type '_DebugScreenState'.
+ - '_DebugScreenState' is from 'package:velvet_sync/screens/debug_screen.dart' ('lib/screens/debug_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+lib/screens/debug_screen.dart:108:20: Error: 'BleService' isn't a type.
+  void _startSweep(BleService ble) {
+                   ^^^^^^^^^^
+lib/screens/debug_screen.dart:184:27: Error: The getter 'bleProvider' isn't defined for the type '_DebugScreenState'.
+ - '_DebugScreenState' is from 'package:velvet_sync/screens/debug_screen.dart' ('lib/screens/debug_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.watch(bleProvider);
+                          ^^^^^^^^^^^
+lib/screens/debug_screen.dart:247:71: Error: The getter 'SpeedLevel' isn't defined for the type '_DebugScreenState'.
+ - '_DebugScreenState' is from 'package:velvet_sync/screens/debug_screen.dart' ('lib/screens/debug_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+              _DebugPresetBtn(label: 'STOP', active: _activePreset == SpeedLevel.stop, onTap: () => _setPreset(SpeedLevel.stop)),
+                                                                      ^^^^^^^^^^
+lib/screens/debug_screen.dart:247:112: Error: The getter 'SpeedLevel' isn't defined for the type '_DebugScreenState'.
+ - '_DebugScreenState' is from 'package:velvet_sync/screens/debug_screen.dart' ('lib/screens/debug_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+              _DebugPresetBtn(label: 'STOP', active: _activePreset == SpeedLevel.stop, onTap: () => _setPreset(SpeedLevel.stop)),
+                                                                                          ^^^^^^^^^^
+lib/screens/debug_screen.dart:249:71: Error: The getter 'SpeedLevel' isn't defined for the type '_DebugScreenState'.
+ - '_DebugScreenState' is from 'package:velvet_sync/screens/debug_screen.dart' ('lib/screens/debug_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+              _DebugPresetBtn(label: 'HIGH', active: _activePreset == SpeedLevel.high, onTap: () => _setPreset(SpeedLevel.high)),
+                                                                      ^^^^^^^^^^
+lib/screens/debug_screen.dart:249:112: Error: The getter 'SpeedLevel' isn't defined for the type '_DebugScreenState'.
+ - '_DebugScreenState' is from 'package:velvet_sync/screens/debug_screen.dart' ('lib/screens/debug_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'SpeedLevel'.
+              _DebugPresetBtn(label: 'HIGH', active: _activePreset == SpeedLevel.high, onTap: () => _setPreset(SpeedLevel.high)),
+                                                                                          ^^^^^^^^^^
+lib/screens/game_screen.dart:28:26: Error: The getter 'bleProvider' isn't defined for the type '_LocalGameScreenState'.
+ - '_LocalGameScreenState' is from 'package:velvet_sync/screens/game_screen.dart' ('lib/screens/game_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+lib/screens/game_screen.dart:34:28: Error: The getter 'LvsCommands' isn't defined for the type '_LocalGameScreenState'.
+ - '_LocalGameScreenState' is from 'package:velvet_sync/screens/game_screen.dart' ('lib/screens/game_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+    _game.ble.writeCommand(LvsCommands.cmdStop, label: 'Game Stop General');
+                           ^^^^^^^^^^^
+lib/screens/game_screen.dart:42:36: Error: Member not found: 'background'.
+        backgroundColor: LvsColors.background,
+                                   ^^^^^^^^^^
+lib/screens/game_screen.dart:82:51: Error: The getter 'LvsCommands' isn't defined for the type '_LocalGameScreenState'.
+ - '_LocalGameScreenState' is from 'package:velvet_sync/screens/game_screen.dart' ('lib/screens/game_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+                           _game.ble.writeCommand(LvsCommands.cmdStop, label: 'Game Stop General');
+                                                  ^^^^^^^^^^^
+lib/screens/game_screen.dart:155:9: Error: 'BleService' isn't a type.
+  final BleService ble;
+        ^^^^^^^^^^
+lib/screens/game_screen.dart:279:19: Error: The getter 'LvsCommands' isn't defined for the type 'FruitGame'.
+ - 'FruitGame' is from 'package:velvet_sync/screens/game_screen.dart' ('lib/screens/game_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+      final cmd = LvsCommands.preciseChannel1(dynamicIntensity);
+                  ^^^^^^^^^^^
+lib/screens/game_screen.dart:284:27: Error: The getter 'LvsCommands' isn't defined for the type 'FruitGame'.
+ - 'FruitGame' is from 'package:velvet_sync/screens/game_screen.dart' ('lib/screens/game_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+         ble.writeCommand(LvsCommands.preciseChannel1(0), label: 'GAME_STOP_CH1'); 
+                          ^^^^^^^^^^^
+lib/screens/game_screen.dart:290:24: Error: The getter 'LvsCommands' isn't defined for the type 'FruitGame'.
+ - 'FruitGame' is from 'package:velvet_sync/screens/game_screen.dart' ('lib/screens/game_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+      ble.writeCommand(LvsCommands.preciseChannel2(30), label: 'GAME_BOUNCE_CH2');
+                       ^^^^^^^^^^^
+lib/screens/game_screen.dart:294:27: Error: The getter 'LvsCommands' isn't defined for the type 'FruitGame'.
+ - 'FruitGame' is from 'package:velvet_sync/screens/game_screen.dart' ('lib/screens/game_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'LvsCommands'.
+         ble.writeCommand(LvsCommands.preciseChannel2(0), label: 'GAME_STOP_CH2');
+                          ^^^^^^^^^^^
+lib/screens/dice_screen.dart:74:26: Error: The getter 'bleProvider' isn't defined for the type '_DiceScreenState'.
+ - '_DiceScreenState' is from 'package:velvet_sync/screens/dice_screen.dart' ('lib/screens/dice_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+lib/screens/dice_screen.dart:103:26: Error: The getter 'bleProvider' isn't defined for the type '_DiceScreenState'.
+ - '_DiceScreenState' is from 'package:velvet_sync/screens/dice_screen.dart' ('lib/screens/dice_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
+    final ble = ref.read(bleProvider);
+                         ^^^^^^^^^^^
+Target kernel_snapshot_program failed: Exception
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildProdRelease'.
+> Process 'command 'C:\src\flutter\bin\flutter.bat'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2m 48s
+Running Gradle task 'assembleProdRelease'...                      169.8s
+Gradle task assembleProdRelease failed with exit code 1

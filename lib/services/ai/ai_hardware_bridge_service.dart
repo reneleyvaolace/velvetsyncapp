@@ -6,13 +6,13 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../devices/models/device_sync_model.dart';
-import '../../devices/models/toy_model.dart';
-import '../../utils/protocol_translator.dart';
-import '../ble/ble_service_platform.dart';
-import '../ble/lvs_commands.dart';
-import '../backend/sync_service.dart';
-import '../../utils/logger.dart';
+import 'package:velvet_sync/devices/models/device_sync_model.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
+import 'package:velvet_sync/utils/protocol_translator.dart';
+import 'package:velvet_sync/services/ble/ble_service_platform.dart';
+import 'package:velvet_sync/services/ble/lvs_commands.dart';
+import 'package:velvet_sync/services/backend/sync_service.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 // ═══════════════════════════════════════════════════════════════
 // Providers de Riverpod

@@ -6,7 +6,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../utils/logger.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 final videoCallServiceProvider = Provider<VideoCallService>((ref) {
   return VideoCallService();

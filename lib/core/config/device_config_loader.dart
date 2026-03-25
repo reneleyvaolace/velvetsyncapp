@@ -6,8 +6,8 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'device_config.dart';
-import '../types/device_types.dart' show DeviceType, DeviceFeature;
-import '../types/result_types.dart';
+import 'package:velvet_sync/types/device_types.dart';
+import 'package:velvet_sync/types/result_types.dart';
 
 /// Cargador de configuraciones de dispositivos
 /// 

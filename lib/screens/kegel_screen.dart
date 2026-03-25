@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../ble/ble_service.dart';
-import '../theme.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/theme.dart';
 
 enum KegelPhase { ready, contract, relax, finished }
 
@@ -139,7 +139,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: LvsColors.background,
+      backgroundColor: LvsColors.bg,
       appBar: AppBar(
         title: Text('ENTRENAMIENTO KEGEL', style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 4)),
         centerTitle: true,
@@ -229,7 +229,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
       }
     } else if (_currentPhase == KegelPhase.finished) {
       text = "¡HECHO!";
-      color = LvsColors.green;
+      color = LvsColors.teal;
       progress = 0.0;
     }
 

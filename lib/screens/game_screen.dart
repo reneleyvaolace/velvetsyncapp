@@ -7,9 +7,10 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/particles.dart';
-import '../ble/ble_service.dart';
-import '../ble/lvs_commands.dart';
-import '../theme.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/lvs_commands.dart';
+import 'package:velvet_sync/theme.dart';
 
 class LocalGameScreen extends ConsumerStatefulWidget {
   const LocalGameScreen({super.key});
@@ -38,7 +39,7 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: LvsColors.background,
+        backgroundColor: LvsColors.bg,
         body: Stack(
           children: [
             // Mesh Gradient sutil en el fondo del juego

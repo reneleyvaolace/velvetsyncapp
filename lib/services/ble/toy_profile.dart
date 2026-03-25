@@ -3,7 +3,7 @@
 // Perfil del dispositivo — auto-vínculo con pre-registrados
 // ═══════════════════════════════════════════════════════════════
 
-import '../../devices/models/toy_model.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
 
 class ToyProfile {
   final String name;        // Nombre amigable
