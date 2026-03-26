@@ -139,12 +139,16 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: LvsColors.bg,
+      backgroundColor: LvsColors.background,
       appBar: AppBar(
-        title: const Text('ENTRENAMIENTO KEGEL'),
+        title: Text('ENTRENAMIENTO KEGEL', style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 4)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SafeArea(
         child: Container(
@@ -158,7 +162,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
               _buildMainDisplay(),
               const Spacer(),
               _buildControls(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 120), // Support for floating dock
             ],
           ),
         ),
@@ -237,62 +241,52 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
             // Brillo de fondo
             AnimatedContainer(
               duration: const Duration(milliseconds: 500),
-              width: 240,
-              height: 240,
+              width: 240, height: 240,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(
-                    color: color.withOpacity(0.15),
-                    blurRadius: 60,
-                    spreadRadius: 10,
-                  ),
+                  BoxShadow(color: color.withOpacity(0.15), blurRadius: 60, spreadRadius: 10),
                 ],
               ),
             ),
             // Anillo de progreso
             SizedBox(
-              width: 220,
-              height: 220,
+              width: 220, height: 220,
               child: CircularProgressIndicator(
                 value: progress,
-                strokeWidth: 12,
+                strokeWidth: 4,
                 color: color,
                 backgroundColor: Colors.white.withOpacity(0.05),
                 strokeCap: StrokeCap.round,
               ),
             ),
             // Círculo interno glass
-            Container(
-              width: 180,
-              height: 180,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.03),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
-              ),
+            CardGlass(
+              width: 180, height: 180,
+              borderRadius: 180,
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (_isRunning && _selectedLevel != null)
                       Text(
-                        '$_currentRep / ${_selectedLevel!.repetitions}',
-                        style: const TextStyle(color: LvsColors.text3, fontSize: 14, fontWeight: FontWeight.bold),
+                        'ROUND ${_currentRep}',
+                        style: GoogleFonts.plusJakartaSans(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2),
                       ),
                     const SizedBox(height: 8),
                     Text(
-                      _isRunning ? '0:$_secondsRemaining' : text,
-                      style: TextStyle(
+                      _isRunning ? '0:${_secondsRemaining.toString().padLeft(2,'0')}' : text,
+                      style: GoogleFonts.spaceGrotesk(
                         color: Colors.white,
-                        fontSize: _isRunning ? 48 : 28,
+                        fontSize: _isRunning ? 54 : 26,
                         fontWeight: FontWeight.w900,
+                        letterSpacing: -1,
                       ),
                     ),
                     if (_isRunning)
                       Text(
                         text,
-                        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2),
+                        style: GoogleFonts.plusJakartaSans(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 4),
                       ),
                   ],
                 ),

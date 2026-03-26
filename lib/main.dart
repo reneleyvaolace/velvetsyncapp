@@ -56,14 +56,26 @@ class VelvetSyncApp extends ConsumerWidget {
   }
 
   ThemeData _buildTheme(Brightness brightness) {
+    lvsLog('Iniciando Tema "The Neon Nocturne"...', tag: 'UI');
+    
     final baseTheme = ThemeData(brightness: brightness);
     return baseTheme.copyWith(
       useMaterial3: true,
+      scaffoldBackgroundColor: const Color(0xFF000000), // surface_lowest
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFFE91E63), // Velvet Pink
+        seedColor: const Color(0xFFFF8BA1), // Velvet Pink
+        primary: const Color(0xFFFF8BA1),
+        secondary: const Color(0xFFBC83FF), // Electric Violet
+        tertiary: const Color(0xFF16FEFE),  // Cyan Neon
+        surface: const Color(0xFF0E0E0E),
         brightness: brightness,
       ),
-      textTheme: GoogleFonts.outfitTextTheme(baseTheme.textTheme),
+      textTheme: GoogleFonts.manropeTextTheme(baseTheme.textTheme).copyWith(
+        displayLarge: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
+        displayMedium: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700),
+        headlineLarge: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+        labelLarge: GoogleFonts.plusJakartaSans(letterSpacing: 1.5, fontWeight: FontWeight.w600),
+      ),
     );
   }
 }

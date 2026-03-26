@@ -110,43 +110,37 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+      backgroundColor: LvsColors.background,
       appBar: AppBar(
-        title: const Text('DADOS HÁPTICOS'),
+        title: Text('DADOS HÁPTICOS', style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 4)),
         backgroundColor: Colors.transparent,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Container(
           width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                LvsColors.bg,
-                LvsColors.bg.withOpacity(0.8),
-                LvsColors.violet.withOpacity(0.1),
-              ],
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(height: 20),
               const SectionLabel('MODO COMBINACIÓN'),
               const SizedBox(height: 10),
-              const Text('LANZA LOS DADOS PARA NUEVAS SENSACIONES', 
-                style: TextStyle(color: LvsColors.text3, fontSize: 10, letterSpacing: 2)),
+              Text('LANZA LOS DADOS PARA NUEVAS SENSACIONES', 
+                style: GoogleFonts.plusJakartaSans(color: LvsColors.text3, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold)),
               
               const SizedBox(height: 50),
               
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildDice(_dice1Value, LvsColors.pink, 'EMPUJE'),
-                  _buildDice(_dice2Value, LvsColors.teal, 'VIBRACIÓN'),
-                ],
-              ),
+                _buildDice(_dice1Value, LvsColors.pink, 'EMPUJE'),
+                const SizedBox(width: 20),
+                _buildDice(_dice2Value, LvsColors.teal, 'VIBRACIÓN'),
+              ],
+            ),
               
               const SizedBox(height: 40),
 

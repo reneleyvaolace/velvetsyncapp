@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lvs_control/theme.dart';
-import 'package:lvs_control/screens/tabs/control_tab.dart';
-import 'package:lvs_control/screens/tabs/modes_tab.dart';
-import 'package:lvs_control/screens/tabs/network_tab.dart';
-import 'package:lvs_control/screens/tabs/settings_tab.dart';
-import 'package:lvs_control/screens/web_catalog_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
+import '../theme.dart';
+import 'tabs/control_tab.dart';
+import 'tabs/settings_tab.dart';
+import 'game_screen.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   final int initialIndex;
@@ -26,87 +24,74 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
 
   final List<Widget> _tabs = [
     const ControlTab(),
-    const ModesTab(),
-    const NetworkTab(),
-    const WebCatalogScreen(),
+    const LocalGameScreen(), // Using Game as a middle tab for now
     const SettingsTab(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: LvsColors.bg,
+      backgroundColor: LvsColors.background,
+      extendBody: true,
       body: IndexedStack(
         index: _currentIndex,
         children: _tabs,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05), width: 1)),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+        child: CardGlass(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          borderRadius: 32,
+          blur: 40,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(0, 'CONTROL', 'assets/icons/icon_tab_control.png', fallback: Icons.gamepad_outlined),
+              _buildNavItem(1, 'VELVET GAME', 'assets/icons/icon_tab_modes.png', fallback: Icons.videogame_asset_outlined),
+              _buildNavItem(2, 'SISTEMA', 'assets/icons/icon_tab_settings.png', fallback: Icons.settings_outlined),
+            ],
+          ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          backgroundColor: LvsColors.bg,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: LvsColors.pink,
-          unselectedItemColor: LvsColors.text3,
-          selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
-          unselectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 1),
-          items: [
-            BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_control.png', width: 28, height: 28),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, String label, String iconPath, {IconData? fallback}) {
+    final isActive = _currentIndex == index;
+    final color = isActive ? LvsColors.pink : LvsColors.text3;
+
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        setState(() => _currentIndex = index);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isActive ? LvsColors.pink.withOpacity(0.08) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Opacity(
+              opacity: isActive ? 1.0 : 0.6,
+              child: Image.asset(
+                iconPath,
+                width: 24, height: 24,
+                color: color,
+                errorBuilder: (_, __, ___) => Icon(fallback ?? Icons.circle_outlined, size: 24, color: color),
               ),
-              activeIcon: Image.asset('assets/icons/icon_tab_control.png', width: 32, height: 32),
-              label: 'CONTROL',
             ),
-            BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_modes.png', width: 28, height: 28),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 8,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.0,
+                color: color,
               ),
-              activeIcon: Image.asset('assets/icons/icon_tab_modes.png', width: 32, height: 32),
-              label: 'MODOS',
-            ),
-            BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset(
-                  'assets/icons/icon_remote_session.png',
-                  width: 28, height: 28,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, size: 20),
-                ),
-              ),
-              activeIcon: Image.asset(
-                'assets/icons/icon_remote_session.png',
-                width: 32, height: 32,
-                errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, size: 24),
-              ),
-              label: 'REMOTO',
-            ),
-            BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset(
-                  'assets/icons/icon_online_products.png',
-                  width: 28, height: 28,
-                ),
-              ),
-              activeIcon: Image.asset(
-                'assets/icons/icon_online_products.png',
-                width: 32, height: 32,
-              ),
-              label: 'CATÁLOGO',
-            ),
-            BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_settings.png', width: 28, height: 28),
-              ),
-              activeIcon: Image.asset('assets/icons/icon_tab_settings.png', width: 32, height: 32),
-              label: 'SISTEMA',
             ),
           ],
         ),

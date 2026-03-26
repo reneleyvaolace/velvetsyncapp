@@ -163,18 +163,18 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
     // 🔒 SECURITY: Prevenir uso en producción
     if (!kDebugMode) {
       return Scaffold(
-        backgroundColor: LvsColors.bg,
+        backgroundColor: LvsColors.background,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.lock_outline, size: 64, color: LvsColors.text3),
               const SizedBox(height: 16),
-              const Text('DEBUG SCREEN', style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: LvsColors.text3)),
+              Text('LABORATORIO BLOQUEADO', style: GoogleFonts.spaceGrotesk(
+                fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.text3)),
               const SizedBox(height: 8),
-              const Text('No disponible en producción', style: TextStyle(
-                fontSize: 12, color: LvsColors.text3)),
+              const Text('Acceso restringido a entorno de desarrollo', style: TextStyle(
+                fontSize: 10, color: LvsColors.text3)),
             ],
           ),
         ),
@@ -184,13 +184,17 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
     final ble = ref.watch(bleProvider);
 
     return Scaffold(
-      backgroundColor: LvsColors.bg,
+      backgroundColor: LvsColors.background,
       appBar: AppBar(
-        title: const Text('COREAURA LAB', style: TextStyle(
-          fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: LvsColors.amber)),
+        title: Text('VELVET AI LAB', style: GoogleFonts.spaceGrotesk(
+          fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.amber)),
         backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        foregroundColor: LvsColors.amber,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),

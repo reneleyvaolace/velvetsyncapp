@@ -138,22 +138,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     final ble = ref.read(bleProvider); // Acceso directo para callbacks sin disparar rebuilds
 
     return Scaffold(
-      backgroundColor: LvsColors.bg,
+      backgroundColor: LvsColors.background, // #000000
       body: Stack(
         children: [
-          // Fondo con gradiente sutil
+          // Fondo con gradiente sutil (Mesh Gradient)
           Positioned(
             top: -100, right: -50,
+            child: Container(
+              width: 400, height: 400,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [LvsColors.pink.withOpacity(0.08), Colors.transparent],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -50, left: -50,
             child: Container(
               width: 300, height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: LvsColors.pink.withOpacity(0.05),
+                gradient: RadialGradient(
+                  colors: [LvsColors.teal.withOpacity(0.06), Colors.transparent],
+                ),
               ),
             ),
           ),
-          
-          SafeArea(
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [

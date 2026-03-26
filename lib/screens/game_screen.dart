@@ -38,102 +38,93 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: LvsColors.bg,
+        backgroundColor: LvsColors.background,
         body: Stack(
-        children: [
-          // Fondo estilo Velvet Neon (gradientes interactivos tenues)
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft, end: Alignment.bottomRight,
-                colors: [
-                  LvsColors.bg,
-                  LvsColors.pink.withValues(alpha: 0.1),
-                  LvsColors.violet.withValues(alpha: 0.1),
-                  LvsColors.bg,
-                ],
+          children: [
+            // Mesh Gradient sutil en el fondo del juego
+            Positioned(
+              top: -50, right: -50,
+              child: Container(
+                width: 300, height: 300,
+                decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [LvsColors.pink.withOpacity(0.05), Colors.transparent])),
               ),
             ),
-          ),
-          
-          // Malla tipo Grid o Glass para el fondo del juego
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.05,
-              child: CustomPaint(painter: _GridPainter()),
+            
+            // Malla Grid (Sutil)
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.03,
+                child: CustomPaint(painter: _GridPainter()),
+              ),
             ),
-          ),
 
-          // Área del juego Flame restringida a zona segura
-          Positioned.fill(
-            child: SafeArea(
-              bottom: true, // Crucial para los botones de Android
-              child: GameWidget(game: _game),
+            // Área del juego Flame
+            Positioned.fill(
+              child: SafeArea(
+                bottom: true,
+                child: GameWidget(game: _game),
+              ),
             ),
-          ),
-          
-          // UI Superior de Controles
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Botón Salir y Detener
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Enviar comando general de parada (0xE5157D)
-                        _game.ble.writeCommand(LvsCommands.cmdStop, label: 'Game Stop General');
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: LvsColors.bgCardH,
-                        foregroundColor: LvsColors.red,
-                        side: BorderSide(color: LvsColors.red.withValues(alpha: 0.3)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      ),
-                      icon: const Icon(Icons.stop_circle_outlined, size: 18),
-                      label: const Text('DETENER', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 11)),
-                    ),
-                    
-                    // Puntaje en pantalla
-                    ValueListenableBuilder<int>(
-                      valueListenable: _game.scoreNotifier,
-                      builder: (context, score, child) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: LvsColors.pink.withValues(alpha: 0.5), width: 1.5),
-                            boxShadow: [
-                              BoxShadow(color: LvsColors.pink.withValues(alpha: 0.2), blurRadius: 10, spreadRadius: 1),
-                            ]
-                          ),
+            
+            // UI Superior de Controles
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Botón Salir
+                      GestureDetector(
+                        onTap: () {
+                           _game.ble.writeCommand(LvsCommands.cmdStop, label: 'Game Stop General');
+                          Navigator.pop(context);
+                        },
+                        child: CardGlass(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          borderRadius: 20,
+                          color: LvsColors.bgCardH,
+                          borderColor: LvsColors.red,
                           child: Row(
                             children: [
-                              const Icon(Icons.star_rounded, color: LvsColors.amber, size: 20),
+                              const Icon(Icons.close, size: 16, color: LvsColors.red),
                               const SizedBox(width: 8),
-                              Text(
-                                '$score',
-                                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1.5),
-                              ),
+                              Text('SALIR', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w900, letterSpacing: 1.5, fontSize: 10, color: LvsColors.red)),
                             ],
                           ),
-                        );
-                      },
-                    ),
-                  ],
+                        ),
+                      ),
+                      
+                      // Puntaje
+                      ValueListenableBuilder<int>(
+                        valueListenable: _game.scoreNotifier,
+                        builder: (context, score, child) {
+                          return CardGlass(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            borderRadius: 20,
+                            borderColor: LvsColors.pink,
+                            child: Row(
+                              children: [
+                                const Icon(Icons.star_rounded, color: LvsColors.amber, size: 20),
+                                const SizedBox(width: 12),
+                                Text(
+                                  '$score',
+                                  style: GoogleFonts.spaceGrotesk(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ), // Cierre del SafeArea de controles superiores
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 }

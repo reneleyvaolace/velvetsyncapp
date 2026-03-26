@@ -156,21 +156,14 @@ class ControlTab extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  LvsColors.teal.withOpacity(0.15),
-                  LvsColors.bgCard.withOpacity(0.5),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: LvsColors.teal.withOpacity(0.3)),
+              color: LvsColors.bgCardH.withOpacity(0.4), // surface_variant @ 40%
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white.withOpacity(0.05), width: 0.5),
               boxShadow: [
                 BoxShadow(
-                  color: LvsColors.teal.withOpacity(0.1),
-                  blurRadius: 20,
-                  spreadRadius: 2,
+                  color: LvsColors.teal.withOpacity(0.05),
+                  blurRadius: 40,
+                  spreadRadius: 0,
                 ),
               ],
             ),

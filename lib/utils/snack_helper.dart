@@ -4,11 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:flutter/material.dart';
-
-class LvsColors {
-  static const Color teal = Color(0xFF00FFC2);
-  static const Color red = Color(0xFFFF1493);
-}
+import '../theme.dart';
 
 class LvsSnack {
   static void show(

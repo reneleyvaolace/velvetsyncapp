@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lvs_control/ble/ble_service.dart';
 import 'package:lvs_control/theme.dart';
@@ -29,71 +29,69 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     final isDeepScan = ref.watch(bleProvider.select((p) => p.isDeepScan));
     final logs = ref.watch(bleProvider.select((p) => p.logs));
 
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
-      slivers: [
-        SliverAppBar(
-          expandedHeight: 80,
-          backgroundColor: Colors.transparent,
-          flexibleSpace: const FlexibleSpaceBar(
-            title: Text('SISTEMA Y CONFIGURACION', style: TextStyle(
-              fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.text3
-            )),
-            centerTitle: true,
+    return Scaffold(
+      backgroundColor: LvsColors.background,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 100,
+            backgroundColor: Colors.transparent,
+            floating: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text('SISTEMA', style: GoogleFonts.spaceGrotesk(
+                fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 8, color: LvsColors.text1
+              )),
+              centerTitle: true,
+            ),
           ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate([
-              _buildWebCatalogCard(context),
-              const SizedBox(height: 20),
-              _buildSettingsCard(burstInterval, isDeepScan),
-              const SizedBox(height: 20),
-              _buildSystemProCard(timerState),
-              const SizedBox(height: 20),
-              _buildDebugButton(context),
-              const SizedBox(height: 20),
-              _buildLogCard(logs),
-              const SizedBox(height: 40),
-            ]),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                _buildWebCatalogCard(context),
+                const SizedBox(height: 24),
+                _buildSettingsCard(burstInterval, isDeepScan),
+                const SizedBox(height: 24),
+                _buildSystemProCard(timerState),
+                const SizedBox(height: 24),
+                _buildDebugButton(context),
+                const SizedBox(height: 24),
+                _buildLogCard(logs),
+                const SizedBox(height: 120), // Spacing for floating dock
+              ]),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildWebCatalogCard(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const WebCatalogScreen()),
-        );
-      },
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WebCatalogScreen())),
       child: CardGlass(
-        borderColor: LvsColors.violet.withOpacity(0.3),
-        padding: const EdgeInsets.all(16),
+        borderColor: LvsColors.violet,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 54, height: 54,
               decoration: BoxDecoration(
-                color: LvsColors.violet.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: LvsColors.violet.withOpacity(0.3)),
+                color: LvsColors.violet.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: LvsColors.violet.withOpacity(0.2)),
               ),
-              child: const Icon(Icons.language, color: LvsColors.violet, size: 24),
+              child: const Icon(Icons.language, color: LvsColors.violet, size: 28),
             ),
-            const SizedBox(width: 14),
-            const Expanded(
+            const SizedBox(width: 18),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('CATÁLOGO WEB', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.violet)),
-                  SizedBox(height: 4),
-                  Text('Explorar catálogo online en Vercel', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+                   Text('CATÁLOGO WEB', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: LvsColors.violet)),
+                   const SizedBox(height: 4),
+                   const Text('Explorar el universo Velvet Sync online', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
                 ],
               ),
             ),
@@ -107,30 +105,34 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
   Widget _buildSettingsCard(int burstInterval, bool isDeepScan) {
     final ble = ref.read(bleProvider);
     return CardGlass(
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionLabel('PARAMETROS TECNICOS'),
+          const SectionLabel('PARÁMETROS TÉCNICOS'),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Frecuencia de Rafaga', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-              Text('$burstInterval ms', style: const TextStyle(fontSize: 12, color: LvsColors.pink, fontWeight: FontWeight.bold)),
+              Text('FRECUENCIA DE RÁFAGA', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+              Text('$burstInterval MS', style: GoogleFonts.spaceGrotesk(fontSize: 12, color: LvsColors.pink, fontWeight: FontWeight.bold)),
             ],
           ),
           Slider(
             value: burstInterval.toDouble(),
             min: 100, max: 1000, divisions: 18,
+            activeColor: LvsColors.pink,
+            inactiveColor: Colors.white10,
             onChanged: (v) => ble.setBurstInterval(v.round()),
           ),
           const SizedBox(height: 12),
           SwitchListTile(
-            title: const Text('DEEP SCAN', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-            subtitle: const Text('Ignorar filtros estandar rMesh', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+            title: Text('DEEP SCAN', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
+            subtitle: const Text('Bypass rMesh V2 protocols', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
             value: isDeepScan,
             onChanged: (v) => ble.toggleDeepScan(),
             activeColor: LvsColors.pink,
+            activeTrackColor: LvsColors.pink.withOpacity(0.2),
             contentPadding: EdgeInsets.zero,
           ),
         ],
