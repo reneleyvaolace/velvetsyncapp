@@ -1,105 +1,680 @@
+Resolving dependencies...
+Downloading packages...
+  app_links 6.4.1 (7.0.0 available)
+  audio_session 0.1.25 (0.2.3 available)
+  audio_waveforms 1.3.0 (2.0.2 available)
+  csv 6.0.0 (8.0.0 available)
+  cupertino_icons 1.0.8 (1.0.9 available)
+  dart_jsonwebtoken 3.3.2 (3.4.0 available)
+  file_picker 8.3.7 (10.3.10 available)
+  flutter_dotenv 5.2.1 (6.0.0 available)
+  flutter_launcher_icons 0.13.1 (0.14.4 available)
+  flutter_lints 4.0.0 (6.0.0 available)
+  flutter_plugin_android_lifecycle 2.0.33 (2.0.34 available)
+  flutter_riverpod 2.6.1 (3.3.1 available)
+  google_fonts 6.3.3 (8.0.2 available)
+  gotrue 2.18.0 (2.19.0 available)
+  image_picker_android 0.8.13+14 (0.8.13+15 available)
+  just_audio 0.9.46 (0.10.5 available)
+  lints 4.0.0 (6.1.0 available)
+  meta 1.17.0 (1.18.2 available)
+  native_toolchain_c 0.17.5 (0.17.6 available)
+  path_provider_android 2.2.22 (2.2.23 available)
+  realtime_client 2.7.0 (2.7.1 available)
+  riverpod 2.6.1 (3.2.1 available)
+  shared_preferences_android 2.4.21 (2.4.23 available)
+  storage_client 2.4.1 (2.5.1 available)
+  supabase 2.10.2 (2.10.4 available)
+  supabase_flutter 2.12.0 (2.12.2 available)
+  test_api 0.7.10 (0.7.11 available)
+  url_launcher_android 6.3.28 (6.3.29 available)
+  vector_math 2.2.0 (2.3.0 available)
+  wakelock_plus 1.4.0 (1.5.1 available)
+  wakelock_plus_platform_interface 1.3.0 (1.4.0 available)
+  webview_flutter_android 4.10.13 (4.10.14 available)
+  webview_flutter_platform_interface 2.14.0 (2.15.0 available)
+  webview_flutter_wkwebview 3.24.0 (3.24.1 available)
+  win32 5.15.0 (6.0.0 available)
+Got dependencies!
+35 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing lvs-flutter...                                        
 
-  android_build_log_v2.txt:674:[        ] [        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
-  android_build_log_v2.txt:675:[        ] [        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
-  android_build_log_v2.txt:676:[        ] [  +42 ms] Initializing file store
-  android_build_log_v2.txt:677:[        ] [  +23 ms] Done initializing file store
-  android_build_log_v2.txt:678:[ +196 ms] [ +196 ms] Skipping target: gen_dart_plugin_registrant
-  android_build_log_v2.txt:679:[        ] [   +4 ms] Skipping target: dart_build
-  android_build_log_v2.txt:680:[        ] [        ] Skipping target: gen_localizations
-  android_build_log_v2.txt:681:[        ] [   +1 ms] Skipping target: install_code_assets
-  android_build_log_v2.txt:682:[+2401 ms] [+2384 ms] kernel_snapshot_program: Starting due to {InvalidatedReasonKind.outputSetAddition: The following outputs were added to the output set: C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill}
-  android_build_log_v2.txt:683:[  +92 ms] [  +39 ms] C:\src\flutter\bin\cache\dart-sdk\bin\dartaotruntime.exe C:\src\flutter\bin\cache\dart-sdk\bin\snapshots\frontend_server_aot.dart.snapshot --sdk-root C:\src\flutter\bin\cache\artifacts\engine\common\flutter_patched_sdk_product/ --target=flutter --no-print-incremental-dependencies -DFLUTTER_VERSION=3.41.4 -DFLUTTER_CHANNEL=stable -DFLUTTER_GIT_URL=https://github.com/flutter/flutter.git -DFLUTTER_FRAMEWORK_REVISION=ff37bef603 -DFLUTTER_ENGINE_REVISION=e4b8dca3f1 -DFLUTTER_DART_VERSION=3.11.1 -DFLUTTER_APP_FLAVOR=prod -Ddart.vm.profile=false -Ddart.vm.product=true --delete-tostring-package-uri=dart:ui --delete-tostring-package-uri=package:flutter --aot --tfa --target-os android --packages C:\Proyectos\lvs-flutter\.dart_tool\package_config.json --output-dill C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill --depfile C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\kernel_snapshot_program.d --source file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --source package:flutter/src/dart_plugin_registrant.dart -Dflutter.dart_plugin_registrant=file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --verbosity=error package:velvet_sync/main.dart
-> android_build_log_v2.txt:684:[+14399 ms] [+14386 ms] package:velvet_sync/main.dart: Error: No 'main' method found.
-  android_build_log_v2.txt:685:[   +1 ms] [   +3 ms] Try adding a method named 'main' to your program.
-  android_build_log_v2.txt:686:[ +106 ms] [ +100 ms] Persisting file store
-  android_build_log_v2.txt:687:[        ] [  +35 ms] Done persisting file store
-  android_build_log_v2.txt:688:[        ] [  +18 ms] Target kernel_snapshot_program failed: Exception
-  android_build_log_v2.txt:689:[        ]            #0      KernelSnapshot.build (package:flutter_tools/src/build_system/targets/common.dart:289:7)
-  android_build_log_v2.txt:690:[        ]            <asynchronous suspension>
-  android_build_log_v2.txt:691:[        ]            #1      _BuildInstance._invokeInternal (package:flutter_tools/src/build_system/build_system.dart:937:9)
-  android_build_log_v2.txt:692:[        ]            <asynchronous suspension>
-  android_build_log_v2.txt:693:[        ]            #2      Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-  android_build_log_v2.txt:694:[        ]            <asynchronous suspension>
-  android_build_log_v3.txt:674:[        ] [        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
-  android_build_log_v3.txt:675:[        ] [        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
-  android_build_log_v3.txt:676:[        ] [  +57 ms] Initializing file store
-  android_build_log_v3.txt:677:[  +99 ms] [  +46 ms] Done initializing file store
-  android_build_log_v3.txt:678:[ +399 ms] [ +424 ms] Skipping target: gen_dart_plugin_registrant
-  android_build_log_v3.txt:679:[        ] [  +11 ms] Skipping target: dart_build
-  android_build_log_v3.txt:680:[        ] [        ] Skipping target: gen_localizations
-  android_build_log_v3.txt:681:[        ] [   +3 ms] Skipping target: install_code_assets
-  android_build_log_v3.txt:682:[+5602 ms] [+5573 ms] kernel_snapshot_program: Starting due to {InvalidatedReasonKind.outputSetAddition: The following outputs were added to the output set: C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill, InvalidatedReasonKind.inputChanged: The following inputs have updated contents: C:\Proyectos\lvs-flutter\lib\main.dart}
-  android_build_log_v3.txt:683:[        ] [  +33 ms] C:\src\flutter\bin\cache\dart-sdk\bin\dartaotruntime.exe C:\src\flutter\bin\cache\dart-sdk\bin\snapshots\frontend_server_aot.dart.snapshot --sdk-root C:\src\flutter\bin\cache\artifacts\engine\common\flutter_patched_sdk_product/ --target=flutter --no-print-incremental-dependencies -DFLUTTER_VERSION=3.41.4 -DFLUTTER_CHANNEL=stable -DFLUTTER_GIT_URL=https://github.com/flutter/flutter.git -DFLUTTER_FRAMEWORK_REVISION=ff37bef603 -DFLUTTER_ENGINE_REVISION=e4b8dca3f1 -DFLUTTER_DART_VERSION=3.11.1 -DFLUTTER_APP_FLAVOR=prod -Ddart.vm.profile=false -Ddart.vm.product=true --delete-tostring-package-uri=dart:ui --delete-tostring-package-uri=package:flutter --aot --tfa --target-os android --packages C:\Proyectos\lvs-flutter\.dart_tool\package_config.json --output-dill C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill --depfile C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\kernel_snapshot_program.d --source file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --source package:flutter/src/dart_plugin_registrant.dart -Dflutter.dart_plugin_registrant=file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --verbosity=error package:velvet_sync/main.dart
-> android_build_log_v3.txt:684:[+5601 ms] [+5524 ms] lib/main.dart:21:18: Error: Method not found: 'Logger'.
-  android_build_log_v3.txt:685:[   +2 ms] [   +2 ms]   final logger = Logger();
-  android_build_log_v3.txt:686:[        ] [        ]                  ^^^^^^
-> android_build_log_v3.txt:687:[        ] [        ] lib/main.dart:24:3: Error: Method not found: 'lvsLog'.
-  android_build_log_v3.txt:688:[        ] [        ]   lvsLog('Iniciando Velvet Sync App...', tag: 'APP');
-  android_build_log_v3.txt:689:[        ] [        ]   ^^^^^^
-> android_build_log_v3.txt:690:[        ] [        ] lib/main.dart:29:5: Error: Method not found: 'lvsLog'.
-  android_build_log_v3.txt:691:[        ] [        ]     lvsLog('Variables de entorno cargadas', tag: 'APP');
-  android_build_log_v3.txt:692:[        ] [        ]     ^^^^^^
-> android_build_log_v3.txt:693:[        ] [        ] lib/main.dart:31:5: Error: Method not found: 'lvsError'.
-  android_build_log_v3.txt:694:[        ] [        ]     lvsError('Error cargando .env: $e', tag: 'APP');
-  android_build_log_v3.txt:695:[        ] [        ]     ^^^^^^^^
-> android_build_log_v3.txt:696:[        ] [        ] lib/main.dart:49:27: Error: The getter 'bleProvider' isn't defined for the type 'VelvetSyncApp'.
-  android_build_log_v3.txt:697:[        ] [        ]  - 'VelvetSyncApp' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
-  android_build_log_v3.txt:698:[        ] [        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
-  android_build_log_v3.txt:699:[        ] [        ]     final ble = ref.watch(bleProvider);
-  android_build_log_v3.txt:700:[        ] [        ]                           ^^^^^^^^^^^
-> android_build_log_v3.txt:701:[        ] [        ] lib/main.dart:110:49: Error: Not a constant expression.
-  android_build_log_v3.txt:702:[        ] [        ]         MaterialPageRoute(builder: (_) => const MainNavigation())
-  android_build_log_v3.txt:703:[        ] [        ]                                                 ^^^^^^^^^^^^^^
-> android_build_log_v3.txt:704:[        ] [        ] lib/main.dart:87:5: Error: The method 'lvsLog' isn't defined for the type '_SplashScreenState'.
-  android_build_log_v3.txt:705:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
-  android_build_log_v3.txt:706:[        ] [        ] Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
-  android_build_log_v3.txt:707:[        ] [        ]     lvsLog('Inicializando core services...', tag: 'APP');
-  android_build_log_v3.txt:708:[        ] [        ]     ^^^^^^
-> android_build_log_v3.txt:709:[        ] [        ] lib/main.dart:90:33: Error: The getter 'bleProvider' isn't defined for the type '_SplashScreenState'.
-  android_build_log_v3.txt:710:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
-  android_build_log_v3.txt:711:[        ] [        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'bleProvider'.
-  android_build_log_v3.txt:712:[        ] [        ]     final bleService = ref.read(bleProvider);
-  android_build_log_v3.txt:713:[        ] [        ]                                 ^^^^^^^^^^^
-> android_build_log_v3.txt:714:[        ] [        ] lib/main.dart:93:34: Error: The getter 'syncServiceProvider' isn't defined for the type '_SplashScreenState'.
-  android_build_log_v3.txt:715:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
-  android_build_log_v3.txt:716:[        ] [        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'syncServiceProvider'.
-  android_build_log_v3.txt:717:[        ] [        ]     final syncService = ref.read(syncServiceProvider);
-  android_build_log_v3.txt:718:[        ] [        ]                                  ^^^^^^^^^^^^^^^^^^^
-> android_build_log_v3.txt:719:[        ] [        ] lib/main.dart:97:31: Error: The getter 'aiHardwareBridgeProvider' isn't defined for the type '_SplashScreenState'.
-  android_build_log_v3.txt:720:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
-  android_build_log_v3.txt:721:[        ] [        ] Try correcting the name to the name of an existing getter, or defining a getter or field named 'aiHardwareBridgeProvider'.
-  android_build_log_v3.txt:722:[        ] [        ]     final aiBridge = ref.read(aiHardwareBridgeProvider);
-  android_build_log_v3.txt:723:[        ] [        ]                               ^^^^^^^^^^^^^^^^^^^^^^^^
-> android_build_log_v3.txt:724:[        ] [        ] lib/main.dart:103:5: Error: The method 'lvsLog' isn't defined for the type '_SplashScreenState'.
-  android_build_log_v3.txt:725:[        ] [        ]  - '_SplashScreenState' is from 'package:velvet_sync/main.dart' ('lib/main.dart').
-  android_build_log_v3.txt:726:[        ] [        ] Try correcting the name to the name of an existing method, or defining a method named 'lvsLog'.
-  android_build_log_v3.txt:727:[        ] [        ]     lvsLog('App inicializada correctamente', tag: 'APP');
-  android_build_log_v3.txt:728:[        ] [        ]     ^^^^^^
-  android_build_log_v3.txt:729:[+10174 ms] [+10233 ms] Persisting file store
-  android_build_log_v3.txt:730:[        ] [  +29 ms] Done persisting file store
-  android_build_log_v3.txt:731:[        ] [   +5 ms] Target kernel_snapshot_program failed: Exception
-  android_build_log_v3.txt:732:[        ]            #0      KernelSnapshot.build (package:flutter_tools/src/build_system/targets/common.dart:289:7)
-  android_build_log_v3.txt:733:[        ]            <asynchronous suspension>
-  android_build_log_v3.txt:734:[        ]            #1      _BuildInstance._invokeInternal (package:flutter_tools/src/build_system/build_system.dart:937:9)
-  android_build_log_v4.txt:674:[        ] [        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
-  android_build_log_v4.txt:675:[        ] [        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
-  android_build_log_v4.txt:676:[        ] [  +38 ms] Initializing file store
-  android_build_log_v4.txt:677:[ +105 ms] [  +22 ms] Done initializing file store
-  android_build_log_v4.txt:678:[  +92 ms] [ +158 ms] Skipping target: gen_dart_plugin_registrant
-  android_build_log_v4.txt:679:[        ] [   +2 ms] Skipping target: dart_build
-  android_build_log_v4.txt:680:[        ] [        ] Skipping target: gen_localizations
-  android_build_log_v4.txt:681:[        ] [   +1 ms] Skipping target: install_code_assets
-  android_build_log_v4.txt:682:[ +809 ms] [ +779 ms] kernel_snapshot_program: Starting due to {InvalidatedReasonKind.outputSetAddition: The following outputs were added to the output set: C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill, InvalidatedReasonKind.inputChanged: The following inputs have updated contents: C:\Proyectos\lvs-flutter\lib\main.dart,C:\Proyectos\lvs-flutter\lib\screens\main_navigation.dart}
-  android_build_log_v4.txt:683:[   +4 ms] [  +16 ms] C:\src\flutter\bin\cache\dart-sdk\bin\dartaotruntime.exe C:\src\flutter\bin\cache\dart-sdk\bin\snapshots\frontend_server_aot.dart.snapshot --sdk-root C:\src\flutter\bin\cache\artifacts\engine\common\flutter_patched_sdk_product/ --target=flutter --no-print-incremental-dependencies -DFLUTTER_VERSION=3.41.4 -DFLUTTER_CHANNEL=stable -DFLUTTER_GIT_URL=https://github.com/flutter/flutter.git -DFLUTTER_FRAMEWORK_REVISION=ff37bef603 -DFLUTTER_ENGINE_REVISION=e4b8dca3f1 -DFLUTTER_DART_VERSION=3.11.1 -DFLUTTER_APP_FLAVOR=prod -Ddart.vm.profile=false -Ddart.vm.product=true --delete-tostring-package-uri=dart:ui --delete-tostring-package-uri=package:flutter --aot --tfa --target-os android --packages C:\Proyectos\lvs-flutter\.dart_tool\package_config.json --output-dill C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\app.dill --depfile C:\Proyectos\lvs-flutter\.dart_tool\flutter_build\05caab025cf01fea4fbadd1a08941c32\kernel_snapshot_program.d --source file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --source package:flutter/src/dart_plugin_registrant.dart -Dflutter.dart_plugin_registrant=file:///C:/Proyectos/lvs-flutter/.dart_tool/flutter_build/dart_plugin_registrant.dart --verbosity=error package:velvet_sync/main.dart
-> android_build_log_v4.txt:684:[+14793 ms] [+14771 ms] package:velvet_sync/main.dart: Error: No 'main' method found.
-  android_build_log_v4.txt:685:[   +1 ms] [   +2 ms] Try adding a method named 'main' to your program.
-  android_build_log_v4.txt:686:[  +93 ms] [  +89 ms] Persisting file store
-  android_build_log_v4.txt:687:[        ] [  +23 ms] Done persisting file store
-  android_build_log_v4.txt:688:[        ] [   +4 ms] Target kernel_snapshot_program failed: Exception
-  android_build_log_v4.txt:689:[        ]            #0      KernelSnapshot.build (package:flutter_tools/src/build_system/targets/common.dart:289:7)
-  android_build_log_v4.txt:690:[        ]            <asynchronous suspension>
-  android_build_log_v4.txt:691:[        ]            #1      _BuildInstance._invokeInternal (package:flutter_tools/src/build_system/build_system.dart:937:9)
-  android_build_log_v4.txt:692:[        ]            <asynchronous suspension>
-  android_build_log_v4.txt:693:[        ]            #2      Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
-  android_build_log_v4.txt:694:[        ]            <asynchronous suspension>
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/device_types.dart' - lib\core\config\device_config.dart:6:8 - uri_does_not_exist
+  error - Undefined class 'DeviceType' - lib\core\config\device_config.dart:26:9 - undefined_class
+  error - The name 'DeviceFeature' isn't a type, so it can't be used as a type argument - lib\core\config\device_config.dart:38:14 - non_type_as_type_argument
+  error - Undefined class 'DeviceFeature' - lib\core\config\device_config.dart:95:24 - undefined_class
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:113:19 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:116:18 - undefined_identifier
+  error - The name 'DeviceFeature' isn't a type, so it can't be used as a type argument - lib\core\config\device_config.dart:122:23 - non_type_as_type_argument
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:139:51 - undefined_identifier
+  error - The property 'name' can't be unconditionally accessed because the receiver can be 'null' - lib\core\config\device_config.dart:159:41 - unchecked_use_of_nullable_value
+  error - Undefined class 'DeviceType' - lib\core\config\device_config.dart:174:5 - undefined_class
+  error - The name 'DeviceFeature' isn't a type, so it can't be used as a type argument - lib\core\config\device_config.dart:178:10 - non_type_as_type_argument
+  error - Undefined class 'DeviceFeature' - lib\core\config\device_config.dart:203:10 - undefined_class
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:206:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:208:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:210:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:212:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:214:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:216:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:218:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config.dart:220:16 - undefined_identifier
+  error - Undefined class 'DeviceType' - lib\core\config\device_config.dart:224:10 - undefined_class
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:227:46 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:228:43 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:229:46 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:230:44 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:231:46 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:232:47 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:233:44 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:234:45 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:235:47 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:236:47 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:237:46 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:238:46 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:239:74 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config.dart:241:12 - undefined_identifier
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/device_types.dart' - lib\core\config\device_config_loader.dart:9:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/result_types.dart' - lib\core\config\device_config_loader.dart:10:8 - uri_does_not_exist
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\config\device_config_loader.dart:43:10 - non_type_as_type_argument
+  error - The method 'Failure' isn't defined for the type 'DeviceConfigLoader' - lib\core\config\device_config_loader.dart:59:14 - undefined_method
+  error - Undefined class 'Result' - lib\core\config\device_config_loader.dart:70:3 - undefined_class
+  error - The name 'Success' isn't a class - lib\core\config\device_config_loader.dart:82:45 - creation_with_non_type
+  error - The name 'Success' isn't a class - lib\core\config\device_config_loader.dart:93:20 - creation_with_non_type
+  error - The method 'Failure' isn't defined for the type 'DeviceConfigLoader' - lib\core\config\device_config_loader.dart:95:14 - undefined_method
+  error - The name 'DeviceFeature' isn't a type, so it can't be used as a type argument - lib\core\config\device_config_loader.dart:111:25 - non_type_as_type_argument
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:126:21 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config_loader.dart:130:53 - undefined_identifier
+  error - Undefined class 'Result' - lib\core\config\device_config_loader.dart:142:3 - undefined_class
+  error - The name 'Success' isn't a class - lib\core\config\device_config_loader.dart:158:20 - creation_with_non_type
+  error - The method 'Failure' isn't defined for the type 'DeviceConfigLoader' - lib\core\config\device_config_loader.dart:160:14 - undefined_method
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\config\device_config_loader.dart:172:10 - non_type_as_type_argument
+  error - The method 'Failure' isn't defined for the type 'DeviceConfigLoader' - lib\core\config\device_config_loader.dart:180:14 - undefined_method
+  error - Undefined class 'Result' - lib\core\config\device_config_loader.dart:185:3 - undefined_class
+  error - The name 'Success' isn't a class - lib\core\config\device_config_loader.dart:195:39 - creation_with_non_type
+  error - The name 'Success' isn't a class - lib\core\config\device_config_loader.dart:219:20 - creation_with_non_type
+  error - The method 'Failure' isn't defined for the type 'DeviceConfigLoader' - lib\core\config\device_config_loader.dart:221:14 - undefined_method
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config_loader.dart:270:20 - undefined_identifier
+  error - Undefined class 'DeviceType' - lib\core\config\device_config_loader.dart:288:3 - undefined_class
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:293:43 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:294:42 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:295:45 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:296:44 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:297:72 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:300:14 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:302:49 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:303:48 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:305:45 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\config\device_config_loader.dart:307:12 - undefined_identifier
+  error - Undefined class 'Result' - lib\core\config\device_config_loader.dart:373:3 - undefined_class
+  error - The method 'Failure' isn't defined for the type 'DeviceConfigLoader' - lib\core\config\device_config_loader.dart:378:14 - undefined_method
+  error - Undefined class 'DeviceFeature' - lib\core\config\device_config_loader.dart:382:10 - undefined_class
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config_loader.dart:385:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config_loader.dart:387:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config_loader.dart:389:16 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\config\device_config_loader.dart:391:16 - undefined_identifier
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/command_types.dart' - lib\core\hal\command_queue.dart:8:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/result_types.dart' - lib\core\hal\command_queue.dart:9:8 - uri_does_not_exist
+  error - Undefined class 'GenericCommand' - lib\core\hal\command_queue.dart:17:25 - undefined_class
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:62:10 - non_type_as_type_argument
+  error - Undefined class 'GenericCommand' - lib\core\hal\command_queue.dart:63:5 - undefined_class
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:67:33 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:96:15 - non_type_as_type_argument
+  error - The name 'GenericCommand' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:97:10 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:100:29 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:108:24 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:122:10 - non_type_as_type_argument
+  error - Undefined class 'CommandSequence' - lib\core\hal\command_queue.dart:123:5 - undefined_class
+  error - The property 'isFailure' can't be unconditionally accessed because the receiver can be 'null' - lib\core\hal\command_queue.dart:127:44 - unchecked_use_of_nullable_value
+  error - The name 'Failure' isn't a class - lib\core\hal\command_queue.dart:130:20 - creation_with_non_type
+  error - The name 'Success' isn't a class - lib\core\hal\command_queue.dart:133:18 - creation_with_non_type
+  error - The name 'Failure' isn't a class - lib\core\hal\command_queue.dart:179:34 - creation_with_non_type
+  error - The name 'Failure' isn't a class - lib\core\hal\command_queue.dart:189:41 - creation_with_non_type
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:203:10 - non_type_as_type_argument
+  error - The name 'Success' isn't a class - lib\core\hal\command_queue.dart:212:22 - creation_with_non_type
+  error - The name 'Failure' isn't a class - lib\core\hal\command_queue.dart:223:18 - creation_with_non_type
+  error - Undefined class 'GenericCommand' - lib\core\hal\command_queue.dart:257:3 - undefined_class
+  error - Undefined class 'GenericCommand' - lib\core\hal\command_queue.dart:267:42 - undefined_class
+  error - Undefined class 'GenericCommand' - lib\core\hal\command_queue.dart:285:9 - undefined_class
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\command_queue.dart:294:19 - non_type_as_type_argument
+  error - Undefined class 'GenericCommand' - lib\core\hal\command_queue.dart:418:25 - undefined_class
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/device_types.dart' - lib\core\hal\connection_manager.dart:7:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/event_types.dart' - lib\core\hal\connection_manager.dart:8:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/result_types.dart' - lib\core\hal\connection_manager.dart:9:8 - uri_does_not_exist
+  error - The name 'PlatformEvent' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:28:45 - non_type_as_type_argument
+  error - The name 'PlatformEvent' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:31:10 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:68:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:68:40 - non_type_as_type_argument
+  error - The name 'DeviceType' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:69:10 - non_type_as_type_argument
+  error - The name 'Failure' isn't a class - lib\core\hal\connection_manager.dart:74:20 - creation_with_non_type
+  error - Undefined name 'DeviceError' - lib\core\hal\connection_manager.dart:74:28 - undefined_identifier
+  error - The method 'ScanStartedEvent' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:80:26 - undefined_method
+  error - Undefined name 'DeviceType' - lib\core\hal\connection_manager.dart:81:35 - undefined_identifier
+  error - The method 'ScanFinishedEvent' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:95:28 - undefined_method
+  error - The method 'Success' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:99:14 - undefined_method
+  error - The name 'Failure' isn't a class - lib\core\hal\connection_manager.dart:102:20 - creation_with_non_type
+  error - Undefined name 'DeviceError' - lib\core\hal\connection_manager.dart:102:28 - undefined_identifier
+  error - The name 'DeviceType' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:108:10 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:132:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:132:34 - non_type_as_type_argument
+  error - The method 'Success' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:142:16 - undefined_method
+  error - The name 'Failure' isn't a class - lib\core\hal\connection_manager.dart:144:20 - creation_with_non_type
+  error - Undefined name 'DeviceError' - lib\core\hal\connection_manager.dart:144:28 - undefined_identifier
+  error - The method 'Failure' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:151:18 - undefined_method
+  error - The method 'DeviceConnectedEvent' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:157:30 - undefined_method
+  error - The method 'Success' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:163:16 - undefined_method
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:174:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:174:23 - non_type_as_type_argument
+  error - The name 'Success' isn't a class - lib\core\hal\connection_manager.dart:183:20 - creation_with_non_type
+  error - The name 'Failure' isn't a class - lib\core\hal\connection_manager.dart:189:20 - creation_with_non_type
+  error - Undefined name 'DeviceError' - lib\core\hal\connection_manager.dart:189:28 - undefined_identifier
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:196:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:196:23 - non_type_as_type_argument
+  error - The method 'Failure' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:202:18 - undefined_method
+  error - The method 'DeviceDisconnectedEvent' isn't defined for the type 'ConnectionManager' - lib\core\hal\connection_manager.dart:204:30 - undefined_method
+  error - Undefined name 'DisconnectReason' - lib\core\hal\connection_manager.dart:207:19 - undefined_identifier
+  error - The name 'Success' isn't a class - lib\core\hal\connection_manager.dart:214:22 - creation_with_non_type
+  error - The name 'DeviceType' isn't a type, so it can't be used as a type argument - lib\core\hal\connection_manager.dart:268:14 - non_type_as_type_argument
+  error - Undefined name 'DeviceType' - lib\core\hal\connection_manager.dart:293:21 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\hal\connection_manager.dart:293:42 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\hal\connection_manager.dart:301:20 - undefined_identifier
+  error - Undefined name 'DeviceType' - lib\core\hal\connection_manager.dart:309:20 - undefined_identifier
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/device_types.dart' - lib\core\hal\device_interface.dart:7:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/command_types.dart' - lib\core\hal\device_interface.dart:8:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/result_types.dart' - lib\core\hal\device_interface.dart:9:8 - uri_does_not_exist
+  error - Undefined class 'DeviceType' - lib\core\hal\device_interface.dart:23:3 - undefined_class
+  error - Undefined class 'ConnectionType' - lib\core\hal\device_interface.dart:26:3 - undefined_class
+  error - Undefined class 'ConnectionStatus' - lib\core\hal\device_interface.dart:29:3 - undefined_class
+  error - Undefined class 'DeviceStatus' - lib\core\hal\device_interface.dart:32:3 - undefined_class
+  error - The name 'DeviceFeature' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:38:8 - non_type_as_type_argument
+  error - Undefined class 'ControlPrecision' - lib\core\hal\device_interface.dart:41:3 - undefined_class
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:68:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:68:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:73:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:73:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:87:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:87:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:93:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:93:23 - non_type_as_type_argument
+  error - Undefined class 'DeviceFeature' - lib\core\hal\device_interface.dart:94:5 - undefined_class
+  error - Undefined class 'DeviceChannel' - lib\core\hal\device_interface.dart:95:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\hal\device_interface.dart:95:29 - undefined_identifier
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:108:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:108:23 - non_type_as_type_argument
+  error - Undefined class 'DeviceChannel' - lib\core\hal\device_interface.dart:110:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\hal\device_interface.dart:110:29 - undefined_identifier
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:117:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:117:23 - non_type_as_type_argument
+  error - Undefined class 'DeviceChannel' - lib\core\hal\device_interface.dart:119:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\hal\device_interface.dart:119:29 - undefined_identifier
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:126:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:126:23 - non_type_as_type_argument
+  error - Undefined class 'DeviceChannel' - lib\core\hal\device_interface.dart:128:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\hal\device_interface.dart:128:29 - undefined_identifier
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:135:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:135:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:144:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:144:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:157:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:157:23 - non_type_as_type_argument
+  error - Undefined class 'DeviceChannel' - lib\core\hal\device_interface.dart:159:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\hal\device_interface.dart:159:29 - undefined_identifier
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:165:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:165:23 - non_type_as_type_argument
+  error - Undefined class 'CommandSequence' - lib\core\hal\device_interface.dart:165:53 - undefined_class
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:174:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:174:25 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:179:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:179:25 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:184:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:184:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:193:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:193:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:200:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:200:39 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:209:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:209:41 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:214:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:214:31 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:317:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:317:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:320:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:320:23 - non_type_as_type_argument
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:323:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\device_interface.dart:323:23 - non_type_as_type_argument
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/command_types.dart' - lib\core\hal\protocol_adapter.dart:6:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/result_types.dart' - lib\core\hal\protocol_adapter.dart:8:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/protocols/protocol_base.dart' - lib\core\hal\protocol_adapter.dart:9:8 - uri_does_not_exist
+  error - The name 'ProtocolBase' isn't a type, so it can't be used as a type argument - lib\core\hal\protocol_adapter.dart:21:21 - non_type_as_type_argument
+  error - Undefined class 'ProtocolBase' - lib\core\hal\protocol_adapter.dart:24:3 - undefined_class
+  error - Undefined class 'ProtocolBase' - lib\core\hal\protocol_adapter.dart:30:38 - undefined_class
+  error - Undefined class 'ProtocolBase' - lib\core\hal\protocol_adapter.dart:36:3 - undefined_class
+  error - Undefined class 'ProtocolBase' - lib\core\hal\protocol_adapter.dart:41:27 - undefined_class
+  error - Undefined class 'ProtocolBase' - lib\core\hal\protocol_adapter.dart:47:3 - undefined_class
+  error - Undefined class 'Result' - lib\core\hal\protocol_adapter.dart:57:3 - undefined_class
+  error - The name 'ProtocolError' isn't a type, so it can't be used as a type argument - lib\core\hal\protocol_adapter.dart:57:27 - non_type_as_type_argument
+  error - Undefined class 'GenericCommand' - lib\core\hal\protocol_adapter.dart:58:5 - undefined_class
+  error - Undefined class 'ProtocolBase' - lib\core\hal\protocol_adapter.dart:61:5 - undefined_class
+  error - The name 'Failure' isn't a class - lib\core\hal\protocol_adapter.dart:70:20 - creation_with_non_type
+  error - Undefined name 'ProtocolError' - lib\core\hal\protocol_adapter.dart:70:28 - undefined_identifier
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\hal\protocol_adapter.dart:81:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\hal\protocol_adapter.dart:81:23 - non_type_as_type_argument
+  error - Undefined class 'GenericCommand' - lib\core\hal\protocol_adapter.dart:82:5 - undefined_class
+  error - The name 'Failure' isn't a class - lib\core\hal\protocol_adapter.dart:89:24 - creation_with_non_type
+  error - Undefined name 'DeviceError' - lib\core\hal\protocol_adapter.dart:89:32 - undefined_identifier
+  error - The name 'Success' isn't a class - lib\core\hal\protocol_adapter.dart:93:24 - creation_with_non_type
+  error - The name 'Failure' isn't a class - lib\core\hal\protocol_adapter.dart:95:24 - creation_with_non_type
+  error - Undefined name 'DeviceError' - lib\core\hal\protocol_adapter.dart:95:32 - undefined_identifier
+  error - Target of URI doesn't exist: 'package:velvet_sync/hal/protocol_adapter.dart' - lib\core\protocols\lvs_protocol.dart:1:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/command_types.dart' - lib\core\protocols\lvs_protocol.dart:7:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/device_types.dart' - lib\core\protocols\lvs_protocol.dart:8:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/result_types.dart' - lib\core\protocols\lvs_protocol.dart:9:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/protocols/protocol_base.dart' - lib\core\protocols\lvs_protocol.dart:10:8 - uri_does_not_exist
+  error - Classes can only extend other classes - lib\core\protocols\lvs_protocol.dart:13:27 - extends_non_class
+warning - The getter doesn't override an inherited getter - lib\core\protocols\lvs_protocol.dart:15:14 - override_on_non_overriding_member
+warning - The getter doesn't override an inherited getter - lib\core\protocols\lvs_protocol.dart:18:14 - override_on_non_overriding_member
+warning - The getter doesn't override an inherited getter - lib\core\protocols\lvs_protocol.dart:21:14 - override_on_non_overriding_member
+  error - The name 'ConnectionType' isn't a type, so it can't be used as a type argument - lib\core\protocols\lvs_protocol.dart:24:8 - non_type_as_type_argument
+warning - The getter doesn't override an inherited getter - lib\core\protocols\lvs_protocol.dart:24:28 - override_on_non_overriding_member
+  error - Undefined name 'ConnectionType' - lib\core\protocols\lvs_protocol.dart:24:52 - undefined_identifier
+  error - The name 'DeviceFeature' isn't a type, so it can't be used as a type argument - lib\core\protocols\lvs_protocol.dart:27:8 - non_type_as_type_argument
+warning - The getter doesn't override an inherited getter - lib\core\protocols\lvs_protocol.dart:27:27 - override_on_non_overriding_member
+  error - Undefined name 'DeviceFeature' - lib\core\protocols\lvs_protocol.dart:28:5 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\protocols\lvs_protocol.dart:29:5 - undefined_identifier
+  error - Undefined class 'ControlPrecision' - lib\core\protocols\lvs_protocol.dart:33:3 - undefined_class
+warning - The getter doesn't override an inherited getter - lib\core\protocols\lvs_protocol.dart:33:24 - override_on_non_overriding_member
+  error - Undefined name 'ControlPrecision' - lib\core\protocols\lvs_protocol.dart:33:37 - undefined_identifier
+  error - Undefined class 'Result' - lib\core\protocols\lvs_protocol.dart:66:3 - undefined_class
+  error - The name 'SpecificCommand' isn't a type, so it can't be used as a type argument - lib\core\protocols\lvs_protocol.dart:66:10 - non_type_as_type_argument
+  error - The name 'ProtocolError' isn't a type, so it can't be used as a type argument - lib\core\protocols\lvs_protocol.dart:66:27 - non_type_as_type_argument
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:66:42 - override_on_non_overriding_member
+  error - Undefined class 'GenericCommand' - lib\core\protocols\lvs_protocol.dart:66:52 - undefined_class
+  error - Undefined name 'CommandType' - lib\core\protocols\lvs_protocol.dart:70:14 - undefined_identifier
+  error - Undefined name 'CommandType' - lib\core\protocols\lvs_protocol.dart:73:14 - undefined_identifier
+  error - Undefined name 'CommandType' - lib\core\protocols\lvs_protocol.dart:76:14 - undefined_identifier
+  error - The name 'Failure' isn't a class - lib\core\protocols\lvs_protocol.dart:78:47 - creation_with_non_type
+  error - Undefined name 'ProtocolError' - lib\core\protocols\lvs_protocol.dart:78:55 - undefined_identifier
+  error - Undefined name 'CommandType' - lib\core\protocols\lvs_protocol.dart:81:14 - undefined_identifier
+  error - The name 'Failure' isn't a class - lib\core\protocols\lvs_protocol.dart:83:43 - creation_with_non_type
+  error - Undefined name 'ProtocolError' - lib\core\protocols\lvs_protocol.dart:83:51 - undefined_identifier
+  error - The name 'Failure' isn't a class - lib\core\protocols\lvs_protocol.dart:87:24 - creation_with_non_type
+  error - Undefined name 'ProtocolError' - lib\core\protocols\lvs_protocol.dart:87:32 - undefined_identifier
+  error - The method 'Success' isn't defined for the type 'LvsProtocol' - lib\core\protocols\lvs_protocol.dart:89:14 - undefined_method
+  error - Undefined name 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:89:22 - undefined_identifier
+  error - The name 'Failure' isn't a class - lib\core\protocols\lvs_protocol.dart:95:20 - creation_with_non_type
+  error - Undefined name 'ProtocolError' - lib\core\protocols\lvs_protocol.dart:95:28 - undefined_identifier
+  error - The body might complete normally, causing 'null' to be returned, but the return type, 'List<int>', is a potentially non-nullable type - lib\core\protocols\lvs_protocol.dart:99:13 - body_might_complete_normally
+  error - Undefined class 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:99:49 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:102:12 - undefined_identifier
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:103:12 - undefined_identifier
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:104:12 - undefined_identifier
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:105:12 - undefined_identifier
+  error - The body might complete normally, causing 'null' to be returned, but the return type, 'List<int>', is a potentially non-nullable type - lib\core\protocols\lvs_protocol.dart:109:13 - body_might_complete_normally
+  error - Undefined class 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:109:28 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:111:12 - undefined_identifier
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:112:12 - undefined_identifier
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:113:12 - undefined_identifier
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:114:12 - undefined_identifier
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:143:3 - undefined_class
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:143:19 - override_on_non_overriding_member
+  error - Undefined class 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:143:55 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:143:79 - undefined_identifier
+  error - Undefined name 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:144:12 - undefined_identifier
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:152:3 - undefined_class
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:152:19 - override_on_non_overriding_member
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:155:3 - undefined_class
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:155:19 - override_on_non_overriding_member
+  error - Undefined class 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:155:34 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\lvs_protocol.dart:155:58 - undefined_identifier
+  error - Undefined name 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:156:12 - undefined_identifier
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:164:3 - undefined_class
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:164:19 - override_on_non_overriding_member
+  error - Undefined name 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:165:12 - undefined_identifier
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\protocols\lvs_protocol.dart:178:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\protocols\lvs_protocol.dart:178:23 - non_type_as_type_argument
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:178:37 - override_on_non_overriding_member
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\lvs_protocol.dart:178:42 - undefined_class
+  error - The name 'Success' isn't a class - lib\core\protocols\lvs_protocol.dart:178:82 - creation_with_non_type
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:181:16 - override_on_non_overriding_member
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:189:24 - override_on_non_overriding_member
+warning - The method doesn't override an inherited method - lib\core\protocols\lvs_protocol.dart:196:8 - override_on_non_overriding_member
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/command_types.dart' - lib\core\protocols\protocol_base.dart:6:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/device_types.dart' - lib\core\protocols\protocol_base.dart:7:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/result_types.dart' - lib\core\protocols\protocol_base.dart:8:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/hal/protocol_adapter.dart' - lib\core\protocols\protocol_base.dart:9:8 - uri_does_not_exist
+  error - The name 'ConnectionType' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:26:8 - non_type_as_type_argument
+  error - The name 'DeviceFeature' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:29:8 - non_type_as_type_argument
+  error - Undefined class 'ControlPrecision' - lib\core\protocols\protocol_base.dart:32:3 - undefined_class
+  error - Undefined class 'ProtocolAdapter' - lib\core\protocols\protocol_base.dart:35:3 - undefined_class
+  error - Undefined class 'Result' - lib\core\protocols\protocol_base.dart:46:3 - undefined_class
+  error - The name 'SpecificCommand' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:46:10 - non_type_as_type_argument
+  error - The name 'ProtocolError' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:46:27 - non_type_as_type_argument
+  error - Undefined class 'GenericCommand' - lib\core\protocols\protocol_base.dart:46:52 - undefined_class
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:52:3 - undefined_class
+  error - Undefined class 'DeviceChannel' - lib\core\protocols\protocol_base.dart:52:55 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\protocol_base.dart:52:79 - undefined_identifier
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:57:3 - undefined_class
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:60:3 - undefined_class
+  error - Undefined class 'DeviceChannel' - lib\core\protocols\protocol_base.dart:60:34 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\protocol_base.dart:60:58 - undefined_identifier
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:65:3 - undefined_class
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:76:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:76:23 - non_type_as_type_argument
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:76:42 - undefined_class
+  error - The name 'Result' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:82:10 - non_type_as_type_argument
+  error - The name 'DeviceError' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:82:23 - non_type_as_type_argument
+  error - The name 'SpecificCommand' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:83:10 - non_type_as_type_argument
+  error - The name 'Success' isn't a class - lib\core\protocols\protocol_base.dart:95:18 - creation_with_non_type
+  error - Undefined class 'DeviceFeature' - lib\core\protocols\protocol_base.dart:131:24 - undefined_class
+  error - Undefined class 'ConnectionType' - lib\core\protocols\protocol_base.dart:136:26 - undefined_class
+  error - Undefined class 'GenericCommand' - lib\core\protocols\protocol_base.dart:141:23 - undefined_class
+  error - Undefined class 'DeviceFeature' - lib\core\protocols\protocol_base.dart:143:5 - undefined_class
+  error - Undefined name 'CommandType' - lib\core\protocols\protocol_base.dart:146:12 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\protocols\protocol_base.dart:147:27 - undefined_identifier
+  error - Undefined name 'CommandType' - lib\core\protocols\protocol_base.dart:149:12 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\protocols\protocol_base.dart:150:27 - undefined_identifier
+  error - Undefined name 'CommandType' - lib\core\protocols\protocol_base.dart:152:12 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\protocols\protocol_base.dart:153:27 - undefined_identifier
+  error - Undefined name 'CommandType' - lib\core\protocols\protocol_base.dart:155:12 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\protocols\protocol_base.dart:156:27 - undefined_identifier
+  error - Undefined name 'CommandType' - lib\core\protocols\protocol_base.dart:158:12 - undefined_identifier
+  error - Undefined name 'DeviceFeature' - lib\core\protocols\protocol_base.dart:159:27 - undefined_identifier
+  error - The name 'ConnectionType' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:188:14 - non_type_as_type_argument
+  error - The name 'DeviceFeature' isn't a type, so it can't be used as a type argument - lib\core\protocols\protocol_base.dart:191:14 - non_type_as_type_argument
+  error - Undefined class 'ControlPrecision' - lib\core\protocols\protocol_base.dart:194:9 - undefined_class
+  error - The property 'name' can't be unconditionally accessed because the receiver can be 'null' - lib\core\protocols\protocol_base.dart:211:63 - unchecked_use_of_nullable_value
+  error - The property 'name' can't be unconditionally accessed because the receiver can be 'null' - lib\core\protocols\protocol_base.dart:212:59 - unchecked_use_of_nullable_value
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:224:3 - undefined_class
+  error - Undefined class 'DeviceChannel' - lib\core\protocols\protocol_base.dart:224:49 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\protocol_base.dart:224:73 - undefined_identifier
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:229:3 - undefined_class
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:234:3 - undefined_class
+  error - Undefined class 'DeviceChannel' - lib\core\protocols\protocol_base.dart:234:28 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\protocols\protocol_base.dart:234:52 - undefined_identifier
+  error - Undefined class 'SpecificCommand' - lib\core\protocols\protocol_base.dart:239:3 - undefined_class
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/device_types.dart' - lib\core\types\command_types.dart:6:8 - uri_does_not_exist
+  error - Undefined class 'DeviceChannel' - lib\core\types\command_types.dart:20:9 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\types\command_types.dart:40:20 - undefined_identifier
+  error - Undefined class 'DeviceChannel' - lib\core\types\command_types.dart:53:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\types\command_types.dart:53:29 - undefined_identifier
+  error - Undefined class 'DeviceChannel' - lib\core\types\command_types.dart:69:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\types\command_types.dart:69:29 - undefined_identifier
+  error - Undefined class 'DeviceChannel' - lib\core\types\command_types.dart:85:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\types\command_types.dart:85:29 - undefined_identifier
+  error - Undefined class 'DeviceChannel' - lib\core\types\command_types.dart:100:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\types\command_types.dart:100:29 - undefined_identifier
+  error - Undefined class 'DeviceChannel' - lib\core\types\command_types.dart:114:5 - undefined_class
+  error - Undefined name 'DeviceChannel' - lib\core\types\command_types.dart:114:29 - undefined_identifier
+  error - Undefined name 'DeviceChannel' - lib\core\types\command_types.dart:147:16 - undefined_identifier
+  error - Undefined name 'DeviceChannel' - lib\core\types\command_types.dart:149:23 - undefined_identifier
+  error - Undefined class 'DeviceChannel' - lib\core\types\command_types.dart:163:5 - undefined_class
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/device_types.dart' - lib\core\types\event_types.dart:6:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/types/command_types.dart' - lib\core\types\event_types.dart:7:8 - uri_does_not_exist
+  error - Undefined class 'DeviceType' - lib\core\types\event_types.dart:43:9 - undefined_class
+  error - Undefined class 'ConnectionType' - lib\core\types\event_types.dart:46:9 - undefined_class
+  error - Undefined class 'DeviceStatus' - lib\core\types\event_types.dart:186:9 - undefined_class
+  error - Undefined class 'DeviceStatus' - lib\core\types\event_types.dart:189:9 - undefined_class
+  error - Undefined class 'CommandType' - lib\core\types\event_types.dart:263:9 - undefined_class
+  error - The name 'DeviceType' isn't a type, so it can't be used as a type argument - lib\core\types\event_types.dart:341:14 - non_type_as_type_argument
+  error - The property 'name' can't be unconditionally accessed because the receiver can be 'null' - lib\core\types\event_types.dart:356:47 - unchecked_use_of_nullable_value
+   info - Use of an async 'dart:io' method - lib\devices\parsers\lovespouse_consolidator.dart:32:18 - avoid_slow_async_io
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseConsolidator' - lib\devices\parsers\lovespouse_consolidator.dart:53:7 - undefined_method
+   info - Use of an async 'dart:io' method - lib\devices\parsers\lovespouse_consolidator.dart:58:16 - avoid_slow_async_io
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseConsolidator' - lib\devices\parsers\lovespouse_consolidator.dart:109:5 - undefined_method
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseConsolidator' - lib\devices\parsers\lovespouse_consolidator.dart:110:5 - undefined_method
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseConsolidator' - lib\devices\parsers\lovespouse_consolidator.dart:111:5 - undefined_method
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseConsolidator' - lib\devices\parsers\lovespouse_consolidator.dart:112:5 - undefined_method
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseConsolidator' - lib\devices\parsers\lovespouse_consolidator.dart:113:5 - undefined_method
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseConsolidator' - lib\devices\parsers\lovespouse_consolidator.dart:114:5 - undefined_method
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseConsolidator' - lib\devices\parsers\lovespouse_consolidator.dart:115:5 - undefined_method
+  error - The function 'lvsLog' isn't defined - lib\devices\parsers\lovespouse_consolidator.dart:124:3 - undefined_function
+  error - The function 'lvsLog' isn't defined - lib\devices\parsers\lovespouse_consolidator.dart:131:3 - undefined_function
+   info - Use of an async 'dart:io' method - lib\devices\parsers\lovespouse_optimizer.dart:237:16 - avoid_slow_async_io
+   info - Use of an async 'dart:io' method - lib\devices\parsers\lovespouse_optimizer.dart:246:18 - avoid_slow_async_io
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseOptimizer' - lib\devices\parsers\lovespouse_optimizer.dart:262:7 - undefined_method
+  error - The method 'lvsLog' isn't defined for the type 'LovespouseOptimizer' - lib\devices\parsers\lovespouse_optimizer.dart:267:5 - undefined_method
+  error - The function 'lvsLog' isn't defined - lib\devices\parsers\lovespouse_optimizer.dart:278:3 - undefined_function
+  error - The function 'lvsLog' isn't defined - lib\devices\parsers\lovespouse_optimizer.dart:285:3 - undefined_function
+  error - The function 'lvsLog' isn't defined - lib\devices\parsers\lovespouse_optimizer.dart:286:3 - undefined_function
+   info - Unnecessary use of double quotes - lib\main.dart:28:33 - prefer_single_quotes
+   info - 'useMaterial3' is deprecated and shouldn't be used. Use a ThemeData constructor (.from, .light, or .dark) instead. These constructors all have a useMaterial3 argument, and they set appropriate default values based on its value. See the useMaterial3 API documentation for full details. This feature was deprecated after v3.13.0-0.2.pre - lib\main.dart:62:7 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\debug_screen.dart:165:14 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\debug_screen.dart:167:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\debug_screen.dart:168:18 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\debug_screen.dart:170:23 - prefer_const_literals_to_create_immutables
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:200:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:276:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:278:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:317:69 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:317:105 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:321:97 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:344:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:372:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:375:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:399:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:428:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:428:73 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\debug_screen.dart:433:57 - deprecated_member_use
+   info - Unnecessary type annotation on a local variable - lib\screens\dice_screen.dart:53:5 - omit_local_variable_types
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dice_screen.dart:127:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dice_screen.dart:128:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dice_screen.dart:202:67 - deprecated_member_use
+   info - Unnecessary type annotation on a local variable - lib\screens\dice_screen.dart:224:19 - omit_local_variable_types
+   info - Unnecessary type annotation on a local variable - lib\screens\dice_screen.dart:225:19 - omit_local_variable_types
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dice_screen.dart:235:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dice_screen.dart:237:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dice_screen.dart:239:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dice_screen.dart:240:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dice_screen.dart:264:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\game_screen.dart:50:116 - deprecated_member_use
+   info - Unnecessary type annotation on a local variable - lib\screens\game_screen.dart:243:17 - omit_local_variable_types
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\game_screen.dart:251:38 - deprecated_member_use
+   info - Unnecessary type annotation on a local variable - lib\screens\game_screen.dart:276:7 - omit_local_variable_types
+   info - 'HasGameRef' is deprecated and shouldn't be used. Use HasGameReference instead. This mixin will be removed in a future version of Flame - lib\screens\game_screen.dart:302:62 - deprecated_member_use
+   info - The member 'isDragged' overrides an inherited member but isn't annotated with '@override' - lib\screens\game_screen.dart:306:8 - annotate_overrides
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\game_screen.dart:339:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\game_screen.dart:348:23 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\game_screen.dart:348:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\game_screen.dart:357:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\game_screen.dart:368:48 - deprecated_member_use
+warning - This method overrides a method annotated as '@mustCallSuper' in 'DragCallbacks', but doesn't invoke the overridden method - lib\screens\game_screen.dart:435:8 - must_call_super
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:152:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:164:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:203:67 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:311:37 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:335:28 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:362:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:379:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:380:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:385:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:394:71 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:448:62 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:459:27 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:487:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:489:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:527:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:530:56 - deprecated_member_use
+   info - Unnecessary type annotation on a local variable - lib\screens\home_screen.dart:554:11 - omit_local_variable_types
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:679:18 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\home_screen.dart:681:23 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:682:15 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\home_screen.dart:684:27 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:685:19 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\home_screen.dart:685:33 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:688:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:688:43 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:691:19 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\home_screen.dart:691:33 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:694:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:694:42 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:697:19 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\home_screen.dart:697:33 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:700:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:700:43 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:832:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:832:52 - prefer_const_constructors
+   info - Unnecessary use of double quotes - lib\screens\home_screen.dart:906:56 - prefer_single_quotes
+   info - Unnecessary use of double quotes - lib\screens\home_screen.dart:907:12 - prefer_single_quotes
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:982:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\home_screen.dart:983:24 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\home_screen.dart:985:29 - prefer_const_literals_to_create_immutables
+   info - Unnecessary 'const' keyword - lib\screens\home_screen.dart:1040:21 - unnecessary_const
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1082:40 - deprecated_member_use
+   info - Unnecessary 'const' keyword - lib\screens\home_screen.dart:1093:21 - unnecessary_const
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1135:41 - deprecated_member_use
+   info - Unnecessary 'const' keyword - lib\screens\home_screen.dart:1146:21 - unnecessary_const
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1228:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1234:50 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\screens\home_screen.dart:1254:13 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1255:46 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\screens\home_screen.dart:1303:17 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1330:38 - deprecated_member_use
+   info - Use a 'SizedBox' to add whitespace to a layout - lib\screens\home_screen.dart:1358:11 - sized_box_for_whitespace
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1386:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1395:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1436:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1497:22 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1499:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1533:72 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1534:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1614:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1617:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1714:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1793:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1793:71 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1799:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1882:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1884:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1912:26 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:1912:50 - deprecated_member_use
+  error - Undefined name 'GoogleFonts' - lib\screens\kegel_screen.dart:144:51 - undefined_identifier
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\kegel_screen.dart:190:51 - deprecated_member_use
+   info - Unnecessary type annotation on a local variable - lib\screens\kegel_screen.dart:216:5 - omit_local_variable_types
+   info - Unnecessary use of double quotes - lib\screens\kegel_screen.dart:216:19 - prefer_single_quotes
+   info - Unnecessary type annotation on a local variable - lib\screens\kegel_screen.dart:217:5 - omit_local_variable_types
+   info - Unnecessary type annotation on a local variable - lib\screens\kegel_screen.dart:218:5 - omit_local_variable_types
+   info - Unnecessary use of double quotes - lib\screens\kegel_screen.dart:222:16 - prefer_single_quotes
+   info - Unnecessary use of double quotes - lib\screens\kegel_screen.dart:226:16 - prefer_single_quotes
+   info - Unnecessary use of double quotes - lib\screens\kegel_screen.dart:231:14 - prefer_single_quotes
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\kegel_screen.dart:248:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\kegel_screen.dart:259:47 - deprecated_member_use
+  error - The named parameter 'width' isn't defined - lib\screens\kegel_screen.dart:265:15 - undefined_named_parameter
+  error - The named parameter 'height' isn't defined - lib\screens\kegel_screen.dart:265:27 - undefined_named_parameter
+   info - Unnecessary braces in a string interpolation - lib\screens\kegel_screen.dart:273:32 - unnecessary_brace_in_string_interps
+  error - Undefined name 'GoogleFonts' - lib\screens\kegel_screen.dart:274:32 - undefined_identifier
+  error - Undefined name 'GoogleFonts' - lib\screens\kegel_screen.dart:279:30 - undefined_identifier
+  error - Undefined name 'GoogleFonts' - lib\screens\kegel_screen.dart:289:32 - undefined_identifier
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\kegel_screen.dart:323:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\kegel_screen.dart:343:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\main_navigation.dart:45:62 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\control_tab.dart:32:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\control_tab.dart:113:23 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\tabs\control_tab.dart:115:35 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\control_tab.dart:116:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\control_tab.dart:118:27 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:151:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:152:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:158:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:161:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:173:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:175:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:197:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:216:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:233:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:236:50 - deprecated_member_use
+   info - Unnecessary type annotation on a local variable - lib\screens\tabs\control_tab.dart:291:11 - omit_local_variable_types
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:403:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:414:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:469:22 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:471:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:500:155 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:544:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:546:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\control_tab.dart:550:54 - deprecated_member_use
+  error - Target of URI doesn't exist: 'package:velvet_sync/screens/roulette_screen.dart' - lib\screens\tabs\modes_tab.dart:6:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/screens/reader_screen.dart' - lib\screens\tabs\modes_tab.dart:7:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/screens/companion_screen.dart' - lib\screens\tabs\modes_tab.dart:8:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/widgets/lvs_modes.dart' - lib\screens\tabs\modes_tab.dart:10:8 - uri_does_not_exist
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\modes_tab.dart:31:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\modes_tab.dart:34:26 - prefer_const_constructors
+  error - The method 'LvsCanvas' isn't defined for the type '_ModesTabState' - lib\screens\tabs\modes_tab.dart:70:11 - undefined_method
+  error - The method 'PatternSelectorRow' isn't defined for the type '_ModesTabState' - lib\screens\tabs\modes_tab.dart:86:11 - undefined_method
+   info - Statements in an if should be enclosed in a block - lib\screens\tabs\modes_tab.dart:90:27 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screens\tabs\modes_tab.dart:91:20 - curly_braces_in_flow_control_structures
+  error - The name 'RouletteScreen' isn't a class - lib\screens\tabs\modes_tab.dart:121:88 - creation_with_non_type
+  error - The name 'ReaderScreen' isn't a class - lib\screens\tabs\modes_tab.dart:126:88 - creation_with_non_type
+  error - The name 'CompanionScreen' isn't a class - lib\screens\tabs\modes_tab.dart:131:88 - creation_with_non_type
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\modes_tab.dart:148:61 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\screens\tabs\modes_tab.dart:164:13 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\modes_tab.dart:185:28 - deprecated_member_use
+  error - Target of URI doesn't exist: 'package:velvet_sync/screens/remote_session_screen.dart' - lib\screens\tabs\network_tab.dart:4:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/screens/catalog_screen.dart' - lib\screens\tabs\network_tab.dart:5:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: 'package:velvet_sync/services/supabase_service.dart' - lib\screens\tabs\network_tab.dart:6:8 - uri_does_not_exist
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:17:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:20:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:39:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:40:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:40:56 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:41:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:42:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:45:30 - prefer_const_constructors
+  error - The name 'RemoteSessionScreen' isn't a class - lib\screens\tabs\network_tab.dart:64:53 - creation_with_non_type
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\network_tab.dart:72:57 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:83:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:84:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:85:24 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\tabs\network_tab.dart:87:29 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:88:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:90:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:91:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:92:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:94:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:98:15 - prefer_const_constructors
+  error - The name 'CatalogScreen' isn't a class - lib\screens\tabs\network_tab.dart:110:86 - creation_with_non_type
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\network_tab.dart:116:59 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:127:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:128:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:129:24 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\screens\tabs\network_tab.dart:131:29 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:132:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:132:49 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:133:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:134:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:134:76 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\network_tab.dart:138:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\settings_tab.dart:36:9 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\settings_tab.dart:76:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\settings_tab.dart:84:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\settings_tab.dart:86:60 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\screens\tabs\settings_tab.dart:134:13 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\tabs\settings_tab.dart:146:38 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\settings_tab.dart:315:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\screens\tabs\settings_tab.dart:316:36 - prefer_const_constructors
+  error - The method 'setActiveToy' isn't defined for the type 'BleService' - lib\services\catalog\catalog_service.dart:137:15 - undefined_method
+  error - The method 'setActiveToy' isn't defined for the type 'BleService' - lib\services\catalog\catalog_service.dart:336:30 - undefined_method
+  error - The method 'setActiveToy' isn't defined for the type 'BleService' - lib\services\catalog\catalog_service.dart:356:28 - undefined_method
+  error - The getter 'activeToy' isn't defined for the type 'BleService' - lib\services\catalog\catalog_service.dart:424:13 - undefined_getter
+  error - The method 'setActiveToy' isn't defined for the type 'BleService' - lib\services\catalog\catalog_service.dart:425:11 - undefined_method
+   info - Use of an async 'dart:io' method - lib\services\media\funscript_loader.dart:93:18 - avoid_slow_async_io
+   info - Use of an async 'dart:io' method - lib\services\media\funscript_loader.dart:191:15 - avoid_slow_async_io
+   info - Use of an async 'dart:io' method - lib\services\media\funscript_loader.dart:214:16 - avoid_slow_async_io
+   info - Use of an async 'dart:io' method - lib\services\media\funscript_loader.dart:234:16 - avoid_slow_async_io
+   info - Unnecessary use of getter and setter to wrap a field - lib\services\media\game_haptics_mapper.dart:237:27 - unnecessary_getters_setters
+   info - Unnecessary use of getter and setter to wrap a field - lib\services\media\game_haptics_mapper.dart:248:12 - unnecessary_getters_setters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme.dart:96:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme.dart:99:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme.dart:104:33 - deprecated_member_use
+   info - Use of an async 'dart:io' method - lib\utils\logger.dart:295:17 - avoid_slow_async_io
+   info - Use of an async 'dart:io' method - lib\utils\logger.dart:353:17 - avoid_slow_async_io
+  error - The name 'bleProvider' is defined in the libraries 'package:velvet_sync/services/ble/ble_service.dart' and 'package:velvet_sync/services/ble/ble_service_stub.dart' - lib\velvet_sync_platform.dart:70:8 - ambiguous_export
+  error - The name 'bleProvider' is defined in the libraries 'package:velvet_sync/services/ble/ble_service_stub.dart' and 'package:velvet_sync/services/ble/ble_service.dart' - lib\velvet_sync_services.dart:19:8 - ambiguous_export
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\compatible_devices_row.dart:101:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\compatible_devices_row.dart:101:72 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\compatible_devices_row.dart:104:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\compatible_devices_row.dart:152:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\compatible_devices_row.dart:155:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\compatible_devices_row.dart:200:31 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\compatible_devices_row.dart:221:23 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\compatible_devices_row.dart:223:42 - deprecated_member_use
 
