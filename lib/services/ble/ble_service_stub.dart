@@ -5,6 +5,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'lvs_commands.dart';
 
 /// Provider mock para Web
@@ -20,6 +21,13 @@ class BleService extends ChangeNotifier {
   bool get isVirtualConnection => true;
   
   String connectedDeviceName = 'Simulador Web';
+  
+  ToyModel? activeToy;
+
+  void setActiveToy(ToyModel? toy) {
+    activeToy = toy;
+    notifyListeners();
+  }
 
   Future<void> connectToDevice({List<dynamic>? catalog}) async {
     state = BleState.scanning;

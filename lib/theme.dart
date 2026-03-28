@@ -76,8 +76,9 @@ class CardGlass extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final Color? borderColor;
   final double borderRadius;
-
   final Color? color;
+  final double? width;
+  final double? height;
 
   const CardGlass({
     super.key,
@@ -86,11 +87,15 @@ class CardGlass extends StatelessWidget {
     this.borderColor,
     this.color,
     this.borderRadius = 16,
+    this.width,
+    this.height,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: width,
+      height: height,
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color ?? LvsColors.bgCard.withOpacity(0.5),

@@ -26,10 +26,10 @@
 // ═══════════════════════════════════════════════════════════════
 
 // Types
-export 'core/types/device_types.dart';
-export 'core/types/command_types.dart';
-export 'core/types/event_types.dart';
-export 'core/types/result_types.dart';
+export 'types/device_types.dart';
+export 'types/command_types.dart';
+export 'types/event_types.dart';
+export 'types/result_types.dart';
 
 // HAL - Hardware Abstraction Layer
 export 'core/hal/device_interface.dart';
@@ -66,9 +66,9 @@ export 'devices/models/game_profile.dart';
 // ═══════════════════════════════════════════════════════════════
 
 // BLE Service
-export 'services/ble/ble_service.dart';
-export 'services/ble/ble_service_platform.dart' hide getBleService;
-export 'services/ble/ble_service_mobile.dart';
+export 'services/ble/ble_service_platform.dart';
+// export 'services/ble/ble_service.dart'; // Removido por ambigüedad
+// export 'services/ble/ble_service_mobile.dart'; // Removido por ambigüedad
 export 'services/ble/lvs_commands.dart' hide PacketMode;
 export 'services/ble/toy_profile.dart';
 

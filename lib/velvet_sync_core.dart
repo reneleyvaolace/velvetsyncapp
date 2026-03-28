@@ -13,10 +13,10 @@
 // ═══════════════════════════════════════════════════════════════
 
 // Types
-export 'core/types/device_types.dart';
-export 'core/types/command_types.dart';
-export 'core/types/event_types.dart';
-export 'core/types/result_types.dart';
+export 'types/device_types.dart';
+export 'types/command_types.dart';
+export 'types/event_types.dart';
+export 'types/result_types.dart';
 
 // HAL - Hardware Abstraction Layer
 export 'core/hal/device_interface.dart';

@@ -5,6 +5,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:velvet_sync/utils/logger.dart';
 
 /// Consolida los archivos optimizados de LoveSpouse en 1 solo archivo
 class LovespouseConsolidator {

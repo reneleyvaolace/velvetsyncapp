@@ -15,8 +15,8 @@
 
 // BLE Service
 export 'services/ble/ble_service_platform.dart';
-export 'services/ble/ble_service_stub.dart';
-export 'services/ble/ble_service_mobile.dart' hide getBleService;
+// export 'services/ble/ble_service_stub.dart'; // Removido para evitar ambigüedad con bleProvider
+// export 'services/ble/ble_service_mobile.dart' hide getBleService; // Removido por el mismo motivo
 export 'services/ble/lvs_commands.dart';
 export 'services/ble/toy_profile.dart';
 

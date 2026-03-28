@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
-import 'package:velvet_sync/theme.dart';
+import 'package:velvet_sync/theme.dart' hide SectionLabel;
 import 'package:velvet_sync/screens/dice_screen.dart';
-import 'package:velvet_sync/screens/roulette_screen.dart';
-import 'package:velvet_sync/screens/reader_screen.dart';
-import 'package:velvet_sync/screens/companion_screen.dart';
+import 'package:velvet_sync/screens/placeholder_screens.dart';
 import 'package:velvet_sync/screens/game_screen.dart';
 import 'package:velvet_sync/widgets/lvs_modes.dart';
 import 'package:flutter/services.dart';
@@ -75,7 +73,7 @@ class _ModesTabState extends ConsumerState<ModesTab> {
 
   Widget _buildPatternsCard(BleService ble) {
     if (!ble.isConnected) return const _DisabledCard(title: 'RITMOS PREDISEÑADOS');
-    final activePattern = ref.watch(bleProvider.select((p) => p.activePatternCh1));
+    final activePattern = ref.watch(bleProvider.select((p) => p.activePattern?.index ?? 0));
 
     return CardGlass(
       child: Column(

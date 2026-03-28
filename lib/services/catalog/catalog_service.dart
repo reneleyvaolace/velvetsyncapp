@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/devices/models/lovespouse_device.dart';
 import 'package:velvet_sync/services/backend/supabase_service.dart';
-import 'package:velvet_sync/services/ble/ble_service_platform.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart';

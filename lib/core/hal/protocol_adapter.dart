@@ -4,9 +4,8 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:velvet_sync/types/command_types.dart';
-
 import 'package:velvet_sync/types/result_types.dart';
-import 'package:velvet_sync/protocols/protocol_base.dart';
+import 'package:velvet_sync/core/protocols/protocol_base.dart';
 
 /// Adaptador de protocolos
 /// 

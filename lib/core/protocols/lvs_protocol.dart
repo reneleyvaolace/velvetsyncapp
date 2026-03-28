@@ -1,4 +1,4 @@
-import 'package:velvet_sync/hal/protocol_adapter.dart';
+import 'package:velvet_sync/core/hal/protocol_adapter.dart';
 // ═══════════════════════════════════════════════════════════════
 // Velvet Sync Platform · lib/core/protocols/lvs_protocol.dart
 // Protocolo para dispositivos Love Spouse (wbMSE/8154)
@@ -7,7 +7,7 @@ import 'package:velvet_sync/hal/protocol_adapter.dart';
 import 'package:velvet_sync/types/command_types.dart';
 import 'package:velvet_sync/types/device_types.dart';
 import 'package:velvet_sync/types/result_types.dart';
-import 'package:velvet_sync/protocols/protocol_base.dart';
+import 'package:velvet_sync/core/protocols/protocol_base.dart';
 
 /// Protocolo para dispositivos Love Spouse (wbMSE/8154)
 class LvsProtocol extends ProtocolBase {

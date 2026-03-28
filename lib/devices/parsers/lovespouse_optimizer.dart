@@ -5,6 +5,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:velvet_sync/utils/logger.dart';
 
 /// Optimiza los archivos JSON de LoveSpouse
 /// Reduce el tamaño en 87% (6.1 MB → 0.8 MB)

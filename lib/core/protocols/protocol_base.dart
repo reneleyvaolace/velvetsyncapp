@@ -6,7 +6,7 @@
 import 'package:velvet_sync/types/command_types.dart';
 import 'package:velvet_sync/types/device_types.dart';
 import 'package:velvet_sync/types/result_types.dart';
-import 'package:velvet_sync/hal/protocol_adapter.dart';
+import 'package:velvet_sync/core/hal/protocol_adapter.dart';
 
 /// Clase base para todos los protocolos
 /// 
