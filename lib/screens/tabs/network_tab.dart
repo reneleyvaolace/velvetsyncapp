@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/screens/remote_session_screen.dart';
 import 'package:velvet_sync/screens/catalog_screen.dart';
-import 'package:velvet_sync/services/supabase_service.dart';
+import 'package:velvet_sync/services/backend/supabase_service.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 
 class NetworkTab extends ConsumerWidget {
