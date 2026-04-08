@@ -21,23 +21,23 @@
 ## Pendientes por Implementar
 
 ### 1. Session Manager (`lib/services/session/session_manager.dart`)
-- [ ] Implementar current user ID
-- [ ] Get current user ID from auth service
-- [ ] Connect to Supabase realtime to join session
-- [ ] Add to session via backend
-- [ ] Remove from session via backend
-- [ ] Generate proper URL with backend
-- [ ] Use clipboard service
+- [x] Implementar current user ID
+- [x] Get current user ID from auth service
+- [x] Connect to Supabase realtime to join session
+- [x] Add to session via backend
+- [x] Remove from session via backend
+- [x] Generate proper URL with backend
+- [x] Use clipboard service
 
 ### 2. Session Chat Service (`lib/services/session/session_chat_service.dart`)
-- [ ] Get from user profile (displayName)
-- [ ] Send to backend (Supabase Realtime / WebSocket)
+- [x] Get from user profile (displayName)
+- [x] Send to backend (Supabase Realtime / WebSocket)
 
 ### 3. Funscript Loader (`lib/services/media/funscript_loader.dart`)
-- [ ] Implementar descarga desde URL
+- [x] Implementar descarga desde URL
 
 ### 4. Connection Manager (`lib/core/hal/connection_manager.dart`)
-- [ ] Medir tiempo real de conexión
+- [x] Medir tiempo real de conexión
 
 ---
 

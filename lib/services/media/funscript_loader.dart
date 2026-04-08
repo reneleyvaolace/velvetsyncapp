@@ -7,8 +7,10 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:velvet_sync/devices/models/funscript.dart';
@@ -137,17 +139,109 @@ class FunscriptLoader extends ChangeNotifier {
   }
 
   /// Cargar script desde URL (requiere internet)
-  Future<Funscript?> loadFromUrl(String url) async {
-    try {
-      // TODO: Implementar descarga desde URL
-      lvsLog('Carga desde URL no implementada aún', tag: 'FUNSCRIPT');
+  /// 
+  /// [url] - URL directa al archivo .funscript
+  /// [cacheToLocal] - Si true, guarda en cache local (default: true)
+  Future<Funscript?> loadFromUrl(String url, {bool cacheToLocal = true}) async {
+    if (_isLoading) {
+      lvsLog('Ya hay carga en progreso', tag: 'FUNSCRIPT');
       return null;
+    }
+
+    try {
+      _isLoading = true;
+      _lastError = null;
+      notifyListeners();
+
+      lvsLog('Descargando funscript desde: $url', tag: 'FUNSCRIPT');
+
+      // Validar URL
+      final uri = Uri.tryParse(url);
+      if (uri == null || !uri.hasScheme) {
+        _lastError = 'URL inválida: $url';
+        lvsLog(_lastError!, tag: 'FUNSCRIPT');
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+
+      // Descargar archivo
+      final response = await http.get(uri).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw TimeoutException('Timeout descargando funscript');
+        },
+      );
+
+      if (response.statusCode != 200) {
+        _lastError = 'Error HTTP ${response.statusCode}: ${response.reasonPhrase}';
+        lvsLog(_lastError!, tag: 'FUNSCRIPT');
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+
+      // Parsear JSON
+      final jsonString = response.body;
+      _currentScript = Funscript.fromString(jsonString);
+
+      // Guardar en cache local si se requiere
+      if (cacheToLocal) {
+        await _cacheScriptFromUrl(url, jsonString);
+      }
+
+      // Agregar a cache en memoria
+      _cache[url] = _currentScript!;
+
+      lvsLog(
+        '✅ Funscript descargado: ${_currentScript!.actionCount} acciones, '
+        '${_currentScript!.duration.inSeconds}s',
+        tag: 'FUNSCRIPT',
+      );
+
+      _isLoading = false;
+      notifyListeners();
+      return _currentScript;
     } catch (e) {
       _lastError = 'Error cargando desde URL: $e';
       lvsLog(_lastError!, tag: 'FUNSCRIPT');
+      _isLoading = false;
       notifyListeners();
       return null;
     }
+  }
+
+  /// Guardar script descargado en cache local
+  Future<void> _cacheScriptFromUrl(String url, String content) async {
+    try {
+      final scriptsDir = await getDefaultScriptsDirectory();
+      final fileName = _generateFileNameFromUrl(url);
+      final filePath = p.join(scriptsDir, fileName);
+      
+      final file = File(filePath);
+      await file.writeAsString(content);
+      
+      lvsLog('Script cacheado en: $filePath', tag: 'FUNSCRIPT');
+    } catch (e) {
+      lvsLog('Error guardando en cache: $e', tag: 'FUNSCRIPT');
+    }
+  }
+
+  /// Generar nombre de archivo desde URL
+  String _generateFileNameFromUrl(String url) {
+    final uri = Uri.parse(url);
+    final pathSegments = uri.pathSegments;
+    
+    if (pathSegments.isNotEmpty) {
+      final fileName = pathSegments.last;
+      if (fileName.endsWith('.funscript')) {
+        return fileName;
+      }
+      return '$fileName.funscript';
+    }
+    
+    // Fallback: nombre basado en hash de URL
+    return 'funscript_${url.hashCode.abs()}.funscript';
   }
 
   // ═══════════════════════════════════════════════════════════════

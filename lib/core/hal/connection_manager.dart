@@ -157,7 +157,7 @@ class ConnectionManager {
         _eventController.add(DeviceConnectedEvent(
           deviceId: deviceId,
           name: device.name,
-          connectionTimeMs: 0, // TODO: Medir tiempo real
+          connectionTimeMs: DateTime.now().millisecondsSinceEpoch,
         ));
         
         return Success(device);

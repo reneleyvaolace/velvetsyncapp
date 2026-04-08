@@ -9,6 +9,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:velvet_sync/utils/logger.dart';
 
@@ -156,17 +157,51 @@ class SessionChatService extends ChangeNotifier {
 
     if (message.trim().isEmpty) return;
 
+    // Get displayName from user profile (Supabase)
+    final displayName = _getDisplayName();
+
     final chatMessage = ChatMessage(
       id: _generateId(),
       sessionId: _currentSessionId!,
       userId: _currentUserId!,
-      displayName: 'User', // TODO: Get from user profile
+      displayName: displayName,
       message: message,
       timestamp: DateTime.now(),
     );
 
     await _addMessage(chatMessage);
+    
+    // Send to backend (Supabase Realtime / WebSocket)
+    await _sendToBackend(chatMessage);
+    
     lvsLog('Mensaje enviado: $message', tag: 'CHAT');
+  }
+
+  /// Obtener nombre para mostrar desde Supabase
+  String _getDisplayName() {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      return user?.userMetadata?['display_name'] ?? 
+             user?.email?.split('@').first ?? 
+             'User';
+    } catch (e) {
+      return 'User';
+    }
+  }
+
+  /// Enviar mensaje al backend
+  Future<void> _sendToBackend(ChatMessage message) async {
+    try {
+      final client = Supabase.instance.client;
+      final channel = client.channel('session_${_currentSessionId}');
+      
+      await channel.sendBroadcastMessage(
+        event: 'chat_message',
+        payload: message.toJson(),
+      );
+    } catch (e) {
+      lvsLog('Error enviando mensaje al backend: $e', tag: 'CHAT');
+    }
   }
 
   /// Enviar mensaje de sistema
@@ -228,8 +263,6 @@ class SessionChatService extends ChangeNotifier {
     _messages.add(message);
     _messageController.add(message);
     notifyListeners();
-
-    // TODO: Send to backend (Supabase Realtime / WebSocket)
   }
 
   /// Recibir mensaje de otro usuario
