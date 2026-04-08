@@ -240,7 +240,7 @@ class FruitGame extends FlameGame with HasCollisionDetection {
         count: 20,
         lifespan: 0.8,
         generator: (i) {
-          final Vector2 velocity = (Vector2.random(_rand) - Vector2(0.5, 0.5)) * 400;
+          final velocity = (Vector2.random(_rand) - Vector2(0.5, 0.5)) * 400;
           return AcceleratedParticle(
             acceleration: Vector2(0, 500), // Gravedad de partículas
             speed: velocity,
@@ -273,7 +273,7 @@ class FruitGame extends FlameGame with HasCollisionDetection {
 
     if (type == 'MERGE') {
       // Fusión (Level Up): Canal 1 (Empuje Principal)
-      int dynamicIntensity = (scoreNotifier.value / 10).clamp(0, 100).toInt();
+      var dynamicIntensity = (scoreNotifier.value / 10).clamp(0, 100).toInt();
       if (dynamicIntensity < 40) dynamicIntensity = 40; // Base force
       
       final cmd = LvsCommands.preciseChannel1(dynamicIntensity);
@@ -303,6 +303,7 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
   final String id;
   final int level;
   Vector2 velocity;
+  @override
   bool isDragged = false;
   
   static const double gravity = 500.0;

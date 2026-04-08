@@ -20,13 +20,13 @@ class ReaderScreen extends ConsumerStatefulWidget {
 
 class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   final TextEditingController _textController = TextEditingController(
-    text: "Toca las palabras resaltadas para sentir la historia...\n\n"
-          "De repente, el ritmo se volvió FUERTE y persistente. "
-          "Sentía como todo VIBRA en sintonía con su respiración. "
-          "El PULSO se aceleraba, RAPIDO e imparable. "
-          "Buscaba un contacto DURO, algo que la sacudiera por completo. "
-          "Luego, todo se volvió SUAVE, un susurro en la piel, un movimiento LENTO y rítmico. "
-          "Con cada LATIDO sentía más. Finalmente decidió un ALTO total."
+    text: 'Toca las palabras resaltadas para sentir la historia...\n\n'
+          'De repente, el ritmo se volvió FUERTE y persistente. '
+          'Sentía como todo VIBRA en sintonía con su respiración. '
+          'El PULSO se aceleraba, RAPIDO e imparable. '
+          'Buscaba un contacto DURO, algo que la sacudiera por completo. '
+          'Luego, todo se volvió SUAVE, un susurro en la piel, un movimiento LENTO y rítmico. '
+          'Con cada LATIDO sentía más. Finalmente decidió un ALTO total.'
   );
 
   Timer? _autoStopTimer;
@@ -71,7 +71,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   };
 
   static String _normalize(String word) {
-    final Map<String, String> subs = {
+    final subs = <String, String>{
       '\u00e1': 'A', '\u00e9': 'E', '\u00ed': 'I', '\u00f3': 'O', '\u00fa': 'U',
       '\u00c1': 'A', '\u00c9': 'E', '\u00cd': 'I', '\u00d3': 'O', '\u00da': 'U',
       '\u00e0': 'A', '\u00e8': 'E', '\u00ec': 'I', '\u00f2': 'O', '\u00f9': 'U',
@@ -176,7 +176,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                         children: [
                           Image.asset('assets/icons/icon_ai_assistant.png', width: 24, height: 24),
                           const SizedBox(width: 6),
-                          Text(
+                          const Text(
                             'Toca las palabras en rosa para activar',
                             style: TextStyle(color: LvsColors.text3, fontSize: 10, letterSpacing: 0.5),
                           ),
@@ -221,7 +221,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     maxLines: null,
                     expands: true,
                     textAlignVertical: TextAlignVertical.top,
-                    style: TextStyle(color: LvsColors.text2, fontSize: 13, height: 1.6),
+                    style: const TextStyle(color: LvsColors.text2, fontSize: 13, height: 1.6),
                     decoration: InputDecoration(
                       hintText: 'Escribe tu historia aquí...\nLas palabras hápticas se resaltarán automáticamente.',
                       hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.15), fontSize: 12),
@@ -242,11 +242,11 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   Widget _buildInteractiveText() {
     final rawText = _textController.text;
     final lines = rawText.split('\n');
-    List<InlineSpan> spans = [];
+    var spans = <InlineSpan>[];
 
-    for (int li = 0; li < lines.length; li++) {
+    for (var li = 0; li < lines.length; li++) {
       final words = lines[li].split(' ');
-      for (int wi = 0; wi < words.length; wi++) {
+      for (var wi = 0; wi < words.length; wi++) {
         final token = words[wi];
         if (token.isEmpty) {
           spans.add(const TextSpan(text: ' '));
@@ -256,7 +256,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         final cmd = _matchKeyword(token);
         if (cmd != null) {
           final channel = _cmdChannel(cmd);
-          final Color color = channel == 0
+          final color = channel == 0
               ? LvsColors.red
               : channel == 2
                   ? LvsColors.teal

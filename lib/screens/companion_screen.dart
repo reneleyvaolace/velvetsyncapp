@@ -120,9 +120,9 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    final double shakeMultiplier = 15.0; 
-    final double intensityRatio = (_currentM1 + _currentM2) / 510.0;
-    final double currentPixels = intensityRatio * shakeMultiplier;
+    const shakeMultiplier = 15.0; 
+    final intensityRatio = (_currentM1 + _currentM2) / 510.0;
+    final currentPixels = intensityRatio * shakeMultiplier;
 
     return Scaffold(
       appBar: AppBar(
@@ -150,8 +150,8 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
             AnimatedBuilder(
               animation: _shakeController,
               builder: (context, child) {
-                double dx = math.sin(_shakeController.value * 2 * math.pi * 5) * currentPixels;
-                double dy = math.cos(_shakeController.value * 2 * math.pi * 7) * currentPixels;
+                var dx = math.sin(_shakeController.value * 2 * math.pi * 5) * currentPixels;
+                var dy = math.cos(_shakeController.value * 2 * math.pi * 7) * currentPixels;
   
                 final shadowRadius = intensityRatio * 30.0;
   

@@ -12,11 +12,11 @@ class NetworkTab extends ConsumerWidget {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        SliverAppBar(
+        const SliverAppBar(
           expandedHeight: 80,
           backgroundColor: Colors.transparent,
           flexibleSpace: FlexibleSpaceBar(
-            title: const Text('SERVICIOS REMOTOS', style: TextStyle(
+            title: Text('SERVICIOS REMOTOS', style: TextStyle(
               fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.text3
             )),
             centerTitle: true,
@@ -34,10 +34,10 @@ class NetworkTab extends ConsumerWidget {
                 child: Column(
                   children: [
                     Image.asset('assets/icons/icon_encryption.png', width: 52, height: 52),
-                    SizedBox(height: 12),
-                    Text('CONEXIÓN ENCRIPTADA', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
-                    SizedBox(height: 8),
-                    Text(
+                    const SizedBox(height: 12),
+                    const Text('CONEXIÓN ENCRIPTADA', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    const SizedBox(height: 8),
+                    const Text(
                       'Todas las sesiones remotas utilizan cifrado de extremo a extremo y canales efímeros en tiempo real.',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 10, color: LvsColors.text3),
@@ -78,8 +78,8 @@ class NetworkTab extends ConsumerWidget {
                 width: 52, height: 52,
                 errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, color: LvsColors.pink, size: 40),
               ),
-              SizedBox(width: 20),
-              Expanded(
+              const SizedBox(width: 20),
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -93,7 +93,7 @@ class NetworkTab extends ConsumerWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.white24),
+              const Icon(Icons.chevron_right, color: Colors.white24),
             ],
           ),
         ),
@@ -122,8 +122,8 @@ class NetworkTab extends ConsumerWidget {
                 width: 52, height: 52,
                 errorBuilder: (_, __, ___) => const Icon(Icons.auto_stories, color: LvsColors.violet, size: 40),
               ),
-              SizedBox(width: 20),
-              Expanded(
+              const SizedBox(width: 20),
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -133,7 +133,7 @@ class NetworkTab extends ConsumerWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.white24),
+              const Icon(Icons.chevron_right, color: Colors.white24),
             ],
           ),
         ),

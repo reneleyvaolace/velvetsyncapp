@@ -50,7 +50,7 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
     HapticFeedback.lightImpact();
 
     // Simular el giro por 1.5 segundos
-    int ticks = 0;
+    var ticks = 0;
     Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {
         _dice1Value = math.Random().nextInt(9) + 1;
@@ -221,8 +221,8 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
           animation: _animationController,
           builder: (context, child) {
             // Efecto de rotación y salto si está rodando
-            final double angle = _isRolling ? math.sin(_animationController.value * math.pi * 2) * 0.2 : 0;
-            final double scale = _isRolling ? 1.0 + math.sin(_animationController.value * math.pi) * 0.1 : 1.0;
+            final angle = _isRolling ? math.sin(_animationController.value * math.pi * 2) * 0.2 : 0.0;
+            final scale = _isRolling ? 1.0 + math.sin(_animationController.value * math.pi) * 0.1 : 1.0;
             
             return Transform.scale(
               scale: scale,

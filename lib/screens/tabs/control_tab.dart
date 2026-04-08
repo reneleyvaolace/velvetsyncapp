@@ -29,9 +29,9 @@ class ControlTab extends ConsumerWidget {
               const SizedBox(height: 16),
               // Lista de dispositivos compatibles
               if (!ble.isConnected)
-                CardGlass(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                  child: const CompatibleDevicesRow(),
+                const CardGlass(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                  child: CompatibleDevicesRow(),
                 ),
               const SizedBox(height: 24),
               _buildControlCard(ref),
@@ -110,11 +110,11 @@ class ControlTab extends ConsumerWidget {
                     _BleStateBox(state: bleState),
                     if (ble.isConnected) ...[
                       const SizedBox(height: 6),
-                      Row(
+                      const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           _StatusIcon(icon: 'assets/icons/icon_battery.png', label: '85%'),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           _StatusIcon(icon: 'assets/icons/icon_signal_strength.png', label: 'GOOD'),
                         ],
                       ),
@@ -288,7 +288,7 @@ class ControlTab extends ConsumerWidget {
     if (!ble.isConnected) return const SizedBox.shrink();
 
     final activeToy = ref.watch(bleProvider.select((p) => p.activeToy));
-    final int maxIntensity = ref.watch(bleProvider.select((p) => p.displayIntensity));
+    final maxIntensity = ref.watch(bleProvider.select((p) => p.displayIntensity));
     final activeSpeed = ref.watch(bleProvider.select((p) => p.activeSpeed));
     final intensityCh1 = ref.watch(bleProvider.select((p) => p.activeIntensityCh1));
     final intensityCh2 = ref.watch(bleProvider.select((p) => p.activeIntensityCh2));

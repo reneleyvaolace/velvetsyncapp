@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'services/ble/ble_service_platform.dart';
 import 'services/backend/sync_service.dart';
+import 'services/backend/link_service.dart';
 import 'services/ai/ai_hardware_bridge_service.dart';
 import 'utils/logger.dart';
 import 'screens/home_screen.dart';
@@ -25,7 +26,7 @@ void main() async {
 
   // 2. Cargar variables de entorno
   try {
-    await dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: '.env');
     lvsLog('Variables de entorno cargadas', tag: 'APP');
   } catch (e) {
     lvsError('Error cargando .env: $e', tag: 'APP');
@@ -59,7 +60,6 @@ class VelvetSyncApp extends ConsumerWidget {
   ThemeData _buildTheme(Brightness brightness) {
     final baseTheme = ThemeData(brightness: brightness);
     return baseTheme.copyWith(
-      useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFFE91E63), // Velvet Pink
         brightness: brightness,
@@ -86,15 +86,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future<void> _initApp() async {
     lvsLog('Inicializando core services...', tag: 'APP');
     
-    // 1. Inicializar BleService
+    // 1. Inicializar LinkService (Deep Linking)
+    final linkService = LinkService();
+    await linkService.init();
+    
+    // 2. Inicializar BleService
     final bleService = ref.read(bleProvider);
     // await bleService.init(); // Si tuviera un init async
     
-    // 2. Inicializar SyncService
+    // 3. Inicializar SyncService
     final syncService = ref.read(syncServiceProvider);
     await syncService.init();
     
-    // 3. Inicializar AI Hardware Bridge
+    // 4. Inicializar AI Hardware Bridge
     final aiBridge = ref.read(aiHardwareBridgeProvider);
     await aiBridge.init(
       bleService: bleService,

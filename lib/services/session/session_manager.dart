@@ -159,7 +159,7 @@ class SessionManager extends ChangeNotifier {
 
       // Crear sesión en Supabase
       final userId = _currentUserId;
-      final deviceId = '8154'; // Default device ID
+      const deviceId = '8154'; // Default device ID
       
       final sessionData = await _supabaseService?.createSharedSession(deviceId);
       
@@ -587,7 +587,7 @@ class SessionManager extends ChangeNotifier {
     if (_currentSession == null) return '';
     
     // Generar URL con backend si está disponible
-    final baseUrl = 'velvetsync://session/join';
+    const baseUrl = 'velvetsync://session/join';
     final token = _currentSession!.accessToken;
     return '$baseUrl?token=$token';
   }

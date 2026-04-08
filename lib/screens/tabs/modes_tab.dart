@@ -6,7 +6,6 @@ import 'package:velvet_sync/screens/dice_screen.dart';
 import 'package:velvet_sync/screens/placeholder_screens.dart';
 import 'package:velvet_sync/screens/game_screen.dart';
 import 'package:velvet_sync/widgets/lvs_modes.dart';
-import 'package:flutter/services.dart';
 import 'package:velvet_sync/screens/kegel_screen.dart';
 
 class ModesTab extends ConsumerStatefulWidget {
@@ -26,11 +25,11 @@ class _ModesTabState extends ConsumerState<ModesTab> {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        SliverAppBar(
+        const SliverAppBar(
           expandedHeight: 80,
           backgroundColor: Colors.transparent,
           flexibleSpace: FlexibleSpaceBar(
-            title: const Text('MODOS DE JUEGO', style: TextStyle(
+            title: Text('MODOS DE JUEGO', style: TextStyle(
               fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.text3
             )),
             centerTitle: true,
@@ -85,8 +84,11 @@ class _ModesTabState extends ConsumerState<ModesTab> {
             activePattern: activePattern,
             color: LvsColors.violet,
             onSelect: (i) {
-              if (i == 0) ble.setProportionalChannel1(0);
-              else ble.setPatternChannel1(i);
+              if (i == 0) {
+                ble.setProportionalChannel1(0);
+              } else {
+                ble.setPatternChannel1(i);
+              }
             },
           ),
         ],

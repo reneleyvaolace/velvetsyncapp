@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/theme.dart';
@@ -33,10 +33,10 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        SliverAppBar(
+        const SliverAppBar(
           expandedHeight: 80,
           backgroundColor: Colors.transparent,
-          flexibleSpace: const FlexibleSpaceBar(
+          flexibleSpace: FlexibleSpaceBar(
             title: Text('SISTEMA Y CONFIGURACION', style: TextStyle(
               fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.text3
             )),
@@ -181,11 +181,31 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
               cacheExtent: 50,
               itemBuilder: (_, i) {
                 final log = logs[logs.length - 1 - i];
+                Color logColor;
+                switch (log.type) {
+                  case 'error':
+                    logColor = LvsColors.red;
+                    break;
+                  case 'warn':
+                    logColor = LvsColors.amber;
+                    break;
+                  case 'success':
+                    logColor = LvsColors.teal;
+                    break;
+                  case 'cmd':
+                    logColor = const Color(0xFF00F5FF);
+                    break;
+                  case 'debug':
+                    logColor = const Color(0xFF00FFCC);
+                    break;
+                  default:
+                    logColor = const Color(0xFFFFD700);
+                }
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
                     '[${log.time.hour}:${log.time.minute.toString().padLeft(2, '0')}] ${log.msg}',
-                    style: const TextStyle(fontSize: 9, fontFamily: 'monospace', color: LvsColors.text3),
+                    style: TextStyle(fontSize: 9, fontFamily: 'monospace', color: logColor),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -312,10 +332,10 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Expanded(
+                          const Expanded(
                             child: Text(
                               'Auto-stop',
-                              style: const TextStyle(fontSize: 8, color: LvsColors.text3),
+                              style: TextStyle(fontSize: 8, color: LvsColors.text3),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),

@@ -214,22 +214,22 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
   }
 
   Widget _buildMainDisplay() {
-    String text = "LISTO";
-    Color color = LvsColors.teal;
-    double progress = 1.0;
+    var text = 'LISTO';
+    var color = LvsColors.teal;
+    var progress = 1.0;
 
     if (_isRunning && _selectedLevel != null) {
       if (_currentPhase == KegelPhase.contract) {
-        text = "CONTRAE";
+        text = 'CONTRAE';
         color = LvsColors.pink;
         progress = _secondsRemaining / _selectedLevel!.contractSeconds;
       } else {
-        text = "RELAJA";
+        text = 'RELAJA';
         color = LvsColors.teal;
         progress = _secondsRemaining / _selectedLevel!.relaxSeconds;
       }
     } else if (_currentPhase == KegelPhase.finished) {
-      text = "¡HECHO!";
+      text = '¡HECHO!';
       color = LvsColors.teal;
       progress = 0.0;
     }
@@ -271,7 +271,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
                   children: [
                     if (_isRunning && _selectedLevel != null)
                       Text(
-                        'ROUND ${_currentRep}',
+                        'ROUND $_currentRep',
                         style: GoogleFonts.plusJakartaSans(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2),
                       ),
                     const SizedBox(height: 8),

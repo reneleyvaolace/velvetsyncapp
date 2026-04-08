@@ -15,6 +15,10 @@
 - [x] AI Companion (CompanionScreen)
 - [x] Modos de juego
 - [x] Kegel
+- [x] Deep Linking (velvetsync://)
+- [x] Notificaciones Push (flutter_local_notifications)
+- [x] Widget LvsModeCard reutilizable
+- [x] Integración Notificaciones con BleService
 
 ---
 
@@ -45,7 +49,7 @@
 
 ### Errores de Análisis
 - 0 errores de compilación
-- 283 warnings/info (mayormente `withOpacity` deprecated - no bloqueante)
+- 17 warnings/info (mayormente `withOpacity` deprecated - no bloqueante)
 
 ### Dependencias Verificadas
 - ✅ SUPABASE_URL configurado
@@ -53,3 +57,5 @@
 - ✅ OPENROUTER_API_KEY configurado
 - ✅ Permisos Android completos
 - ✅ Dependencias pubspec.yaml correctas
+- ✅ flutter_local_notifications ^18.0.1
+- ✅ app_links ^6.4.0

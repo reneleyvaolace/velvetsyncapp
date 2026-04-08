@@ -37,6 +37,9 @@ dependencies:
   # ── Deep Linking ──────────────────────────────────
   app_links: ^6.4.0
 
+  # ── Notificaciones Push ────────────────────────────
+  flutter_local_notifications: ^18.0.1
+
   wakelock_plus: ^1.4.0
   cupertino_icons: ^1.0.8
   flame: ^1.36.0

@@ -385,13 +385,13 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
           textCapitalization: TextCapitalization.characters,
           keyboardType: TextInputType.text,
           decoration: InputDecoration(
-            counterText: "",
+            counterText: '',
             hintText: '------',
             hintStyle: TextStyle(color: Colors.white.withValues(alpha:0.1)),
             filled: true,
             fillColor: LvsColors.bgCard,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white12)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.white12)),
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: LvsColors.pink.withValues(alpha:0.5))),
           ),
         ),
@@ -508,7 +508,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   Widget _buildControlView() {
     final anatomy = _toyModel?.targetAnatomy ?? 'Placer';
     final label = 'Estimulación $anatomy';
-    final bool isDual = _toyModel?.hasDualChannel ?? false;
+    final isDual = _toyModel?.hasDualChannel ?? false;
 
     return Column(
       children: [

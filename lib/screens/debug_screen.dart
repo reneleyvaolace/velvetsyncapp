@@ -162,18 +162,18 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
   Widget build(BuildContext context) {
     // 🔒 SECURITY: Prevenir uso en producción
     if (!kDebugMode) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: LvsColors.bg,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.lock_outline, size: 64, color: LvsColors.text3),
-              const SizedBox(height: 16),
-              const Text('DEBUG SCREEN', style: TextStyle(
+              Icon(Icons.lock_outline, size: 64, color: LvsColors.text3),
+              SizedBox(height: 16),
+              Text('DEBUG SCREEN', style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.bold, color: LvsColors.text3)),
-              const SizedBox(height: 8),
-              const Text('No disponible en producción', style: TextStyle(
+              SizedBox(height: 8),
+              Text('No disponible en producción', style: TextStyle(
                 fontSize: 12, color: LvsColors.text3)),
             ],
           ),

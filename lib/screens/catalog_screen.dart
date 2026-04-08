@@ -300,7 +300,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                         ),
                         const SizedBox(height: 4),
                         Text(toy.targetAnatomy.toUpperCase(),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: LvsColors.text3, fontSize: 8, letterSpacing: 1)),
                       ],
                     ),
@@ -589,10 +589,10 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2)),
             ),
-            child: Row(
+            child: const Row(
               children: [
-                const Icon(Icons.info_outline, color: LvsColors.pink, size: 18),
-                const SizedBox(width: 10),
+                Icon(Icons.info_outline, color: LvsColors.pink, size: 18),
+                SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'El catálogo carga automáticamente desde el servidor. Usa esta sección para agregar un dispositivo que no aparezca en la lista, usando su clave o ID del empaque.',
@@ -604,7 +604,7 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
           ),
           const SizedBox(height: 22),
 
-          Text('Clave o ID del Producto',
+          const Text('Clave o ID del Producto',
               style: TextStyle(color: LvsColors.text3, fontSize: 10, letterSpacing: 1.2)),
           const SizedBox(height: 8),
           Row(
@@ -669,11 +669,11 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
-              const Icon(Icons.check_circle_rounded, color: LvsColors.teal, size: 20),
-              const SizedBox(width: 8),
-              const Text('¡Dispositivo encontrado y agregado!',
+              Icon(Icons.check_circle_rounded, color: LvsColors.teal, size: 20),
+              SizedBox(width: 8),
+              Text('¡Dispositivo encontrado y agregado!',
                   style: TextStyle(color: LvsColors.teal, fontWeight: FontWeight.w900, fontSize: 13)),
             ],
           ),
@@ -744,7 +744,7 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
           SizedBox(
               width: 72,
               child: Text(label,
-                  style: TextStyle(color: LvsColors.text3, fontSize: 11))),
+                  style: const TextStyle(color: LvsColors.text3, fontSize: 11))),
           Expanded(
             child: Text(value,
                 style: const TextStyle(

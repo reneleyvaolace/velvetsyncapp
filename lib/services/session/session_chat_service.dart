@@ -193,7 +193,7 @@ class SessionChatService extends ChangeNotifier {
   Future<void> _sendToBackend(ChatMessage message) async {
     try {
       final client = Supabase.instance.client;
-      final channel = client.channel('session_${_currentSessionId}');
+      final channel = client.channel('session_$_currentSessionId');
       
       await channel.sendBroadcastMessage(
         event: 'chat_message',

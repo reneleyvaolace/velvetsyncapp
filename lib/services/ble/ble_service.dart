@@ -26,6 +26,7 @@ import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'toy_profile.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
+import 'package:velvet_sync/services/backend/notification_service.dart';
 
 // ── Provider Global para Riverpod ──────────────────────────────
 final bleProvider = ChangeNotifierProvider((ref) => BleService());
@@ -81,6 +82,10 @@ class BleService extends ChangeNotifier {
   bool isDeepScan      = false;
   int batteryLevel     = 0;
 
+  // Notificaciones
+  bool _batteryLowNotified = false;
+  NotificationService? _notificationService;
+
   bool isCooldownActive = false;
   int cooldownRemaining = 0;
   Timer? _cooldownTimer;
@@ -123,15 +128,22 @@ class BleService extends ChangeNotifier {
     );
     connectedDeviceName = toy.name;
 
+    // Inicializar servicio de notificaciones
+    _initNotifications();
+
     // ── NUEVO: Marcar como conexión VIRTUAL (sin hardware real) ──
     _hardwareConfirmed = false;
     _setState(BleState.connected); // Estado "virtual" para UI
 
-    // Notificar al AI Hardware Bridge
-    _notifyAIBridge(toy);
-
     _log('📱 Dispositivo "${toy.name}" activado desde el catálogo (MODO VIRTUAL - sin hardware)', 'info');
     notifyListeners();
+  }
+
+  void _initNotifications() {
+    if (_notificationService == null) {
+      _notificationService = NotificationService();
+      _notificationService!.init();
+    }
   }
 
   /// ── NUEVO: Método para verificar si hay hardware real conectado ──
@@ -142,6 +154,7 @@ class BleService extends ChangeNotifier {
       final ok = await writeCommand(verificationCmd, label: 'VERIFY_HW', silent: true);
       if (ok) {
         _hardwareConfirmed = true;
+        _initNotifications();
         _log('✅ Hardware verificado exitosamente', 'success');
       } else {
         _log('❌ No hay hardware físico presente', 'error');
@@ -485,6 +498,7 @@ class BleService extends ChangeNotifier {
 
       // ── NUEVO: Confirmar hardware exitoso ──
       _hardwareConfirmed = true;
+      _initNotifications();
       batteryLevel = 100;
       _setState(BleState.connected);
       _log('✅ Handshake OK — ${toyProfile?.name ?? connectedDeviceName} vinculado. Hardware CONFIRMADO.', 'success');
@@ -529,6 +543,10 @@ class BleService extends ChangeNotifier {
     activePattern = null;
     activeIntensity = null;
     batteryLevel = 0;
+    _batteryLowNotified = false;
+
+    // Notificación de desconexión
+    _notificationService?.showConnectionLost();
 
     // ── NUEVO: Resetear confirmación de hardware ──
     _hardwareConfirmed = false;
@@ -536,6 +554,20 @@ class BleService extends ChangeNotifier {
     _setState(BleState.idle);
     await _updateNotification('Desconectado');
     _log('🔌 Dispositivo desconectado. Hardware no confirmado.', 'info');
+  }
+
+  /// ── Actualizar nivel de batería y enviar notificaciones ──
+  void _updateBatteryLevel(int level) {
+    batteryLevel = level;
+    // Notificar si batería baja (≤20%) y no se ha notificado
+    if (level <= 20 && !_batteryLowNotified && _notificationService != null) {
+      _notificationService!.showBatteryLow(level: level);
+      _batteryLowNotified = true;
+    }
+    // Resetear notificación cuando suba de 20%
+    if (level > 20) {
+      _batteryLowNotified = false;
+    }
   }
 
   // Para de emergencia: detiene burst+sequencer, bypassa mutex y para el advertising

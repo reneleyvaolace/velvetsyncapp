@@ -13,16 +13,15 @@ import 'package:velvet_sync/providers/media_sync_provider.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/theme.dart';
-// import 'preregister_widget.dart'; // FALTANTE EN DISCO
 import 'package:velvet_sync/widgets/compatible_devices_row.dart';
 import 'debug_screen.dart';
 import 'game_screen.dart';
-// import 'companion_screen.dart'; // FALTANTE EN DISCO
+import 'companion_screen.dart';
 import 'dice_screen.dart';
-// import 'roulette_screen.dart'; // FALTANTE EN DISCO
-// import 'reader_screen.dart'; // FALTANTE EN DISCO
-// import 'catalog_screen.dart'; // FALTANTE EN DISCO
-// import 'remote_session_screen.dart'; // FALTANTE EN DISCO
+import 'roulette_screen.dart';
+import 'reader_screen.dart';
+import 'catalog_screen.dart';
+import 'remote_session_screen.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -332,7 +331,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                   Text(
                     devicesCount > 1 ? '$devicesCount LINKS ACTIVOS' : 'LINK ACTIVO',
-                    style: TextStyle(fontSize: 9, color: LvsColors.text3, letterSpacing: 1.5),
+                    style: const TextStyle(fontSize: 9, color: LvsColors.text3, letterSpacing: 1.5),
                   ),
                 ],
               ),
@@ -456,7 +455,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   onPressed: _cancelAutoConnect,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: LvsColors.text3,
-                    side: BorderSide(color: Colors.white12),
+                    side: const BorderSide(color: Colors.white12),
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -551,7 +550,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     if (bleState != BleState.connected) return const SizedBox.shrink();
 
     final ble = ref.read(bleProvider);
-    final int maxIntensity = ref.watch(bleProvider.select((p) => p.displayIntensity));
+    final maxIntensity = ref.watch(bleProvider.select((p) => p.displayIntensity));
     final activeSpeed = ref.watch(bleProvider.select((p) => p.activeSpeed));
     final intensityCh1 = ref.watch(bleProvider.select((p) => p.activeIntensityCh1));
     final intensityCh2 = ref.watch(bleProvider.select((p) => p.activeIntensityCh2));
@@ -676,27 +675,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
           ),
-          child: Row(
+          child: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(children: [
-                    const Text('SESSION:', style: TextStyle(color: LvsColors.text3, fontSize: 11, fontWeight: FontWeight.w700)),
-                    const SizedBox(width: 4),
+                    Text('SESSION:', style: TextStyle(color: LvsColors.text3, fontSize: 11, fontWeight: FontWeight.w700)),
+                    SizedBox(width: 4),
                     Text('ACTIVE', style: TextStyle(color: LvsColors.text1, fontSize: 11, fontWeight: FontWeight.w800)),
                   ]),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   Row(children: [
-                    const Text('DURATION:', style: TextStyle(color: LvsColors.text3, fontSize: 11, fontWeight: FontWeight.w700)),
-                    const SizedBox(width: 4),
+                    Text('DURATION:', style: TextStyle(color: LvsColors.text3, fontSize: 11, fontWeight: FontWeight.w700)),
+                    SizedBox(width: 4),
                     Text('45:32', style: TextStyle(color: LvsColors.text1, fontSize: 11, fontWeight: FontWeight.w800)),
                   ]),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   Row(children: [
-                    const Text('STATUS:', style: TextStyle(color: LvsColors.text3, fontSize: 11, fontWeight: FontWeight.w700)),
-                    const SizedBox(width: 4),
+                    Text('STATUS:', style: TextStyle(color: LvsColors.text3, fontSize: 11, fontWeight: FontWeight.w700)),
+                    SizedBox(width: 4),
                     Text('SYNCED', style: TextStyle(color: LvsColors.text1, fontSize: 11, fontWeight: FontWeight.w800)),
                   ]),
                 ],
@@ -829,7 +828,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('MODO MULTIMEDIA', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 13)),
+                    const Text('MODO MULTIMEDIA', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 13)),
                     Text(
                       media.fileName ?? 'Selecciona un audio local',
                       style: const TextStyle(color: Colors.white54, fontSize: 11),
@@ -903,8 +902,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   }
 
   String _formatDuration(Duration d) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    return "${twoDigits(d.inMinutes.remainder(60))}:${twoDigits(d.inSeconds.remainder(60))}";
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    return '${twoDigits(d.inMinutes.remainder(60))}:${twoDigits(d.inSeconds.remainder(60))}';
   }
 
   // ── MODO JUEGO LOCAL (Nuevo) ──────────────────────────────────
@@ -979,12 +978,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 child: Image.asset('assets/icons/icon_ai_assistant.png', width: 42, height: 42),
               ),
               const SizedBox(width: 12),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('ACOMPAÑANTE DIGITAL', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 13)),
-                    const Text(
+                    Text('ACOMPAÑANTE DIGITAL', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 13)),
+                    Text(
                       'IA Generativa (Gemini 2.0)',
                       style: TextStyle(color: Colors.white54, fontSize: 11),
                       overflow: TextOverflow.ellipsis,
@@ -995,7 +994,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ElevatedButton(
                 onPressed: () {
                   HapticFeedback.heavyImpact();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => /* const CompanionScreen() FALTANTE */ Container()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CompanionScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: LvsColors.amber,
@@ -1037,7 +1036,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('DADOS HÁPTICOS', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 13)),
-                    const Text(
+                    Text(
                       'Combinaciones Aleatorias Dual-Motor',
                       style: TextStyle(color: Colors.white54, fontSize: 11),
                       overflow: TextOverflow.ellipsis,
@@ -1090,7 +1089,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('RULETA RUSA', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 13)),
-                    const Text(
+                    Text(
                       'Evento Aleatorio de Alta Intensidad',
                       style: TextStyle(color: Colors.white54, fontSize: 11),
                       overflow: TextOverflow.ellipsis,
@@ -1101,7 +1100,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ElevatedButton(
                 onPressed: () {
                   HapticFeedback.heavyImpact();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => /* const RouletteScreen() FALTANTE */ Container()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RouletteScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: LvsColors.red,
@@ -1143,7 +1142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('LECTOR DINÁMICO', style: TextStyle(color: LvsColors.text1, fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 13)),
-                    const Text(
+                    Text(
                       'Historias que cobran vida física',
                       style: TextStyle(color: Colors.white54, fontSize: 11),
                       overflow: TextOverflow.ellipsis,
@@ -1154,7 +1153,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ElevatedButton(
                 onPressed: () {
                   HapticFeedback.heavyImpact();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => /* const ReaderScreen() FALTANTE */ Container()));
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ReaderScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: LvsColors.teal,
@@ -1279,8 +1278,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           Slider(
             value: ble.burstIntervalMs.toDouble(),
             min: 100, max: 1000, divisions: 18,
-            activeTrackColor: LvsColors.pink,
-            activeThumbColor: LvsColors.pink,
+            activeColor: LvsColors.pink,
+            thumbColor: LvsColors.pink,
             onChanged: (v) => ble.setBurstInterval(v.round()),
           ),
           
@@ -1357,7 +1356,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             ],
           ),
           const SizedBox(height: 8),
-          Container(
+          SizedBox(
             height: 120,
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),
@@ -1377,7 +1376,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return CardGlass(
       padding: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => /* const CatalogScreen() FALTANTE */ Container())),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CatalogScreen())),
         borderRadius: BorderRadius.circular(24),
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -1425,7 +1424,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => /* const RemoteSessionScreen() FALTANTE */ Container()),
+            MaterialPageRoute(builder: (_) => const RemoteSessionScreen()),
           );
         },
         borderRadius: BorderRadius.circular(24),
@@ -1664,8 +1663,9 @@ class _LogRow extends StatelessWidget {
       'success' => LvsColors.teal,
       'error'   => LvsColors.red,
       'warn'    => LvsColors.amber,
-      'cmd'     => LvsColors.pink,
-      _         => LvsColors.text3,
+      'cmd'     => const Color(0xFF00F5FF),
+      'debug'   => const Color(0xFF00FFCC),
+      _         => const Color(0xFFFFD700),
     };
     final t = entry.time;
     final ts = '${t.hour.toString().padLeft(2,'0')}:${t.minute.toString().padLeft(2,'0')}:${t.second.toString().padLeft(2,'0')}';
@@ -1674,7 +1674,7 @@ class _LogRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(ts, style: const TextStyle(fontFamily: 'monospace', fontSize: 9, color: LvsColors.text3)),
+          Text(ts, style: const TextStyle(fontFamily: 'monospace', fontSize: 9, color: Color(0xFFFFD700))),
           const SizedBox(width: 8),
           Expanded(child: Text(entry.msg, style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w500))),
         ],
