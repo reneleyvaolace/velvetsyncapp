@@ -10,9 +10,9 @@ class LvsCanvas extends StatelessWidget {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha:0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha:0.1)),
       ),
       child: const Center(child: Text('Canvas de Dibujo (Simulado)', style: TextStyle(color: LvsColors.text3))),
     );
@@ -64,9 +64,9 @@ class _PatternTile extends StatelessWidget {
         width: 60,
         height: 60,
         decoration: BoxDecoration(
-          color: isActive ? color.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+          color: isActive ? color.withValues(alpha:0.2) : Colors.white.withValues(alpha:0.05),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: isActive ? color : Colors.white.withOpacity(0.1)),
+          border: Border.all(color: isActive ? color : Colors.white.withValues(alpha:0.1)),
         ),
         child: Center(child: Text(index == 0 ? 'Off' : 'P$index', style: TextStyle(color: isActive ? color : LvsColors.text3))),
       ),

@@ -115,7 +115,7 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
               end: Alignment.bottomCenter,
               colors: [
                 _isExploded ? Colors.red.shade900 : LvsColors.bg,
-                LvsColors.bg.withOpacity(0.8),
+                LvsColors.bg.withValues(alpha:0.8),
               ],
             ),
           ),
@@ -174,9 +174,9 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: color.withOpacity(0.5), width: 2),
+                border: Border.all(color: color.withValues(alpha:0.5), width: 2),
                 boxShadow: [
-                  BoxShadow(color: color.withOpacity(_isExploded ? 0.8 : 0.2), blurRadius: _isExploded ? 50 : 20, spreadRadius: 5),
+                  BoxShadow(color: color.withValues(alpha:_isExploded ? 0.8 : 0.2), blurRadius: _isExploded ? 50 : 20, spreadRadius: 5),
                 ],
               ),
               child: Center(
@@ -185,7 +185,7 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
                   height: 160,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha:0.5),
                   ),
                   child: Center(
                     child: _isExploded 

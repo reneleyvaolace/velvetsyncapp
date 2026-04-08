@@ -148,17 +148,17 @@ class ControlTab extends ConsumerWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  LvsColors.teal.withOpacity(0.15),
-                  LvsColors.bgCard.withOpacity(0.5),
+                  LvsColors.teal.withValues(alpha:0.15),
+                  LvsColors.bgCard.withValues(alpha:0.5),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: LvsColors.teal.withOpacity(0.3)),
+              border: Border.all(color: LvsColors.teal.withValues(alpha:0.3)),
               boxShadow: [
                 BoxShadow(
-                  color: LvsColors.teal.withOpacity(0.1),
+                  color: LvsColors.teal.withValues(alpha:0.1),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -170,9 +170,9 @@ class ControlTab extends ConsumerWidget {
                 Container(
                   width: 80, height: 80,
                   decoration: BoxDecoration(
-                    color: LvsColors.teal.withOpacity(0.2),
+                    color: LvsColors.teal.withValues(alpha:0.2),
                     shape: BoxShape.circle,
-                    border: Border.all(color: LvsColors.teal.withOpacity(0.5), width: 2),
+                    border: Border.all(color: LvsColors.teal.withValues(alpha:0.5), width: 2),
                   ),
                   child: Icon(
                     _getDeviceIcon(ble.activeToy),
@@ -194,7 +194,7 @@ class ControlTab extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: LvsColors.bgCardH.withOpacity(0.5),
+                    color: LvsColors.bgCardH.withValues(alpha:0.5),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -213,7 +213,7 @@ class ControlTab extends ConsumerWidget {
                     label: const Text('RENOMBRAR', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: LvsColors.teal,
-                      side: BorderSide(color: LvsColors.teal.withOpacity(0.5)),
+                      side: BorderSide(color: LvsColors.teal.withValues(alpha:0.5)),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
@@ -230,10 +230,10 @@ class ControlTab extends ConsumerWidget {
             icon: const Icon(Icons.link_off, size: 18),
             label: const Text('DESVINCULAR DISPOSITIVO', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.withOpacity(0.15),
+              backgroundColor: Colors.red.withValues(alpha:0.15),
               foregroundColor: Colors.redAccent,
               elevation: 0,
-              side: BorderSide(color: Colors.red.withOpacity(0.3)),
+              side: BorderSide(color: Colors.red.withValues(alpha:0.3)),
               minimumSize: const Size(double.infinity, 48),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -400,7 +400,7 @@ class ControlTab extends ConsumerWidget {
             minimumSize: const Size(double.infinity, 60),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             elevation: 12,
-            shadowColor: LvsColors.red.withOpacity(0.4),
+            shadowColor: LvsColors.red.withValues(alpha:0.4),
           ),
         ),
         
@@ -411,7 +411,7 @@ class ControlTab extends ConsumerWidget {
             activeTrackColor: LvsColors.teal,
             inactiveTrackColor: LvsColors.bgCardH,
             thumbColor: Colors.white,
-            overlayColor: LvsColors.teal.withOpacity(0.1),
+            overlayColor: LvsColors.teal.withValues(alpha:0.1),
             trackHeight: 2,
           ),
           child: Column(
@@ -466,9 +466,9 @@ class _BleStateBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha:0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha:0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -497,7 +497,7 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
   void dispose() { _c.dispose(); super.dispose(); }
   @override
   Widget build(BuildContext context) {
-    return widget.pulse ? AnimatedBuilder(animation: _c, builder: (_, __) => Container(width: 6, height: 6, decoration: BoxDecoration(color: widget.color.withOpacity(_c.value), shape: BoxShape.circle))) : Container(width: 6, height: 6, decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle));
+    return widget.pulse ? AnimatedBuilder(animation: _c, builder: (_, __) => Container(width: 6, height: 6, decoration: BoxDecoration(color: widget.color.withValues(alpha:_c.value), shape: BoxShape.circle))) : Container(width: 6, height: 6, decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle));
   }
 }
 
@@ -541,13 +541,13 @@ class _NeonPresetBtn extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: active ? color.withOpacity(0.1) : Colors.transparent,
+          color: active ? color.withValues(alpha:0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: active ? color : color.withOpacity(0.3), width: 1.5),
+          border: Border.all(color: active ? color : color.withValues(alpha:0.3), width: 1.5),
         ),
         child: Column(
           children: [
-            Icon(icon, color: active ? color : color.withOpacity(0.6), size: 16),
+            Icon(icon, color: active ? color : color.withValues(alpha:0.6), size: 16),
             const SizedBox(height: 6),
             Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1, color: active ? Colors.white : LvsColors.text1)),
           ],

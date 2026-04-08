@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:velvet_sync/theme.dart';
 
 class RouletteScreen extends StatelessWidget {
   const RouletteScreen({super.key});

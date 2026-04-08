@@ -188,7 +188,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
                 duration: const Duration(milliseconds: 300),
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? level.color.withOpacity(0.2) : Colors.transparent,
+                  color: isSelected ? level.color.withValues(alpha:0.2) : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected ? level.color : Colors.transparent,
@@ -246,7 +246,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(color: color.withOpacity(0.15), blurRadius: 60, spreadRadius: 10),
+                  BoxShadow(color: color.withValues(alpha:0.15), blurRadius: 60, spreadRadius: 10),
                 ],
               ),
             ),
@@ -257,7 +257,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
                 value: progress,
                 strokeWidth: 4,
                 color: color,
-                backgroundColor: Colors.white.withOpacity(0.05),
+                backgroundColor: Colors.white.withValues(alpha:0.05),
                 strokeCap: StrokeCap.round,
               ),
             ),
@@ -321,7 +321,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
             });
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white.withOpacity(0.05),
+            backgroundColor: Colors.white.withValues(alpha:0.05),
             foregroundColor: LvsColors.red,
             side: const BorderSide(color: LvsColors.red, width: 1),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -341,7 +341,7 @@ class _KegelScreenState extends ConsumerState<KegelScreen> with SingleTickerProv
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
           elevation: 20,
-          shadowColor: LvsColors.teal.withOpacity(0.4),
+          shadowColor: LvsColors.teal.withValues(alpha:0.4),
         ),
         child: const Text(
           'INICIAR RUTINA',

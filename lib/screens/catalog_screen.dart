@@ -208,7 +208,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
       width: 60,
       height: 60,
       decoration: BoxDecoration(
-        color: LvsColors.pink.withOpacity(0.1),
+        color: LvsColors.pink.withValues(alpha:0.1),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
