@@ -8,12 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'services/ble/ble_service_platform.dart';
-import 'services/backend/sync_service.dart';
-import 'services/backend/link_service.dart';
-import 'services/ai/ai_hardware_bridge_service.dart';
-import 'utils/logger.dart';
-import 'screens/home_screen.dart';
+import 'package:velvet_sync/services/ble/ble_service_platform.dart';
+import 'package:velvet_sync/services/backend/sync_service.dart';
+import 'package:velvet_sync/services/backend/link_service.dart';
+import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
+import 'package:velvet_sync/utils/logger.dart';
+import 'package:velvet_sync/screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -86,24 +86,41 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future<void> _initApp() async {
     lvsLog('Inicializando core services...', tag: 'APP');
     
-    // 1. Inicializar LinkService (Deep Linking)
-    final linkService = LinkService();
-    await linkService.init();
+    try {
+      // 1. Inicializar LinkService (Deep Linking)
+      final linkService = LinkService();
+      await linkService.init();
+    } catch (e) {
+      lvsLog('LinkService error: $e', tag: 'APP');
+    }
     
-    // 2. Inicializar BleService
-    final bleService = ref.read(bleProvider);
-    // await bleService.init(); // Si tuviera un init async
+    try {
+      // 2. Inicializar BleService
+      final bleService = ref.read(bleProvider);
+    } catch (e) {
+      lvsLog('BleService error: $e', tag: 'APP');
+    }
     
-    // 3. Inicializar SyncService
-    final syncService = ref.read(syncServiceProvider);
-    await syncService.init();
+    try {
+      // 3. Inicializar SyncService
+      final syncService = ref.read(syncServiceProvider);
+      await syncService.init();
+    } catch (e) {
+      lvsLog('SyncService error: $e', tag: 'APP');
+    }
     
-    // 4. Inicializar AI Hardware Bridge
-    final aiBridge = ref.read(aiHardwareBridgeProvider);
-    await aiBridge.init(
-      bleService: bleService,
-      syncService: syncService,
-    );
+    try {
+      // 4. Inicializar AI Hardware Bridge
+      final bleService = ref.read(bleProvider);
+      final syncService = ref.read(syncServiceProvider);
+      final aiBridge = ref.read(aiHardwareBridgeProvider);
+      await aiBridge.init(
+        bleService: bleService,
+        syncService: syncService,
+      );
+    } catch (e) {
+      lvsLog('AI Bridge error: $e', tag: 'APP');
+    }
 
     lvsLog('App inicializada correctamente', tag: 'APP');
     
