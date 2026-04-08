@@ -80,3 +80,5 @@ app.*.map.json
 /.tmp/
 activity.log
 scripts/*.log
+nul
+$null
