@@ -162,7 +162,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
                       shape: BoxShape.circle,
                       boxShadow: intensityRatio > 0.1 ? [
                         BoxShadow(
-                          color: Colors.pinkAccent.withValues(alpha: intensityRatio * 0.8),
+                          color: Colors.pinkAccent.withOpacity(intensityRatio * 0.8),
                           blurRadius: shadowRadius,
                           spreadRadius: intensityRatio * 10,
                         ),
@@ -261,7 +261,7 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: message.isUser ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.8) : Colors.grey[800],
+          color: message.isUser ? Theme.of(context).colorScheme.primary.withOpacity(0.8) : Colors.grey[800],
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(20),
             topRight: const Radius.circular(20),

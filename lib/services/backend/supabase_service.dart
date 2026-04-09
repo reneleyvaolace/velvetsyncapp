@@ -43,10 +43,18 @@ class SupabaseService {
       await Supabase.initialize(
         url: url,
         anonKey: anonKey,
+        realtimeClientOptions: const RealtimeClientOptions(
+          eventsPerSecond: 10,
+        ),
       );
       _isInitialized = true;
       lvsLog('Supabase Inicializado OK: $url', tag: 'SUPABASE');
     } catch (e) {
+      if (e.toString().contains('already been initialized')) {
+        _isInitialized = true;
+        lvsLog('Supabase ya estaba inicializado', tag: 'SUPABASE');
+        return;
+      }
       lvsLog('❌ Error crítico inicializando Supabase: $e', tag: 'SUPABASE');
       rethrow;
     }

@@ -124,8 +124,8 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
               end: Alignment.bottomCenter,
               colors: [
                 LvsColors.bg,
-                LvsColors.bg.withValues(alpha:0.8),
-                LvsColors.violet.withValues(alpha:0.1),
+                LvsColors.bg.withOpacity(0.8),
+                LvsColors.violet.withOpacity(0.1),
               ],
             ),
           ),
@@ -199,7 +199,7 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
                         child: Text(
                           'Cada dado aplica un patrón experimental a los motores del Knight No. 3. Los resultados son instantáneos.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: LvsColors.text3.withValues(alpha:0.8), fontSize: 11, height: 1.5),
+                          style: TextStyle(color: LvsColors.text3.withOpacity(0.8), fontSize: 11, height: 1.5),
                         ),
                       ),
                     ],
@@ -232,12 +232,12 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
                   width: 110,
                   height: 110,
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha:0.4),
+                    color: Colors.black.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: color.withValues(alpha:0.8), width: 3),
+                    border: Border.all(color: color.withOpacity(0.8), width: 3),
                     boxShadow: [
-                      BoxShadow(color: color.withValues(alpha:0.35), blurRadius: 25, spreadRadius: 1),
-                      BoxShadow(color: Colors.black.withValues(alpha:0.5), blurRadius: 10, offset: const Offset(5, 5)),
+                      BoxShadow(color: color.withOpacity(0.35), blurRadius: 25, spreadRadius: 1),
+                      BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10, offset: const Offset(5, 5)),
                     ],
                   ),
                   child: Center(
@@ -261,7 +261,7 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
         ),
         const SizedBox(height: 16),
         Text(label, style: TextStyle(
-          color: color.withValues(alpha:0.8), 
+          color: color.withOpacity(0.8), 
           fontSize: 10,
           fontWeight: FontWeight.w900, 
           letterSpacing: 1.5

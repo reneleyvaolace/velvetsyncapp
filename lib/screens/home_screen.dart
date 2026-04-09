@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -148,7 +149,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [LvsColors.pink.withValues(alpha:0.08), Colors.transparent],
+                  colors: [LvsColors.pink.withOpacity(0.08), Colors.transparent],
                 ),
               ),
             ),
@@ -160,7 +161,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
-                  colors: [LvsColors.teal.withValues(alpha:0.06), Colors.transparent],
+                  colors: [LvsColors.teal.withOpacity(0.06), Colors.transparent],
                 ),
               ),
             ),
@@ -196,12 +197,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       const SizedBox(height: 20),
                       _buildReaderCard(context, ble),
                       const SizedBox(height: 10),
-                      Center(
-                        child: Text(
-                          'LVS CONTROL V1.6.1-DEBUG',
-                          style: TextStyle(color: LvsColors.text3.withValues(alpha:0.3), fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 2),
-                        ),
-                      ),
+
                       const SizedBox(height: 30),
                       _buildCatalogCard(context),
                       const SizedBox(height: 20),
@@ -211,9 +207,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       const SizedBox(height: 20),
                       _buildSettingsCard(ble),
                       const SizedBox(height: 20),
-                      _buildDebugButton(context),
-                      const SizedBox(height: 20),
-                      _buildLogCard(ble),
+                      // Solo visible en modo debug
+                      if (kDebugMode) ...[  
+                        _buildDebugButton(context),
+                        const SizedBox(height: 20),
+                        _buildLogCard(ble),
+                      ],
                     ]),
                   ),
                 ),
@@ -242,12 +241,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: Colors.white.withOpacity(0.05),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
               boxShadow: [
-                BoxShadow(color: LvsColors.pink.withValues(alpha: 0.1), blurRadius: 10),
-                BoxShadow(color: LvsColors.violet.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(5, 5)),
+                BoxShadow(color: LvsColors.pink.withOpacity(0.1), blurRadius: 10),
+                BoxShadow(color: LvsColors.violet.withOpacity(0.1), blurRadius: 10, offset: const Offset(5, 5)),
               ]
             ),
             child: ShaderMask(
@@ -307,7 +306,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
       return CardGlass(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        borderColor: LvsColors.teal.withValues(alpha:0.3),
+        borderColor: LvsColors.teal.withOpacity(0.3),
         child: Row(
           children: [
             Container(
@@ -358,7 +357,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     if (hasPreregistered && _autoConnectEnabled) {
       return CardGlass(
         padding: const EdgeInsets.all(22),
-        borderColor: LvsColors.pink.withValues(alpha:0.15),
+        borderColor: LvsColors.pink.withOpacity(0.15),
         child: Column(
           children: [
             // Icono animado (pulso continuo mientras escanea)
@@ -375,13 +374,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.bgCardH,
                   border: Border.all(
                     color: isScanning
-                        ? LvsColors.pink.withValues(alpha:0.6)
-                        : LvsColors.teal.withValues(alpha:0.3),
+                        ? LvsColors.pink.withOpacity(0.6)
+                        : LvsColors.teal.withOpacity(0.3),
                     width: 1.5,
                   ),
                   boxShadow: isScanning ? [
                     BoxShadow(
-                      color: LvsColors.pink.withValues(alpha:0.15 + _burstAnim.value * 0.15),
+                      color: LvsColors.pink.withOpacity(0.15 + _burstAnim.value * 0.15),
                       blurRadius: 20,
                       spreadRadius: 4,
                     )
@@ -390,7 +389,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 child: Icon(
                   isScanning ? Icons.bluetooth_searching : Icons.bluetooth_connected,
                   size: 28,
-                  color: isScanning ? LvsColors.pink : LvsColors.teal.withValues(alpha:0.5),
+                  color: isScanning ? LvsColors.pink : LvsColors.teal.withOpacity(0.5),
                 ),
               ),
             ),
@@ -444,7 +443,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: LvsColors.pink,
-                      side: BorderSide(color: LvsColors.pink.withValues(alpha:0.4)),
+                      side: BorderSide(color: LvsColors.pink.withOpacity(0.4)),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
@@ -483,9 +482,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: LvsColors.bgCardH,
-              border: Border.all(color: LvsColors.pink.withValues(alpha:0.2)),
+              border: Border.all(color: LvsColors.pink.withOpacity(0.2)),
               boxShadow: isScanning ? [
-                BoxShadow(color: LvsColors.pink.withValues(alpha:0.1), blurRadius: 20, spreadRadius: 5)
+                BoxShadow(color: LvsColors.pink.withOpacity(0.1), blurRadius: 20, spreadRadius: 5)
               ] : [],
             ),
             child: Icon(
@@ -523,10 +522,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ble.connectToDevice(catalog: catalog);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: LvsColors.pink.withValues(alpha:0.1),
+                backgroundColor: LvsColors.pink.withOpacity(0.1),
                 foregroundColor: LvsColors.pink,
                 shadowColor: Colors.transparent,
-                side: BorderSide(color: LvsColors.pink.withValues(alpha:0.4), width: 1.5),
+                side: BorderSide(color: LvsColors.pink.withOpacity(0.4), width: 1.5),
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
@@ -570,9 +569,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       boxShadow: [
-                        BoxShadow(color: LvsColors.red.withValues(alpha: 0.15),   blurRadius: 60, spreadRadius: 5, offset: const Offset(-20, 0)),
-                        BoxShadow(color: LvsColors.pink.withValues(alpha: 0.15), blurRadius: 60, spreadRadius: 5, offset: const Offset(-10, 0)),
-                        BoxShadow(color: LvsColors.violet.withValues(alpha: 0.15), blurRadius: 60, spreadRadius: 5, offset: const Offset(20, 0)),
+                        BoxShadow(color: LvsColors.red.withOpacity(0.15),   blurRadius: 60, spreadRadius: 5, offset: const Offset(-20, 0)),
+                        BoxShadow(color: LvsColors.pink.withOpacity(0.15), blurRadius: 60, spreadRadius: 5, offset: const Offset(-10, 0)),
+                        BoxShadow(color: LvsColors.violet.withOpacity(0.15), blurRadius: 60, spreadRadius: 5, offset: const Offset(20, 0)),
                       ]
                     ),
                   ),
@@ -581,7 +580,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                     width: 230, height: 230,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 12),
+                      border: Border.all(color: Colors.white.withOpacity(0.05), width: 12),
                     ),
                   ),
                   // Gradient Active Ring
@@ -620,9 +619,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   style: const TextStyle(fontSize: 78, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1)
                 ),
                 const Text('LEVEL', style: TextStyle(color: LvsColors.text1, fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: 1.5)),
-                const SizedBox(height: 6),
-                const Text('Inter, Regular, 18px', style: TextStyle(color: LvsColors.text3, fontSize: 9)),
-                const Text('subtle glow', style: TextStyle(color: LvsColors.text3, fontSize: 9)),
+
               ],
             ),
           const SizedBox(height: 48),
@@ -671,9 +668,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.03),
+            color: Colors.white.withOpacity(0.03),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+            border: Border.all(color: Colors.white.withOpacity(0.08)),
           ),
           child: const Row(
             mainAxisSize: MainAxisSize.min,
@@ -716,7 +713,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: 6,
                   activeTrackColor: LvsColors.amber, inactiveTrackColor: LvsColors.borderH,
-                  thumbColor: Colors.white, overlayColor: LvsColors.amber.withValues(alpha: 0.2),
+                  thumbColor: Colors.white, overlayColor: LvsColors.amber.withOpacity(0.2),
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
                 ),
                 child: Slider(
@@ -730,7 +727,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: 6,
                   activeTrackColor: LvsColors.pink, inactiveTrackColor: LvsColors.borderH,
-                  thumbColor: Colors.white, overlayColor: LvsColors.pink.withValues(alpha: 0.2),
+                  thumbColor: Colors.white, overlayColor: LvsColors.pink.withOpacity(0.2),
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
                 ),
                 child: Slider(
@@ -750,7 +747,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 data: SliderTheme.of(context).copyWith(
                   trackHeight: 6,
                   activeTrackColor: LvsColors.teal, inactiveTrackColor: LvsColors.borderH,
-                  thumbColor: Colors.white, overlayColor: LvsColors.teal.withValues(alpha: 0.2),
+                  thumbColor: Colors.white, overlayColor: LvsColors.teal.withOpacity(0.2),
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
                 ),
                 child: Slider(
@@ -786,7 +783,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 color: LvsColors.bgCardH,
-                border: Border.all(color: LvsColors.red.withValues(alpha: 0.2)),
+                border: Border.all(color: LvsColors.red.withOpacity(0.2)),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -818,7 +815,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: LvsColors.pink.withValues(alpha: 0.15),
+                  color: LvsColors.pink.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset('assets/icons/icon_sync_music.png', width: 42, height: 42),
@@ -919,7 +916,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: LvsColors.violet.withValues(alpha: 0.15),
+                  color: LvsColors.violet.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset('assets/icons/icon_game_roulette.png', width: 42, height: 42),
@@ -972,7 +969,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: LvsColors.amber.withValues(alpha: 0.15),
+                  color: LvsColors.amber.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset('assets/icons/icon_ai_assistant.png', width: 42, height: 42),
@@ -1025,7 +1022,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: LvsColors.violet.withValues(alpha: 0.15),
+                  color: LvsColors.violet.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset('assets/icons/icon_tab_games.png', width: 42, height: 42),
@@ -1078,7 +1075,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: LvsColors.red.withValues(alpha:0.15),
+                  color: LvsColors.red.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.timer_outlined, color: LvsColors.red, size: 24),
@@ -1131,7 +1128,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: LvsColors.teal.withValues(alpha:0.15),
+                  color: LvsColors.teal.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.menu_book_outlined, color: LvsColors.teal, size: 24),
@@ -1224,13 +1221,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     if (ble.state != BleState.connected) return const SizedBox.shrink();
 
     return CardGlass(
-      borderColor: _shakeMode ? LvsColors.pink.withValues(alpha:0.3) : null,
+      borderColor: _shakeMode ? LvsColors.pink.withOpacity(0.3) : null,
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _shakeMode ? LvsColors.pink.withValues(alpha:0.1) : LvsColors.bgCardH,
+              color: _shakeMode ? LvsColors.pink.withOpacity(0.1) : LvsColors.bgCardH,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(Icons.vibration, color: _shakeMode ? LvsColors.pink : LvsColors.text3),
@@ -1250,7 +1247,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           Switch(
             value: _shakeMode,
             onChanged: (v) => _toggleShake(ble),
-            activeTrackColor: LvsColors.pink.withValues(alpha: 0.2),
+            activeTrackColor: LvsColors.pink.withOpacity(0.2),
             activeThumbColor: LvsColors.pink,
           ),
         ],
@@ -1328,7 +1325,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DebugScreen())),
       child: CardGlass(
-        borderColor: LvsColors.amber.withValues(alpha:0.2),
+        borderColor: LvsColors.amber.withOpacity(0.2),
         padding: const EdgeInsets.all(16),
         child: const Row(
           children: [
@@ -1384,7 +1381,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             gradient: LinearGradient(
               colors: [
                 LvsColors.bgCard,
-                LvsColors.violet.withValues(alpha:0.15),
+                LvsColors.violet.withOpacity(0.15),
               ],
             ),
           ),
@@ -1393,7 +1390,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               Container(
                 width: 50, height: 50,
                 decoration: BoxDecoration(
-                  color: LvsColors.violet.withValues(alpha:0.2),
+                  color: LvsColors.violet.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.shopping_bag_outlined, color: LvsColors.violet, size: 28),
@@ -1434,7 +1431,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             gradient: LinearGradient(
               colors: [
                 LvsColors.bgCard,
-                LvsColors.pink.withValues(alpha:0.1),
+                LvsColors.pink.withOpacity(0.1),
               ],
             ),
           ),
@@ -1443,9 +1440,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               Container(
                 width: 65, height: 65,
                 decoration: BoxDecoration(
-                  color: LvsColors.pink.withValues(alpha: 0.15),
+                  color: LvsColors.pink.withOpacity(0.15),
                   shape: BoxShape.circle,
-                  border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2)),
+                  border: Border.all(color: LvsColors.pink.withOpacity(0.2)),
                 ),
                 child: Image.asset(
                   'assets/icons/icon_remote_session.png', 
@@ -1495,9 +1492,9 @@ class _BleStateBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha:0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha:0.3)),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1531,8 +1528,8 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
       : _dot(1.0);
   }
   Widget _dot(double opacity) => Container(
-    width: 6, height: 6, decoration: BoxDecoration(color: widget.color.withValues(alpha:opacity), shape: BoxShape.circle,
-      boxShadow: [BoxShadow(color: widget.color.withValues(alpha:opacity * 0.5), blurRadius: 4)]),
+    width: 6, height: 6, decoration: BoxDecoration(color: widget.color.withOpacity(opacity), shape: BoxShape.circle,
+      boxShadow: [BoxShadow(color: widget.color.withOpacity(opacity * 0.5), blurRadius: 4)]),
   );
 }
 
@@ -1560,23 +1557,20 @@ class _NeonPresetBtn extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: active ? color.withValues(alpha: 0.1) : Colors.transparent,
+          color: active ? color.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: active ? color : color.withValues(alpha: 0.3), width: 1.5),
-          boxShadow: active ? [BoxShadow(color: color.withValues(alpha: 0.15), blurRadius: 12)] : [],
+          border: Border.all(color: active ? color : color.withOpacity(0.3), width: 1.5),
+          boxShadow: active ? [BoxShadow(color: color.withOpacity(0.15), blurRadius: 12)] : [],
         ),
         child: Column(
           children: [
-            Icon(icon, color: active ? color : color.withValues(alpha: 0.6), size: 16),
+            Icon(icon, color: active ? color : color.withOpacity(0.6), size: 16),
             const SizedBox(height: 6),
             Text(label, style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1,
               color: active ? Colors.white : LvsColors.text1
             )),
-            const SizedBox(height: 2),
-            Text('Inter\n16px', textAlign: TextAlign.center, style: TextStyle(
-              fontSize: 9, color: color.withValues(alpha: active ? 0.7 : 0.4)
-            )),
+
           ],
         ),
       ),
@@ -1612,10 +1606,10 @@ class _PatternGrid extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             decoration: BoxDecoration(
-              color: isActive ? item.color.withValues(alpha:0.15) : LvsColors.bgCardH,
+              color: isActive ? item.color.withOpacity(0.15) : LvsColors.bgCardH,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: isActive ? item.color : LvsColors.borderH, width: isActive ? 2 : 1),
-              boxShadow: isActive ? [BoxShadow(color: item.color.withValues(alpha:0.3), blurRadius: 16)] : [],
+              boxShadow: isActive ? [BoxShadow(color: item.color.withOpacity(0.3), blurRadius: 16)] : [],
             ),
             padding: const EdgeInsets.all(8),
             child: Column(
@@ -1713,7 +1707,7 @@ class _ModeSwitcher extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? LvsColors.pink.withValues(alpha:0.15) : Colors.transparent,
+          color: isActive ? LvsColors.pink.withOpacity(0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(label, style: TextStyle(
@@ -1792,13 +1786,13 @@ class _PatternBtnV2 extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: active ? color.withValues(alpha:0.15) : LvsColors.bgCardH.withValues(alpha:0.5),
+          color: active ? color.withOpacity(0.15) : LvsColors.bgCardH.withOpacity(0.5),
           border: Border.all(
             color: active ? color : LvsColors.borderH,
             width: active ? 1.5 : 1,
           ),
           boxShadow: active ? [
-            BoxShadow(color: color.withValues(alpha:0.2), blurRadius: 8, spreadRadius: 1)
+            BoxShadow(color: color.withOpacity(0.2), blurRadius: 8, spreadRadius: 1)
           ] : null,
         ),
         child: Column(
@@ -1881,9 +1875,9 @@ class _LvsCanvasState extends State<_LvsCanvas> {
             height: 200,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha:0.3),
+              color: Colors.black.withOpacity(0.3),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: LvsColors.pink.withValues(alpha:0.2), width: 1.5),
+              border: Border.all(color: LvsColors.pink.withOpacity(0.2), width: 1.5),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
@@ -1911,7 +1905,7 @@ class _CanvasPainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
-          colors: [color.withValues(alpha:0.1), color.withValues(alpha:0.5)],
+          colors: [color.withOpacity(0.1), color.withOpacity(0.5)],
         ).createShader(Rect.fromLTRB(0, 0, size.width, size.height));
 
       final h = (intensity / 100) * size.height;

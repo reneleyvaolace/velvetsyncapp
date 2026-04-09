@@ -145,7 +145,7 @@ class _ModesTabState extends ConsumerState<ModesTab> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: LvsColors.pink.withValues(alpha:0.1), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: LvsColors.pink.withOpacity(0.1), shape: BoxShape.circle),
             child: Image.asset('assets/icons/icon_shake_mode.png', width: 36, height: 36),
           ),
           const SizedBox(width: 16),
@@ -182,7 +182,7 @@ class _GameTile extends StatelessWidget {
       onTap: onTap,
       child: CardGlass(
         padding: EdgeInsets.zero,
-        borderColor: color.withValues(alpha:0.2),
+        borderColor: color.withOpacity(0.2),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

@@ -67,7 +67,7 @@ class NetworkTab extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [LvsColors.bgCard, LvsColors.pink.withValues(alpha:0.1)],
+              colors: [LvsColors.bgCard, LvsColors.pink.withOpacity(0.1)],
               begin: Alignment.topLeft, end: Alignment.bottomRight,
             ),
           ),
@@ -111,7 +111,7 @@ class NetworkTab extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [LvsColors.bgCard, LvsColors.violet.withValues(alpha:0.1)],
+              colors: [LvsColors.bgCard, LvsColors.violet.withOpacity(0.1)],
               begin: Alignment.topLeft, end: Alignment.bottomRight,
             ),
           ),

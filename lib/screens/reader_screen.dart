@@ -212,9 +212,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.25),
+                    color: Colors.black.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: LvsColors.pink.withValues(alpha: 0.15)),
+                    border: Border.all(color: LvsColors.pink.withOpacity(0.15)),
                   ),
                   child: TextField(
                     controller: _textController,
@@ -224,7 +224,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                     style: const TextStyle(color: LvsColors.text2, fontSize: 13, height: 1.6),
                     decoration: InputDecoration(
                       hintText: 'Escribe tu historia aquí...\nLas palabras hápticas se resaltarán automáticamente.',
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.15), fontSize: 12),
+                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.15), fontSize: 12),
                       contentPadding: const EdgeInsets.all(16),
                       border: InputBorder.none,
                     ),
@@ -271,10 +271,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.18),
+                    color: color.withOpacity(0.18),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: color.withValues(alpha: 0.7)),
-                    boxShadow: [BoxShadow(color: color.withValues(alpha: 0.25), blurRadius: 6)],
+                    border: Border.all(color: color.withOpacity(0.7)),
+                    boxShadow: [BoxShadow(color: color.withOpacity(0.25), blurRadius: 6)],
                   ),
                   child: Text(
                     token,
@@ -282,7 +282,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                       color: color,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      shadows: [Shadow(color: color.withValues(alpha: 0.5), blurRadius: 4)],
+                      shadows: [Shadow(color: color.withOpacity(0.5), blurRadius: 4)],
                     ),
                   ),
                 ),
@@ -314,9 +314,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
+        border: Border.all(color: color.withOpacity(0.4)),
       ),
       child: Text(label, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
     );

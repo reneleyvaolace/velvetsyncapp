@@ -73,7 +73,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
         );
       },
       child: CardGlass(
-        borderColor: LvsColors.violet.withValues(alpha:0.3),
+        borderColor: LvsColors.violet.withOpacity(0.3),
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
@@ -81,9 +81,9 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: LvsColors.violet.withValues(alpha:0.15),
+                color: LvsColors.violet.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: LvsColors.violet.withValues(alpha:0.3)),
+                border: Border.all(color: LvsColors.violet.withOpacity(0.3)),
               ),
               child: const Icon(Icons.language, color: LvsColors.violet, size: 24),
             ),
@@ -143,7 +143,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DebugScreen())),
       child: CardGlass(
-        borderColor: LvsColors.amber.withValues(alpha:0.2),
+        borderColor: LvsColors.amber.withOpacity(0.2),
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
@@ -279,7 +279,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                 height: 36,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: LvsColors.pink.withValues(alpha: 0.15),
+                  color: LvsColors.pink.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Image.asset(

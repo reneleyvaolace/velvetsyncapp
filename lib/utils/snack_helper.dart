@@ -38,7 +38,7 @@ class LvsSnack {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: (ok ? LvsColors.teal : LvsColors.red).withValues(alpha: 0.35),
+                  color: (ok ? LvsColors.teal : LvsColors.red).withOpacity(0.35),
                   blurRadius: 24,
                   offset: const Offset(0, 6),
                 ),

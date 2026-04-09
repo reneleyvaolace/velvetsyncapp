@@ -174,9 +174,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Container(
         decoration: BoxDecoration(
-          color: LvsColors.bgCard.withValues(alpha: 0.5),
+          color: LvsColors.bgCard.withOpacity(0.5),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2)),
+          border: Border.all(color: LvsColors.pink.withOpacity(0.2)),
         ),
         child: TextField(
           controller: _searchController,
@@ -184,7 +184,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
           onChanged: (val) => setState(() => _searchQuery = val),
           decoration: InputDecoration(
             hintText: 'Buscar por modelo o ID...',
-            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
             prefixIcon: const Icon(Icons.search, color: LvsColors.pink),
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
@@ -208,7 +208,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
       width: 60,
       height: 60,
       decoration: BoxDecoration(
-        color: LvsColors.pink.withValues(alpha:0.1),
+        color: LvsColors.pink.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
@@ -232,10 +232,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
             decoration: BoxDecoration(
               color: LvsColors.bgCard,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              border: Border.all(color: Colors.white.withOpacity(0.05)),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
+                    color: Colors.black.withOpacity(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5)),
               ],
@@ -248,7 +248,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                   Expanded(
                     child: Container(
                       width: double.infinity,
-                      color: Colors.white.withValues(alpha: 0.02),
+                      color: Colors.white.withOpacity(0.02),
                       child: toy.imageUrl.isNotEmpty
                           ? CachedNetworkImage(
                               imageUrl: toy.imageUrl,
@@ -282,7 +282,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 5, vertical: 2),
                               decoration: BoxDecoration(
-                                color: LvsColors.pink.withValues(alpha: 0.15),
+                                color: LvsColors.pink.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(5),
                               ),
                               child: Text(toy.id,
@@ -318,7 +318,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
+                  color: Colors.black.withOpacity(0.6),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.more_vert, color: Colors.white54, size: 16),
@@ -389,9 +389,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
+          color: color.withOpacity(0.08),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withValues(alpha: 0.2)),
+          border: Border.all(color: color.withOpacity(0.2)),
         ),
         child: Row(
           children: [
@@ -462,9 +462,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: LvsColors.amber.withValues(alpha: 0.1),
+                color: LvsColors.amber.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: LvsColors.amber.withValues(alpha: 0.3)),
+                border: Border.all(color: LvsColors.amber.withOpacity(0.3)),
               ),
               child: const Row(
                 children: [
@@ -500,9 +500,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
   Widget _formField(TextEditingController ctrl, String label, IconData icon) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.3),
+        color: Colors.black.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2)),
+        border: Border.all(color: LvsColors.pink.withOpacity(0.2)),
       ),
       child: TextField(
         controller: ctrl,
@@ -523,10 +523,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off, size: 64, color: Colors.white.withValues(alpha: 0.1)),
+          Icon(Icons.search_off, size: 64, color: Colors.white.withOpacity(0.1)),
           const SizedBox(height: 16),
           Text('No se encontraron resultados para "$_searchQuery"',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.3))),
+              style: TextStyle(color: Colors.white.withOpacity(0.3))),
           const SizedBox(height: 12),
           TextButton.icon(
             onPressed: () => _tabController.animateTo(1),
@@ -587,7 +587,7 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
             decoration: BoxDecoration(
               color: LvsColors.bgCard,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2)),
+              border: Border.all(color: LvsColors.pink.withOpacity(0.2)),
             ),
             child: const Row(
               children: [
@@ -614,7 +614,7 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
                   decoration: BoxDecoration(
                     color: LvsColors.bgCard,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: LvsColors.pink.withValues(alpha: 0.3)),
+                    border: Border.all(color: LvsColors.pink.withOpacity(0.3)),
                   ),
                   child: TextField(
                     controller: _keyController,
@@ -622,7 +622,7 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
                     textCapitalization: TextCapitalization.characters,
                     decoration: InputDecoration(
                       hintText: 'Ej: 8154',
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
+                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
                       prefixIcon: const Icon(Icons.vpn_key_rounded, color: LvsColors.pink, size: 18),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -639,7 +639,7 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(colors: [LvsColors.pink, LvsColors.violet]),
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: LvsColors.pink.withValues(alpha: 0.4), blurRadius: 12)],
+                    boxShadow: [BoxShadow(color: LvsColors.pink.withOpacity(0.4), blurRadius: 12)],
                   ),
                   child: const Icon(Icons.search_rounded, color: Colors.white),
                 ),
@@ -663,8 +663,8 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
       decoration: BoxDecoration(
         color: LvsColors.bgCard,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: LvsColors.teal.withValues(alpha: 0.4), width: 1.5),
-        boxShadow: [BoxShadow(color: LvsColors.teal.withValues(alpha: 0.15), blurRadius: 16)],
+        border: Border.all(color: LvsColors.teal.withOpacity(0.4), width: 1.5),
+        boxShadow: [BoxShadow(color: LvsColors.teal.withOpacity(0.15), blurRadius: 16)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -718,9 +718,9 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: LvsColors.red.withValues(alpha: 0.1),
+        color: LvsColors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: LvsColors.red.withValues(alpha: 0.3)),
+        border: Border.all(color: LvsColors.red.withOpacity(0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -836,7 +836,7 @@ class _QrScannerScreenState extends State<_QrScannerScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
+                  color: Colors.black.withOpacity(0.6),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(

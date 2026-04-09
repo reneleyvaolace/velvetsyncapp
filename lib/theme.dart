@@ -5,31 +5,34 @@
 
 import 'package:flutter/material.dart';
 
+// Nota: Fuente Outfit cargada desde assets/fonts/ (local)
+// para evitar descarga de red en arranque
+
 // ═══════════════════════════════════════════════════════════════
 // COLORES DE LA APLICACIÓN
 // ═══════════════════════════════════════════════════════════════
 
 class LvsColors {
-  // Colores principales
-  static const Color teal = Color(0xFF00FFC2);
-  static const Color pink = Color(0xFFFF1493);
-  static const Color red = Color(0xFFFF1493);
-  static const Color violet = Color(0xFF8B5CF6);
-  static const Color amber = Color(0xFFFFB800);
+  // Colores principales (Tokens de Directiva)
+  static const Color teal   = Color(0xFF00F5FF); // Electric Cyan (CH2)
+  static const Color pink   = Color(0xFFFF006E); // Vivid Raspberry (CH1)
+  static const Color violet = Color(0xFF8338EC); // Zomp/Purple (Gradient Target)
+  static const Color red    = Color(0xFFFF4D4D); // Neon Red (Emergency)
+  static const Color amber  = Color(0xFFFFB800); // Pulse Warning
   
   // Bordes
-  static const Color border = Color(0xFF2A2A4A);
-  static const Color borderH = Color(0xFF3A3A5A);
+  static const Color border  = Color(0xFF1E1E2A);
+  static const Color borderH = Color(0xFF2A2A3A);
   
-  // Colores de fondo
-  static const Color bg = Color(0xFF0A0A14);
-  static const Color bgCard = Color(0xFF1A1A2E);
-  static const Color bgCardH = Color(0xFF252542);
+  // Colores de fondo (Tokens de Directiva)
+  static const Color bg      = Color(0xFF0D0D12); // Deep Black / Dark Navy
+  static const Color bgCard  = Color(0xFF161621); // Glass Card Overlay
+  static const Color bgCardH = Color(0xFF1C1C29); // Glass Card Hover
   
   // Colores de texto
-  static const Color text1 = Color(0xFFEEEEEE);
-  static const Color text2 = Color(0xFFCCCCCC);
-  static const Color text3 = Color(0xFF888899);
+  static const Color text1 = Color(0xFFFFFFFF); // Pure White
+  static const Color text2 = Color(0xFFD1D1D1); // Light Grey
+  static const Color text3 = Color(0xFF8E8E9F); // Muted Blueish Grey
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -98,15 +101,15 @@ class CardGlass extends StatelessWidget {
       height: height,
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color ?? LvsColors.bgCard.withValues(alpha:0.5),
+        color: color ?? LvsColors.bgCard.withOpacity(0.5),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: borderColor ?? Colors.white.withValues(alpha:0.05),
+          color: borderColor ?? Colors.white.withOpacity(0.05),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.2),
+            color: Colors.black.withOpacity(0.2),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),

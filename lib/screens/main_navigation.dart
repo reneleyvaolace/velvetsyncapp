@@ -42,7 +42,7 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.white.withValues(alpha:0.05), width: 1)),
+          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05), width: 1)),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
