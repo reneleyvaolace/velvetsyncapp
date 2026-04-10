@@ -20,15 +20,15 @@ const List<_PatternDef> _kIntensityDefs = [
 
 // ── Modos de Ritmo (Shock/Vibración 1-9) ───────────────────────────
 const List<_PatternDef> _kRhythmDefs = [
-  _PatternDef(label: 'MODO 1',  asset: 'assets/icons/icon_heart.png',          fallback: Icons.favorite),
-  _PatternDef(label: 'MODO 2',  asset: 'assets/icons/icon_pulse_waves.png',    fallback: Icons.water),
-  _PatternDef(label: 'MODO 3',  asset: 'assets/icons/icon_vibrator.png',       fallback: Icons.graphic_eq),
-  _PatternDef(label: 'MODO 4',  asset: 'assets/icons/icon_custom_pattern.png', fallback: Icons.flags),
-  _PatternDef(label: 'MODO 5',  asset: 'assets/icons/icon_clitoral.png',       fallback: Icons.waves),
-  _PatternDef(label: 'MODO 6',  asset: 'assets/icons/icon_sync_music.png',     fallback: Icons.people),
-  _PatternDef(label: 'MODO 7',  asset: 'assets/icons/icon_bullet.png',         fallback: Icons.favorite_border),
-  _PatternDef(label: 'MODO 8',  asset: 'assets/icons/icon_motion_control.png', fallback: Icons.sunny),
-  _PatternDef(label: 'MODO 9',  asset: 'assets/icons/icon_cool_down.png',      fallback: Icons.cyclone),
+  _PatternDef(label: 'PULSO',   asset: 'assets/icons/icon_sync_music.png',     fallback: Icons.favorite),
+  _PatternDef(label: 'OLA',     asset: 'assets/icons/icon_pulse_waves.png',    fallback: Icons.water),
+  _PatternDef(label: 'RAMPA',   asset: 'assets/icons/icon_vibrator.png',       fallback: Icons.graphic_eq),
+  _PatternDef(label: 'FLIP',    asset: 'assets/icons/icon_dual_motor.png',     fallback: Icons.gesture),
+  _PatternDef(label: 'STORM',   asset: 'assets/icons/icon_cool_down.png',      fallback: Icons.cyclone),
+  _PatternDef(label: 'CHAOS',   asset: 'assets/icons/icon_custom_pattern.png', fallback: Icons.crisis_alert),
+  _PatternDef(label: 'BALA',    asset: 'assets/icons/icon_bullet.png',         fallback: Icons.adjust),
+  _PatternDef(label: 'CONTROL', asset: 'assets/icons/icon_motion_control.png', fallback: Icons.tune),
+  _PatternDef(label: 'HEART',   asset: 'assets/icons/icon_heart.png',          fallback: Icons.favorite),
 ];
 
 // ── Grilla de Selección de Modos ───────────────────────────────────

@@ -1180,12 +1180,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           const SizedBox(height: 24),
           _PatternGrid(
             items: [
-              _PatternItem('PULSO', LvsPattern.pat1, LvsColors.pink),
-              _PatternItem('OLA',   LvsPattern.pat2, LvsColors.violet),
-              _PatternItem('RAMPA', LvsPattern.pat3, LvsColors.teal),
-              _PatternItem('FLIP',  LvsPattern.pat4, LvsColors.amber),
-              _PatternItem('STORM', LvsPattern.pat5, LvsColors.teal),
-              _PatternItem('CHAOS', LvsPattern.pat6, LvsColors.red),
+              _PatternItem('PULSO', LvsPattern.pat1, LvsColors.pink, 'assets/icons/icon_sync_music.png'),
+              _PatternItem('OLA',   LvsPattern.pat2, LvsColors.violet, 'assets/icons/icon_pulse_waves.png'),
+              _PatternItem('RAMPA', LvsPattern.pat3, LvsColors.teal, 'assets/icons/icon_motion_control.png'),
+              _PatternItem('FLIP',  LvsPattern.pat4, LvsColors.amber, 'assets/icons/icon_dual_motor.png'),
+              _PatternItem('STORM', LvsPattern.pat5, LvsColors.teal, 'assets/icons/icon_cool_down.png'),
+              _PatternItem('CHAOS', LvsPattern.pat6, LvsColors.red, 'assets/icons/icon_custom_pattern.png'),
             ],
             active: ble.activePattern,
             enabled: ble.state == BleState.connected && !_shakeMode,
@@ -1615,10 +1615,19 @@ class _PatternGrid extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  isActive ? Icons.graphic_eq : Icons.noise_control_off,
-                  color: isActive ? item.color : LvsColors.text3,
-                  size: 26,
+                SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: Image.asset(
+                    item.asset,
+                    color: isActive ? item.color : LvsColors.text3,
+                    colorBlendMode: BlendMode.srcIn,
+                    errorBuilder: (_, __, ___) => Icon(
+                      isActive ? Icons.graphic_eq : Icons.noise_control_off,
+                      color: isActive ? item.color : LvsColors.text3,
+                      size: 26,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -1644,7 +1653,8 @@ class _PatternItem {
   final String label;
   final LvsPattern pattern;
   final Color color;
-  _PatternItem(this.label, this.pattern, this.color);
+  final String asset;
+  _PatternItem(this.label, this.pattern, this.color, this.asset);
 }
 
 class _LogRow extends StatelessWidget {
@@ -1726,16 +1736,16 @@ class _PatternSelectorRow extends StatelessWidget {
   const _PatternSelectorRow({this.activePattern, required this.color, required this.onSelect});
 
   static const Map<int, Map<String, dynamic>> _meta = {
-    0: {'icon': Icons.tune, 'label': 'MANUAL'},
-    1: {'icon': Icons.keyboard_double_arrow_up, 'label': 'SUAVE'},
-    2: {'icon': Icons.bolt, 'label': 'MEDIO'},
-    3: {'icon': Icons.rocket_launch, 'label': 'FUERTE'},
-    4: {'icon': Icons.waves, 'label': 'OLA'},
-    5: {'icon': Icons.graphic_eq, 'label': 'PULSO'},
-    6: {'icon': Icons.trending_up, 'label': 'RAMPA'},
-    7: {'icon': Icons.favorite, 'label': 'LATIDO'},
-    8: {'icon': Icons.flash_on, 'label': 'CAOS'},
-    9: {'icon': Icons.cyclone, 'label': 'TORNADO'},
+    0: {'asset': 'assets/icons/icon_motion_control.png', 'label': 'MANUAL'},
+    1: {'asset': 'assets/icons/icon_cool_down.png',      'label': 'SUAVE'},
+    2: {'asset': 'assets/icons/icon_heart.png',          'label': 'MEDIO'},
+    3: {'asset': 'assets/icons/icon_thrust.png',         'label': 'FUERTE'},
+    4: {'asset': 'assets/icons/icon_pulse_waves.png',    'label': 'OLA'},
+    5: {'asset': 'assets/icons/icon_sync_music.png',     'label': 'PULSO'},
+    6: {'asset': 'assets/icons/icon_motion_control.png', 'label': 'RAMPA'},
+    7: {'asset': 'assets/icons/icon_heart.png',          'label': 'LATIDO'},
+    8: {'asset': 'assets/icons/icon_custom_pattern.png', 'label': 'CAOS'},
+    9: {'asset': 'assets/icons/icon_dual_motor.png',     'label': 'TORNADO'},
   };
 
   @override
@@ -1749,7 +1759,7 @@ class _PatternSelectorRow extends StatelessWidget {
         children: [
           for (int i = 0; i <= 9; i++)
             _PatternBtnV2(
-              icon: _meta[i]!['icon'],
+              asset: _meta[i]!['asset'],
               label: _meta[i]!['label'],
               active: (i == 0) ? (activePattern == null) : (activePattern == i),
               color: color,
@@ -1762,14 +1772,14 @@ class _PatternSelectorRow extends StatelessWidget {
 }
 
 class _PatternBtnV2 extends StatelessWidget {
-  final IconData icon;
+  final String asset;
   final String label;
   final bool active;
   final Color color;
   final VoidCallback onTap;
 
   const _PatternBtnV2({
-    required this.icon,
+    required this.asset,
     required this.label,
     required this.active,
     required this.color,
@@ -1797,7 +1807,20 @@ class _PatternBtnV2 extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, color: active ? color : LvsColors.text3, size: 20),
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: Image.asset(
+                asset,
+                color: active ? color : LvsColors.text3,
+                colorBlendMode: BlendMode.srcIn,
+                errorBuilder: (_, __, ___) => Icon(
+                  Icons.gesture,
+                  color: active ? color : LvsColors.text3,
+                  size: 20,
+                ),
+              ),
+            ),
             const SizedBox(height: 4),
             Text(
               label,
