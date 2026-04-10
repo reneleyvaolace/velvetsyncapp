@@ -26,5 +26,12 @@ Para evitar el uso de iconos genéricos de Material Design, se deben utilizar lo
 3. **Fallback:** Siempre incluir un `errorBuilder` con un icono de Material equivalente para evitar espacios vacíos si el activo falla.
 4. **Haptics:** Cada interacción con un selector de modo debe disparar `HapticFeedback.selectionClick()`.
 
+### Lógica de Interacción (Toggle)
+Para mejorar la usabilidad y reducir la dependencia del botón de parada de emergencia:
+1. **Comportamiento Toggle:** Si un usuario presiona un modo que ya está activo, el sistema debe interpretar esto como una orden de "Apagar" y detener todos los motores.
+2. **Visualización:** El estado activo debe ser claramente distinguible mediante un cambio de color de fondo (opacidad 0.15) y sombras neón.
+3. **Respuesta Inmediata:** La detención debe ocurrir mediante el método `stopAllMotors()` del servicio BLE, que envía comandos de parada a ambos canales de forma secuencial.
+
 ### Historial de Aprendizaje
 - **2026-04-10:** Se detectó que la pantalla principal usaba iconos genéricos `noise_control_off`. Se migró a un sistema basado en `Image.asset` con mapeo determinista por cada patrón rítmico.
+- **2026-04-10:** Implementada lógica de "Toggle-to-Stop" en `BleService`. Ahora, al presionar un modo activo, el dispositivo se detiene automáticamente, eliminando la fricción de tener que buscar el botón de emergencia para paradas rutinarias.

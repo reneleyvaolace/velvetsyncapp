@@ -549,6 +549,7 @@ class BleService extends ChangeNotifier {
     _stopSequencer();
     activeSpeed = null; activePattern = null; activeIntensity = null;
     activeIntensityCh1 = null; activeIntensityCh2 = null;
+    activePatternCh1 = null; activePatternCh2 = null;
     try {
       _isWriting = false;   // Liberar mutex por si está bloqueado
       _lastPacket = null;
@@ -557,11 +558,27 @@ class BleService extends ChangeNotifier {
       }
       await writeCommand(LvsCommands.cmdStop, label: 'EMERGENCY_STOP', silent: false);
       await Future.delayed(const Duration(milliseconds: 120));
-      _lastPacket = null;
       await writeCommand(LvsCommands.ch1Stop, label: 'EMERGENCY_STOP_CH1', silent: false);
     } catch (_) {}
     _log('🛑 PARADA DE EMERGENCIA', 'error');
-    Future.microtask(() => notifyListeners());
+    notifyListeners();
+  }
+
+  // Detiene todos los motores sin afectar el estado del servicio BLE
+  Future<void> stopAllMotors() async {
+    _stopBurst();
+    _stopSequencer();
+    activeSpeed = null; activePattern = null; activeIntensity = null;
+    activeIntensityCh1 = null; activeIntensityCh2 = null;
+    activePatternCh1 = null; activePatternCh2 = null;
+    try {
+      _lastPacket = null;
+      await writeCommand(LvsCommands.cmdStop, label: 'STOP_MOTORS');
+      await Future.delayed(const Duration(milliseconds: 120));
+      await writeCommand(LvsCommands.ch1Stop, label: 'STOP_MOTORS_CH1');
+    } catch (_) {}
+    _log('⏹️ MOTORES DETENIDOS', 'info');
+    notifyListeners();
   }
 
   // NUEVO: Sincronización Multimedia (Dual Motor 8154)
@@ -708,7 +725,10 @@ class BleService extends ChangeNotifier {
   }
 
   Future<void> selectPattern(LvsPattern pattern) async {
-    if (activePattern == pattern) return;
+    if (activePattern == pattern) {
+      await stopAllMotors();
+      return;
+    }
     _stopSequencer();
     activePattern = pattern;
     activeSpeed = null;
@@ -770,6 +790,10 @@ class BleService extends ChangeNotifier {
   }
 
   Future<void> setPatternChannel2(int p) async {
+    if (activePatternCh2 == p && p != 0) {
+      await stopAllMotors();
+      return;
+    }
     _stopSequencer();
     activePatternCh2 = (p == 0) ? null : p;
     activeIntensityCh2 = null;
@@ -783,6 +807,10 @@ class BleService extends ChangeNotifier {
 
   Future<void> setPatternChannel1(int p) async {
     if (isCooldownActive) return;
+    if (activePatternCh1 == p && p != 0) {
+      await stopAllMotors();
+      return;
+    }
     _stopSequencer();
     activePatternCh1 = (p == 0) ? null : p;
     activeIntensityCh1 = null; activeIntensity = null;
