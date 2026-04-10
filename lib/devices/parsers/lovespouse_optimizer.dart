@@ -235,7 +235,7 @@ class LovespouseOptimizer {
 
     // Crear directorio de salida
     final outputDirPath = Directory(outputDir);
-    if (!await outputDirPath.exists()) {
+    if (!outputDirPath.existsSync()) {
       await outputDirPath.create(recursive: true);
     }
 
@@ -244,7 +244,7 @@ class LovespouseOptimizer {
 
     for (final fileName in files) {
       final inputFile = File('$inputDir/$fileName');
-      if (!await inputFile.exists()) continue;
+      if (!inputFile.existsSync()) continue;
 
       final content = await inputFile.readAsString();
       final optimized = optimizeFile(content);
@@ -254,8 +254,8 @@ class LovespouseOptimizer {
       await outputFile.writeAsString(optimized);
 
       // Calcular tamaños
-      final originalSize = await inputFile.length();
-      final optimizedSize = await outputFile.length();
+      final originalSize = inputFile.lengthSync();
+      final optimizedSize = outputFile.lengthSync();
 
       totalOriginalSize += originalSize;
       totalOptimizedSize += optimizedSize;

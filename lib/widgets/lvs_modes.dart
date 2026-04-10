@@ -2,67 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 
-// ── Canvas de Dibujo Táctil ──────────────────────────────────────
-class LvsCanvas extends StatelessWidget {
-  final BleService ble;
-  const LvsCanvas({super.key, required this.ble});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: LvsColors.pink.withOpacity(0.25)),
-      ),
-      child: const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.gesture, color: LvsColors.text3, size: 32),
-            SizedBox(height: 8),
-            Text('Desliza para controlar', style: TextStyle(color: LvsColors.text3, fontSize: 11)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Definición de Patrones con íconos propios de la app ──────────
+// ── Definición de Patrones ──────────────────────────────────────────
 class _PatternDef {
   final String label;
-  final String asset;       // PNG propio de la app
-  final IconData fallback;  // Material icon de respaldo
+  final String asset;       
+  final IconData fallback;  
 
   const _PatternDef({required this.label, required this.asset, required this.fallback});
 }
 
-// 10 patrones: índice 0 = MANUAL (stop), 1-9 = patrones BLE
-const List<_PatternDef> kPatternDefs = [
-  _PatternDef(label: 'MANUAL',   asset: 'assets/icons/icon_dual_motor.png',   fallback: Icons.tune),
-  _PatternDef(label: 'SUAVE',    asset: 'assets/icons/icon_vibrator.png',     fallback: Icons.keyboard_arrow_up),
-  _PatternDef(label: 'MEDIO',    asset: 'assets/icons/icon_intensity.png',    fallback: Icons.bolt),
-  _PatternDef(label: 'FUERTE',   asset: 'assets/icons/icon_thrust.png',       fallback: Icons.rocket_launch),
-  _PatternDef(label: 'OLA',      asset: 'assets/icons/icon_pulse_waves.png',  fallback: Icons.water),
-  _PatternDef(label: 'PULSO',    asset: 'assets/icons/icon_sync_music.png',   fallback: Icons.graphic_eq),
-  _PatternDef(label: 'RAMPA',    asset: 'assets/icons/icon_motion_control.png', fallback: Icons.trending_up),
-  _PatternDef(label: 'LATIDO',   asset: 'assets/icons/icon_heart.png',        fallback: Icons.favorite),
-  _PatternDef(label: 'CAOS',     asset: 'assets/icons/icon_custom_pattern.png', fallback: Icons.flash_on),
-  _PatternDef(label: 'TORNADO',  asset: 'assets/icons/icon_cool_down.png',    fallback: Icons.cyclone),
+// ── Modos de Intensidad (Para el motor de rotación/constante) ────────
+const List<_PatternDef> _kIntensityDefs = [
+  _PatternDef(label: 'BAJO',   asset: 'assets/icons/icon_intensity.png',       fallback: Icons.keyboard_arrow_up),
+  _PatternDef(label: 'MEDIO',  asset: 'assets/icons/icon_thrust.png',          fallback: Icons.bolt),
+  _PatternDef(label: 'FUERTE', asset: 'assets/icons/icon_dual_motor.png',      fallback: Icons.rocket_launch),
 ];
 
-// ── Selector de Patrones en Grid con íconos PNG de la app ────────
-class PatternSelectorRow extends StatelessWidget {
-  final int activePattern;
+// ── Modos de Ritmo (Shock/Vibración 1-9) ───────────────────────────
+const List<_PatternDef> _kRhythmDefs = [
+  _PatternDef(label: 'MODO 1',  asset: 'assets/icons/icon_heart.png',          fallback: Icons.favorite),
+  _PatternDef(label: 'MODO 2',  asset: 'assets/icons/icon_pulse_waves.png',    fallback: Icons.water),
+  _PatternDef(label: 'MODO 3',  asset: 'assets/icons/icon_vibrator.png',       fallback: Icons.graphic_eq),
+  _PatternDef(label: 'MODO 4',  asset: 'assets/icons/icon_custom_pattern.png', fallback: Icons.flags),
+  _PatternDef(label: 'MODO 5',  asset: 'assets/icons/icon_clitoral.png',       fallback: Icons.waves),
+  _PatternDef(label: 'MODO 6',  asset: 'assets/icons/icon_sync_music.png',     fallback: Icons.people),
+  _PatternDef(label: 'MODO 7',  asset: 'assets/icons/icon_bullet.png',         fallback: Icons.favorite_border),
+  _PatternDef(label: 'MODO 8',  asset: 'assets/icons/icon_motion_control.png', fallback: Icons.sunny),
+  _PatternDef(label: 'MODO 9',  asset: 'assets/icons/icon_cool_down.png',      fallback: Icons.cyclone),
+];
+
+// ── Grilla de Selección de Modos ───────────────────────────────────
+class ModeSelectorGrid extends StatelessWidget {
+  final int? activeIndex;
+  final List<_PatternDef> defs;
+  final int offset; // Para mapear el índice al comando correcto
   final Color color;
   final Function(int) onSelect;
+  final int crossAxisCount;
 
-  const PatternSelectorRow({
+  const ModeSelectorGrid({
     super.key,
-    required this.activePattern,
-    required this.color,
+    required this.activeIndex,
+    required this.defs,
     required this.onSelect,
+    this.offset = 0,
+    this.color = LvsColors.violet,
+    this.crossAxisCount = 3,
   });
 
   @override
@@ -70,17 +55,47 @@ class PatternSelectorRow extends StatelessWidget {
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 3,
+      crossAxisCount: crossAxisCount,
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
       childAspectRatio: 1.1,
-      children: List.generate(kPatternDefs.length, (index) => _PatternTile(
-        index: index,
-        def: kPatternDefs[index],
-        isActive: activePattern == index,
-        color: color,
-        onTap: () => onSelect(index),
-      )),
+      children: List.generate(defs.length, (index) {
+        final realIndex = index + offset;
+        return _PatternTile(
+          index: realIndex,
+          def: defs[index],
+          isActive: activeIndex == realIndex,
+          color: color,
+          onTap: () => onSelect(realIndex),
+        );
+      }),
+    );
+  }
+}
+
+// ── Canvas de Dibujo Táctil ──────────────────────────────────────
+class LvsCanvas extends StatelessWidget {
+  final BleService ble;
+  const LvsCanvas({super.key, required this.ble});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 180,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: LvsColors.pink.withValues(alpha: 0.25)),
+      ),
+      child: const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.gesture, color: LvsColors.text3, size: 32),
+            SizedBox(height: 8),
+            Text('Desliza para controlar intensidad', style: TextStyle(color: LvsColors.text3, fontSize: 11)),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -108,20 +123,16 @@ class _PatternTile extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: isActive ? color.withOpacity(0.18) : Colors.white.withOpacity(0.04),
+          color: isActive ? color.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isActive ? color : Colors.white.withOpacity(0.08),
+            color: isActive ? color : Colors.white.withValues(alpha: 0.08),
             width: isActive ? 1.5 : 1,
           ),
-          boxShadow: isActive
-              ? [BoxShadow(color: color.withOpacity(0.30), blurRadius: 14, spreadRadius: 0)]
-              : [],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Ícono PNG de la app con fallback a Material icon
             _AppIcon(asset: def.asset, fallback: def.fallback, color: color, active: isActive),
             const SizedBox(height: 6),
             Text(
@@ -141,7 +152,6 @@ class _PatternTile extends StatelessWidget {
   }
 }
 
-// ── Widget de ícono PNG con ColorFilter dinámico ─────────────────
 class _AppIcon extends StatelessWidget {
   final String asset;
   final IconData fallback;
@@ -153,21 +163,20 @@ class _AppIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 34,
-      height: 34,
+      width: 32,
+      height: 32,
       child: Image.asset(
         asset,
-        width: 34,
-        height: 34,
+        width: 32,
+        height: 32,
         color: active ? color : LvsColors.text3,
         colorBlendMode: BlendMode.srcIn,
-        errorBuilder: (_, __, ___) => Icon(fallback, color: active ? color : LvsColors.text3, size: 28),
+        errorBuilder: (_, __, ___) => Icon(fallback, color: active ? color : LvsColors.text3, size: 24),
       ),
     );
   }
 }
 
-// ── Etiqueta de sección ──────────────────────────────────────────
 class SectionLabel extends StatelessWidget {
   final String text;
   const SectionLabel(this.text, {super.key});
@@ -184,3 +193,7 @@ class SectionLabel extends StatelessWidget {
     );
   }
 }
+
+// Exportar listas para uso externo
+const kIntensityModes = _kIntensityDefs;
+const kRhythmModes = _kRhythmDefs;

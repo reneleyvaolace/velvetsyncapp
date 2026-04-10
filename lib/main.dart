@@ -127,23 +127,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     } catch (e) {
       lvsError('Error silencioso en inicialización: $e', tag: 'APP');
-    } finally {
-      lvsLog('App inicializada correctamente o por timeout', tag: 'APP');
+    }
+    
+    lvsLog('App inicializada correctamente o por timeout', tag: 'APP');
       
-      if (mounted) {
-        // Tiempo mínimo de Splash para ver el logo
-        await Future.delayed(const Duration(seconds: 2));
-        
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      }
+    if (mounted) {
+      // Tiempo mínimo de Splash para ver el logo
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
+      
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          transitionDuration: const Duration(milliseconds: 800),
+        ),
+      );
     }
   }
 
@@ -154,19 +155,37 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.sync, size: 80, color: Color(0xFFE91E63)),
-            const SizedBox(height: 24),
-            Text(
+            // ── Logo Central ──────────────────────────────────────────
+            Image.asset(
+              'assets/images/logo_neon.png',
+              height: 180,
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.sync,
+                size: 80,
+                color: Color(0xFFE91E63),
+              ),
+            ),
+            const SizedBox(height: 32),
+            // ── Nombre de la App ──────────────────────────────────────
+            const Text(
               'VELVET SYNC',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Outfit',
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 4,
               ),
             ),
-            const SizedBox(height: 8),
-            const CircularProgressIndicator(),
+            const SizedBox(height: 40),
+            // ── Indicador de Carga ────────────────────────────────────
+            const SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                color: Color(0xFFE91E63),
+              ),
+            ),
           ],
         ),
       ),

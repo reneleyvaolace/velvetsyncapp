@@ -47,7 +47,7 @@ class _LocalGameScreenState extends ConsumerState<LocalGameScreen> {
               top: -50, right: -50,
               child: Container(
                 width: 300, height: 300,
-                decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [LvsColors.pink.withOpacity(0.05), Colors.transparent])),
+                decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [LvsColors.pink.withValues(alpha: 0.05), Colors.transparent])),
               ),
             ),
             
@@ -248,7 +248,7 @@ class FruitGame extends FlameGame with HasCollisionDetection {
             child: ComputedParticle(
               renderer: (canvas, particle) {
                 final paint = Paint()
-                  ..color = curColor.withOpacity(1.0 - particle.progress)
+                  ..color = curColor.withValues(alpha: 1.0 - particle.progress)
                   ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
                 canvas.drawCircle(Offset.zero, 4.0 + _rand.nextDouble() * 3, paint);
               },
@@ -299,7 +299,7 @@ class FruitGame extends FlameGame with HasCollisionDetection {
 
 // ── Objeto Fruta ─────────────────────────────────────────────────────────
 
-class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGame>, DragCallbacks {
+class Fruit extends CircleComponent with CollisionCallbacks, HasGameReference<FruitGame>, DragCallbacks {
   final String id;
   final int level;
   Vector2 velocity;
@@ -337,7 +337,7 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
   void render(Canvas canvas) {
     // 1. Sombra externa glow (Neon)
     final shadowPaint = Paint()
-      ..color = paint.color.withOpacity(0.6)
+      ..color = paint.color.withValues(alpha: 0.6)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
     canvas.drawCircle(Offset(radius, radius), radius * 1.05, shadowPaint);
 
@@ -346,7 +346,7 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
       ..shader = ui.Gradient.radial(
         Offset(radius * 0.7, radius * 0.7), // Foco de luz un poco arriba a la izq
         radius * 1.5,
-        [Colors.white.withOpacity(0.9), paint.color, paint.color.withOpacity(0.5)],
+        [Colors.white.withValues(alpha: 0.9), paint.color, paint.color.withValues(alpha: 0.5)],
         const [0.0, 0.5, 1.0],
       );
     canvas.drawCircle(Offset(radius, radius), radius, spherePaint);
@@ -355,7 +355,7 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
     final borderPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
-      ..color = Colors.white.withOpacity(0.7);
+      ..color = Colors.white.withValues(alpha: 0.7);
     canvas.drawCircle(Offset(radius, radius), radius, borderPaint);
 
     // 4. Texto central con el "Level"
@@ -366,7 +366,7 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
           color: Colors.white,
           fontSize: radius * 0.8,
           fontWeight: FontWeight.w900,
-          shadows: [Shadow(color: Colors.black.withOpacity(0.3), blurRadius: 4, offset: const Offset(1, 2))],
+          shadows: [Shadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 4, offset: const Offset(1, 2))],
           fontFamily: 'Inter'
         ),
       ),
@@ -391,14 +391,14 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
     if (position.x - radius < 0) {
       position.x = radius;
       velocity.x = -velocity.x * bounceFactor;
-    } else if (position.x + radius > gameRef.size.x) {
-      position.x = gameRef.size.x - radius;
+    } else if (position.x + radius > game.size.x) {
+      position.x = game.size.x - radius;
       velocity.x = -velocity.x * bounceFactor;
     }
 
     // Colisión simple con el suelo (Rebote piso y)
-    if (position.y + radius > gameRef.size.y) {
-      position.y = gameRef.size.y - radius;
+    if (position.y + radius > game.size.y) {
+      position.y = game.size.y - radius;
       // Absorber impactos casi inactivos
       if (velocity.y.abs() < 50) {
         velocity.y = 0;
@@ -434,6 +434,7 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
 
   @override
   void onDragCancel(DragCancelEvent event) {
+    super.onDragCancel(event);
     isDragged = false;
   }
 
@@ -446,9 +447,9 @@ class Fruit extends CircleComponent with CollisionCallbacks, HasGameRef<FruitGam
       // Paredes, ya resuelto en update()
     } else if (other is Fruit) {
       // Despachar la decisión al Controller Principal
-      gameRef.handleCollision(this, other);
+      game.handleCollision(this, other);
       
-      if (!gameRef._pendingRemovals.contains(id)) {
+      if (!game._pendingRemovals.contains(id)) {
         // Pseudo-Física de rebote muy simple (intercambiar velocidades si están solapados)
         final diff = position - other.position;
         if (diff.length > 0) {

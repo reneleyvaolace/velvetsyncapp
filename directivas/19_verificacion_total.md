@@ -30,6 +30,7 @@ Realizar una auditoría exhaustiva del proyecto para asegurar su integridad téc
 ### Restricciones/Historial de Aprendizaje
 - **Nota**: El proyecto fue renombrado de `lvs_control` a `velvet_sync`. Algunos scripts antiguos podrían seguir usando el nombre viejo.
 - **Nota**: Se han detectado múltiples archivos faltantes en `lib/screens/` que fueron comentados para permitir la compilación. No revertir estos cambios sin antes confirmar la existencia de los archivos.
+- **Nota**: Al usar los productFlavors definidos en Gradle (`dev`, `prod`), NUNCA usar `flutter build apk` a secas. Hacer `flutter build apk --flavor dev` para evitar el error "failed to produce an .apk file".
 
 ### Skills Usadas
 - Análisis Estático (Flutter/Dart)

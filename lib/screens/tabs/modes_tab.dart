@@ -29,7 +29,7 @@ class _ModesTabState extends ConsumerState<ModesTab> {
           expandedHeight: 80,
           backgroundColor: Colors.transparent,
           flexibleSpace: FlexibleSpaceBar(
-            title: Text('MODOS DE JUEGO', style: TextStyle(
+            title: Text('VELVET EXPERIENCE', style: TextStyle(
               fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.text3
             )),
             centerTitle: true,
@@ -39,13 +39,11 @@ class _ModesTabState extends ConsumerState<ModesTab> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              _buildCanvasCard(ble),
-              const SizedBox(height: 20),
-              _buildPatternsCard(ble),
-              const SizedBox(height: 20),
+              _buildControlSections(ble),
+              const SizedBox(height: 32),
+              const SectionLabel('MINI JUEGOS DISPONIBLES'),
+              const SizedBox(height: 16),
               _buildGameGrid(context, ble),
-              const SizedBox(height: 20),
-              _buildShakeCard(ble),
               const SizedBox(height: 40),
             ]),
           ),
@@ -54,43 +52,76 @@ class _ModesTabState extends ConsumerState<ModesTab> {
     );
   }
 
-  Widget _buildCanvasCard(BleService ble) {
-    if (!ble.isConnected) return const _DisabledCard(title: 'CANVAS DE DIBUJO');
-    return CardGlass(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildControlSections(BleService ble) {
+    if (!ble.isConnected) {
+      return const Column(
         children: [
-          const SectionLabel('CANVAS DE DIBUJO'),
-          const SizedBox(height: 8),
-          const Text('Control táctil dinámico (Empuje)', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
-          const SizedBox(height: 20),
-          LvsCanvas(ble: ble),
+          _DisabledCard(title: 'CANVAS DE CONTROL'),
+          SizedBox(height: 20),
+          _DisabledCard(title: 'MODOS DE VIBRACIÓN'),
         ],
-      ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Sección de Dibujo / Shake ──
+        _buildInteractiveCard(ble),
+        const SizedBox(height: 24),
+
+        // ── Sección de Shock (RITMOS) ──
+        const SectionLabel('MODOS DE VIBRACIÓN (SHOCK)'),
+        const SizedBox(height: 16),
+        ModeSelectorGrid(
+          activeIndex: ble.activePatternCh2,
+          defs: kRhythmModes,
+          offset: 4, 
+          color: LvsColors.pink,
+          onSelect: (i) => ble.setPatternChannel2(i),
+        ),
+        const SizedBox(height: 32),
+
+        // ── Sección de Rotate (INTENSIDADES) ──
+        const SectionLabel('MODOS DE ROTACIÓN (INTENSIDAD)'),
+        const SizedBox(height: 16),
+        ModeSelectorGrid(
+          activeIndex: ble.activePatternCh1,
+          defs: kIntensityModes,
+          offset: 1, 
+          color: LvsColors.teal,
+          onSelect: (i) => ble.setPatternChannel1(i),
+        ),
+      ],
     );
   }
 
-  Widget _buildPatternsCard(BleService ble) {
-    if (!ble.isConnected) return const _DisabledCard(title: 'RITMOS PREDISEÑADOS');
-    final activePattern = ref.watch(bleProvider.select((p) => p.activePattern?.index ?? 0));
-
+  Widget _buildInteractiveCard(BleService ble) {
     return CardGlass(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionLabel('RITMOS PREDISEÑADOS'),
-          const SizedBox(height: 20),
-          PatternSelectorRow(
-            activePattern: activePattern,
-            color: LvsColors.violet,
-            onSelect: (i) {
-              if (i == 0) {
-                ble.setProportionalChannel1(0);
-              } else {
-                ble.setPatternChannel1(i);
-              }
-            },
+          Row(
+            children: [
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SectionLabel('INTERACCIÓN DINÁMICA'),
+                    SizedBox(height: 4),
+                    Text('Control táctil y movimiento', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+                  ],
+                ),
+              ),
+              Switch(
+                value: _shakeMode,
+                onChanged: (v) => setState(() => _shakeMode = v),
+                activeTrackColor: LvsColors.pink,
+              ),
+              const Text('AGITAR', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white)),
+            ],
           ),
+          const SizedBox(height: 20),
+          LvsCanvas(ble: ble),
         ],
       ),
     );
@@ -138,35 +169,6 @@ class _ModesTabState extends ConsumerState<ModesTab> {
       ],
     );
   }
-
-  Widget _buildShakeCard(BleService ble) {
-    return CardGlass(
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: LvsColors.pink.withOpacity(0.1), shape: BoxShape.circle),
-            child: Image.asset('assets/icons/icon_shake_mode.png', width: 36, height: 36),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('MODO AGITAR', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
-                Text('Control por movimiento', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
-              ],
-            ),
-          ),
-          Switch(
-            value: _shakeMode,
-            onChanged: (v) => setState(() => _shakeMode = v),
-            activeTrackColor: LvsColors.pink,
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _GameTile extends StatelessWidget {
@@ -182,7 +184,7 @@ class _GameTile extends StatelessWidget {
       onTap: onTap,
       child: CardGlass(
         padding: EdgeInsets.zero,
-        borderColor: color.withOpacity(0.2),
+        borderColor: color.withValues(alpha: 0.2),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -193,7 +195,7 @@ class _GameTile extends StatelessWidget {
                     height: 132,
                     child: ClipRect(
                       child: Transform.scale(
-                        scale: 1.15, // Aumenta un 15% total para que el recorte del ClipRect quite los bordes (7.5% por lado)
+                        scale: 1.15, 
                         child: Image.asset(assetPath!, fit: BoxFit.cover),
                       ),
                     ),

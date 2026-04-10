@@ -91,7 +91,7 @@ class FunscriptLoader extends ChangeNotifier {
 
       // Verificar archivo
       final file = File(path);
-      if (!await file.exists()) {
+      if (!file.existsSync()) {
         _lastError = 'Archivo no encontrado: $path';
         lvsLog(_lastError!, tag: 'FUNSCRIPT');
         _isLoading = false;
@@ -281,7 +281,7 @@ class FunscriptLoader extends ChangeNotifier {
     final scriptPath = p.join(directory.path, '$videoName.funscript');
     final file = File(scriptPath);
     
-    if (await file.exists()) {
+    if (file.existsSync()) {
       lvsLog('Script encontrado: $scriptPath', tag: 'FUNSCRIPT');
       return scriptPath;
     }
@@ -304,7 +304,7 @@ class FunscriptLoader extends ChangeNotifier {
   /// Obtener lista de scripts en directorio
   static Future<List<String>> listScriptsInDirectory(String directoryPath) async {
     final directory = Directory(directoryPath);
-    if (!await directory.exists()) {
+    if (!directory.existsSync()) {
       return [];
     }
 
@@ -324,7 +324,7 @@ class FunscriptLoader extends ChangeNotifier {
     final appDir = await getApplicationDocumentsDirectory();
     final scriptsDir = Directory(p.join(appDir.path, 'funscripts'));
     
-    if (!await scriptsDir.exists()) {
+    if (!scriptsDir.existsSync()) {
       await scriptsDir.create(recursive: true);
     }
     

@@ -123,6 +123,9 @@ class LvsCommands {
       case 7: return ch1Pat4;
       case 8: return ch1Pat5;
       case 9: return ch1Pat6;
+      case 10: return ch1Pat7;
+      case 11: return ch1Pat8;
+      case 12: return ch1Pat9;
       default: return ch1Stop;
     }
   }
@@ -138,6 +141,9 @@ class LvsCommands {
       case 7: return ch2Pat4;
       case 8: return ch2Pat5;
       case 9: return ch2Pat6;
+      case 10: return ch2Pat7;
+      case 11: return ch2Pat8;
+      case 12: return ch2Pat9;
       default: return ch2Stop;
     }
   }

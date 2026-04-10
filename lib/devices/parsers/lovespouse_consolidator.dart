@@ -30,7 +30,7 @@ class LovespouseConsolidator {
 
     for (final fileName in files) {
       final inputFile = File('$inputDir/$fileName');
-      if (!await inputFile.exists()) continue;
+      if (!inputFile.existsSync()) continue;
 
       final content = await inputFile.readAsString();
       final List<dynamic> devices = jsonDecode(content);
@@ -56,7 +56,7 @@ class LovespouseConsolidator {
 
     // Crear directorio de salida
     final outputDirPath = Directory(outputDir);
-    if (!await outputDirPath.exists()) {
+    if (!outputDirPath.existsSync()) {
       await outputDirPath.create(recursive: true);
     }
 
@@ -82,10 +82,10 @@ class LovespouseConsolidator {
 | **Archivos originales** | 8 |
 | **Archivos consolidados** | 2 (devices.json + devices_index.json) |
 | **Total dispositivos** | $totalDevices |
-| **Tamaño devices.json** | ${(await consolidatedFile.length() / 1024).toStringAsFixed(2)} KB |
-| **Tamaño devices_index.json** | ${(await indexFile.length() / 1024).toStringAsFixed(2)} KB |
-| **Tamaño total** | ${((await consolidatedFile.length() + await indexFile.length()) / 1024).toStringAsFixed(2)} KB |
-| **Reducción vs original (6.1 MB)** | ${(100 - (await consolidatedFile.length() / 6100000 * 100)).toStringAsFixed(1)}% |
+| **Tamaño devices.json** | ${(consolidatedFile.lengthSync() / 1024).toStringAsFixed(2)} KB |
+| **Tamaño devices_index.json** | ${(indexFile.lengthSync() / 1024).toStringAsFixed(2)} KB |
+| **Tamaño total** | ${((consolidatedFile.lengthSync() + indexFile.lengthSync()) / 1024).toStringAsFixed(2)} KB |
+| **Reducción vs original (6.1 MB)** | ${(100 - (consolidatedFile.lengthSync() / 6100000 * 100)).toStringAsFixed(1)}% |
 
 ## Beneficios
 
@@ -109,11 +109,11 @@ final device = await parser.findByBarcode('1001');
 
     lvsLog('\n✅ Consolidación completada!');
     lvsLog('📁 Archivos creados:');
-    lvsLog('   - devices.json (${(await consolidatedFile.length() / 1024).toStringAsFixed(2)} KB)');
-    lvsLog('   - devices_index.json (${(await indexFile.length() / 1024).toStringAsFixed(2)} KB)');
+    lvsLog('   - devices.json (${(consolidatedFile.lengthSync() / 1024).toStringAsFixed(2)} KB)');
+    lvsLog('   - devices_index.json (${(indexFile.lengthSync() / 1024).toStringAsFixed(2)} KB)');
     lvsLog('   - STATS.md');
     lvsLog('\n📊 Total dispositivos: $totalDevices');
-    lvsLog('📦 Tamaño total: ${((await consolidatedFile.length() + await indexFile.length()) / 1024).toStringAsFixed(2)} KB');
+    lvsLog('📦 Tamaño total: ${((consolidatedFile.lengthSync() + indexFile.lengthSync()) / 1024).toStringAsFixed(2)} KB');
   }
 }
 

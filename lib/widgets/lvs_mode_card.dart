@@ -50,7 +50,7 @@ class LvsModeCard extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(lockMessage!),
-                    backgroundColor: LvsColors.red.withOpacity(0.9),
+                    backgroundColor: LvsColors.red.withValues(alpha: 0.9),
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -66,8 +66,8 @@ class LvsModeCard extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              _accentColor.withOpacity(isLocked ? 0.05 : 0.15),
-              LvsColors.bgCard.withOpacity(0.5),
+              _accentColor.withValues(alpha: isLocked ? 0.05 : 0.15),
+              LvsColors.bgCard.withValues(alpha: 0.5),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -75,14 +75,14 @@ class LvsModeCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isLocked
-                ? Colors.white.withOpacity(0.05)
-                : _accentColor.withOpacity(0.4),
+                ? Colors.white.withValues(alpha: 0.05)
+                : _accentColor.withValues(alpha: 0.4),
           ),
           boxShadow: isLocked
               ? null
               : [
                   BoxShadow(
-                    color: _accentColor.withOpacity(0.2),
+                    color: _accentColor.withValues(alpha: 0.2),
                     blurRadius: 20,
                     spreadRadius: 1,
                   ),
@@ -95,8 +95,8 @@ class LvsModeCard extends StatelessWidget {
               height: 56,
               decoration: BoxDecoration(
                 color: isLocked
-                    ? Colors.white.withOpacity(0.05)
-                    : _accentColor.withOpacity(0.2),
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : _accentColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -127,7 +127,7 @@ class LvsModeCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text('BLOQUEADO', style: TextStyle(fontSize: 8, fontWeight: FontWeight.w800, color: LvsColors.text3, letterSpacing: 1)),
@@ -151,7 +151,7 @@ class LvsModeCard extends StatelessWidget {
             if (!isLocked)
               Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: _accentColor.withOpacity(0.6),
+                color: _accentColor.withValues(alpha: 0.6),
                 size: 18,
               ),
           ],

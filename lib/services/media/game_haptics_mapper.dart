@@ -199,7 +199,7 @@ class ResponseCurveConfig {
 /// Inspirado en Intiface Game Haptics Router (GHR)
 class GameHapticsMapper {
   /// Curva de respuesta actual
-  ResponseCurveConfig _curveConfig;
+  ResponseCurveConfig curveConfig;
 
   /// Sensibilidad del motor izquierdo (0.0-2.0)
   double _leftSensitivity;
@@ -208,7 +208,7 @@ class GameHapticsMapper {
   double _rightSensitivity;
 
   /// ¿Invertir motores?
-  bool _invertMotors;
+  bool invertMotors;
 
   /// Zona muerta mínima (0.0-0.5)
   double _deadZone;
@@ -217,25 +217,20 @@ class GameHapticsMapper {
   double _maxIntensity;
 
   GameHapticsMapper({
-    ResponseCurveConfig curveConfig = const ResponseCurveConfig(),
+    this.curveConfig = const ResponseCurveConfig(),
     double leftSensitivity = 1.0,
     double rightSensitivity = 1.0,
-    bool invertMotors = false,
+    this.invertMotors = false,
     double deadZone = 0.05,
     double maxIntensity = 1.0,
-  })  : _curveConfig = curveConfig,
-        _leftSensitivity = leftSensitivity.clamp(0.0, 2.0),
+  })  : _leftSensitivity = leftSensitivity.clamp(0.0, 2.0),
         _rightSensitivity = rightSensitivity.clamp(0.0, 2.0),
-        _invertMotors = invertMotors,
         _deadZone = deadZone.clamp(0.0, 0.5),
         _maxIntensity = maxIntensity.clamp(0.0, 1.0);
 
   // ═══════════════════════════════════════════════════════════════
   // Getters y Setters
   // ═══════════════════════════════════════════════════════════════
-
-  ResponseCurveConfig get curveConfig => _curveConfig;
-  set curveConfig(ResponseCurveConfig value) => _curveConfig = value;
 
   double get leftSensitivity => _leftSensitivity;
   set leftSensitivity(double value) =>
@@ -244,9 +239,6 @@ class GameHapticsMapper {
   double get rightSensitivity => _rightSensitivity;
   set rightSensitivity(double value) =>
       _rightSensitivity = value.clamp(0.0, 2.0);
-
-  bool get invertMotors => _invertMotors;
-  set invertMotors(bool value) => _invertMotors = value;
 
   double get deadZone => _deadZone;
   set deadZone(double value) => _deadZone = value.clamp(0.0, 0.5);
@@ -279,7 +271,7 @@ class GameHapticsMapper {
     normalized = (normalized * sens).clamp(0.0, 1.0);
 
     // Aplicar curva de respuesta
-    normalized = _curveConfig.apply(normalized);
+    normalized = curveConfig.apply(normalized);
 
     // Aplicar intensidad máxima
     return (normalized * _maxIntensity).clamp(0.0, 1.0);
@@ -290,8 +282,8 @@ class GameHapticsMapper {
   /// [leftMotor] - Motor izquierdo (0-65535)
   /// [rightMotor] - Motor derecho (0-65535)
   HapticsOutput mapDualMotors(int leftMotor, int rightMotor) {
-    final left = _invertMotors ? rightMotor : leftMotor;
-    final right = _invertMotors ? leftMotor : rightMotor;
+    final left = invertMotors ? rightMotor : leftMotor;
+    final right = invertMotors ? leftMotor : rightMotor;
 
     return HapticsOutput(
       channel1: mapRumbleToIntensity(left, sensitivity: _leftSensitivity),
@@ -349,10 +341,10 @@ class GameHapticsMapper {
 
   /// Resetear configuración a valores por defecto
   void resetToDefaults() {
-    _curveConfig = const ResponseCurveConfig();
+    curveConfig = const ResponseCurveConfig();
     _leftSensitivity = 1.0;
     _rightSensitivity = 1.0;
-    _invertMotors = false;
+    invertMotors = false;
     _deadZone = 0.05;
     _maxIntensity = 1.0;
   }
@@ -360,11 +352,11 @@ class GameHapticsMapper {
   /// Obtener configuración actual como mapa
   Map<String, dynamic> toJson() {
     return {
-      'curveType': _curveConfig.type.name,
-      'exponent': _curveConfig.exponent,
+      'curveType': curveConfig.type.name,
+      'exponent': curveConfig.exponent,
       'leftSensitivity': _leftSensitivity,
       'rightSensitivity': _rightSensitivity,
-      'invertMotors': _invertMotors,
+      'invertMotors': invertMotors,
       'deadZone': _deadZone,
       'maxIntensity': _maxIntensity,
     };
@@ -372,7 +364,7 @@ class GameHapticsMapper {
 
   /// Cargar configuración desde mapa
   void fromJson(Map<String, dynamic> json) {
-    _curveConfig = ResponseCurveConfig(
+    curveConfig = ResponseCurveConfig(
       type: ResponseCurve.values.firstWhere(
         (e) => e.name == json['curveType'],
         orElse: () => ResponseCurve.linear,
@@ -381,14 +373,14 @@ class GameHapticsMapper {
     );
     _leftSensitivity = (json['leftSensitivity'] ?? 1.0).clamp(0.0, 2.0);
     _rightSensitivity = (json['rightSensitivity'] ?? 1.0).clamp(0.0, 2.0);
-    _invertMotors = json['invertMotors'] ?? false;
+    invertMotors = json['invertMotors'] ?? false;
     _deadZone = (json['deadZone'] ?? 0.05).clamp(0.0, 0.5);
     _maxIntensity = (json['maxIntensity'] ?? 1.0).clamp(0.0, 1.0);
   }
 
   @override
   String toString() {
-    return 'GameHapticsMapper(curve: ${_curveConfig.type}, '
+    return 'GameHapticsMapper(curve: ${curveConfig.type}, '
         'leftSens: ${_leftSensitivity.toStringAsFixed(2)}, '
         'rightSens: ${_rightSensitivity.toStringAsFixed(2)}, '
         'deadZone: ${_deadZone.toStringAsFixed(2)})';

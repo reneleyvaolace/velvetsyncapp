@@ -292,8 +292,8 @@ class Logger {
       _logFilePath = file.path;
       
       // Rotar archivo si es muy grande
-      if (await file.exists()) {
-        final size = await file.length();
+      if (file.existsSync()) {
+        final size = file.lengthSync();
         if (size > _maxFileSize) {
           await file.rename('${directory.path}/velvet_sync.old.log');
         }
@@ -350,7 +350,7 @@ class Logger {
     
     try {
       final file = File(_logFilePath!);
-      if (await file.exists()) {
+      if (file.existsSync()) {
         await file.writeAsString('');
         info('Archivo de logs limpiado', tag: 'LOGGER');
       }

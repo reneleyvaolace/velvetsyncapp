@@ -101,15 +101,15 @@ class CardGlass extends StatelessWidget {
       height: height,
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color ?? LvsColors.bgCard.withOpacity(0.5),
+        color: color ?? LvsColors.bgCard.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: borderColor ?? Colors.white.withOpacity(0.05),
+          color: borderColor ?? Colors.white.withValues(alpha: 0.05),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),

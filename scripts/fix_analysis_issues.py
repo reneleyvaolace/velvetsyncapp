@@ -4,7 +4,7 @@ import re
 # Versión: 1.0.0
 # Descripción: Arregla los problemas de análisis restantes en el proyecto Velvet Sync.
 
-PROJECT_PATH = r"c:\Projects\velvetsync\velvetsyncapp"
+PROJECT_PATH = r"c:\Proyectos\lvs-flutter"
 LIB_PATH = os.path.join(PROJECT_PATH, "lib")
 
 def fix_avoid_print():

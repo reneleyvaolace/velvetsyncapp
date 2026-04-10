@@ -1,104 +1,53 @@
-# Reporte de Verificación Total - Velvet Sync
+# Reporte de Verificación Total (Velvet Sync)
 
-**Fecha:** 2026-04-08  
-**Versión del Proyecto:** 1.4.0  
-**Ejecutado por:** opencode
+## 1. Dependencias (`flutter pub get`)
+- Estado: Exitoso
 
----
+## 2. Análisis Estático (`flutter analyze`)
+- Estado: Revisar issues
+- Salida capturada en `.tmp/build_errors_full.txt`
 
-## 1. Auditoría de Dependencias
+## 3. Seguridad (`enhanced_audit.py`)
+- Ejecutado correctamente: Sí
+- Revisar `security_results.log` para hallazgos.
 
-| Resultado | Detalles |
-|-----------|----------|
-| ✅ PASADO | `flutter pub get` ejecutado correctamente |
-| ⚠️ ADVERTENCIA | 40 paquetes tienen versiones más nuevas incompatibles |
+## 4. Validación Estructura
+- Nombre del paquete es `velvet_sync`: Sí
 
-**Recomendación:** Ejecutar `flutter pub outdated` para ver alternativas.
+## 5. Prueba de Compilación Android (`flutter build apk --debug`)
+- Estado: Fallido
+```text
+e)
+  image_picker_android 0.8.13+14 (0.8.13+16 available)
+  just_audio 0.9.46 (0.10.5 available)
+  lints 4.0.0 (6.1.0 available)
+  meta 1.17.0 (1.18.2 available)
+  native_toolchain_c 0.17.5 (0.17.6 available)
+  package_info_plus 9.0.0 (9.0.1 available)
+  path_provider_android 2.2.22 (2.3.1 available)
+  realtime_client 2.7.0 (2.7.1 available)
+  riverpod 2.6.1 (3.2.1 available)
+  shared_preferences 2.5.4 (2.5.5 available)
+  shared_preferences_android 2.4.21 (2.4.23 available)
+  shared_preferences_platform_interface 2.4.1 (2.4.2 available)
+  storage_client 2.4.1 (2.5.1 available)
+  supabase 2.10.2 (2.10.4 available)
+  supabase_flutter 2.12.0 (2.12.2 available)
+  test_api 0.7.10 (0.7.11 available)
+  timezone 0.10.1 (0.11.0 available)
+  url_launcher_android 6.3.28 (6.3.29 available)
+  vector_math 2.2.0 (2.3.0 available)
+  wakelock_plus 1.4.0 (1.5.1 available)
+  wakelock_plus_platform_interface 1.3.0 (1.4.0 available)
+  webview_flutter_android 4.10.13 (4.10.15 available)
+  webview_flutter_platform_interface 2.14.0 (2.15.1 available)
+  webview_flutter_wkwebview 3.24.0 (3.24.2 available)
+  win32 5.15.0 (6.0.0 available)
+Got dependencies!
+44 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleDebug'...                            278.1s
 
----
+Gradle build failed to produce an .apk file. It's likely that this file was generated under C:\Proyectos\lvs-flutter\build, but the tool couldn't find it.
 
-## 2. Análisis Estático
-
-| Tipo | Cantidad |
-|------|----------|
-| Errores | 0 (CORREGIDO: 2 errores de `activeTrackColor`/`activeThumbColor` en Slider) |
-| Warnings | 1 (unused_import en funscript_loader.dart) |
-| Info | 145 |
-
-**Errores corregidos durante la auditoría:**
-- `lib/screens/home_screen.dart:1282-1283` - `activeTrackColor` y `activeThumbColor` → `activeColor` y `thumbColor`
-
-**Patrones-info predominantes:**
-- `prefer_const_constructors` (~90 occurrences)
-- `omit_local_variable_types` (~20 occurrences)
-- `avoid_slow_async_io` (6 occurrences)
-
----
-
-## 3. Verificación de Estructura
-
-| Componente | Estado |
-|------------|--------|
-| Paquete principal | ✅ `velvet_sync` |
-| Pantallas principales | ✅ Todas presentes (home, catalog, dice, game, roulette, reader, companion, kegel, remote_session) |
-| Servicios BLE | ✅ `ble_service.dart`, `lvs_commands.dart` |
-| Servicios Backend | ✅ `supabase_service.dart`, `sync_service.dart`, `ai_service.dart` |
-| Navegación | ✅ `main_navigation.dart` |
-
----
-
-## 4. Auditoría de Seguridad
-
-### Hallazgos
-
-| Hallazgo | Severidad | Estado |
-|----------|-----------|--------|
-| `.env` en `.gitignore` | ✅ | Seguro |
-| API Keys hardcodeadas | ✅ | No detectadas |
-| IPs hardcodeadas | ✅ | No detectadas |
-| `debugPrint` sin `kDebugMode` | ⚠️ MEDIA | 8 archivos afectados |
-| `SharedPreferences` para datos sensibles | ⚠️ MEDIA | 2 archivos (home_screen, session_timer_service) |
-| AndroidManifest exportados | ℹ️ INFO | Componentes estándar |
-
-### Archivos con `debugPrint` sin validación:
-- `media_sync_provider.dart`
-- `ai_hardware_bridge_service.dart`
-- `sync_service.dart`
-- `ble_service.dart`
-- `ble_service_stub.dart`
-- `catalog_service.dart`
-
-### Recomendaciones de Seguridad:
-1. **Alta prioridad:** Envolver todos los `debugPrint` en `if (kDebugMode)` 
-2. **Media prioridad:** Migrar `home_screen.dart` y `session_timer_service.dart` a `flutter_secure_storage`
-3. **Info:** Rotar API keys si alguna estuvo expuesta en Git (directiva 08)
-
----
-
-## 5. Estado de Compilación
-
-- ✅ Proyecto compila sin errores
-- ⚠️ 146 issues (mayormente info/warnings, no bloqueantes)
-
----
-
-## 6. Pendientes Remanentes
-
-| Prioridad | Tarea |
-|-----------|-------|
-| MEDIA | Aplicar `prefer_const_constructors` en ~90 ubicaciones |
-| MEDIA | Envolver `debugPrint` en `kDebugMode` (8 archivos) |
-| BAJA | Eliminar import no usado en `funscript_loader.dart` |
-| BAJA | Ejecutar `flutter pub outdated` para ver updates disponibles |
-
----
-
-## Conclusión
-
-El proyecto se encuentra en **estado funcional** con:
-- ✅ 0 errores de compilación
-- ✅ Dependencias resueltas
-- ✅ Estructura intacta
-- ⚠️ 146 issues menores (estilo, no funcionales)
-
-**Acción recomendada:** Ejecutar `dart fix --apply` para auto-corrección de issues menores.
+```

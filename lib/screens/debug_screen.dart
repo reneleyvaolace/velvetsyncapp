@@ -197,7 +197,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
         children: [
           // Display de Protocolo
           CardGlass(
-            borderColor: LvsColors.amber.withOpacity(0.1),
+            borderColor: LvsColors.amber.withValues(alpha: 0.1),
             child: Column(
               children: [
                 const SectionLabel('MANUAL BYTE FORGE', color: LvsColors.amber),
@@ -273,9 +273,9 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: LvsColors.pink.withOpacity(0.1),
+                    color: LvsColors.pink.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: LvsColors.pink.withOpacity(0.3)),
+                    border: Border.all(color: LvsColors.pink.withValues(alpha: 0.3)),
                   ),
                   child: const Icon(Icons.bookmark_add_outlined, color: LvsColors.pink),
                 ),
@@ -314,11 +314,11 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                   child: ElevatedButton(
                     onPressed: ble.isConnected ? (_sweepActive ? _stopSweep : () => _startSweep(ble)) : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _sweepActive ? LvsColors.red.withOpacity(0.2) : LvsColors.violet.withOpacity(0.2),
+                      backgroundColor: _sweepActive ? LvsColors.red.withValues(alpha: 0.2) : LvsColors.violet.withValues(alpha: 0.2),
                       foregroundColor: _sweepActive ? LvsColors.red : LvsColors.violet,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      side: BorderSide(color: (_sweepActive ? LvsColors.red : LvsColors.violet).withOpacity(0.5)),
+                      side: BorderSide(color: (_sweepActive ? LvsColors.red : LvsColors.violet).withValues(alpha: 0.5)),
                     ),
                     child: Text(_sweepActive ? 'STOP SWEEP' : 'START SWEEP ENGINE', style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
                   ),
@@ -341,7 +341,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
                   decoration: BoxDecoration(
                     color: LvsColors.bgCardH,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: LvsColors.pink.withOpacity(0.2)),
+                    border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2)),
                   ),
                   child: Text(m.hexStr, style: const TextStyle(fontFamily: 'monospace', fontSize: 12, color: LvsColors.pink, fontWeight: FontWeight.bold)),
                 ),
@@ -369,10 +369,10 @@ class _ByteCell extends StatelessWidget {
         Container(
           width: 70, height: 70,
           decoration: BoxDecoration(
-            color: highlight ? color.withOpacity(0.15) : LvsColors.bgCardH,
+            color: highlight ? color.withValues(alpha: 0.15) : LvsColors.bgCardH,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: highlight ? color : LvsColors.border, width: highlight ? 2 : 1),
-            boxShadow: highlight ? [BoxShadow(color: color.withOpacity(0.3), blurRadius: 12)] : [],
+            boxShadow: highlight ? [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 12)] : [],
           ),
           alignment: Alignment.center,
           child: Text(hex, style: TextStyle(fontFamily: 'monospace', fontSize: 24, fontWeight: FontWeight.w900, color: color)),
@@ -396,7 +396,7 @@ class _DebugPresetBtn extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: active ? LvsColors.amber.withOpacity(0.1) : LvsColors.bgCardH,
+            color: active ? LvsColors.amber.withValues(alpha: 0.1) : LvsColors.bgCardH,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: active ? LvsColors.amber : LvsColors.border),
           ),
@@ -425,12 +425,12 @@ class _BigActionBtn extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 18),
           decoration: BoxDecoration(
             gradient: active 
-                ? LinearGradient(colors: [color.withOpacity(0.4), color.withOpacity(0.1)])
+                ? LinearGradient(colors: [color.withValues(alpha: 0.4), color.withValues(alpha: 0.1)])
                 : null,
             color: active ? null : LvsColors.bgCardH,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: active ? color : LvsColors.borderH),
-            boxShadow: active ? [BoxShadow(color: color.withOpacity(0.2), blurRadius: 15)] : [],
+            boxShadow: active ? [BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 15)] : [],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

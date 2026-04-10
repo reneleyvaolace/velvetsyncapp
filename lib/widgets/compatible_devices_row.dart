@@ -98,10 +98,10 @@ class _CatalogGatewayChip extends StatelessWidget {
         width: 100,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [LvsColors.pink.withOpacity(0.1), LvsColors.violet.withOpacity(0.1)],
+            colors: [LvsColors.pink.withValues(alpha: 0.1), LvsColors.violet.withValues(alpha: 0.1)],
           ),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: LvsColors.pink.withOpacity(0.3), width: 1.5),
+          border: Border.all(color: LvsColors.pink.withValues(alpha: 0.3), width: 1.5),
         ),
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -149,10 +149,10 @@ class _DeviceChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: LvsColors.bgCard,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: _color.withOpacity(0.25)),
+          border: Border.all(color: _color.withValues(alpha: 0.25)),
           boxShadow: [
             BoxShadow(
-              color: _color.withOpacity(0.08),
+              color: _color.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -197,7 +197,7 @@ class _DeviceChip extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
               decoration: BoxDecoration(
-                color: _color.withOpacity(0.15),
+                color: _color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -218,9 +218,9 @@ class _DeviceChip extends StatelessWidget {
       width: 56, height: 56,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: _color.withOpacity(0.05),
+        color: _color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _color.withOpacity(0.2)),
+        border: Border.all(color: _color.withValues(alpha: 0.2)),
       ),
       child: Image.asset(
         toy.iconAsset,

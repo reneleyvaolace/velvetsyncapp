@@ -245,13 +245,13 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         GestureDetector(
           onTap: () => _startHostSession(ble),
           child: CardGlass(
-            borderColor: LvsColors.teal.withOpacity(0.3),
+            borderColor: LvsColors.teal.withValues(alpha: 0.3),
             padding: const EdgeInsets.all(24),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: LvsColors.teal.withOpacity(0.1), shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: LvsColors.teal.withValues(alpha: 0.1), shape: BoxShape.circle),
                   child: const Icon(Icons.share_rounded, color: LvsColors.teal, size: 28),
                 ),
                 const SizedBox(width: 20),
@@ -287,13 +287,13 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         GestureDetector(
           onTap: () => setState(() => _showGuestLogin = true),
           child: CardGlass(
-            borderColor: LvsColors.pink.withOpacity(0.3),
+            borderColor: LvsColors.pink.withValues(alpha: 0.3),
             padding: const EdgeInsets.all(24),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: LvsColors.pink.withOpacity(0.1), shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: LvsColors.pink.withValues(alpha: 0.1), shape: BoxShape.circle),
                   child: const Icon(Icons.vpn_key_rounded, color: LvsColors.pink, size: 28),
                 ),
                 const SizedBox(width: 20),
@@ -387,12 +387,12 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
           decoration: InputDecoration(
             counterText: '',
             hintText: '------',
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.1)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.1)),
             filled: true,
             fillColor: LvsColors.bgCard,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.white12)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: LvsColors.pink.withOpacity(0.5))),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: LvsColors.pink.withValues(alpha: 0.5))),
           ),
         ),
         const SizedBox(height: 32),
@@ -420,12 +420,12 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     final token = _sessionData?['access_token'] ?? '---';
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.85),
+      barrierColor: Colors.black.withValues(alpha: 0.85),
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A1A),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: LvsColors.teal.withOpacity(0.2), width: 1),
+          side: BorderSide(color: LvsColors.teal.withValues(alpha: 0.2), width: 1),
         ),
         title: const Text(
           'COMPARTIR ACCESO',
@@ -446,9 +446,9 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: LvsColors.teal.withOpacity(0.5)),
+                border: Border.all(color: LvsColors.teal.withValues(alpha: 0.5)),
                 boxShadow: [
-                  BoxShadow(color: LvsColors.teal.withOpacity(0.1), blurRadius: 20, spreadRadius: 2),
+                  BoxShadow(color: LvsColors.teal.withValues(alpha: 0.1), blurRadius: 20, spreadRadius: 2),
                 ],
               ),
               child: Text(
@@ -482,7 +482,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
                   ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
-                    BoxShadow(color: LvsColors.pink.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                    BoxShadow(color: LvsColors.pink.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4)),
                   ],
                 ),
                 child: const Row(
@@ -580,7 +580,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFF151515),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: LvsColors.teal.withOpacity(0.2)),
+                border: Border.all(color: LvsColors.teal.withValues(alpha: 0.2)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -618,7 +618,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
               duration: const Duration(milliseconds: 300),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: _partnerActive ? LvsColors.pink.withOpacity(0.1) : Colors.black45,
+                color: _partnerActive ? LvsColors.pink.withValues(alpha: 0.1) : Colors.black45,
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(color: _partnerActive ? LvsColors.pink : Colors.white12),
               ),
@@ -654,7 +654,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
               decoration: BoxDecoration(
                 color: LvsColors.bgCardH,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: LvsColors.pink.withOpacity(0.3)),
+                border: Border.all(color: LvsColors.pink.withValues(alpha: 0.3)),
               ),
               child: Text(
                 _sessionData?['access_token'] ?? '---',
@@ -691,9 +691,9 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: color,
-            inactiveTrackColor: color.withOpacity(0.1),
+            inactiveTrackColor: color.withValues(alpha: 0.1),
             thumbColor: Colors.white,
-            overlayColor: color.withOpacity(0.2),
+            overlayColor: color.withValues(alpha: 0.2),
             trackHeight: 8,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
           ),

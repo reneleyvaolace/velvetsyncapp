@@ -25,7 +25,6 @@ import 'lvs_commands.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'toy_profile.dart';
 import 'package:velvet_sync/utils/logger.dart';
-import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
 import 'package:velvet_sync/services/backend/notification_service.dart';
 
 // ── Provider Global para Riverpod ──────────────────────────────
@@ -83,7 +82,6 @@ class BleService extends ChangeNotifier {
   int batteryLevel     = 0;
 
   // Notificaciones
-  bool _batteryLowNotified = false;
   NotificationService? _notificationService;
 
   bool isCooldownActive = false;
@@ -162,18 +160,6 @@ class BleService extends ChangeNotifier {
       return ok;
     }
     return true;
-  }
-
-  /// Notifica al AI Hardware Bridge sobre el dispositivo activo
-  void _notifyAIBridge(ToyModel toy) {
-    try {
-      // Obtener instancia del AIHardwareBridge si está disponible
-      debugPrint('[BleService] Notificando AI Bridge: ${toy.name}');
-      final aiBridge = AIHardwareBridge();
-      aiBridge.setCurrentToy(toy);
-    } catch (e) {
-      debugPrint('[BleService] Error notificando AI Bridge: $e');
-    }
   }
 
   void renameActiveToy(String newName) {
@@ -543,7 +529,6 @@ class BleService extends ChangeNotifier {
     activePattern = null;
     activeIntensity = null;
     batteryLevel = 0;
-    _batteryLowNotified = false;
 
     // Notificación de desconexión
     _notificationService?.showConnectionLost();
@@ -556,19 +541,7 @@ class BleService extends ChangeNotifier {
     _log('🔌 Dispositivo desconectado. Hardware no confirmado.', 'info');
   }
 
-  /// ── Actualizar nivel de batería y enviar notificaciones ──
-  void _updateBatteryLevel(int level) {
-    batteryLevel = level;
-    // Notificar si batería baja (≤20%) y no se ha notificado
-    if (level <= 20 && !_batteryLowNotified && _notificationService != null) {
-      _notificationService!.showBatteryLow(level: level);
-      _batteryLowNotified = true;
-    }
-    // Resetear notificación cuando suba de 20%
-    if (level > 20) {
-      _batteryLowNotified = false;
-    }
-  }
+
 
   // Para de emergencia: detiene burst+sequencer, bypassa mutex y para el advertising
   Future<void> emergencyStop() async {

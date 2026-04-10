@@ -17,6 +17,7 @@ Corregir el error de compilación de Flutter (Release APK) causado por espacios 
 ### Restricciones/Historial de Aprendizaje:
 - **Espacios Invisibles:** Gradle puede incluir espacios en las rutas de los archivos si se carga directamente desde un archivo de propiedades sin trim. 
 - **Ruta Relativa:** En `build.gradle.kts`, `file(it)` busca el archivo relativo al directorio del proyecto `app`.
+- **Compilación Fallida sin APK:** Si el build parece terminar pero dice que falló al producir el archivo .apk, es porque el proyecto usa `flavorDimensions`. Siempre pasar `--flavor dev` o `--flavor prod` (ej. `flutter build apk --flavor dev --release`).
 
 ### Skills Usadas:
 - `view_file`
