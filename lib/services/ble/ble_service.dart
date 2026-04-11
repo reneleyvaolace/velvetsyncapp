@@ -576,6 +576,9 @@ class BleService extends ChangeNotifier {
       await writeCommand(LvsCommands.cmdStop, label: 'STOP_MOTORS');
       await Future.delayed(const Duration(milliseconds: 120));
       await writeCommand(LvsCommands.ch1Stop, label: 'STOP_MOTORS_CH1');
+      await Future.delayed(const Duration(milliseconds: 100));
+      // Extra safety for dual channel devices
+      await writeCommand(LvsCommands.dualMotor(0, 0), label: 'STOP_MOTORS_DUAL_SYNC');
     } catch (_) {}
     _log('⏹️ MOTORES DETENIDOS', 'info');
     notifyListeners();
@@ -712,13 +715,18 @@ class BleService extends ChangeNotifier {
   }
 
   Future<void> selectSpeed(SpeedLevel level) async {
-    if (activeSpeed == level) return;
+    if (activeSpeed == level) {
+      await stopAllMotors();
+      return;
+    }
     _stopSequencer();
     activeSpeed = level;
     activePattern = null;
     activeIntensity = null;
     activeIntensityCh1 = null;
     activeIntensityCh2 = null;
+    activePatternCh1 = null;
+    activePatternCh2 = null;
     final cmd = LvsCommands.commandFor(level);
     _startBurst(cmd, level.name);
     notifyListeners();
@@ -735,6 +743,8 @@ class BleService extends ChangeNotifier {
     activeIntensity = null;
     activeIntensityCh1 = null;
     activeIntensityCh2 = null;
+    activePatternCh1 = null;
+    activePatternCh2 = null;
     final cmd = LvsCommands.patternFor(pattern);
     _startBurst(cmd, pattern.name.toUpperCase());
     notifyListeners();
@@ -743,13 +753,21 @@ class BleService extends ChangeNotifier {
   Future<void> setProportionalIntensity(int intensity) async {
     if (isCooldownActive) return;
     final capped = (intensity * stealthIntensityCap).round();
-    if (activeIntensity == capped && activeSpeed == null && activePattern == null) return;
+    
+    // Toggle: if intensity is high and we set same intensity again, maybe stay? 
+    // Actually for sliders/intensity it's better to just set it.
+    // But if we explicitly set 0, use emergency stop.
+    
+    if (activeIntensity == capped && activeSpeed == null && activePattern == null && capped > 0) return;
+    
     _stopSequencer();
     activeIntensity = capped;
     activeIntensityCh1 = null; activeIntensityCh2 = null;
     activeSpeed = null; activePattern = null;
+    activePatternCh1 = null; activePatternCh2 = null;
+    
     if (capped == 0) {
-      emergencyStop();
+      await stopAllMotors();
     } else {
       final cmd = LvsCommands.proportional(capped);
       _startBurst(cmd, 'LVL:$capped');
@@ -790,6 +808,7 @@ class BleService extends ChangeNotifier {
   }
 
   Future<void> setPatternChannel2(int p) async {
+    if (isCooldownActive) return;
     if (activePatternCh2 == p && p != 0) {
       await stopAllMotors();
       return;
@@ -800,9 +819,14 @@ class BleService extends ChangeNotifier {
     activeIntensity = null;
     activePattern = null;
     activeSpeed = null;
+    activePatternCh1 = null; // Unificar estado: si cambiamos canal, limpiamos otros modos
     notifyListeners();
-    final cmd = LvsCommands.ch2PatternFor(p);
-    _startBurst(cmd, 'CH2:PAT$p');
+    if (p == 0) {
+      _startBurst(LvsCommands.cmdStop, 'CH2:STOP');
+    } else {
+      final cmd = LvsCommands.ch2PatternFor(p);
+      _startBurst(cmd, 'CH2:PAT$p');
+    }
   }
 
   Future<void> setPatternChannel1(int p) async {
@@ -813,11 +837,18 @@ class BleService extends ChangeNotifier {
     }
     _stopSequencer();
     activePatternCh1 = (p == 0) ? null : p;
-    activeIntensityCh1 = null; activeIntensity = null;
-    activePattern = null; activeSpeed = null;
+    activeIntensityCh1 = null; 
+    activeIntensity = null;
+    activePattern = null; 
+    activeSpeed = null;
+    activePatternCh2 = null;
     notifyListeners();
-    final cmd = LvsCommands.ch1PatternFor(p);
-    _startBurst(cmd, 'CH1:PAT$p');
+    if (p == 0) {
+      _startBurst(LvsCommands.ch1Stop, 'CH1:STOP');
+    } else {
+      final cmd = LvsCommands.ch1PatternFor(p);
+      _startBurst(cmd, 'CH1:PAT$p');
+    }
   }
 
   void playWaveChannel1(WaveType type, {int max = 100}) {
