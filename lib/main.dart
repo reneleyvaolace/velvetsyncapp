@@ -13,7 +13,7 @@ import 'package:velvet_sync/services/backend/sync_service.dart';
 import 'package:velvet_sync/services/backend/link_service.dart';
 import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
-import 'package:velvet_sync/screens/home_screen.dart';
+import 'package:velvet_sync/screens/main_navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -138,7 +138,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+          pageBuilder: (context, animation, secondaryAnimation) => const MainNavigation(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
