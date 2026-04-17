@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
+import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/theme.dart';
 
 class CompatibleDevicesRow extends ConsumerWidget {
@@ -142,7 +143,10 @@ class _DeviceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _openWebCatalog,
+      onTap: () {
+        final catalog = ref.read(catalogProvider).asData?.value;
+        ref.read(bleProvider).connectToDevice(catalog: [toy]);
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: 90,
@@ -229,8 +233,5 @@ class _DeviceChip extends StatelessWidget {
         fit: BoxFit.contain,
       ),
     );
-  }
-  void _openWebCatalog() {
-    CatalogNotifier.openWebCatalog();
   }
 }

@@ -194,7 +194,7 @@ class Logger {
     
     // Imprimir en consola (solo debug)
     if (kDebugMode) {
-      lvsLog(entry.toString());
+      debugPrint(entry.toString());
     }
     
     // Emitir a stream

@@ -137,109 +137,132 @@ class ControlTab extends ConsumerWidget {
                 ),
               ],
             ),
-          // ═══════════════════════════════════════════════════════════════
-          // ESTADO: DISPOSITIVO VINCULADO
-          // ═══════════════════════════════════════════════════════════════
-          const Divider(height: 24, color: Colors.white10),
-          
-          // Tarjeta del dispositivo
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  LvsColors.teal.withValues(alpha: 0.15),
-                  LvsColors.bgCard.withValues(alpha: 0.5),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: bleState == BleState.scanning || bleState == BleState.connecting ? null : () {
+                final catalog = ref.read(catalogProvider).asData?.value;
+                ble.connectToDevice(catalog: catalog);
+              },
+              icon: (bleState == BleState.scanning || bleState == BleState.connecting)
+                ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: LvsColors.teal))
+                : const Icon(Icons.bluetooth_searching, size: 18),
+              label: Text(
+                (bleState == BleState.scanning || bleState == BleState.connecting) ? 'BUSCANDO...' : 'INICIAR ESCANEO', 
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)
               ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: LvsColors.teal.withValues(alpha: 0.3)),
-              boxShadow: [
-                BoxShadow(
-                  color: LvsColors.teal.withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                ),
-              ],
+              style: ElevatedButton.styleFrom(
+                backgroundColor: LvsColors.teal.withValues(alpha: 0.1),
+                foregroundColor: LvsColors.teal,
+                elevation: 0,
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                side: BorderSide(color: LvsColors.teal.withValues(alpha: 0.3)),
+              ),
             ),
-            child: Column(
-              children: [
-                // Icono grande del dispositivo
-                Container(
-                  width: 80, height: 80,
-                  decoration: BoxDecoration(
-                    color: LvsColors.teal.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: LvsColors.teal.withValues(alpha: 0.5), width: 2),
-                  ),
-                  child: Icon(
-                    _getDeviceIcon(ble.activeToy),
-                    color: LvsColors.teal,
-                    size: 50,
-                  ),
+          ] else ...[
+            // ═══════════════════════════════════════════════════════════════
+            // ESTADO: DISPOSITIVO VINCULADO
+            // ═══════════════════════════════════════════════════════════════
+            const Divider(height: 24, color: Colors.white10),
+            
+            // Tarjeta del dispositivo
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    LvsColors.teal.withValues(alpha: 0.15),
+                    LvsColors.bgCard.withValues(alpha: 0.5),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                const SizedBox(height: 16),
-                
-                // Nombre del dispositivo
-                Text(
-                  ble.activeToy?.name.toUpperCase() ?? ble.connectedDeviceName.toUpperCase(),
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 6),
-                
-                // ID y tipo
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: LvsColors.bgCardH.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: LvsColors.teal.withValues(alpha: 0.3)),
+                boxShadow: [
+                  BoxShadow(
+                    color: LvsColors.teal.withValues(alpha: 0.1),
+                    blurRadius: 20,
+                    spreadRadius: 2,
                   ),
-                  child: Text(
-                    'ID: ${ble.activeToy?.id ?? ble.toyProfile?.identifier ?? "---"}',
-                    style: const TextStyle(color: LvsColors.teal, fontSize: 11, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Botón de renombrar
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () => _showRenameDialog(ref, ble),
-                    icon: const Icon(Icons.edit, size: 16),
-                    label: const Text('RENOMBRAR', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: LvsColors.teal,
-                      side: BorderSide(color: LvsColors.teal.withValues(alpha: 0.5)),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Icono grande del dispositivo
+                  Container(
+                    width: 80, height: 80,
+                    decoration: BoxDecoration(
+                      color: LvsColors.teal.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: LvsColors.teal.withValues(alpha: 0.5), width: 2),
+                    ),
+                    child: Icon(
+                      _getDeviceIcon(ble.activeToy),
+                      color: LvsColors.teal,
+                      size: 50,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  
+                  // Nombre del dispositivo
+                  Text(
+                    ble.activeToy?.name.toUpperCase() ?? ble.connectedDeviceName.toUpperCase(),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 6),
+                  
+                  // ID y tipo
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: LvsColors.bgCardH.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'ID: ${ble.activeToy?.id ?? ble.toyProfile?.identifier ?? "---"}',
+                      style: const TextStyle(color: LvsColors.teal, fontSize: 11, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Botón de renombrar
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _showRenameDialog(ref, ble),
+                      icon: const Icon(Icons.edit, size: 16),
+                      label: const Text('RENOMBRAR', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: LvsColors.teal,
+                        side: BorderSide(color: LvsColors.teal.withValues(alpha: 0.5)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          
-          // Botón desvincular
-          ElevatedButton.icon(
-            onPressed: () => ble.disconnect(),
-            icon: const Icon(Icons.link_off, size: 18),
-            label: const Text('DESVINCULAR DISPOSITIVO', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.withValues(alpha: 0.15),
-              foregroundColor: Colors.redAccent,
-              elevation: 0,
-              side: BorderSide(color: Colors.red.withValues(alpha: 0.3)),
-              minimumSize: const Size(double.infinity, 48),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            const SizedBox(height: 16),
+            
+            // Botón desvincular
+            ElevatedButton.icon(
+              onPressed: () => ble.disconnect(),
+              icon: const Icon(Icons.link_off, size: 18),
+              label: const Text('DESVINCULAR DISPOSITIVO', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.withValues(alpha: 0.15),
+                foregroundColor: Colors.redAccent,
+                elevation: 0,
+                side: BorderSide(color: Colors.red.withValues(alpha: 0.3)),
+                minimumSize: const Size(double.infinity, 48),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
             ),
-          ),
-        ],
+          ],
         ],
       ),
     );
