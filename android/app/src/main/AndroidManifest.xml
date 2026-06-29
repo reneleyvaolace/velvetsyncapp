@@ -6,7 +6,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- ══════════════════════════════════════════════════════════
-         PERMISOS BLUETOOTH ═════════════════════════════════════════════════════════= -->
+         PERMISOS CAMARA Y BLUETOOTH ═════════════════════════════════════════════════════════= -->
+    
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- Android 12+ (API 31+): Nuevos permisos granulares BLE -->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />

@@ -5,8 +5,10 @@ import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
+import 'package:velvet_sync/widgets/lvs_modes.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/screens/catalog_screen.dart';
+import 'package:velvet_sync/screens/qr_scanner_screen.dart';
 import 'package:velvet_sync/screens/remote_session_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:math';
@@ -122,7 +124,7 @@ class ControlTab extends ConsumerWidget {
                 title: 'AGREGAR',
                 icon: Icons.bluetooth_searching,
                 color: LvsColors.violet,
-                onTap: () => ble.connectToDevice(), // Or navigate to add device
+                onTap: () => _showAddDeviceOptions(context, ble),
               ),
             ),
             const SizedBox(width: 12),
@@ -152,6 +154,111 @@ class ControlTab extends ConsumerWidget {
           ],
         ),
       ],
+    );
+  }
+
+  void _showAddDeviceOptions(BuildContext context, BleService ble) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: LvsColors.bgCard,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'AGREGAR DISPOSITIVO',
+              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1),
+            ),
+            const SizedBox(height: 24),
+            _buildOptionRow(
+              icon: Icons.bluetooth_searching,
+              color: LvsColors.violet,
+              title: 'Búsqueda Rápida',
+              subtitle: 'Escanea dispositivos cercanos visibles (Recomendado).',
+              onTap: () {
+                ble.isDeepScan = false;
+                ble.connectToDevice();
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildOptionRow(
+              icon: Icons.radar,
+              color: LvsColors.amber,
+              title: 'Búsqueda Profunda (Deep Scan)',
+              subtitle: 'Útil si el juguete no aparece (ej. juguetes antiguos o de baja energía).',
+              onTap: () {
+                ble.isDeepScan = true;
+                ble.connectToDevice();
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildOptionRow(
+              icon: Icons.qr_code_scanner,
+              color: LvsColors.teal,
+              title: 'Escanear Código QR',
+              subtitle: 'Vincular rápidamente dispositivos Lovense y compatibles.',
+              onTap: () async {
+                Navigator.pop(context);
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const QRScannerScreen()),
+                );
+                if (result != null && result is String) {
+                  // Connect to Lovense via QR (TODO: send token to backend)
+                  debugPrint('QR Scanned: $result');
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionRow({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 32),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 4),
+                  Text(subtitle, style: const TextStyle(color: LvsColors.text3, fontSize: 12)),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, color: LvsColors.text3, size: 16),
+          ],
+        ),
+      ),
     );
   }
 

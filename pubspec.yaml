@@ -49,7 +49,7 @@ dependencies:
   csv: ^6.0.0
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.1  # 🔒 PERFORMANCE: Custom cache manager para imágenes
-  mobile_scanner: ^7.0.0      # QR / Barcode scanner real
+  mobile_scanner: ^7.2.0      # QR / Barcode scanner real
   supabase_flutter: ^2.12.0
   url_launcher: ^6.3.1
   flutter_dotenv: ^5.2.1  # Updated: Bug fixes
