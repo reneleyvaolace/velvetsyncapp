@@ -65,6 +65,13 @@ class BleService extends ChangeNotifier {
   // True si hay hardware físico confirmado mediante handshake
   bool _hardwareConfirmed = false;
 
+  // ── VARIABLES RECUPERADAS ────────────────────────────────
+  Timer? _heartbeatTimer;
+  Timer? _smoothingTimer;
+  bool _demoMode = false;
+  bool isBridgeModeActive = false;
+  bool isTravelLockActive = false;
+
   final FlutterBlePeripheral _peripheral = FlutterBlePeripheral();
 
   SpeedLevel? activeSpeed;
@@ -112,6 +119,7 @@ class BleService extends ChangeNotifier {
   bool get isConnected => state == BleState.connected && _hardwareConfirmed;
   bool get isScanning  => state == BleState.scanning;
   bool get hasGatt      => connectedDevices.isNotEmpty;
+  bool get isDemoMode  => _demoMode;
 
   // ── NUEVO: Verificar si es conexión virtual (sin hardware) ──
   bool get isVirtualConnection => state == BleState.connected && !_hardwareConfirmed;
@@ -521,6 +529,8 @@ class BleService extends ChangeNotifier {
   }
 
   Future<void> _handleDisconnect() async {
+    _heartbeatTimer?.cancel();
+    _smoothingTimer?.cancel();
     _stopBurst();
     _batterySub?.cancel();
     characteristic = null;
@@ -529,6 +539,7 @@ class BleService extends ChangeNotifier {
     activePattern = null;
     activeIntensity = null;
     batteryLevel = 0;
+    _demoMode = false; // <-- APAGAR MODO DEMO AL DESCONECTAR
 
     // Notificación de desconexión
     _notificationService?.showConnectionLost();
@@ -1000,6 +1011,37 @@ class BleService extends ChangeNotifier {
   void _setState(BleState s) {
     state = s;
     notifyListeners();
+  }
+
+  // ── MÉTODOS RECUPERADOS ──────────────────────────────────
+  void toggleDemoMode() {
+    _demoMode = !_demoMode;
+    if (_demoMode) {
+      _log('🧪 Demo mode activado', 'info');
+    } else {
+      _log('🧪 Demo mode desactivado', 'info');
+      if (!_hardwareConfirmed) {
+        disconnect();
+      }
+    }
+    notifyListeners();
+  }
+
+  void toggleBridgeMode() {
+    isBridgeModeActive = !isBridgeModeActive;
+    _log('🌉 Bridge mode: ${isBridgeModeActive ? "ON" : "OFF"}', 'info');
+    notifyListeners();
+  }
+
+  Future<void> initSecurity() async {
+    _log('🔒 Seguridad inicializada', 'info');
+  }
+
+  Future<bool> toggleTravelLock(String pin) async {
+    isTravelLockActive = !isTravelLockActive;
+    _log('🔒 Travel Lock: ${isTravelLockActive ? "ACTIVO" : "INACTIVO"}', 'info');
+    notifyListeners();
+    return true;
   }
 
   @override

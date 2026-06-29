@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
-import 'package:velvet_sync/theme.dart' hide SectionLabel;
+import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/screens/dice_screen.dart';
-import 'package:velvet_sync/screens/placeholder_screens.dart';
 import 'package:velvet_sync/screens/game_screen.dart';
+import 'package:velvet_sync/screens/roulette_screen.dart';
+import 'package:velvet_sync/screens/reader_screen.dart';
+import 'package:velvet_sync/screens/companion_screen.dart';
 import 'package:velvet_sync/widgets/lvs_modes.dart';
 import 'package:velvet_sync/screens/kegel_screen.dart';
+import 'package:velvet_sync/screens/haptic_video_player_screen.dart';
+import 'package:velvet_sync/screens/remote_video_sync_screen.dart';
 
 class ModesTab extends ConsumerStatefulWidget {
   const ModesTab({super.key});
@@ -16,8 +20,6 @@ class ModesTab extends ConsumerStatefulWidget {
 }
 
 class _ModesTabState extends ConsumerState<ModesTab> {
-  bool _shakeMode = false;
-
   @override
   Widget build(BuildContext context) {
     final ble = ref.watch(bleProvider);
@@ -52,8 +54,56 @@ class _ModesTabState extends ConsumerState<ModesTab> {
     );
   }
 
+  Widget _buildDemoBanner(BleService ble) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: LvsColors.amber.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: LvsColors.amber.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: LvsColors.amber.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.science, color: LvsColors.amber, size: 18),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'MODO DEMO',
+                    style: TextStyle(
+                      color: LvsColors.amber,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Simulación sin hardware. Activa P2P o conecta BLE para control real.',
+                    style: TextStyle(color: LvsColors.text3, fontSize: 9),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildControlSections(BleService ble) {
-    if (!ble.isConnected) {
+    if (!ble.isConnected && !ble.isDemoMode) {
       return const Column(
         children: [
           _DisabledCard(title: 'CANVAS DE CONTROL'),
@@ -66,6 +116,7 @@ class _ModesTabState extends ConsumerState<ModesTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (ble.isDemoMode) _buildDemoBanner(ble),
         // ── Sección de Dibujo / Shake ──
         _buildInteractiveCard(ble),
         const SizedBox(height: 24),
@@ -100,9 +151,9 @@ class _ModesTabState extends ConsumerState<ModesTab> {
     return CardGlass(
       child: Column(
         children: [
-          Row(
+          const Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -112,12 +163,6 @@ class _ModesTabState extends ConsumerState<ModesTab> {
                   ],
                 ),
               ),
-              Switch(
-                value: _shakeMode,
-                onChanged: (v) => setState(() => _shakeMode = v),
-                activeTrackColor: LvsColors.pink,
-              ),
-              const Text('AGITAR', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white)),
             ],
           ),
           const SizedBox(height: 20),
@@ -165,6 +210,16 @@ class _ModesTabState extends ConsumerState<ModesTab> {
           title: 'KEGEL', icon: Icons.fitness_center, color: LvsColors.amber,
           assetPath: 'assets/icons/icon_kegel.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KegelScreen())),
+        ),
+        _GameTile(
+          title: 'VIDEO', icon: Icons.videocam, color: LvsColors.pink,
+          assetPath: null,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HapticVideoPlayerScreen())),
+        ),
+        _GameTile(
+          title: 'REMOTO', icon: Icons.sensors, color: LvsColors.teal,
+          assetPath: null,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteVideoSyncScreen(role: RemoteVideoRole.host))),
         ),
       ],
     );

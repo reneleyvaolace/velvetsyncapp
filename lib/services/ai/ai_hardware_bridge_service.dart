@@ -18,14 +18,14 @@ import 'package:velvet_sync/utils/logger.dart';
 // Providers de Riverpod
 // ═══════════════════════════════════════════════════════════════
 
-/// Provider que expone el AIHardwareBridge como singleton
-final aiHardwareBridgeProvider = Provider<AIHardwareBridge>((ref) {
+/// Provider que expone el AIHardwareBridge como singleton y maneja su estado
+final aiHardwareBridgeProvider = ChangeNotifierProvider<AIHardwareBridge>((ref) {
   return AIHardwareBridge();
 });
 
-/// Provider que expone el estado del puente IA-Hardware
-final aiBridgeStateProvider = StateProvider<AIBridgeState>((ref) {
-  return AIBridgeState.disconnected;
+/// Provider derivado para observar solo el estado del puente
+final aiBridgeStateProvider = Provider<AIBridgeState>((ref) {
+  return ref.watch(aiHardwareBridgeProvider).state;
 });
 
 /// Provider que expone el último evento de IA procesado
@@ -171,12 +171,21 @@ class AIHardwareBridge extends ChangeNotifier {
   /// Manejador principal de eventos APPLY_AI_PROFILE
   ///
   /// Procesa el intensity_map del evento y envía comandos BLE
-  void _handleAIProfile(DeviceSyncEvent event) async {
+  void _handleAIProfile(DeviceSyncEvent event) {
+    if (_isExecuting) {
+      debugPrint('[AIHardwareBridge] Descartando evento, ejecución en progreso');
+      return;
+    }
+    unawaited(_processAIProfile(event));
+  }
+
+  Future<void> _processAIProfile(DeviceSyncEvent event) async {
     debugPrint('[AIHardwareBridge] Evento AI Profile recibido: ${event.id}');
     lvsLog('AI Profile: ${event.command} para ${event.deviceId}', tag: 'AI_BRIDGE');
 
     // Validar que tengamos un juguete conectado
-    if (_currentToy == null) {
+    final toy = _currentToy;
+    if (toy == null) {
       debugPrint('[AIHardwareBridge] No hay juguete conectado');
       lvsLog('No hay juguete conectado para aplicar AI Profile', tag: 'AI_BRIDGE');
       return;
@@ -206,7 +215,7 @@ class AIHardwareBridge extends ChangeNotifier {
       debugPrint('[AIHardwareBridge] Intensity Map: $intensityMap');
 
       // Procesar cada valor en el mapa de intensidad
-      await _executeIntensityMap(intensityMap, event);
+      await _executeIntensityMap(intensityMap, toy, event);
 
       // Actualizar último evento procesado
       _lastProcessedEvent = event;
@@ -299,29 +308,46 @@ class AIHardwareBridge extends ChangeNotifier {
   /// Ejecuta el mapa de intensidades en el hardware
   Future<void> _executeIntensityMap(
     Map<String, int> intensityMap,
+    ToyModel toy,
     DeviceSyncEvent event,
   ) async {
-    final toy = _currentToy!;
+    // GUARD: Verificar Precise Control CH1/General
+    final ch1Val = intensityMap['intensity'] ?? intensityMap['intensity_ch1'] ?? 0;
+    final guardResult1 = _preciseControlGuard(toy: toy, intensity: ch1Val);
 
-    // GUARD: Verificar Precise Control
-    final guardResult = _preciseControlGuard(
-      toy: toy,
-      intensity: intensityMap['intensity'] ??
-                 intensityMap['intensity_ch1'] ??
-                 0,
-    );
-
-    if (!guardResult.allowed) {
-      debugPrint('[AIHardwareBridge] Guard bloqueó el envío: ${guardResult.reason}');
-      lvsLog('Guard bloqueó AI: ${guardResult.reason}', tag: 'AI_BRIDGE');
+    if (!guardResult1.allowed) {
+      debugPrint('[AIHardwareBridge] Guard bloqueó CH1: ${guardResult1.reason}');
+      lvsLog('Guard bloqueó AI CH1: ${guardResult1.reason}', tag: 'AI_BRIDGE');
       return;
+    }
+
+    final newIntensityMap = Map<String, int>.from(intensityMap);
+    
+    if (newIntensityMap.containsKey('intensity')) {
+      newIntensityMap['intensity'] = guardResult1.adjustedIntensity;
+    }
+    if (newIntensityMap.containsKey('intensity_ch1')) {
+      newIntensityMap['intensity_ch1'] = guardResult1.adjustedIntensity;
     }
 
     // Si el dispositivo es Dual Channel, manejar canales separados
     if (toy.hasDualChannel) {
-      await _executeDualChannel(intensityMap, toy, event);
+      final ch2Val = intensityMap['intensity_ch2'] ?? intensityMap['intensity'] ?? 0;
+      final guardResult2 = _preciseControlGuard(toy: toy, intensity: ch2Val);
+      
+      if (!guardResult2.allowed) {
+        debugPrint('[AIHardwareBridge] Guard bloqueó CH2: ${guardResult2.reason}');
+        lvsLog('Guard bloqueó AI CH2: ${guardResult2.reason}', tag: 'AI_BRIDGE');
+        return;
+      }
+      
+      if (newIntensityMap.containsKey('intensity_ch2')) {
+        newIntensityMap['intensity_ch2'] = guardResult2.adjustedIntensity;
+      }
+      
+      await _executeDualChannel(newIntensityMap, toy, event);
     } else {
-      await _executeSingleChannel(intensityMap, toy, event);
+      await _executeSingleChannel(newIntensityMap, toy, event);
     }
   }
 

@@ -24,12 +24,12 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 
-import 'ble_service_mobile.dart' as mobile;
+import 'ble_service.dart' as real;
 
 /// Obtiene el servicio BLE apropiado para la plataforma actual.
 ///
 /// Retorna:
-/// - [mobile.BleServiceMobile] para Android/iOS
+/// - [real.BleService] para Android/iOS
 ///
 /// Ejemplo:
 /// ```dart
@@ -43,7 +43,7 @@ dynamic getBleService() {
   }
 
   if (Platform.isAndroid || Platform.isIOS) {
-    return mobile.getBleService();
+    return real.BleService();
   }
 
   throw UnsupportedError('Plataforma no soportada: ${Platform.operatingSystem}');

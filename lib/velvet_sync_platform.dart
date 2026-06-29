@@ -53,11 +53,12 @@ export 'core/config/buttplug_config_loader.dart';
 // Models
 export 'devices/models/toy_model.dart';
 export 'devices/models/lovespouse_device.dart';
-export 'devices/models/buttplug_devices.dart' hide ConnectionType;
+export 'devices/models/buttplug_devices.dart' hide ConnectionType, ButtplugDevice;
 export 'devices/models/device_sync_model.dart';
 export 'devices/models/session_models.dart';
 export 'devices/models/funscript.dart';
 export 'devices/models/game_profile.dart';
+export 'devices/models/session_invite.dart';
 
 // Parsers
 
@@ -73,6 +74,14 @@ export 'services/ble/lvs_commands.dart' hide PacketMode;
 export 'services/ble/toy_profile.dart';
 
 // Buttplug Service
+export 'services/buttplug/buttplug_client_service.dart';
+export 'services/buttplug/buttplug_device.dart';
+
+// P2P Services
+export 'services/p2p/p2p_connection_manager.dart';
+export 'services/p2p/p2p_signaling_service.dart';
+export 'services/p2p/direct_websocket_transport.dart';
+export 'services/p2p/supabase_broadcast_transport.dart';
 
 // Catalog Service
 export 'services/catalog/catalog_service.dart';

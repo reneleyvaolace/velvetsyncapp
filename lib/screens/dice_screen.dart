@@ -25,6 +25,7 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
   bool _isRolling = false;
   bool _isActive  = false;  // ← true cuando el hardware está activado
   Timer? _autoStopTimer;
+  Timer? _rollTimer;
   int _secondsLeft = 0;
   static const _defaultDuration = 15; // Segundos que dura la sensación
 
@@ -39,6 +40,7 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
 
   @override
   void dispose() {
+    _rollTimer?.cancel();
     _autoStopTimer?.cancel();
     _animationController.dispose();
     super.dispose();
@@ -51,7 +53,9 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
 
     // Simular el giro por 1.5 segundos
     var ticks = 0;
-    Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    _rollTimer?.cancel();
+    _rollTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (!mounted) { timer.cancel(); return; }
       setState(() {
         _dice1Value = math.Random().nextInt(9) + 1;
         _dice2Value = math.Random().nextInt(9) + 1;
@@ -62,6 +66,7 @@ class _DiceScreenState extends ConsumerState<DiceScreen> with TickerProviderStat
       ticks++;
       if (ticks > 15) {
         timer.cancel();
+        _rollTimer = null;
         _stopRolling();
       }
     });

@@ -44,7 +44,7 @@ class ToyModel {
     if (anatomyLower.contains('anal') || anatomyLower.contains('zen')) return 'assets/icons/icon_anal.png';
     if (anatomyLower.contains('prostat') || anatomyLower.contains('prostático')) return 'assets/icons/icon_prostate.png';
     if (anatomyLower.contains('clitor') || anatomyLower.contains('luna')) return 'assets/icons/icon_clitoral.png';
-    if (anatomyLower.contains('penian') || anatomyLower.contains('ring') || anatomyLower.contains('anillo')) return 'assets/icons/icon_ring.png';
+    if (anatomyLower.contains('peneano') || anatomyLower.contains('ring') || anatomyLower.contains('anillo')) return 'assets/icons/icon_ring.png';
 
     // 2. Prioridad por Tipo de Estimulación / Mecanismo
     if (stimLower.contains('onda') || stimLower.contains('pulse') || stimLower.contains('wave')) return 'assets/icons/icon_pulse_waves.png';
@@ -65,6 +65,27 @@ class ToyModel {
   }
 
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ToyModel &&
+          id == other.id &&
+          name == other.name &&
+          usageType == other.usageType &&
+          targetAnatomy == other.targetAnatomy &&
+          stimulationType == other.stimulationType &&
+          motorLogic == other.motorLogic &&
+          imageUrl == other.imageUrl &&
+          qrCodeUrl == other.qrCodeUrl &&
+          supportedFuncs == other.supportedFuncs &&
+          isPrecise == other.isPrecise &&
+          broadcastPrefix == other.broadcastPrefix;
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, usageType, targetAnatomy, stimulationType,
+          motorLogic, imageUrl, qrCodeUrl, supportedFuncs, isPrecise, broadcastPrefix);
+
   factory ToyModel.fromCsv(List<dynamic> row) {
     // Estructura esperada segun el CSV:
     // 0:ID, 1:Barcode, 2:Nombre, 3:UsageType, 4:TargetAnatomy, 5:StimulationType,
@@ -72,18 +93,23 @@ class ToyModel {
     // 12:SupportedFuncs, 13:Wireless, 14:FactoryId, 15:IsEncrypt,
     // 16:IsPrecise, 17:BroadcastPrefix, 18:BleName
 
+    String safeGet(List<dynamic> row, int index) {
+      if (index >= row.length) return '';
+      return row[index]?.toString() ?? '';
+    }
+
     return ToyModel(
-      id: row[0].toString(),
-      name: row[2]?.toString() ?? 'Unknown',
-      usageType: row[3]?.toString() ?? 'Universal',
-      targetAnatomy: row[4]?.toString() ?? 'Universal',
-      stimulationType: row[5]?.toString() ?? 'Vibración',
-      motorLogic: row[6]?.toString() ?? 'Single Channel',
-      imageUrl: row[9]?.toString() ?? '',
-      qrCodeUrl: row[11]?.toString() ?? '',
-      supportedFuncs: row[12]?.toString() ?? '',
-      isPrecise: row[16]?.toString() == '0-255',
-      broadcastPrefix: row[17]?.toString() ?? '77 62 4d 53 45',
+      id: safeGet(row, 0),
+      name: safeGet(row, 2) == '' ? 'Unknown' : safeGet(row, 2),
+      usageType: safeGet(row, 3) == '' ? 'Universal' : safeGet(row, 3),
+      targetAnatomy: safeGet(row, 4) == '' ? 'Universal' : safeGet(row, 4),
+      stimulationType: safeGet(row, 5) == '' ? 'Vibración' : safeGet(row, 5),
+      motorLogic: safeGet(row, 6) == '' ? 'Single Channel' : safeGet(row, 6),
+      imageUrl: safeGet(row, 9),
+      qrCodeUrl: safeGet(row, 11),
+      supportedFuncs: safeGet(row, 12),
+      isPrecise: safeGet(row, 16) == '0-255',
+      broadcastPrefix: safeGet(row, 17) == '' ? '77 62 4d 53 45' : safeGet(row, 17),
     );
   }
 

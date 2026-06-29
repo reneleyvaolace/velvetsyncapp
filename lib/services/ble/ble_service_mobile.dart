@@ -15,6 +15,7 @@ class BleServiceMobile {
   Future<void> connect(dynamic device) async {}
   Future<void> disconnect(dynamic device) async {}
   Future<void> writeCommand(dynamic device, List<int> bytes, {String? serviceUuid}) async {}
+  Future<void> initSecurity() async {}
   Future<void> dispose() async {}
 }
 

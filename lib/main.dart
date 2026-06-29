@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // Velvet Sync · lib/main.dart
-// Entrypoint unificado de la plataforma (Refactored)
+// Entrypoint unificado de la plataforma (Refactored & Robust)
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:flutter/material.dart';
@@ -11,9 +11,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/backend/sync_service.dart';
 import 'package:velvet_sync/services/backend/link_service.dart';
+import 'package:velvet_sync/services/backend/profile_service.dart';
 import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:velvet_sync/screens/main_navigation.dart';
+import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,10 +31,11 @@ void main() async {
     await dotenv.load(fileName: '.env');
     lvsLog('Variables de entorno cargadas', tag: 'APP');
   } catch (e) {
-    lvsError('Error cargando .env: $e', tag: 'APP');
+    lvsError('Error crítico cargando .env: $e', tag: 'APP');
+    // Continuamos pero los servicios fallarán si dependen de .env
   }
 
-  // 3. Inicializar Supabase Temprano
+  // 3. Inicializar Supabase Temprano (Opcional en main, obligatorio en servicios)
   try {
     final url = dotenv.env['SUPABASE_URL'] ?? '';
     final anonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
@@ -43,6 +46,12 @@ void main() async {
         realtimeClientOptions: const RealtimeClientOptions(eventsPerSecond: 10),
       );
       lvsLog('Supabase inicializado en main()', tag: 'APP');
+
+      // Autenticación anónima para obtener user ID persistente
+      if (Supabase.instance.client.auth.currentUser == null) {
+        await Supabase.instance.client.auth.signInAnonymously();
+        lvsLog('Usuario anónimo autenticado', tag: 'APP');
+      }
     }
   } catch (e) {
     lvsError('Fallo inicialización Supabase en main: $e', tag: 'APP');
@@ -72,7 +81,7 @@ class VelvetSyncApp extends ConsumerWidget {
     final baseTheme = ThemeData(
       brightness: brightness,
       scaffoldBackgroundColor: const Color(0xFF0D0D12),
-      fontFamily: 'Outfit', // Fuente local en assets/fonts/
+      fontFamily: 'Outfit',
     );
     return baseTheme.copyWith(
       colorScheme: ColorScheme.fromSeed(
@@ -91,6 +100,8 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  String _statusMessage = 'Inicializando core services...';
+
   @override
   void initState() {
     super.initState();
@@ -98,47 +109,58 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _initApp() async {
-    lvsLog('Inicializando core services...', tag: 'APP');
-    
     try {
-      // 1. Inicializar LinkService (con timeout)
-      await LinkService().init().timeout(const Duration(seconds: 3), onTimeout: () {
-        lvsLog('LinkService timeout', tag: 'APP');
-      });
+      // 1. Inicializar LinkService
+      setState(() => _statusMessage = 'Preparando Deep Links...');
+      await ref.read(linkServiceProvider).init().timeout(const Duration(seconds: 3));
       
       if (!mounted) return;
 
-      // 2. Cargar BleService (síncrono)
+      // 2. Cargar BleService
+      setState(() => _statusMessage = 'Configurando Bluetooth...');
       final bleService = ref.read(bleProvider);
+      await bleService.initSecurity();
       
-      // 3. Inicializar SyncService (con timeout)
-      await ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 4), onTimeout: () {
-        lvsLog('SyncService timeout', tag: 'APP');
-      });
+      // 3. Inicializar SyncService (Supabase Realtime)
+      setState(() => _statusMessage = 'Conectando con la nube...');
+      await ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 5));
       
+      if (!mounted) return;
+
       // 4. Inicializar AI Hardware Bridge
+      setState(() => _statusMessage = 'Activando Puente de IA...');
       final aiBridge = ref.read(aiHardwareBridgeProvider);
       await aiBridge.init(
         bleService: bleService,
         syncService: ref.read(syncServiceProvider),
-      ).timeout(const Duration(seconds: 3), onTimeout: () {
-        lvsLog('AI Bridge timeout', tag: 'APP');
-      });
+      ).timeout(const Duration(seconds: 3));
+
+      // 5. Cargar perfil de usuario
+      setState(() => _statusMessage = 'Cargando perfil...');
+      final profileService = ref.read(profileServiceProvider);
+      await profileService.loadCachedProfile();
 
     } catch (e) {
-      lvsError('Error silencioso en inicialización: $e', tag: 'APP');
+      lvsError('Error en inicialización: $e', tag: 'APP');
+      setState(() {
+        _statusMessage = 'Error en algunos servicios. Continuando...';
+      });
+      await Future.delayed(const Duration(seconds: 1));
     }
     
-    lvsLog('App inicializada correctamente o por timeout', tag: 'APP');
-      
     if (mounted) {
-      // Tiempo mínimo de Splash para ver el logo
-      await Future.delayed(const Duration(seconds: 2));
+      setState(() => _statusMessage = '¡Todo listo!');
+      await Future.delayed(const Duration(seconds: 1));
       if (!mounted) return;
       
+      // Verificar si el usuario tiene perfil o necesita crear uno
+      final profileService = ref.read(profileServiceProvider);
+      final needsProfile = profileService.myProfile == null;
+
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const MainNavigation(),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              needsProfile ? const MyProfileScreen() : const MainNavigation(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -155,7 +177,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ── Logo Central ──────────────────────────────────────────
             Image.asset(
               'assets/images/logo_neon.png',
               height: 180,
@@ -166,7 +187,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            // ── Nombre de la App ──────────────────────────────────────
             const Text(
               'VELVET SYNC',
               style: TextStyle(
@@ -177,12 +197,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ),
             ),
             const SizedBox(height: 40),
-            // ── Indicador de Carga ────────────────────────────────────
+            Text(
+              _statusMessage,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.7),
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 20),
             const SizedBox(
               width: 30,
               height: 30,
               child: CircularProgressIndicator(
-                strokeWidth: 2.5,
+                strokeWidth: 2,
                 color: Color(0xFFE91E63),
               ),
             ),
@@ -211,7 +238,7 @@ class DebugDashboard extends ConsumerWidget {
           const SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: () {
-              // Navegar al catálogo web o local
+              // Navegar al catálogo
             },
             icon: const Icon(Icons.explore),
             label: const Text('Open Device Catalog'),
@@ -236,7 +263,10 @@ class DebugDashboard extends ConsumerWidget {
         title: Text(title),
         trailing: Text(
           status.toUpperCase(),
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+          style: TextStyle(
+            fontWeight: FontWeight.bold, 
+            color: status.toLowerCase() == 'error' ? Colors.red : Colors.blue
+          ),
         ),
       ),
     );

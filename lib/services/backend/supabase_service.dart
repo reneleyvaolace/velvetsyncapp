@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
+import 'package:meta/meta.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +17,31 @@ final supabaseServiceProvider = Provider<SupabaseService>((ref) {
 
 class SupabaseService {
   static bool _isInitialized = false;
+  SupabaseClient? _mockClient;
+
+  SupabaseService();
+
+  @visibleForTesting
+  factory SupabaseService.testing({SupabaseClient? client}) {
+    final service = SupabaseService();
+    service._mockClient = client;
+    return service;
+  }
+
+  @visibleForTesting
+  void setInitialized() {
+    _isInitialized = true;
+  }
+
+  @visibleForTesting
+  void resetInitialized() {
+    _isInitialized = false;
+    _lastSessionCreationTime = null;
+    _activeChannel = null;
+  }
+
+  @visibleForTesting
+  bool get isInitialized => _isInitialized;
 
   static const String thermMax80 = 'THERM_MAX_80';
 
@@ -60,7 +86,7 @@ class SupabaseService {
     }
   }
 
-  SupabaseClient get client => Supabase.instance.client;
+  SupabaseClient get client => _mockClient ?? Supabase.instance.client;
 
   // 1. Mapeo de Hardware (device_catalog)
   /// Obtiene el catálogo de dispositivos desde Supabase
@@ -219,7 +245,7 @@ class SupabaseService {
 
   /// Crea una nueva sesión compartida en la DB y retorna sus datos (ID, Token)
   /// Incluye rate limiting para prevenir abuso
-  Future<Map<String, dynamic>?> createSharedSession(String deviceId) async {
+  Future<Map<String, dynamic>?> createSharedSession(String deviceId, {String? hostName}) async {
     if (!_isInitialized) return null;
 
     // 🔒 SECURITY: Rate limiting - prevent session creation abuse
@@ -241,6 +267,7 @@ class SupabaseService {
           .insert({
             'device_id': deviceId,
             'is_active': true,
+            if (hostName != null) 'host_name': hostName,
           })
           .select()
           .single();
@@ -258,6 +285,7 @@ class SupabaseService {
               .insert({
                 'device_id': '8154', // Usamos el ID del Knight No. 3 como fallback universal
                 'is_active': true,
+                if (hostName != null) 'host_name': hostName,
               })
               .select()
               .single();

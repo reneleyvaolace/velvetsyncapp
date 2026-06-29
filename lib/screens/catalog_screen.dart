@@ -564,16 +564,27 @@ class _AddDeviceTabState extends ConsumerState<_AddDeviceTab> {
     if (key.trim().isEmpty) return;
     setState(() { _isSearching = true; _foundDevice = null; _errorMsg = null; });
 
-    final result = await ref.read(catalogProvider.notifier).addByKey(key.trim());
-    setState(() {
-      _isSearching = false;
-      if (result != null) {
-        _foundDevice = result;
-      } else {
-        _errorMsg = 'No se encontró ningún dispositivo con ID "$key".\n'
-            'Verifica la clave en el empaque del producto o en la documentación del fabricante.';
+    try {
+      final result = await ref.read(catalogProvider.notifier).addByKey(key.trim());
+      if (mounted) {
+        setState(() {
+          _isSearching = false;
+          if (result != null) {
+            _foundDevice = result;
+          } else {
+            _errorMsg = 'No se encontró ningún dispositivo con ID "$key".\n'
+                'Verifica la clave en el empaque del producto o en la documentación del fabricante.';
+          }
+        });
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSearching = false;
+          _errorMsg = 'Error al buscar: $e';
+        });
+      }
+    }
   }
 
   @override

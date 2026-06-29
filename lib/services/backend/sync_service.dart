@@ -15,9 +15,14 @@ import 'supabase_service.dart';
 // Providers de Riverpod
 // ═══════════════════════════════════════════════════════════════
 
-/// Provider que expone el SyncService como singleton
-final syncServiceProvider = Provider<SyncService>((ref) {
+/// Provider que expone el SyncService como singleton y maneja su estado
+final syncServiceProvider = ChangeNotifierProvider<SyncService>((ref) {
   return SyncService();
+});
+
+/// Provider derivado para observar solo el estado del canal de sincronización
+final syncChannelStateProvider = Provider<SyncChannelState>((ref) {
+  return ref.watch(syncServiceProvider).state;
 });
 
 /// Provider que expone el stream de eventos de sincronización
@@ -28,11 +33,6 @@ final syncEventsProvider = StreamProvider<List<DeviceSyncEvent>>((ref) {
 
 /// Provider que expone el último evento recibido
 final lastSyncEventProvider = StateProvider<DeviceSyncEvent?>((ref) => null);
-
-/// Provider que expone el estado de conexión del canal realtime
-final syncChannelStateProvider = StateProvider<SyncChannelState>((ref) {
-  return SyncChannelState.disconnected;
-});
 
 // ═══════════════════════════════════════════════════════════════
 // Estados del canal
@@ -72,6 +72,13 @@ class SyncService extends ChangeNotifier {
   static final SyncService _instance = SyncService._internal();
   factory SyncService() => _instance;
   SyncService._internal();
+
+  @visibleForTesting
+  factory SyncService.testing({SupabaseService? supabaseService}) {
+    final service = SyncService._internal();
+    service._supabaseService = supabaseService;
+    return service;
+  }
 
   SupabaseService? _supabaseService;
   RealtimeChannel? _channel;
@@ -119,7 +126,7 @@ class SyncService extends ChangeNotifier {
 
     try {
       // Obtener instancia de SupabaseService
-      _supabaseService = SupabaseService();
+      _supabaseService ??= SupabaseService();
       await _supabaseService!.initialize();
 
       // Suscribirse al canal de device_sync
@@ -317,6 +324,20 @@ class SyncService extends ChangeNotifier {
 
     debugPrint('[SyncService] Eventos antiguos removidos. Restantes: ${_recentEvents.length}');
   }
+
+  /// Agrega un evento directamente (expuesto para testing)
+  @visibleForTesting
+  void addTestEvent(DeviceSyncEvent event) => _addEvent(event);
+
+  /// Procesa un payload de cambio en la BD (expuesto para testing)
+  @visibleForTesting
+  void onDatabaseChange(PostgresChangePayload payload) =>
+      _onDatabaseChange(payload);
+
+  /// Notifica listeners de AI Profile (expuesto para testing)
+  @visibleForTesting
+  void notifyAiProfileListeners(DeviceSyncEvent event) =>
+      _notifyAiProfileListeners(event);
 
   // ═══════════════════════════════════════════════════════════════
   // Cleanup

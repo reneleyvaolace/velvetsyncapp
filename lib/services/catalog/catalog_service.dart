@@ -378,7 +378,7 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
 
   // ─── CRUD ─────────────────────────────────────────────────────
 
-  void updateDevice(String oldId, String newName, String newId) async {
+  Future<void> updateDevice(String oldId, String newName, String newId) async {
     // Si el ID cambia, borramos el viejo y creamos el nuevo en pre-registrados
     // Si no estaba en pre-registrados (venía del catálogo general), lo añadimos ahora con su personalización
 
@@ -426,11 +426,10 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
     }
   }
 
-  void removeDevice(String id) {
-    final all = state.valueOrNull ?? [];
+  Future<void> removeDevice(String id) async {
     _preregisteredList = _preregisteredList.where((t) => t.id != id).toList();
-    _savePreregistered();
-    state = AsyncValue.data(all.where((t) => t.id != id).toList());
+    await _savePreregistered();
+    state = AsyncValue.data(_merged());
   }
 
   // ─── CATÁLOGO LOCAL DE EMERGENCIA ─────────────────────────────

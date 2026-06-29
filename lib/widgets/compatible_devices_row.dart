@@ -144,7 +144,6 @@ class _DeviceChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        final catalog = ref.read(catalogProvider).asData?.value;
         ref.read(bleProvider).connectToDevice(catalog: [toy]);
       },
       child: AnimatedContainer(

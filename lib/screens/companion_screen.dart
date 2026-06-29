@@ -78,16 +78,24 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> with SingleTi
       _isLoading = true;
     });
 
-    final response = await aiService.sendMessage(userText);
-
-    if (mounted) {
-      setState(() {
-        _messages.insert(0, ChatMessage(response.text, isUser: false));
-        _currentM1 = response.motor1;
-        _currentM2 = response.motor2;
-        _isLoading = false;
-      });
-      _scrollToBottom();
+    try {
+      final response = await aiService.sendMessage(userText);
+      if (mounted) {
+        setState(() {
+          _messages.insert(0, ChatMessage(response.text, isUser: false));
+          _currentM1 = response.motor1;
+          _currentM2 = response.motor2;
+          _isLoading = false;
+        });
+        _scrollToBottom();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _messages.insert(0, ChatMessage('Error: No se pudo obtener respuesta.', isUser: false));
+          _isLoading = false;
+        });
+      }
     }
   }
 

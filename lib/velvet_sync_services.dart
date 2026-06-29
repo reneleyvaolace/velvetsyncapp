@@ -21,6 +21,14 @@ export 'services/ble/lvs_commands.dart';
 export 'services/ble/toy_profile.dart';
 
 // Buttplug Service
+export 'services/buttplug/buttplug_client_service.dart';
+export 'services/buttplug/buttplug_device.dart';
+
+// P2P Services
+export 'services/p2p/p2p_connection_manager.dart';
+export 'services/p2p/p2p_signaling_service.dart';
+export 'services/p2p/direct_websocket_transport.dart';
+export 'services/p2p/supabase_broadcast_transport.dart';
 
 // Catalog Service
 export 'services/catalog/catalog_service.dart';
@@ -39,6 +47,9 @@ export 'services/session/session_timer_service.dart';
 export 'services/media/video_call_service.dart';
 export 'services/media/funscript_loader.dart';
 export 'services/media/game_haptics_mapper.dart';
+export 'services/media/haptic_video_sync_service.dart';
+export 'services/media/haptic_recorder_service.dart';
+export 'services/media/remote_haptic_receiver.dart';
 
 // Backend Services
 export 'services/backend/supabase_service.dart';
@@ -46,6 +57,9 @@ export 'services/backend/sync_service.dart';
 export 'services/backend/link_service.dart';
 export 'services/backend/cloud_backup_service.dart';
 export 'services/backend/companion_settings.dart';
+export 'services/backend/profile_service.dart';
+export 'services/backend/contact_service.dart';
+export 'services/backend/invitation_service.dart';
 
 // AI Services
 export 'services/ai/ai_service.dart';

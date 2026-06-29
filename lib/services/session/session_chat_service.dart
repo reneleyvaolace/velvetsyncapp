@@ -150,8 +150,7 @@ class SessionChatService extends ChangeNotifier {
 
   /// Enviar mensaje de texto
   Future<void> sendMessage(String message) async {
-    if (_currentSessionId == null || _currentUserId == null) {
-      lvsLog('Chat no inicializado', tag: 'CHAT');
+    if (!_ensureInitialized('sendMessage', requireUserId: true)) {
       return;
     }
 
@@ -206,6 +205,10 @@ class SessionChatService extends ChangeNotifier {
 
   /// Enviar mensaje de sistema
   Future<void> sendSystemMessage(String message) async {
+    if (!_ensureInitialized('sendSystemMessage')) {
+      return;
+    }
+
     final chatMessage = ChatMessage(
       id: _generateId(),
       sessionId: _currentSessionId!,
@@ -225,6 +228,10 @@ class SessionChatService extends ChangeNotifier {
     required double intensity,
     required String action,
   }) async {
+    if (!_ensureInitialized('sendControlMessage')) {
+      return;
+    }
+
     final chatMessage = ChatMessage(
       id: _generateId(),
       sessionId: _currentSessionId!,
@@ -240,6 +247,10 @@ class SessionChatService extends ChangeNotifier {
 
   /// Enviar imagen
   Future<void> sendImage(String imageUrl) async {
+    if (!_ensureInitialized('sendImage', requireUserId: true)) {
+      return;
+    }
+
     final chatMessage = ChatMessage(
       id: _generateId(),
       sessionId: _currentSessionId!,
@@ -327,6 +338,15 @@ class SessionChatService extends ChangeNotifier {
 
   String _generateId() {
     return 'msg_${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  bool _ensureInitialized(String action, {bool requireUserId = false}) {
+    if (_currentSessionId == null || (requireUserId && _currentUserId == null)) {
+      lvsLog('Chat no inicializado para $action', tag: 'CHAT');
+      return false;
+    }
+
+    return true;
   }
 
   /// Contar mensajes no leídos

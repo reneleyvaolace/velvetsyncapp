@@ -316,20 +316,17 @@ class ProtocolTranslator {
   }
 
   /// Normaliza la intensidad a 0-255
+  /// - [isPrecise]: true = raw 0-255, false = 0-100 es porcentaje
   static int _normalizeIntensity(int intensity, bool isPrecise) {
-    if (intensity >= 0 && intensity <= 255) {
-      return intensity;
-    }
-
-    if (intensity >= 0 && intensity <= 100) {
-      return ((intensity / 100) * 255).round();
-    }
-
     if (intensity > 255) {
       return 255;
     }
 
-    return 0;
+    if (isPrecise || intensity > 100) {
+      return intensity.clamp(0, 255);
+    }
+
+    return ((intensity / 100) * 255).round();
   }
 
   /// Mapea intensidad a niveles genéricos (0-9)

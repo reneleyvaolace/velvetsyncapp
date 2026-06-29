@@ -5,6 +5,7 @@ import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/screens/debug_screen.dart';
 import 'package:velvet_sync/screens/web_catalog_screen.dart';
 import 'package:velvet_sync/services/session/session_timer_service.dart';
+import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 
 class SettingsTab extends ConsumerStatefulWidget {
   const SettingsTab({super.key});
@@ -14,15 +15,6 @@ class SettingsTab extends ConsumerStatefulWidget {
 }
 
 class _SettingsTabState extends ConsumerState<SettingsTab> {
-  // Variables para features futuras (actualmente no usadas)
-  // int _sessionDuration = 30;
-  // bool _autoDisconnect = false;
-  // bool _hiddenTimer = false;
-  // int _hiddenTimerMin = 5;
-  // int _hiddenTimerMax = 30;
-  // bool _travelLock = false;
-  // String _travelLockPin = '0000';
-
   @override
   Widget build(BuildContext context) {
     final timerState = ref.watch(sessionTimerStateProvider);
@@ -37,7 +29,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           expandedHeight: 80,
           backgroundColor: Colors.transparent,
           flexibleSpace: FlexibleSpaceBar(
-            title: Text('SISTEMA Y CONFIGURACION', style: TextStyle(
+            title: Text('SISTEMA Y CONFIGURACIÓN', style: TextStyle(
               fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 4, color: LvsColors.text3
             )),
             centerTitle: true,
@@ -48,6 +40,8 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               _buildWebCatalogCard(context),
+              const SizedBox(height: 20),
+              _buildMyProfileCard(context),
               const SizedBox(height: 20),
               _buildSettingsCard(burstInterval, isDeepScan),
               const SizedBox(height: 20),
@@ -105,18 +99,59 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     );
   }
 
+  Widget _buildMyProfileCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const MyProfileScreen()),
+        );
+      },
+      child: CardGlass(
+        borderColor: LvsColors.teal.withValues(alpha: 0.3),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: LvsColors.teal.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: LvsColors.teal.withValues(alpha: 0.3)),
+              ),
+              child: const Icon(Icons.person, color: LvsColors.teal, size: 24),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('MI PERFIL', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.teal)),
+                  SizedBox(height: 4),
+                  Text('Ver nombre de usuario y editar datos', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, color: LvsColors.teal, size: 14),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSettingsCard(int burstInterval, bool isDeepScan) {
     final ble = ref.read(bleProvider);
     return CardGlass(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionLabel('PARAMETROS TECNICOS'),
+          const SectionLabel('PARÁMETROS TÉCNICOS'),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Frecuencia de Rafaga', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              const Text('Frecuencia de Ráfaga', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
               Text('$burstInterval ms', style: const TextStyle(fontSize: 12, color: LvsColors.pink, fontWeight: FontWeight.bold)),
             ],
           ),
@@ -128,7 +163,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           const SizedBox(height: 12),
           SwitchListTile(
             title: const Text('DEEP SCAN', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-            subtitle: const Text('Ignorar filtros estandar rMesh', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+            subtitle: const Text('Ignorar filtros estándar rMesh', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
             value: isDeepScan,
             onChanged: (v) => ble.toggleDeepScan(),
             activeTrackColor: LvsColors.pink,
@@ -149,7 +184,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           children: [
             Image.asset('assets/icons/icon_tab_settings.png', width: 32, height: 32),
             const SizedBox(width: 14),
-            const Expanded(child: Text('CONSOLA DE DEPURACIÃ“N', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
+            const Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
             const Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
           ],
         ),
@@ -217,6 +252,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
       ),
     );
   }
+
   Widget _buildSystemProCard(SessionTimerState timerState) {
     final timerService = ref.read(sessionTimerServiceProvider);
     final ble = ref.read(bleProvider);
@@ -230,30 +266,37 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
             const SectionLabel('MODO AVANZADO'),
             const SizedBox(height: 12),
 
-            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-            // 1. TEMPORIZADOR DE SESIÃ“N (IMPLEMENTADO)
-            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // ═══════════════════════════════════════════════════════════════
+            // 1. TEMPORIZADOR DE SESIÓN (IMPLEMENTADO)
+            // ═══════════════════════════════════════════════════════════════
             _buildTimerOption(timerState, timerService, ble),
 
             const Divider(height: 32, color: Colors.white10),
 
-            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-            // 2. BLOQUEO DE VIAJE (PRÃ“XIMAMENTE)
-            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // ═══════════════════════════════════════════════════════════════
+            // 2. BLOQUEO DE VIAJE (IMPLEMENTADO)
+            // ═══════════════════════════════════════════════════════════════
             _buildTravelLockOption(),
 
             const Divider(height: 32, color: Colors.white10),
 
-            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-            // 3. RESPALDO EN NUBE (PRÃ“XIMAMENTE)
-            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // ═══════════════════════════════════════════════════════════════
+            // 3. MODO DEMO
+            // ═══════════════════════════════════════════════════════════════
+            _buildDemoModeOption(),
+
+            const Divider(height: 32, color: Colors.white10),
+
+            // ═══════════════════════════════════════════════════════════════
+            // 4. RESPALDO EN NUBE (PRÓXIMAMENTE)
+            // ═══════════════════════════════════════════════════════════════
             _buildCloudBackupOption(),
 
             const Divider(height: 32, color: Colors.white10),
 
-            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-            // 4. ACTUALIZACIÃ“N FIRMWARE (PRÃ“XIMAMENTE)
-            // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+            // ═══════════════════════════════════════════════════════════════
+            // 5. ACTUALIZACIÓN FIRMWARE (PRÓXIMAMENTE)
+            // ═══════════════════════════════════════════════════════════════
             _buildFirmwareUpdateOption(),
           ],
         ),
@@ -298,10 +341,10 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                   children: [
                     Row(
                       children: [
-                        Flexible(
+                        const Flexible(
                           child: Text(
-                            isActive ? 'TEMPORIZADOR' : 'TEMPORIZADOR',
-                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                            'TEMPORIZADOR',
+                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -356,7 +399,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                       Text(
                         timerState.durationSeconds > 0
                             ? 'Config: ${timerState.formattedDuration}'
-                            : 'Auto-desconexion',
+                            : 'Auto-desconexión',
                         style: const TextStyle(fontSize: 8, color: LvsColors.text3),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -382,14 +425,13 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     final isActive = timerService.isActive;
 
     if (isActive) {
-      // Mostrar opciones: Pausar o Detener
       final action = await showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF0A0A14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: const Text('TEMPORIZADOR ACTIVO', style: TextStyle(color: Colors.white)),
-          content: const Text('Â¿QuÃ© deseas hacer?', style: TextStyle(color: Color(0xFF888899))),
+          content: const Text('¿Qué deseas hacer?', style: TextStyle(color: Color(0xFF888899))),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, 'pause'),
@@ -409,19 +451,14 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
         timerService.stop();
       }
     } else {
-      // Mostrar dialog para configurar
       final minutes = await showSessionTimerDialog(context);
       if (minutes != null && minutes > 0) {
-        // Configurar callback de expiraciÃ³n (auto-stop)
         timerService.onExpired = () {
-          // Detener dispositivo BLE cuando expira
           ble.emergencyStop();
-
-          // Mostrar notificaciÃ³n
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('â° TIEMPO EXPIRADO - SesiÃ³n finalizada'),
+                content: Text('⌛ TIEMPO EXPIRADO - Sesión finalizada'),
                 backgroundColor: Color(0xFFFF1493),
                 duration: Duration(seconds: 5),
               ),
@@ -435,61 +472,209 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     }
   }
 
-  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  // PLACEHOLDERS - PRÃ“XIMAMENTE
-  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-
   Widget _buildTravelLockOption() {
-    return SizedBox(
-      height: 56,
-      child: InkWell(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('ðŸ”’ BLOQUEO DE VIAJE - PrÃ³ximamente'),
-            backgroundColor: Color(0xFF888899),
-          ),
-        );
+    final ble = ref.watch(bleProvider);
+    final isLocked = ble.isTravelLockActive;
+
+    return InkWell(
+      onTap: () async {
+        final pin = await _showPinDialog(context);
+        if (pin != null) {
+          final success = await ble.toggleTravelLock(pin);
+          if (!success && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('PIN INCORRECTO'), backgroundColor: LvsColors.red),
+            );
+          }
+        }
       },
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-            Image.asset('assets/icons/icon_travel_lock.png', width: 38, height: 38),
+            Container(
+              width: 38, height: 38,
+              decoration: BoxDecoration(
+                color: isLocked ? LvsColors.red.withValues(alpha: 0.1) : LvsColors.violet.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(isLocked ? Icons.lock : Icons.lock_open, color: isLocked ? LvsColors.red : LvsColors.violet, size: 20),
+            ),
             const SizedBox(width: 16),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     'BLOQUEO DE VIAJE',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                    style: TextStyle(
+                      fontSize: 11, 
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 0.5,
+                      color: isLocked ? LvsColors.red : Colors.white,
+                    ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
-                    'Evita encendidos accidentales',
-                    style: TextStyle(fontSize: 9, color: LvsColors.text3),
+                    isLocked ? 'ESTADO: ACTIVADO' : 'ESTADO: DESACTIVADO',
+                    style: TextStyle(
+                      fontSize: 9, 
+                      fontWeight: FontWeight.bold,
+                      color: isLocked ? LvsColors.red : LvsColors.text3
+                    ),
+                  ),
+                  if (!isLocked)
+                    const Text(
+                      'Evita encendidos accidentales',
+                      style: TextStyle(fontSize: 8, color: LvsColors.text3),
+                    ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: isLocked ? LvsColors.red : Colors.white24, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<String?> _showPinDialog(BuildContext context) async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: LvsColors.bgCard,
+        title: const Text('INGRESAR PIN (Default: 0000)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          obscureText: true,
+          maxLength: 4,
+          style: const TextStyle(letterSpacing: 20, fontSize: 24),
+          decoration: const InputDecoration(counterText: ''),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('CONFIRMAR')),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDemoModeOption() {
+    final ble = ref.watch(bleProvider);
+    final isDemo = ble.isDemoMode;
+
+    return InkWell(
+      onTap: () => ble.toggleDemoMode(),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 38, height: 38,
+              decoration: BoxDecoration(
+                color: isDemo
+                    ? LvsColors.amber.withValues(alpha: 0.15)
+                    : LvsColors.pink.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isDemo
+                      ? LvsColors.amber.withValues(alpha: 0.4)
+                      : Colors.transparent,
+                ),
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: isDemo
+                    ? const Icon(Icons.science, key: ValueKey('on'), color: LvsColors.amber, size: 20)
+                    : const Icon(Icons.science_outlined, key: ValueKey('off'), color: LvsColors.pink, size: 20),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'MODO DEMO',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                          color: isDemo ? LvsColors.amber : Colors.white,
+                        ),
+                      ),
+                      if (isDemo) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: LvsColors.amber.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: LvsColors.amber.withValues(alpha: 0.3)),
+                          ),
+                          child: const Text(
+                            'ACTIVO',
+                            style: TextStyle(
+                              fontSize: 7,
+                              fontWeight: FontWeight.w900,
+                              color: LvsColors.amber,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isDemo
+                        ? 'Simulando ${ble.activeToy?.name ?? "dispositivo"}'
+                        : 'Probar sin hardware físico',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: isDemo ? LvsColors.amber : LvsColors.text3,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: isDemo ? LvsColors.amber.withValues(alpha: 0.15) : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: AnimatedCrossFade(
+                duration: const Duration(milliseconds: 300),
+                crossFadeState: isDemo
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                firstChild: const Icon(Icons.check_circle, color: LvsColors.amber, size: 18),
+                secondChild: const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+              ),
+            ),
           ],
         ),
       ),
-    ),
     );
   }
 
   Widget _buildCloudBackupOption() {
-    return SizedBox(
-      height: 56,
-      child: InkWell(
+    return InkWell(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('â˜ï¸ RESPALDO EN NUBE - PrÃ³ximamente'),
+            content: Text('☁️ RESPALDO EN NUBE - Próximamente'),
             backgroundColor: Color(0xFF888899),
           ),
         );
@@ -521,26 +706,23 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           ],
         ),
       ),
-    ),
     );
   }
 
   Widget _buildFirmwareUpdateOption() {
-    return SizedBox(
-      height: 56,
-      child: InkWell(
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('ðŸ”„ ACTUALIZAR FIRMWARE - PrÃ³ximamente'),
-              backgroundColor: Color(0xFF888899),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
+    return InkWell(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('🔄 ACTUALIZAR FIRMWARE - Próximamente'),
+            backgroundColor: Color(0xFF888899),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
           children: [
             Image.asset('assets/icons/icon_firmware_update.png', width: 38, height: 38),
             const SizedBox(width: 16),
@@ -564,7 +746,6 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           ],
         ),
       ),
-    ),
     );
   }
 }

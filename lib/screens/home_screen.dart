@@ -15,6 +15,8 @@ import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/widgets/compatible_devices_row.dart';
+import 'package:velvet_sync/widgets/lvs_modes.dart';
+import 'package:velvet_sync/widgets/ble_control_widgets.dart';
 import 'debug_screen.dart';
 import 'game_screen.dart';
 import 'companion_screen.dart';
@@ -275,7 +277,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
         ],
       ),
       actions: [
-        _BleStateBox(state: bleState),
+        BleStateBox(state: bleState),
         const SizedBox(width: 8),
         IconButton(
           icon: const Icon(Icons.exit_to_app, color: LvsColors.text3, size: 20),
@@ -466,7 +468,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             const SizedBox(height: 14),
 
             // Pre-registro (chips de dispositivos + agregar más)
-            // PreregisterPanel(onAdded: _tryAutoConnect), // FALTANTE
+            _PreregisterPanel(onAdded: _tryAutoConnect),
           ],
         ),
       );
@@ -509,7 +511,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           const SizedBox(height: 20),
 
           // Pre-registro
-          // PreregisterPanel(onAdded: _tryAutoConnect), // FALTANTE
+          _PreregisterPanel(onAdded: _tryAutoConnect),
           const SizedBox(height: 16),
 
           // Botón de escaneo manual
@@ -630,7 +632,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           child: Row(
             children: [
               Expanded(
-                child: _NeonPresetBtn(
+                child: NeonPresetBtn(
                   label: 'LOW',
                   color: LvsColors.teal,
                   icon: Icons.wifi_tethering,
@@ -640,7 +642,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: _NeonPresetBtn(
+                child: NeonPresetBtn(
                   label: 'MED',
                   color: LvsColors.pink,
                   icon: Icons.radio_button_checked,
@@ -650,7 +652,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: _NeonPresetBtn(
+                child: NeonPresetBtn(
                   label: 'HIGH',
                   color: LvsColors.violet,
                   icon: Icons.signal_cellular_alt,
@@ -1210,7 +1212,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           const Text('Dibuja para controlar el empuje en tiempo real', 
             style: TextStyle(fontSize: 10, color: LvsColors.text3)),
           const SizedBox(height: 20),
-          _LvsCanvas(ble: ble),
+          LvsCanvas(ble: ble),
         ],
       ),
     );
@@ -1476,107 +1478,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 // WIDGETS AUXILIARES REDISEÑADOS
 // ══════════════════════════════════════════════════════════
 
-class _BleStateBox extends StatelessWidget {
-  final BleState state;
-  const _BleStateBox({required this.state});
 
-  @override
-  Widget build(BuildContext context) {
-    final (label, color) = switch(state) {
-      BleState.connected  => ('Online',   LvsColors.teal),
-      BleState.scanning   => ('Scanning', LvsColors.amber),
-      BleState.connecting => ('Joining',  LvsColors.amber),
-      BleState.error      => ('Error',    LvsColors.red),
-      BleState.idle       => ('Offline',  LvsColors.text3),
-    };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _Dot(color: color, pulse: state == BleState.scanning || state == BleState.connecting),
-          const SizedBox(width: 8),
-          Text(label.toUpperCase(), style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: color)),
-        ],
-      ),
-    );
-  }
-}
-
-class _Dot extends StatefulWidget {
-  final Color color;
-  final bool pulse;
-  const _Dot({required this.color, required this.pulse});
-  @override
-  State<_Dot> createState() => _DotState();
-}
-class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
-  late AnimationController _c;
-  @override
-  void initState() { super.initState(); _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 700))..repeat(reverse: true); }
-  @override
-  void dispose() { _c.dispose(); super.dispose(); }
-  @override
-  Widget build(BuildContext context) {
-    return widget.pulse
-      ? AnimatedBuilder(animation: _c, builder: (_, __) => _dot(_c.value))
-      : _dot(1.0);
-  }
-  Widget _dot(double opacity) => Container(
-    width: 6, height: 6, decoration: BoxDecoration(color: widget.color.withValues(alpha: opacity), shape: BoxShape.circle,
-      boxShadow: [BoxShadow(color: widget.color.withValues(alpha: opacity * 0.5), blurRadius: 4)]),
-  );
-}
-
-// ── Neon Preset Button (Basado en la imagen 1) ─────────────────
-class _NeonPresetBtn extends StatelessWidget {
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-  final IconData icon;
-  final Color color;
-
-  const _NeonPresetBtn({
-    required this.label, 
-    required this.active, 
-    required this.onTap,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () { HapticFeedback.selectionClick(); onTap(); },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: active ? color.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: active ? color : color.withValues(alpha: 0.3), width: 1.5),
-          boxShadow: active ? [BoxShadow(color: color.withValues(alpha: 0.15), blurRadius: 12)] : [],
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: active ? color : color.withValues(alpha: 0.6), size: 16),
-            const SizedBox(height: 6),
-            Text(label, style: TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1,
-              color: active ? Colors.white : LvsColors.text1
-            )),
-
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _PatternGrid extends StatelessWidget {
   final List<_PatternItem> items;
@@ -1838,121 +1740,57 @@ class _PatternBtnV2 extends StatelessWidget {
   }
 }
 
-class _LvsCanvas extends StatefulWidget {
-  final BleService ble;
-  const _LvsCanvas({required this.ble});
+class _PreregisterPanel extends ConsumerWidget {
+  final VoidCallback onAdded;
+
+  const _PreregisterPanel({required this.onAdded});
 
   @override
-  State<_LvsCanvas> createState() => _LvsCanvasState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final preregistered = ref.watch(preregisteredProvider);
+    final ble = ref.read(bleProvider);
 
-class _LvsCanvasState extends State<_LvsCanvas> {
-  Timer? _throttle;
-  double _intensity = 0;
-  bool _active = false;
-
-  void _update(Offset pos, Size size) {
-    final val = ((size.height - pos.dy) / size.height * 100).clamp(0.0, 100.0);
-    
-    setState(() {
-      _intensity = val;
-      _active = true;
-    });
-    
-    // Throttling dinámico: 60ms para mayor fluidez (aprox 16 envíos/seg)
-    if (_throttle == null || !_throttle!.isActive) {
-      widget.ble.setProportionalChannel1(_intensity.round());
-      _throttle = Timer(const Duration(milliseconds: 60), () {
-        // Enviar el último valor capturado al final del ciclo de throttle
-        if (_active) widget.ble.setProportionalChannel1(_intensity.round());
-      });
-    }
-  }
-
-  void _stop() {
-    setState(() {
-      _active = false;
-      _intensity = 0;
-    });
-    _throttle?.cancel();
-    widget.ble.setProportionalChannel1(0);
-  }
-
-  @override
-  void dispose() {
-    _throttle?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = Size(constraints.maxWidth, 200);
-        return GestureDetector(
-          onPanStart: (details) => _update(details.localPosition, size),
-          onPanUpdate: (details) => _update(details.localPosition, size),
-          onPanEnd: (_) => _stop(),
-          onPanCancel: () => _stop(),
-          child: Container(
-            height: 200,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2), width: 1.5),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: CustomPaint(
-                painter: _CanvasPainter(_active ? _intensity : 0, LvsColors.pink),
-              ),
+    if (preregistered.isEmpty) {
+      return Row(
+        children: [
+          const Expanded(
+            child: Text(
+              'Sin dispositivos pre-registrados aún.',
+              style: TextStyle(fontSize: 11, color: LvsColors.text3),
             ),
           ),
-        );
-      }
+          TextButton(
+            onPressed: () async {
+              await CatalogNotifier.openWebCatalog();
+            },
+            child: const Text('ABRIR CATÁLOGO'),
+          ),
+        ],
+      );
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        for (final toy in preregistered)
+          ActionChip(
+            label: Text(toy.name, overflow: TextOverflow.ellipsis),
+            avatar: const Icon(Icons.memory, size: 18),
+            onPressed: () {
+              ble.setActiveToy(toy);
+              onAdded();
+            },
+          ),
+        TextButton.icon(
+          onPressed: () async {
+            await CatalogNotifier.openWebCatalog();
+          },
+          icon: const Icon(Icons.add_link, size: 16),
+          label: const Text('AÑADIR'),
+        ),
+      ],
     );
   }
-}
-
-class _CanvasPainter extends CustomPainter {
-  final double intensity;
-  final Color color;
-  _CanvasPainter(this.intensity, this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Dibujamos el área activa
-    if (intensity > 0) {
-      final paint = Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [color.withValues(alpha: 0.1), color.withValues(alpha: 0.5)],
-        ).createShader(Rect.fromLTRB(0, 0, size.width, size.height));
-
-      final h = (intensity / 100) * size.height;
-      canvas.drawRect(Rect.fromLTRB(0, size.height - h, size.width, size.height), paint);
-      
-      // Línea de horizonte
-      final linePaint = Paint()
-        ..color = color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
-      canvas.drawLine(Offset(0, size.height - h), Offset(size.width, size.height - h), linePaint);
-
-      // Texto de nivel
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: '${intensity.round()}%',
-          style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      textPainter.paint(canvas, Offset(size.width / 2 - textPainter.width / 2, size.height - h - 25));
-    }
-  }
-
-  @override
-  bool shouldRepaint(_CanvasPainter old) => old.intensity != intensity;
 }

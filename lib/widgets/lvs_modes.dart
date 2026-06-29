@@ -1,41 +1,42 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 
 // ── Definición de Patrones ──────────────────────────────────────────
-class _PatternDef {
+class PatternDef {
   final String label;
   final String asset;       
   final IconData fallback;  
 
-  const _PatternDef({required this.label, required this.asset, required this.fallback});
+  const PatternDef({required this.label, required this.asset, required this.fallback});
 }
 
 // ── Modos de Intensidad (Canal de Empuje/Rotación) ────────
-const List<_PatternDef> _kIntensityDefs = [
-  _PatternDef(label: 'BAJO',   asset: 'assets/icons/icon_intensity.png',       fallback: Icons.keyboard_arrow_up),
-  _PatternDef(label: 'MEDIO',  asset: 'assets/icons/icon_heart.png',           fallback: Icons.bolt),
-  _PatternDef(label: 'FUERTE', asset: 'assets/icons/icon_thrust.png',          fallback: Icons.rocket_launch),
+const List<PatternDef> _kIntensityDefs = [
+  PatternDef(label: 'BAJO',   asset: 'assets/icons/icon_intensity.png',       fallback: Icons.keyboard_arrow_up),
+  PatternDef(label: 'MEDIO',  asset: 'assets/icons/icon_heart.png',           fallback: Icons.bolt),
+  PatternDef(label: 'FUERTE', asset: 'assets/icons/icon_thrust.png',          fallback: Icons.rocket_launch),
 ];
 
 // ── Modos de Ritmo (Canal de Vibración/Patrones) ───────────────────────────
-const List<_PatternDef> _kRhythmDefs = [
-  _PatternDef(label: 'PULSO',   asset: 'assets/icons/icon_sync_music.png',     fallback: Icons.favorite),
-  _PatternDef(label: 'OLA',     asset: 'assets/icons/icon_pulse_waves.png',    fallback: Icons.water),
-  _PatternDef(label: 'RAMPA',   asset: 'assets/icons/icon_motion_control.png', fallback: Icons.graphic_eq),
-  _PatternDef(label: 'FLIP',    asset: 'assets/icons/icon_dual_motor.png',     fallback: Icons.gesture),
-  _PatternDef(label: 'STORM',   asset: 'assets/icons/icon_cool_down.png',      fallback: Icons.cyclone),
-  _PatternDef(label: 'CHAOS',   asset: 'assets/icons/icon_custom_pattern.png', fallback: Icons.crisis_alert),
-  _PatternDef(label: 'SURF',    asset: 'assets/icons/icon_vibrator.png',       fallback: Icons.water), 
-  _PatternDef(label: 'VOLCAN',  asset: 'assets/icons/icon_thrust.png',         fallback: Icons.volcano),
-  _PatternDef(label: 'LATIDO',  asset: 'assets/icons/icon_heart.png',          fallback: Icons.favorite),
+const List<PatternDef> _kRhythmDefs = [
+  PatternDef(label: 'PULSO',   asset: 'assets/icons/icon_sync_music.png',     fallback: Icons.favorite),
+  PatternDef(label: 'OLA',     asset: 'assets/icons/icon_pulse_waves.png',    fallback: Icons.water),
+  PatternDef(label: 'RAMPA',   asset: 'assets/icons/icon_motion_control.png', fallback: Icons.graphic_eq),
+  PatternDef(label: 'FLIP',    asset: 'assets/icons/icon_dual_motor.png',     fallback: Icons.gesture),
+  PatternDef(label: 'STORM',   asset: 'assets/icons/icon_cool_down.png',      fallback: Icons.cyclone),
+  PatternDef(label: 'CHAOS',   asset: 'assets/icons/icon_custom_pattern.png', fallback: Icons.crisis_alert),
+  PatternDef(label: 'SURF',    asset: 'assets/icons/icon_vibrator.png',       fallback: Icons.water), 
+  PatternDef(label: 'VOLCAN',  asset: 'assets/icons/icon_thrust.png',         fallback: Icons.volcano),
+  PatternDef(label: 'LATIDO',  asset: 'assets/icons/icon_heart.png',          fallback: Icons.favorite),
 ];
 
 // ── Grilla de Selección de Modos ───────────────────────────────────
 class ModeSelectorGrid extends StatelessWidget {
   final int? activeIndex;
-  final List<_PatternDef> defs;
+  final List<PatternDef> defs;
   final int offset; 
   final Color color;
   final Function(int) onSelect;
@@ -193,49 +194,114 @@ class _AppIcon extends StatelessWidget {
   }
 }
 
-// ── Canvas de Dibujo Táctil (Simplified for now) ──────────────────────────────────
-class LvsCanvas extends StatelessWidget {
+// ── Canvas de Dibujo Táctil Dinámico ──────────────────────────────────
+class LvsCanvas extends StatefulWidget {
   final BleService ble;
   const LvsCanvas({super.key, required this.ble});
+
+  @override
+  State<LvsCanvas> createState() => _LvsCanvasState();
+}
+
+class _LvsCanvasState extends State<LvsCanvas> {
+  Timer? _throttle;
+  double _intensity = 0;
+  bool _active = false;
+
+  void _update(Offset pos, Size size) {
+    final val = ((size.height - pos.dy) / size.height * 100).clamp(0.0, 100.0);
+    setState(() {
+      _intensity = val;
+      _active = true;
+    });
+    if (_throttle == null || !_throttle!.isActive) {
+      widget.ble.setProportionalChannel1(_intensity.round());
+      _throttle = Timer(const Duration(milliseconds: 60), () {
+        if (_active) widget.ble.setProportionalChannel1(_intensity.round());
+      });
+    }
+  }
+
+  void _stop() {
+    setState(() { _active = false; _intensity = 0; });
+    _throttle?.cancel();
+    widget.ble.setProportionalChannel1(0);
+  }
+
+  @override
+  void dispose() {
+    _throttle?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 180,
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: LvsColors.pink.withValues(alpha: 0.15)),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.touch_app_outlined, color: LvsColors.pink.withValues(alpha: 0.4), size: 42),
-            const SizedBox(height: 12),
-            const Text('CONTROL TÁCTIL ACTIVO', 
-              style: TextStyle(color: LvsColors.text3, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-          ],
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = Size(constraints.maxWidth, 200);
+        return GestureDetector(
+          onPanStart: (details) => _update(details.localPosition, size),
+          onPanUpdate: (details) => _update(details.localPosition, size),
+          onPanEnd: (_) => _stop(),
+          onPanCancel: () => _stop(),
+          child: Container(
+            height: 200,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2), width: 1.5),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: CustomPaint(
+                painter: _CanvasPainter(_active ? _intensity : 0, LvsColors.pink),
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 }
 
-class SectionLabel extends StatelessWidget {
-  final String text;
-  const SectionLabel(this.text, {super.key});
+class _CanvasPainter extends CustomPainter {
+  final double intensity;
+  final Color color;
+  _CanvasPainter(this.intensity, this.color);
+
   @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w900,
-        letterSpacing: 2,
-        color: LvsColors.text3,
-      ),
-    );
+  void paint(Canvas canvas, Size size) {
+    if (intensity > 0) {
+      final paint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          colors: [color.withValues(alpha: 0.1), color.withValues(alpha: 0.5)],
+        ).createShader(Rect.fromLTRB(0, 0, size.width, size.height));
+
+      final h = (intensity / 100) * size.height;
+      canvas.drawRect(Rect.fromLTRB(0, size.height - h, size.width, size.height), paint);
+
+      final linePaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2;
+      canvas.drawLine(Offset(0, size.height - h), Offset(size.width, size.height - h), linePaint);
+
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: '${intensity.round()}%',
+          style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 1),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      textPainter.paint(canvas, Offset(size.width / 2 - textPainter.width / 2, size.height - h - 25));
+    }
   }
+
+  @override
+  bool shouldRepaint(_CanvasPainter old) => old.intensity != intensity;
 }
 
 // Exportar listas para uso externo

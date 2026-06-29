@@ -7,16 +7,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'lvs_commands.dart';
+import 'ble_types.dart';
 
 /// Provider mock para Web
 final bleProvider = ChangeNotifierProvider((ref) => BleService());
 
-enum BleState { idle, scanning, connecting, connected, error }
-
 class BleService extends ChangeNotifier {
   BleState state = BleState.idle;
-  
+
   bool get isConnected => state == BleState.connected;
+  bool get hasHardwareConnection => state == BleState.connected;
   bool get isScanning => state == BleState.scanning;
   bool get isVirtualConnection => true;
   
@@ -52,6 +52,10 @@ class BleService extends ChangeNotifier {
 
   Future<void> emergencyStop() async {
     debugPrint('[BleServiceStub] EMERGENCY STOP');
+  }
+
+  Future<void> initSecurity() async {
+    debugPrint('[BleServiceStub] Security Initialized');
   }
 
   // Métodos requeridos por el Bridge

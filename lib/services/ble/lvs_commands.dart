@@ -82,6 +82,11 @@ class LvsCommands {
   static const int companyId = 0xFFF0;
   static const String serviceUuid  = '0000fff0-0000-1000-8000-00805f9b34fb';
 
+  // ── Handshake y Verificación ──────────────────────────────────
+  static const List<int> handshakePing = [0x01, 0x01, 0x01];
+  static const List<int> handshakePong = [0x02, 0x02, 0x02];
+  static const List<int> handshakeFinal = [0x00, 0x00, 0x00];
+
   // ── Obtener bytes por nivel ──────────────────────────────────
   static List<int> commandFor(SpeedLevel level) {
     switch (level) {
@@ -182,10 +187,10 @@ class LvsCommands {
     return [0xD6, 0x0D, intensityByte];
   }
 
-  // Motor 2 (CH2 - Vibración)
+  // Motor 2 (CH2 - Vibración) - Corregido prefijo 0xA para 8154 Multimedia
   static List<int> proportionalChannel2(int intensityLevel) {
     final intensityByte = intensityLevel.clamp(0, 100);
-    return [0xE6, 0x8E, intensityByte];
+    return [0xA6, 0x8E, intensityByte];
   }
 
   // ── Construir el paquete completo ────────────────────────────

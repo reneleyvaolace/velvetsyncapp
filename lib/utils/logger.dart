@@ -341,7 +341,6 @@ class Logger {
   /// Limpiar logs
   void clear() {
     _logs.clear();
-    info('Logs limpiados', tag: 'LOGGER');
   }
   
   /// Limpiar archivo de logs

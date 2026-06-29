@@ -5,9 +5,15 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:velvet_sync/utils/logger.dart';
+
+/// Provider que expone el LinkService como singleton
+final linkServiceProvider = ChangeNotifierProvider<LinkService>((ref) {
+  return LinkService();
+});
 
 /// Servicio de Deep Linking para Velvet Sync
 /// Escucha enlaces entrantes con el esquema velvetsync://

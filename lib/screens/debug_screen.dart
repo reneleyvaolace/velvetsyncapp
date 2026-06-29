@@ -285,6 +285,33 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
 
           const SizedBox(height: 24),
 
+          // ── NUEVO: Bridge Mode Lovense 2026 ──
+          CardGlass(
+            borderColor: LvsColors.violet.withValues(alpha: 0.3),
+            child: Column(
+              children: [
+                const SectionLabel('LOVENSE BRIDGE EMULATOR', color: LvsColors.violet),
+                const SizedBox(height: 12),
+                const Text(
+                  'Activa este modo para que Intiface/Buttplug en tu PC detecte este teléfono como un juguete Lovense. Los comandos del PC se enviarán al hardware 8154.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 11, color: LvsColors.text3),
+                ),
+                const SizedBox(height: 20),
+                _BigActionBtn(
+                  label: ble.isBridgeModeActive ? 'DETENER BRIDGE' : 'INICIAR BRIDGE MODE',
+                  icon: Icons.router,
+                  active: ble.isBridgeModeActive,
+                  color: LvsColors.violet,
+                  enabled: true,
+                  onTap: () => ble.toggleBridgeMode(),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
           // Barrido
           CardGlass(
             child: Column(

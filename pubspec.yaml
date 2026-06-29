@@ -33,6 +33,7 @@ dependencies:
   just_audio: ^0.9.46  # Updated: Bug fixes
   file_picker: ^8.1.7
   audio_waveforms: ^1.1.0
+  video_player: ^2.9.2
 
   # ── Deep Linking ──────────────────────────────────
   app_links: ^6.4.0
@@ -58,17 +59,21 @@ dependencies:
   web_socket_channel: any
   path: any
 
+  meta: any
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/app_icon.png"
   min_sdk_android: 21
 
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.13.1
+  mocktail: ^1.0.4
 
 flutter:
   uses-material-design: true
@@ -78,6 +83,7 @@ flutter:
     - assets/icon/
     - assets/icons/
     - assets/images/
+    - lib/devices/lovespouse/jsons_consolidated/
   fonts:
     - family: Outfit
       fonts:

@@ -28,6 +28,7 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
   
   late AnimationController _pulseController;
   late AnimationController _spinController;
+  late Listenable _mergeAnimation;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
         vsync: this, duration: const Duration(milliseconds: 1000))..repeat(reverse: true);
     _spinController = AnimationController(
         vsync: this, duration: const Duration(seconds: 2));
+    _mergeAnimation = Listenable.merge([_pulseController, _spinController]);
   }
 
   @override
@@ -58,6 +60,7 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
     HapticFeedback.heavyImpact();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) { timer.cancel(); return; }
       if (_secondsLeft > 1) {
         setState(() => _secondsLeft--);
         HapticFeedback.selectionClick();
@@ -84,10 +87,12 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
       _stopHardware();
     }
 
-    setState(() {
-      _isActive = false;
-      _isExploded = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isActive = false;
+        _isExploded = false;
+      });
+    }
   }
 
   void _stopHardware() {
@@ -159,7 +164,7 @@ class _RouletteScreenState extends ConsumerState<RouletteScreen> with TickerProv
 
   Widget _buildCenterVisual() {
     return AnimatedBuilder(
-      animation: Listenable.merge([_pulseController, _spinController]),
+      animation: _mergeAnimation,
       builder: (context, child) {
         final scale = 1.0 + (_isActive ? _pulseController.value * 0.1 : 0);
         final rotation = _spinController.value * 2 * math.pi;

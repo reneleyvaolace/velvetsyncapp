@@ -13,10 +13,13 @@ import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/utils/logger.dart';
+import 'package:velvet_sync/services/backend/profile_service.dart';
+import 'package:velvet_sync/screens/contacts/contacts_screen.dart';
 
 class RemoteSessionScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic>? initialSessionData;
-  const RemoteSessionScreen({super.key, this.initialSessionData});
+  final String? prefilledToken;
+  const RemoteSessionScreen({super.key, this.initialSessionData, this.prefilledToken});
 
   @override
   ConsumerState<RemoteSessionScreen> createState() => _RemoteSessionScreenState();
@@ -47,11 +50,15 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
       _isConnected = true;
       _loadToyModel();
       _startListening();
+    } else if (widget.prefilledToken != null && widget.prefilledToken!.isNotEmpty) {
+      _tokenController.text = widget.prefilledToken!;
+      Future.microtask(_connect);
     }
   }
 
   @override
   void dispose() {
+    ref.read(supabaseServiceProvider).leaveControlRoom();
     _tokenController.dispose();
     _partnerTimer?.cancel();
     super.dispose();
@@ -151,16 +158,18 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Token inválido o sesión expirada.')),
         );
+        setState(() => _isLoading = false);
       }
-      setState(() => _isLoading = false);
       return;
     }
 
-    setState(() {
-      _sessionData = session;
-      _isConnected = true;
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _sessionData = session;
+        _isConnected = true;
+        _isLoading = false;
+      });
+    }
     
     _loadToyModel();
     _startListening();
@@ -312,6 +321,38 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
             ),
           ),
         ),
+
+        const SizedBox(height: 20),
+
+        // OPCIÓN 3: CONTACTOS DIRECTOS
+        GestureDetector(
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ContactsScreen())),
+          child: CardGlass(
+            borderColor: LvsColors.violet.withValues(alpha: 0.3),
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(color: LvsColors.violet.withValues(alpha: 0.1), shape: BoxShape.circle),
+                  child: const Icon(Icons.contacts_rounded, color: LvsColors.violet, size: 28),
+                ),
+                const SizedBox(width: 20),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('MIS CONTACTOS', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1)),
+                      SizedBox(height: 4),
+                      Text('Invita a tus amigos guardados o acepta sus invitaciones rápidamente.',
+                        style: TextStyle(color: LvsColors.text3, fontSize: 11)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -326,14 +367,22 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     setState(() => _isLoading = true);
     try {
       final supabase = ref.read(supabaseServiceProvider);
-      final session = await supabase.createSharedSession(ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs');
+      final profile = ref.read(profileServiceProvider).myProfile;
+      final hostName = profile != null ? '@${profile.username}' : null;
+
+      final session = await supabase.createSharedSession(
+        ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs',
+        hostName: hostName,
+      );
       
       if (session != null) {
-        setState(() {
-          _sessionData = session;
-          _isConnected = true;
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _sessionData = session;
+            _isConnected = true;
+            _isLoading = false;
+          });
+        }
         _loadToyModel();
         _startListening();
         
@@ -560,13 +609,25 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     final deviceName = _toyModel?.name ?? 'Dispositivo Remoto';
     final isHost = ref.read(bleProvider).isConnected;
 
+    final hostName = _sessionData?['host_name'];
+
     return Column(
       children: [
-        Text(
-          isHost ? 'ESTÁS COMPARTIENDO EL CONTROL' : 'CONECTADO AL DISPOSITIVO DE TU PAREJA',
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.5),
-        ),
+        if (hostName != null && hostName.toString().isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              isHost ? 'ESTÁS COMPARTIENDO COMO $hostName' : 'CONECTADO AL DISPOSITIVO DE $hostName',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: LvsColors.pink, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+            ),
+          )
+        else
+          Text(
+            isHost ? 'ESTÁS COMPARTIENDO EL CONTROL' : 'CONECTADO AL DISPOSITIVO DE TU PAREJA',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.5),
+          ),
         const SizedBox(height: 16),
         
         // Pill Status

@@ -136,7 +136,18 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _textController.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    setState(() {});
+  }
+
+  @override
   void dispose() {
+    _textController.removeListener(_onTextChanged);
     _autoStopTimer?.cancel();
     _textController.dispose();
     super.dispose();
@@ -228,7 +239,6 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                       contentPadding: const EdgeInsets.all(16),
                       border: InputBorder.none,
                     ),
-                    onChanged: (_) => setState(() {}),
                   ),
                 ),
               ),

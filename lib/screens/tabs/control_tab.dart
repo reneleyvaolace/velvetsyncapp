@@ -6,7 +6,8 @@ import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
-import 'package:velvet_sync/widgets/compatible_devices_row.dart';
+import 'package:velvet_sync/screens/catalog_screen.dart';
+import 'package:velvet_sync/screens/remote_session_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:math';
 
@@ -27,12 +28,9 @@ class ControlTab extends ConsumerWidget {
             delegate: SliverChildListDelegate([
               _buildConnectCard(ref, ble),
               const SizedBox(height: 16),
-              // Lista de dispositivos compatibles
+              // Bienvenida y accesos rápidos
               if (!ble.isConnected)
-                const CardGlass(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                  child: CompatibleDevicesRow(),
-                ),
+                _buildWelcomeAndShortcuts(context, ble),
               const SizedBox(height: 24),
               _buildControlCard(ref),
               const SizedBox(height: 40),
@@ -70,6 +68,117 @@ class ControlTab extends ConsumerWidget {
             padding: const EdgeInsets.only(bottom: 25),
             child: Image.asset('assets/images/logo_neon.png', width: 62, height: 62),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWelcomeAndShortcuts(BuildContext context, BleService ble) {
+    return Column(
+      children: [
+        CardGlass(
+          padding: const EdgeInsets.all(24),
+          borderColor: LvsColors.pink.withValues(alpha: 0.3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: LvsColors.pink.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.auto_awesome, color: LvsColors.pink, size: 24),
+                  ),
+                  const SizedBox(width: 16),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('BIENVENIDO A VELVET SYNC', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1)),
+                        SizedBox(height: 4),
+                        Text('La nueva era del control háptico.', style: TextStyle(color: LvsColors.text3, fontSize: 11)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Enciende tu dispositivo y presiona "BUSCAR" para comenzar. Si no tienes uno a la mano, puedes probar las funciones activando el MODO DEMO.',
+                style: TextStyle(color: LvsColors.text2, fontSize: 12, height: 1.5),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: _buildShortcutCard(
+                context,
+                title: 'CATÁLOGO',
+                icon: Icons.auto_stories,
+                color: LvsColors.violet,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CatalogScreen())),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildShortcutCard(
+                context,
+                title: 'REMOTOS',
+                icon: Icons.settings_remote,
+                color: LvsColors.teal,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen())),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildShortcutCard(
+                context,
+                title: 'DEMO',
+                icon: Icons.science,
+                color: LvsColors.amber,
+                onTap: () => ble.toggleDemoMode(),
+                isActive: ble.isDemoMode,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShortcutCard(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+    bool isActive = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: CardGlass(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        borderColor: isActive ? color : color.withValues(alpha: 0.2),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 28),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: TextStyle(
+                color: isActive ? Colors.white : LvsColors.text3,
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -187,61 +296,88 @@ class ControlTab extends ConsumerWidget {
                   ),
                 ],
               ),
-              child: Column(
+              child: Stack(
                 children: [
-                  // Icono grande del dispositivo
-                  Container(
-                    width: 80, height: 80,
-                    decoration: BoxDecoration(
-                      color: LvsColors.teal.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: LvsColors.teal.withValues(alpha: 0.5), width: 2),
-                    ),
-                    child: Icon(
-                      _getDeviceIcon(ble.activeToy),
-                      color: LvsColors.teal,
-                      size: 50,
-                    ),
+                  Column(
+                    children: [
+                      // Icono grande del dispositivo
+                      Container(
+                        width: 80, height: 80,
+                        decoration: BoxDecoration(
+                          color: LvsColors.teal.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: LvsColors.teal.withValues(alpha: 0.5), width: 2),
+                        ),
+                        child: Icon(
+                          _getDeviceIcon(ble.activeToy),
+                          color: LvsColors.teal,
+                          size: 50,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Nombre del dispositivo
+                      Text(
+                        ble.activeToy?.name.toUpperCase() ?? ble.connectedDeviceName.toUpperCase(),
+                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      
+                      // ID y tipo
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: LvsColors.bgCardH.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'ID: ${ble.activeToy?.id ?? ble.toyProfile?.identifier ?? "---"}',
+                          style: const TextStyle(color: LvsColors.teal, fontSize: 11, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Botón de renombrar
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () => _showRenameDialog(ref, ble),
+                          icon: const Icon(Icons.edit, size: 16),
+                          label: const Text('RENOMBRAR', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: LvsColors.teal,
+                            side: BorderSide(color: LvsColors.teal.withValues(alpha: 0.5)),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  
-                  // Nombre del dispositivo
-                  Text(
-                    ble.activeToy?.name.toUpperCase() ?? ble.connectedDeviceName.toUpperCase(),
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 6),
-                  
-                  // ID y tipo
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: LvsColors.bgCardH.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'ID: ${ble.activeToy?.id ?? ble.toyProfile?.identifier ?? "---"}',
-                      style: const TextStyle(color: LvsColors.teal, fontSize: 11, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Botón de renombrar
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () => _showRenameDialog(ref, ble),
-                      icon: const Icon(Icons.edit, size: 16),
-                      label: const Text('RENOMBRAR', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: LvsColors.teal,
-                        side: BorderSide(color: LvsColors.teal.withValues(alpha: 0.5)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  if (ble.isDemoMode)
+                    Positioned(
+                      top: 0, right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: LvsColors.amber.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [BoxShadow(color: LvsColors.amber.withValues(alpha: 0.4), blurRadius: 8)],
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.science, color: Colors.black, size: 12),
+                            SizedBox(width: 4),
+                            Text(
+                              'DEMO',
+                              style: TextStyle(color: Colors.black, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
