@@ -413,7 +413,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
           ],
         ),
         const SizedBox(height: 30),
-        Image.asset('assets/icons/icon_remote_session.png', width: 80, height: 80),
+        const Icon(Icons.public, size: 80, color: LvsColors.teal),
         const SizedBox(height: 24),
         const Text(
           'CONFIGURAR ACCESO',
@@ -647,7 +647,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                    if (_toyModel != null) ...[
-                    Image.asset(_toyModel!.iconAsset, width: 22, height: 22),
+                    Icon(_toyModel!.materialIcon, size: 22, color: LvsColors.teal),
                     const SizedBox(width: 10),
                   ],
                   Container(
@@ -686,9 +686,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('assets/icons/icon_remote_partner.png', width: 32, height: 32,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.person_outline, color: LvsColors.pink, size: 24),
-                  ),
+                  const Icon(Icons.people, size: 32, color: LvsColors.teal),
                   const SizedBox(width: 8),
                   Text(
                     _partnerActive ? 'SOCIO ACTIVO' : 'SOCIO EN ESPERA',

@@ -1018,6 +1018,20 @@ class BleService extends ChangeNotifier {
     _demoMode = !_demoMode;
     if (_demoMode) {
       _log('🧪 Demo mode activado', 'info');
+      final dummyToy = ToyModel(
+        id: 'DEMO-8154',
+        name: 'Knight No. 3 (Demo)',
+        usageType: 'Ambos',
+        targetAnatomy: 'Múltiple',
+        stimulationType: 'Vibración',
+        motorLogic: 'Dual (Canal A y B)',
+        imageUrl: 'https://i.ibb.co/L9Nn4wH/toy-placeholder.png',
+        qrCodeUrl: '',
+        supportedFuncs: 'Gamificación, Sync',
+        isPrecise: true,
+        broadcastPrefix: 'wbMSE',
+      );
+      setActiveToy(dummyToy);
     } else {
       _log('🧪 Demo mode desactivado', 'info');
       if (!_hardwareConfirmed) {

@@ -2,6 +2,7 @@
 // Velvet Sync · lib/models/toy_model.dart
 // Modelo de datos para dispositivos del catálogo
 // ═══════════════════════════════════════════════════════════════
+import 'package:flutter/material.dart';
 
 class ToyModel {
   final String id;
@@ -32,7 +33,35 @@ class ToyModel {
 
   bool get hasDualChannel => motorLogic.toLowerCase().contains('dual');
 
-  /// Ícono representativo del dispositivo basado en su tipo, anatomía y estimulación
+  /// Icono Vectorial Nativo (Material Icons) para la app, escalable y tintable
+  IconData get materialIcon {
+    final nameLower = name.toLowerCase();
+    final typeLower = usageType.toLowerCase();
+    final anatomyLower = targetAnatomy.toLowerCase();
+    final stimLower = stimulationType.toLowerCase();
+
+    // 1. Prioridad por Anatomía Específica
+    if (anatomyLower.contains('kegel') || nameLower.contains('kegel')) return Icons.spa;
+    if (anatomyLower.contains('anal') || anatomyLower.contains('zen')) return Icons.adjust;
+    if (anatomyLower.contains('prostat') || anatomyLower.contains('prostático')) return Icons.gamepad; // Joystick-like
+    if (anatomyLower.contains('clitor') || anatomyLower.contains('luna')) return Icons.flare;
+    if (anatomyLower.contains('peneano') || anatomyLower.contains('ring') || anatomyLower.contains('anillo')) return Icons.donut_large;
+
+    // 2. Prioridad por Tipo de Estimulación / Mecanismo
+    if (stimLower.contains('onda') || stimLower.contains('pulse') || stimLower.contains('wave')) return Icons.waves;
+    if (stimLower.contains('succión') || stimLower.contains('suction')) return Icons.cyclone;
+    if (stimLower.contains('empuje') || stimLower.contains('thrust')) return Icons.unfold_more;
+    if (hasDualChannel || stimLower.contains('dual')) return Icons.hub;
+
+    // 3. Casos por Forma
+    if (nameLower.contains('egg') || nameLower.contains('huevo') || typeLower.contains('egg')) return Icons.egg;
+    if (nameLower.contains('wand') || nameLower.contains('varita')) return Icons.auto_fix_high;
+    if (nameLower.contains('bullet') || nameLower.contains('bala')) return Icons.rocket_launch;
+
+    return Icons.vibration; // Default genérico
+  }
+
+  /// Ícono representativo del dispositivo (PNG original - Obsoleto)
   String get iconAsset {
     final nameLower = name.toLowerCase();
     final typeLower = usageType.toLowerCase();

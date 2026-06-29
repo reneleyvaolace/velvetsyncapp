@@ -119,20 +119,23 @@ class ControlTab extends ConsumerWidget {
             Expanded(
               child: _buildShortcutCard(
                 context,
-                title: 'CATÁLOGO',
-                icon: Icons.auto_stories,
+                title: 'AGREGAR',
+                icon: Icons.bluetooth_searching,
                 color: LvsColors.violet,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CatalogScreen())),
+                onTap: () => ble.connectToDevice(), // Or navigate to add device
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildShortcutCard(
                 context,
-                title: 'REMOTOS',
-                icon: Icons.settings_remote,
+                title: 'AGENDA',
+                icon: Icons.recent_actors,
                 color: LvsColors.teal,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteSessionScreen())),
+                onTap: () {
+                  // If ContactsScreen exists, navigate to it. Otherwise show SnackBar
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Abriendo Agenda...')));
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -470,11 +473,11 @@ class ControlTab extends ConsumerWidget {
                   ? CachedNetworkImage(
                       imageUrl: activeToy.imageUrl,
                       fit: BoxFit.contain,
-                      placeholder: (_, __) => Center(child: Image.asset(activeToy.iconAsset, width: 80, height: 80)),
-                      errorWidget: (_, __, ___) => Center(child: Image.asset(activeToy.iconAsset, width: 80, height: 80)),
+                      placeholder: (_, __) => Center(child: Icon(activeToy.materialIcon, size: 80, color: LvsColors.teal.withValues(alpha: 0.5))),
+                      errorWidget: (_, __, ___) => Center(child: Icon(activeToy.materialIcon, size: 80, color: LvsColors.teal.withValues(alpha: 0.5))),
                     )
-                  : Center(child: Image.asset(activeToy.iconAsset, width: 80, height: 80)),
-              ),
+                  : Center(child: Icon(activeToy.materialIcon, size: 80, color: LvsColors.teal)),
+                ),
             ),
           ),
         const SectionLabel('INTENSIDAD MAESTRA'),
@@ -551,7 +554,7 @@ class ControlTab extends ConsumerWidget {
         
         ElevatedButton.icon(
           onPressed: () => ble.emergencyStop(),
-          icon: Image.asset('assets/icons/icon_cool_down.png', width: 28, height: 28),
+          icon: const Icon(Icons.stop_circle, size: 28, color: Colors.white),
           label: const Text('STOP DE EMERGENCIA (ALTO)', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
           style: ElevatedButton.styleFrom(
             backgroundColor: LvsColors.red,

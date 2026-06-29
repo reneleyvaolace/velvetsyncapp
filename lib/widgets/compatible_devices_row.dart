@@ -225,11 +225,10 @@ class _DeviceChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: _color.withValues(alpha: 0.2)),
       ),
-      child: Image.asset(
-        toy.iconAsset,
-        width: 32,
-        height: 32,
-        fit: BoxFit.contain,
+      child: Icon(
+        toy.materialIcon,
+        size: 32,
+        color: _color,
       ),
     );
   }

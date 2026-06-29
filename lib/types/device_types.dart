@@ -205,7 +205,6 @@ extension DeviceTypeExtension on DeviceType {
       case DeviceType.unknown: return 'Desconocido';
     }
   }
-
   String get iconAsset {
     switch (this) {
       case DeviceType.vibrator: return 'assets/icons/icon_vibrator.png';
@@ -223,6 +222,26 @@ extension DeviceTypeExtension on DeviceType {
       case DeviceType.multi:
       case DeviceType.kegel: return 'assets/icons_icon_dual_motor.png';
       default: return 'assets/icons_icon_vibrator.png';
+    }
+  }
+
+  IconData get materialIcon {
+    switch (this) {
+      case DeviceType.vibrator: return Icons.vibration;
+      case DeviceType.egg: return Icons.egg;
+      case DeviceType.bullet: return Icons.rocket_launch;
+      case DeviceType.ring: return Icons.donut_large;
+      case DeviceType.clitoral: return Icons.flare;
+      case DeviceType.prostate: return Icons.gamepad;
+      case DeviceType.anal: return Icons.adjust;
+      case DeviceType.penis: return Icons.water_drop;
+      case DeviceType.ems: return Icons.bolt;
+      case DeviceType.suction: return Icons.cyclone;
+      case DeviceType.thrusting: return Icons.unfold_more;
+      case DeviceType.rotating: return Icons.sync_rounded;
+      case DeviceType.multi: return Icons.hub;
+      case DeviceType.kegel: return Icons.spa;
+      default: return Icons.vibration;
     }
   }
 }

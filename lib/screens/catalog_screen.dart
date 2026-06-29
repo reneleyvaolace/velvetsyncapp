@@ -97,8 +97,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
           labelColor: LvsColors.pink,
           unselectedLabelColor: LvsColors.text3,
           tabs: [
-            Tab(icon: Image.asset('assets/icons/icon_tab_control.png', width: 24, height: 24), text: 'Mis Dispositivos'),
-            Tab(icon: Image.asset('assets/icons/icon_add_device.png', width: 24, height: 24), text: 'Agregar'),
+            Tab(icon: const Icon(Icons.gamepad, size: 24), text: 'Mis Dispositivos'),
+            Tab(icon: const Icon(Icons.add_circle_outline, size: 24), text: 'Agregar'),
           ],
         ),
       ),
@@ -214,11 +214,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Image.asset(
-          toy.iconAsset,
-          width: 64,
-          height: 64,
-          fit: BoxFit.contain,
+        child: Icon(
+          toy.materialIcon,
+          size: 48,
+          color: LvsColors.pink,
         ),
       ),
     );
@@ -294,7 +293,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                             ),
                             const SizedBox(width: 4),
                             if (toy.hasDualChannel)
-                              Image.asset('assets/icons/icon_bluetooth.png', width: 26, height: 26),
+                              const Icon(Icons.bluetooth, size: 26, color: LvsColors.teal),
                             if (toy.isPrecise)
                               const Icon(Icons.tune, color: LvsColors.teal, size: 13),
                           ],
@@ -351,7 +350,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                 style: const TextStyle(color: LvsColors.pink, fontSize: 11)),
             const SizedBox(height: 20),
             _menuAction(
-              iconWidget: Image.asset('assets/icons/icon_tab_settings.png', width: 24, height: 24),
+              iconWidget: const Icon(Icons.settings, size: 24, color: LvsColors.teal),
               color: LvsColors.teal,
               label: 'Editar nombre / ID',
               onTap: () {

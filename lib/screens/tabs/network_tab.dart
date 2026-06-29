@@ -36,7 +36,7 @@ class NetworkTab extends ConsumerWidget {
               CardGlass(
                 child: Column(
                   children: [
-                    Image.asset('assets/icons/icon_encryption.png', width: 52, height: 52),
+                    const Icon(Icons.enhanced_encryption, size: 52, color: LvsColors.teal),
                     const SizedBox(height: 12),
                     const Text('CONEXIÓN ENCRIPTADA', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
                     const SizedBox(height: 8),

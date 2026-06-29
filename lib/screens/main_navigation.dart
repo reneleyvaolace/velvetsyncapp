@@ -55,57 +55,28 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           unselectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 1),
           items: [
             BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_control.png', width: 28, height: 28),
-              ),
-              activeIcon: Image.asset('assets/icons/icon_tab_control.png', width: 32, height: 32),
+              icon: const Icon(Icons.gamepad, size: 24),
+              activeIcon: const Icon(Icons.gamepad, size: 30),
               label: 'CONTROL',
             ),
             BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_modes.png', width: 28, height: 28),
-              ),
-              activeIcon: Image.asset('assets/icons/icon_tab_modes.png', width: 32, height: 32),
+              icon: const Icon(Icons.explore, size: 24),
+              activeIcon: const Icon(Icons.explore, size: 30),
               label: 'MODOS',
             ),
             BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset(
-                  'assets/icons/icon_remote_session.png',
-                  width: 28, height: 28,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, size: 20),
-                ),
-              ),
-              activeIcon: Image.asset(
-                'assets/icons/icon_remote_session.png',
-                width: 32, height: 32,
-                errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, size: 24),
-              ),
+              icon: const Icon(Icons.public, size: 24),
+              activeIcon: const Icon(Icons.public, size: 30),
               label: 'REMOTO',
             ),
             BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset(
-                  'assets/icons/icon_online_products.png',
-                  width: 28, height: 28,
-                ),
-              ),
-              activeIcon: Image.asset(
-                'assets/icons/icon_online_products.png',
-                width: 32, height: 32,
-              ),
+              icon: const Icon(Icons.auto_awesome_mosaic, size: 24),
+              activeIcon: const Icon(Icons.auto_awesome_mosaic, size: 30),
               label: 'CATÁLOGO',
             ),
             BottomNavigationBarItem(
-              icon: Opacity(
-                opacity: 0.5,
-                child: Image.asset('assets/icons/icon_tab_settings.png', width: 28, height: 28),
-              ),
-              activeIcon: Image.asset('assets/icons/icon_tab_settings.png', width: 32, height: 32),
+              icon: const Icon(Icons.build_circle, size: 24),
+              activeIcon: const Icon(Icons.build_circle, size: 30),
               label: 'SISTEMA',
             ),
           ],
