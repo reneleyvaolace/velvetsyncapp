@@ -706,3 +706,4 @@ class _HapticVideoPlayerScreenState extends ConsumerState<HapticVideoPlayerScree
     );
   }
 }
+

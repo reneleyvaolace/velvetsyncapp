@@ -183,42 +183,34 @@ class _ModesTabState extends ConsumerState<ModesTab> {
       children: [
         _GameTile(
           title: 'FRUTAS', icon: Icons.animation, color: LvsColors.teal,
-          assetPath: 'assets/icons/icon_fruit_game.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocalGameScreen())),
         ),
         _GameTile(
           title: 'DADOS', icon: Icons.casino, color: LvsColors.amber,
-          assetPath: 'assets/icons/icon_tab_games.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DiceScreen())),
         ),
         _GameTile(
           title: 'RULETA', icon: Icons.timer, color: LvsColors.red,
-          assetPath: 'assets/icons/icon_game_roulette.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RouletteScreen())),
         ),
         _GameTile(
           title: 'LECTOR', icon: Icons.book, color: LvsColors.teal,
-          assetPath: 'assets/icons/icon_reading_section.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReaderScreen())),
         ),
         _GameTile(
           title: 'COMPANION', icon: Icons.auto_awesome, color: LvsColors.pink,
-          assetPath: 'assets/icons/icon_ai_assistant.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CompanionScreen())),
         ),
         _GameTile(
           title: 'KEGEL', icon: Icons.fitness_center, color: LvsColors.amber,
-          assetPath: 'assets/icons/icon_kegel.png',
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KegelScreen())),
         ),
         _GameTile(
           title: 'VIDEO', icon: Icons.videocam, color: LvsColors.pink,
-          assetPath: null,
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HapticVideoPlayerScreen())),
         ),
         _GameTile(
           title: 'REMOTO', icon: Icons.sensors, color: LvsColors.teal,
-          assetPath: null,
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemoteVideoSyncScreen(role: RemoteVideoRole.host))),
         ),
       ],
@@ -229,10 +221,9 @@ class _ModesTabState extends ConsumerState<ModesTab> {
 class _GameTile extends StatelessWidget {
   final String title;
   final IconData icon;
-  final String? assetPath;
   final Color color;
   final VoidCallback onTap;
-  const _GameTile({required this.title, required this.icon, this.assetPath, required this.color, required this.onTap});
+  const _GameTile({required this.title, required this.icon, required this.color, required this.onTap});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -244,18 +235,7 @@ class _GameTile extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              assetPath != null
-                ? SizedBox(
-                    width: 132,
-                    height: 132,
-                    child: ClipRect(
-                      child: Transform.scale(
-                        scale: 1.15, 
-                        child: Image.asset(assetPath!, fit: BoxFit.cover),
-                      ),
-                    ),
-                  )
-                : Icon(icon, color: color, size: 132),
+              Icon(icon, color: color, size: 48),
               const SizedBox(height: 8),
               Text(title, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
             ],

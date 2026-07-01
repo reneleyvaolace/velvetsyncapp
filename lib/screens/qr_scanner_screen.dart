@@ -11,7 +11,7 @@ class QRScannerScreen extends StatefulWidget {
 
 class _QRScannerScreenState extends State<QRScannerScreen> {
   final MobileScannerController _controller = MobileScannerController(
-    detectionSpeed: DetectionSpeed.normal,
+    detectionSpeed: DetectionSpeed.noDuplicates,
     facing: CameraFacing.back,
   );
   
@@ -31,13 +31,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       final barcode = barcodes.first;
       if (barcode.rawValue != null) {
         setState(() => _isProcessing = true);
-        _controller.stop();
         
         final code = barcode.rawValue!;
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Código escaneado: $code')),
-        );
         
         // Return the scanned code to the previous screen
         Navigator.pop(context, code);

@@ -3,11 +3,12 @@ import 'dart:async';
 enum BleState { idle, scanning, connecting, connected, error }
 enum WaveType { none, pulse, wave, ramp, storm }
 
-class LogEntry {
+// LogEntry simple para el log interno del BleService
+class BleLogEntry {
   final DateTime time;
   final String msg;
-  final String type;
-  LogEntry(this.time, this.msg, this.type);
+  final String type; // 'info' | 'cmd' | 'success' | 'warn' | 'error'
+  BleLogEntry(this.time, this.msg, this.type);
 }
 
 class QueuedCommand {

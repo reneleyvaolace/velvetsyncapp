@@ -1,17 +1,16 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
-import 'package:velvet_sync/widgets/lvs_modes.dart';
-import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/screens/catalog_screen.dart';
 import 'package:velvet_sync/screens/qr_scanner_screen.dart';
-import 'package:velvet_sync/screens/remote_session_screen.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'dart:math';
+
 
 class ControlTab extends ConsumerWidget {
   const ControlTab({super.key});
@@ -28,11 +27,11 @@ class ControlTab extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              _buildConnectCard(ref, ble),
+              _buildConnectCard(context, ref, ble),
               const SizedBox(height: 16),
               // Bienvenida y accesos rápidos
               if (!ble.isConnected)
-                _buildWelcomeAndShortcuts(context, ble),
+                _buildWelcomeAndShortcuts(context, ble, ref),
               const SizedBox(height: 24),
               _buildControlCard(ref),
               const SizedBox(height: 40),
@@ -75,7 +74,7 @@ class ControlTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildWelcomeAndShortcuts(BuildContext context, BleService ble) {
+  Widget _buildWelcomeAndShortcuts(BuildContext context, BleService ble, WidgetRef ref) {
     return Column(
       children: [
         CardGlass(
@@ -124,7 +123,7 @@ class ControlTab extends ConsumerWidget {
                 title: 'AGREGAR',
                 icon: Icons.bluetooth_searching,
                 color: LvsColors.violet,
-                onTap: () => _showAddDeviceOptions(context, ble),
+                onTap: () => _showAddDeviceOptions(context, ble, ref),
               ),
             ),
             const SizedBox(width: 12),
@@ -157,11 +156,69 @@ class ControlTab extends ConsumerWidget {
     );
   }
 
-  void _showAddDeviceOptions(BuildContext context, BleService ble) {
-    showModalBottomSheet(
+  void _processQRResult(BuildContext context, String qrData, WidgetRef ref) async {
+    // 1. Agregar y registrar el juguete usando el QR (Extrae el ID)
+    final catalogNotifier = ref.read(catalogProvider.notifier);
+    final ble = ref.read(bleProvider);
+    
+    // Mostrar loading
+    showDialog(
       context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator(color: LvsColors.teal)),
+    );
+
+    final toy = await catalogNotifier.addByKey(qrData);
+    
+    if (context.mounted) {
+      Navigator.pop(context); // Cerrar loading
+
+      if (toy != null) {
+        // Juguete encontrado y registrado exitosamente
+        final isLovense = qrData.toLowerCase().contains('lovense') || qrData.toLowerCase().contains('lovn.se');
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isLovense 
+                ? 'Lovense detectado. Buscando conexión Bluetooth...'
+                : '${toy.name} registrado. Buscando conexión...',
+            ),
+            backgroundColor: LvsColors.teal,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+
+        // Lo ponemos como activo y ordenamos escaneo para conexión local
+        ble.setActiveToy(toy);
+        
+        // Extraemos la lista actual de dispositivos pre-registrados
+        final currentCatalog = ref.read(catalogProvider).value ?? [];
+        ble.connectToDevice(catalog: currentCatalog);
+
+      } else {
+        // Falló al registrar (o fue un QR inválido)
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: LvsColors.bgCard,
+            title: const Text('Dispositivo No Encontrado', style: TextStyle(color: Colors.white)),
+            content: Text(
+              'No logramos identificar ningún juguete válido a partir de este código:\n\n$qrData', 
+              style: const TextStyle(color: LvsColors.text2)
+            ),
+            actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('ENTENDIDO', style: TextStyle(color: LvsColors.teal)))],
+          ),
+        );
+      }
+    }
+  }
+
+  void _showAddDeviceOptions(BuildContext outerContext, BleService ble, WidgetRef ref) {
+    showModalBottomSheet(
+      context: outerContext,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
+      builder: (bsContext) => Container(
         decoration: const BoxDecoration(
           color: LvsColors.bgCard,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -183,8 +240,9 @@ class ControlTab extends ConsumerWidget {
               subtitle: 'Escanea dispositivos cercanos visibles (Recomendado).',
               onTap: () {
                 ble.isDeepScan = false;
-                ble.connectToDevice();
-                Navigator.pop(context);
+                Navigator.pop(bsContext);
+                final currentCatalog = ref.read(catalogProvider).value ?? [];
+                ble.connectToDevice(catalog: currentCatalog);
               },
             ),
             const SizedBox(height: 16),
@@ -192,11 +250,12 @@ class ControlTab extends ConsumerWidget {
               icon: Icons.radar,
               color: LvsColors.amber,
               title: 'Búsqueda Profunda (Deep Scan)',
-              subtitle: 'Útil si el juguete no aparece (ej. juguetes antiguos o de baja energía).',
+              subtitle: 'Rastreo forzado si tu dispositivo no aparece.',
               onTap: () {
                 ble.isDeepScan = true;
-                ble.connectToDevice();
-                Navigator.pop(context);
+                Navigator.pop(bsContext);
+                final currentCatalog = ref.read(catalogProvider).value ?? [];
+                ble.connectToDevice(catalog: currentCatalog);
               },
             ),
             const SizedBox(height: 16),
@@ -206,14 +265,13 @@ class ControlTab extends ConsumerWidget {
               title: 'Escanear Código QR',
               subtitle: 'Vincular rápidamente dispositivos Lovense y compatibles.',
               onTap: () async {
-                Navigator.pop(context);
+                Navigator.pop(bsContext);
                 final result = await Navigator.push(
-                  context,
+                  outerContext,
                   MaterialPageRoute(builder: (_) => const QRScannerScreen()),
                 );
                 if (result != null && result is String) {
-                  // Connect to Lovense via QR (TODO: send token to backend)
-                  debugPrint('QR Scanned: $result');
+                  _processQRResult(outerContext, result, ref);
                 }
               },
             ),
@@ -294,7 +352,7 @@ class ControlTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildConnectCard(WidgetRef ref, BleService ble) {
+  Widget _buildConnectCard(BuildContext context, WidgetRef ref, BleService ble) {
     final bleState = ref.watch(bleProvider.select((p) => p.state));
     
     return CardGlass(
@@ -310,7 +368,7 @@ class ControlTab extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Image.asset('assets/icons/icon_bluetooth.png', width: 20, height: 20),
+                        const Icon(Icons.bluetooth, color: LvsColors.teal, size: 20),
                         const SizedBox(width: 8),
                         const Flexible(
                           child: SectionLabel('ESTADO DE CONEXIÓN'),
@@ -332,9 +390,9 @@ class ControlTab extends ConsumerWidget {
                       const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _StatusIcon(icon: 'assets/icons/icon_battery.png', label: '85%'),
+                          _StatusIcon(icon: Icons.battery_charging_full, label: '85%'),
                           SizedBox(width: 4),
-                          _StatusIcon(icon: 'assets/icons/icon_signal_strength.png', label: 'GOOD'),
+                          _StatusIcon(icon: Icons.signal_cellular_alt, label: 'GOOD'),
                         ],
                       ),
                     ],
@@ -410,18 +468,28 @@ class ControlTab extends ConsumerWidget {
                 children: [
                   Column(
                     children: [
-                      // Icono grande del dispositivo
-                      Container(
-                        width: 80, height: 80,
-                        decoration: BoxDecoration(
-                          color: LvsColors.teal.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: LvsColors.teal.withValues(alpha: 0.5), width: 2),
-                        ),
-                        child: Icon(
-                          _getDeviceIcon(ble.activeToy),
-                          color: LvsColors.teal,
-                          size: 50,
+                      GestureDetector(
+                        onTap: () {
+                          final idToSearch = ble.activeToy?.id ?? ble.toyProfile?.identifier ?? ble.connectedDeviceName;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CatalogScreen(initialSearch: idToSearch),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 80, height: 80,
+                          decoration: BoxDecoration(
+                            color: LvsColors.teal.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: LvsColors.teal.withValues(alpha: 0.5), width: 2),
+                          ),
+                          child: Icon(
+                            _getDeviceIcon(ble.activeToy),
+                            color: LvsColors.teal,
+                            size: 50,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -724,12 +792,12 @@ class _BleStateBox extends StatelessWidget {
   const _BleStateBox({required this.state});
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch(state) {
-      BleState.connected  => ('Online',   LvsColors.teal),
-      BleState.scanning   => ('Buscando', LvsColors.amber),
-      BleState.connecting => ('Uniendo',  LvsColors.amber),
-      BleState.error      => ('Error',    LvsColors.red),
-      BleState.idle       => ('Offline',  LvsColors.text3),
+    final (label, color, iconData) = switch(state) {
+      BleState.connected  => ('Online',   LvsColors.teal, Icons.bluetooth_connected),
+      BleState.scanning   => ('Buscando', LvsColors.amber, Icons.bluetooth_searching),
+      BleState.connecting => ('Uniendo',  LvsColors.amber, Icons.sync),
+      BleState.error      => ('Error',    LvsColors.red, Icons.error_outline),
+      BleState.idle       => ('Offline',  LvsColors.text3, Icons.bluetooth_disabled),
     };
 
     return Container(
@@ -742,8 +810,8 @@ class _BleStateBox extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _Dot(color: color, pulse: state == BleState.scanning || state == BleState.connecting),
-          const SizedBox(width: 8),
+          Icon(iconData, color: color, size: 12),
+          const SizedBox(width: 6),
           Text(label.toUpperCase(), style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: color)),
         ],
       ),
@@ -774,7 +842,7 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
 // Helper para obtener ícono del dispositivo
 // ═══════════════════════════════════════════════════════════════
 IconData _getDeviceIcon(ToyModel? toy) {
-  if (toy == null) return Icons.devices;
+  if (toy == null) return Icons.vibration;
   
   final name = toy.name.toLowerCase();
   final anatomy = toy.targetAnatomy.toLowerCase();
@@ -791,8 +859,8 @@ IconData _getDeviceIcon(ToyModel? toy) {
   if (type.contains('insertable')) return Icons.water_drop;
   if (type.contains('wearable')) return Icons.brightness_1;
   
-  // Default
-  return Icons.devices;
+  // Si no coincide con ninguno, pero es un juguete, regresamos vibración
+  return Icons.vibration;
 }
 
 class _NeonPresetBtn extends StatelessWidget {
@@ -827,7 +895,7 @@ class _NeonPresetBtn extends StatelessWidget {
 }
 
 class _StatusIcon extends StatelessWidget {
-  final String icon;
+  final IconData icon;
   final String label;
   const _StatusIcon({required this.icon, required this.label});
 
@@ -843,7 +911,7 @@ class _StatusIcon extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(icon, width: 14, height: 14),
+          Icon(icon, size: 14, color: Colors.white70),
           const SizedBox(width: 6),
           Text(label, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white70)),
         ],
@@ -851,3 +919,4 @@ class _StatusIcon extends StatelessWidget {
     );
   }
 }
+

@@ -15,7 +15,8 @@ import 'package:velvet_sync/theme.dart';
 // Pantalla principal del Catálogo
 // ══════════════════════════════════════════════════════════════
 class CatalogScreen extends ConsumerStatefulWidget {
-  const CatalogScreen({super.key});
+  final String? initialSearch;
+  const CatalogScreen({super.key, this.initialSearch});
 
   @override
   ConsumerState<CatalogScreen> createState() => _CatalogScreenState();
@@ -23,7 +24,7 @@ class CatalogScreen extends ConsumerStatefulWidget {
 
 class _CatalogScreenState extends ConsumerState<CatalogScreen>
     with SingleTickerProviderStateMixin {
-  String _searchQuery = '';
+  late String _searchQuery;
   final TextEditingController _searchController = TextEditingController();
   late TabController _tabController;
 
@@ -31,6 +32,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _searchQuery = widget.initialSearch ?? '';
+    if (_searchQuery.isNotEmpty) {
+      _searchController.text = _searchQuery;
+    }
   }
 
   @override

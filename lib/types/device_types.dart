@@ -3,6 +3,8 @@
 // Tipos y enumeraciones para dispositivos
 // ═══════════════════════════════════════════════════════════════
 
+import 'package:flutter/material.dart';
+
 /// Tipos de dispositivo según anatomía y uso
 enum DeviceType {
   /// Vibrador universal

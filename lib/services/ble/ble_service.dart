@@ -10,10 +10,11 @@
 //    permite continuar recibiendo eventos BLE mientras la app
 //    está en background (limitado por iOS power management).
 // ═══════════════════════════════════════════════════════════════
-
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Platform;
 import 'dart:math' as math;
+import 'package:velvet_sync/services/ble/ble_types.dart';
+export 'package:velvet_sync/services/ble/ble_types.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -30,15 +31,7 @@ import 'package:velvet_sync/services/backend/notification_service.dart';
 // ── Provider Global para Riverpod ──────────────────────────────
 final bleProvider = ChangeNotifierProvider((ref) => BleService());
 
-enum BleState { idle, scanning, connecting, connected, error }
-enum WaveType { none, pulse, wave, ramp, storm }
 
-class LogEntry {
-  final DateTime time;
-  final String msg;
-  final String type; // 'info' | 'cmd' | 'success' | 'warn' | 'error'
-  LogEntry(this.time, this.msg, this.type);
-}
 
 // 🔒 PERFORMANCE: Clase para cola de comandos BLE
 class _QueuedCommand {
@@ -217,8 +210,8 @@ class BleService extends ChangeNotifier {
   }
 
   // Log - 🔒 PERFORMANCE: Limitado a 100 entradas para prevenir memory growth
-  final List<LogEntry> _logs = [];
-  List<LogEntry> get logs {
+  final List<BleLogEntry> _logs = [];
+  List<BleLogEntry> get logs {
     const maxLogs = 100;
     if (_logs.length <= maxLogs) return List.from(_logs);
     return _logs.sublist(_logs.length - maxLogs);
@@ -423,10 +416,23 @@ class BleService extends ChangeNotifier {
     }
 
     if (found == null) {
-      _log('No se encontró dispositivo compatible.', 'warn');
-      _setState(BleState.idle);
-      return;
+      if (!isDeepScan) {
+        _log('Búsqueda rápida falló, activando Deep Scan oculto...', 'warn');
+        isDeepScan = true;
+        _lastScanTime = null; // Reiniciar cooldown para escaneo inmediato
+        _setState(BleState.idle); // Necesario para que el if de arriba no bloquee
+        await connectToDevice(catalog: catalog);
+        return; // El recursivo maneja el resto
+      } else {
+        _log('No se encontró dispositivo compatible ni con Deep Scan.', 'error');
+        _setState(BleState.idle);
+        isDeepScan = false; // Reset para el siguiente intento
+        return;
+      }
     }
+    
+    // Si lo encontró, resetear la variable para futuras búsquedas limpias
+    isDeepScan = false;
 
     // Registrar nombre real del dispositivo detectado
     final rawName = found!.platformName.isEmpty
@@ -450,10 +456,13 @@ class BleService extends ChangeNotifier {
     _setState(BleState.connecting);
     _log('🔐 Handshake: Verificando hardware activo...', 'info');
 
-    // ── NUEVO: Timeout estricto para handshake (3 segundos máx) ──
     const handshakeTimeout = Duration(seconds: 3);
 
     try {
+      if (!connectedDevices.contains(dev)) {
+        connectedDevices.add(dev);
+      }
+
       // HANDSHAKE ACTIVO REAL con timeout
       final ok = await writeCommand(verificationCmd, label: 'VERIFY', silent: false)
           .timeout(handshakeTimeout, onTimeout: () {
@@ -465,6 +474,7 @@ class BleService extends ChangeNotifier {
         _log('❌ Handshake fallido: el hardware no responde. Conexión RECHAZADA.', 'error');
         _log('   Posibles causas: 1) Dispositivo apagado, 2) Fuera de rango, 3) Falso positivo en escaneo', 'warn');
         connectedDeviceName = '';
+        connectedDevices.remove(dev);
         _hardwareConfirmed = false;
         _setState(BleState.idle);
 
@@ -486,9 +496,6 @@ class BleService extends ChangeNotifier {
         // No rechazamos, pero logueamos
       }
 
-      if (!connectedDevices.contains(dev)) {
-        connectedDevices.add(dev);
-      }
 
       // ── NUEVO: Confirmar hardware exitoso ──
       _hardwareConfirmed = true;
@@ -1001,7 +1008,7 @@ class BleService extends ChangeNotifier {
   }
 
   void _log(String msg, String type) {
-    _logs.add(LogEntry(DateTime.now(), msg, type));
+    _logs.add(BleLogEntry(DateTime.now(), msg, type));
     if (_logs.length > 150) {
       _logs.removeRange(0, 50);
     }

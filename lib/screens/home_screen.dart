@@ -820,7 +820,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.pink.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset('assets/icons/icon_sync_music.png', width: 42, height: 42),
+                child: const Icon(Icons.music_note, color: LvsColors.teal, size: 42),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -921,7 +921,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.violet.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset('assets/icons/icon_game_roulette.png', width: 42, height: 42),
+                child: const Icon(Icons.casino, color: LvsColors.red, size: 42),
               ),
               const SizedBox(width: 12),
               const Expanded(
@@ -974,7 +974,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.amber.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset('assets/icons/icon_ai_assistant.png', width: 42, height: 42),
+                child: const Icon(Icons.smart_toy, color: LvsColors.teal, size: 42),
               ),
               const SizedBox(width: 12),
               const Expanded(
@@ -1027,7 +1027,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   color: LvsColors.violet.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Image.asset('assets/icons/icon_tab_games.png', width: 42, height: 42),
+                child: const Icon(Icons.sports_esports, color: LvsColors.violet, size: 42),
               ),
               const SizedBox(width: 12),
               const Expanded(
@@ -1182,12 +1182,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
           const SizedBox(height: 24),
           _PatternGrid(
             items: [
-              _PatternItem('PULSO', LvsPattern.pat1, LvsColors.pink, 'assets/icons/icon_sync_music.png'),
-              _PatternItem('OLA',   LvsPattern.pat2, LvsColors.violet, 'assets/icons/icon_pulse_waves.png'),
-              _PatternItem('RAMPA', LvsPattern.pat3, LvsColors.teal, 'assets/icons/icon_motion_control.png'),
-              _PatternItem('FLIP',  LvsPattern.pat4, LvsColors.amber, 'assets/icons/icon_dual_motor.png'),
-              _PatternItem('STORM', LvsPattern.pat5, LvsColors.teal, 'assets/icons/icon_cool_down.png'),
-              _PatternItem('CHAOS', LvsPattern.pat6, LvsColors.red, 'assets/icons/icon_custom_pattern.png'),
+              _PatternItem('PULSO', LvsPattern.pat1, LvsColors.pink, Icons.favorite),
+              _PatternItem('OLA',   LvsPattern.pat2, LvsColors.violet, Icons.water),
+              _PatternItem('RAMPA', LvsPattern.pat3, LvsColors.teal, Icons.graphic_eq),
+              _PatternItem('FLIP',  LvsPattern.pat4, LvsColors.amber, Icons.gesture),
+              _PatternItem('STORM', LvsPattern.pat5, LvsColors.teal, Icons.cyclone),
+              _PatternItem('CHAOS', LvsPattern.pat6, LvsColors.red, Icons.crisis_alert),
             ],
             active: ble.activePattern,
             enabled: ble.state == BleState.connected && !_shakeMode,
@@ -1446,11 +1446,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   shape: BoxShape.circle,
                   border: Border.all(color: LvsColors.pink.withValues(alpha: 0.2)),
                 ),
-                child: Image.asset(
-                  'assets/icons/icon_remote_session.png', 
-                  width: 44, height: 44,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.settings_remote, color: LvsColors.pink, size: 32),
-                ),
+                child: const Icon(Icons.public, color: LvsColors.pink, size: 32),
               ),
               const SizedBox(width: 20),
               const Expanded(
@@ -1520,15 +1516,10 @@ class _PatternGrid extends StatelessWidget {
                 SizedBox(
                   width: 32,
                   height: 32,
-                  child: Image.asset(
-                    item.asset,
+                  child: Icon(
+                    item.icon,
                     color: isActive ? item.color : LvsColors.text3,
-                    colorBlendMode: BlendMode.srcIn,
-                    errorBuilder: (_, __, ___) => Icon(
-                      isActive ? Icons.graphic_eq : Icons.noise_control_off,
-                      color: isActive ? item.color : LvsColors.text3,
-                      size: 26,
-                    ),
+                    size: 28,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1555,12 +1546,12 @@ class _PatternItem {
   final String label;
   final LvsPattern pattern;
   final Color color;
-  final String asset;
-  _PatternItem(this.label, this.pattern, this.color, this.asset);
+  final IconData icon;
+  _PatternItem(this.label, this.pattern, this.color, this.icon);
 }
 
 class _LogRow extends StatelessWidget {
-  final LogEntry entry;
+  final BleLogEntry entry;
   const _LogRow({required this.entry});
 
   @override

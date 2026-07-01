@@ -177,18 +177,10 @@ class _AppIcon extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: Image.asset(
-        assetPath,
-        color: active ? activeColor : null,
-        colorBlendMode: active ? BlendMode.srcIn : null,
-        opacity: active ? null : const AlwaysStoppedAnimation(0.5),
-        errorBuilder: (context, error, stackTrace) {
-          return Icon(
-            fallback,
-            color: active ? activeColor : LvsColors.text3,
-            size: size * 0.9,
-          );
-        },
+      child: Icon(
+        fallback,
+        color: active ? activeColor : LvsColors.text3,
+        size: size,
       ),
     );
   }
@@ -240,6 +232,8 @@ class _LvsCanvasState extends State<LvsCanvas> {
       builder: (context, constraints) {
         final size = Size(constraints.maxWidth, 200);
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onPanDown: (details) => _update(details.localPosition, size),
           onPanStart: (details) => _update(details.localPosition, size),
           onPanUpdate: (details) => _update(details.localPosition, size),
           onPanEnd: (_) => _stop(),

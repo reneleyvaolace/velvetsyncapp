@@ -20,7 +20,7 @@ import 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart';
 const _kPreregisteredKey = 'lvs_preregistered_devices';
 
 /// URL del Catálogo Web de Velvet Sync (Planeado: subdominio de Vercel)
-const kWebCatalogUrl = 'https://velvetsync.com/catalog';
+const kWebCatalogUrl = 'https://velvetsynccatalog.vercel.app/';
 
 // Provider solo para los pre-registrados (donde vive la persistencia reactiva)
 final preregisteredProvider = StateProvider<List<ToyModel>>((ref) => []);

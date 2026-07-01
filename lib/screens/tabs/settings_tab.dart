@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/screens/debug_screen.dart';
-import 'package:velvet_sync/screens/web_catalog_screen.dart';
 import 'package:velvet_sync/services/session/session_timer_service.dart';
 import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 
@@ -39,8 +38,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              _buildWebCatalogCard(context),
-              const SizedBox(height: 20),
+
               _buildMyProfileCard(context),
               const SizedBox(height: 20),
               _buildSettingsCard(burstInterval, isDeepScan),
@@ -55,47 +53,6 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildWebCatalogCard(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const WebCatalogScreen()),
-        );
-      },
-      child: CardGlass(
-        borderColor: LvsColors.violet.withValues(alpha: 0.3),
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: LvsColors.violet.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: LvsColors.violet.withValues(alpha: 0.3)),
-              ),
-              child: const Icon(Icons.language, color: LvsColors.violet, size: 24),
-            ),
-            const SizedBox(width: 14),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('CATÁLOGO WEB', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.violet)),
-                  SizedBox(height: 4),
-                  Text('Explorar catálogo online en Vercel', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios, color: LvsColors.violet, size: 14),
-          ],
-        ),
-      ),
     );
   }
 
@@ -192,7 +149,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     );
   }
 
-  Widget _buildLogCard(List<LogEntry> logs) {
+  Widget _buildLogCard(List<BleLogEntry> logs) {
     final ble = ref.read(bleProvider);
     if (logs.isEmpty) return const SizedBox.shrink();
     

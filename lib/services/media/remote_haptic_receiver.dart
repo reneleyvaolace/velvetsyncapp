@@ -63,3 +63,4 @@ class RemoteHapticReceiver {
     onConnectionChange = null;
   }
 }
+

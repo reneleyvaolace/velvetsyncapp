@@ -433,3 +433,4 @@ class _RemoteVideoSyncScreenState extends ConsumerState<RemoteVideoSyncScreen> {
     );
   }
 }
+
