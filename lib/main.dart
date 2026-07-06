@@ -6,16 +6,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/backend/sync_service.dart';
 import 'package:velvet_sync/services/backend/link_service.dart';
 import 'package:velvet_sync/services/backend/profile_service.dart';
+import 'package:velvet_sync/services/backend/auth_service.dart';
 import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:velvet_sync/screens/main_navigation.dart';
 import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
+import 'package:velvet_sync/screens/auth_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -152,22 +155,54 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       setState(() => _statusMessage = '¡Todo listo!');
       await Future.delayed(const Duration(seconds: 1));
       if (!mounted) return;
-      
-      // Verificar si el usuario tiene perfil o necesita crear uno
-      final profileService = ref.read(profileServiceProvider);
-      final needsProfile = profileService.myProfile == null;
 
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              needsProfile ? const MyProfileScreen() : const MainNavigation(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 800),
-        ),
-      );
+      final auth = ref.read(authServiceProvider);
+      final prefs = await SharedPreferences.getInstance();
+      final hasEmail = auth.email != null;
+      final skipAuth = prefs.getBool('skip_auth') ?? false;
+
+      if (!hasEmail && !skipAuth) {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => AuthScreen(
+              onSkip: () async {
+                (await SharedPreferences.getInstance()).setBool('skip_auth', true);
+                if (!mounted) return;
+                Navigator.of(context).pushReplacement(
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => _getPostAuthScreen(),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    transitionDuration: const Duration(milliseconds: 800),
+                  ),
+                );
+              },
+            ),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 800),
+          ),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => _getPostAuthScreen(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 800),
+          ),
+        );
+      }
     }
+  }
+
+  Widget _getPostAuthScreen() {
+    final profileService = ref.read(profileServiceProvider);
+    final needsProfile = profileService.myProfile == null;
+    return needsProfile ? const MyProfileScreen() : const MainNavigation();
   }
 
   @override

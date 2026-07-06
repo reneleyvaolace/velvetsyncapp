@@ -54,6 +54,7 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_dotenv: ^5.2.1  # Updated: Bug fixes
   shared_preferences: ^2.3.3  # Persistencia de configuración
+  share_plus: ^10.1.4         # Compartir archivos de respaldo
   webview_flutter: ^4.8.0     # WebView para catálogo web (Android/iOS)
   path_provider: ^2.1.2       # 🔒 PERSISTENCE: Required for Logger library
   web_socket_channel: any
