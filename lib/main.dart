@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/backend/sync_service.dart';
 import 'package:velvet_sync/services/backend/link_service.dart';
 import 'package:velvet_sync/services/backend/profile_service.dart';
 import 'package:velvet_sync/services/backend/auth_service.dart';
+import 'package:velvet_sync/services/backend/supabase_service.dart';
 import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:velvet_sync/screens/main_navigation.dart';
@@ -38,23 +38,16 @@ void main() async {
     // Continuamos pero los servicios fallarán si dependen de .env
   }
 
-  // 3. Inicializar Supabase Temprano (Opcional en main, obligatorio en servicios)
+  // 3. Inicializar Supabase (servicio unificado)
   try {
-    final url = dotenv.env['SUPABASE_URL'] ?? '';
-    final anonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
-    if (url.isNotEmpty && anonKey.isNotEmpty) {
-      await Supabase.initialize(
-        url: url,
-        anonKey: anonKey,
-        realtimeClientOptions: const RealtimeClientOptions(eventsPerSecond: 10),
-      );
-      lvsLog('Supabase inicializado en main()', tag: 'APP');
+    final supabaseService = SupabaseService();
+    await supabaseService.initialize();
 
-      // Autenticación anónima para obtener user ID persistente
-      if (Supabase.instance.client.auth.currentUser == null) {
-        await Supabase.instance.client.auth.signInAnonymously();
-        lvsLog('Usuario anónimo autenticado', tag: 'APP');
-      }
+    // Autenticación anónima para obtener user ID persistente
+    final auth = supabaseService.client.auth;
+    if (auth.currentUser == null) {
+      await auth.signInAnonymously();
+      lvsLog('Usuario anónimo autenticado', tag: 'APP');
     }
   } catch (e) {
     lvsError('Fallo inicialización Supabase en main: $e', tag: 'APP');

@@ -47,6 +47,7 @@ class SupabaseService {
 
   // Canales para comunicación rápida (P2P Virtual)
   RealtimeChannel? _activeChannel;
+  String? _currentSessionId;
   final String _clientId = DateTime.now().millisecondsSinceEpoch.toString(); // Identificador único por sesión de app
 
   Future<void> initialize() async {
@@ -303,6 +304,7 @@ class SupabaseService {
   /// Se une a una sala de control en tiempo real para una sesión
   void joinControlRoom(String sessionId, Function(Map<String, dynamic> payload, bool isSelf) onCommandReceived) {
     _activeChannel?.unsubscribe();
+    _currentSessionId = sessionId;
 
     _activeChannel = client.channel('session_$sessionId');
 
@@ -321,7 +323,9 @@ class SupabaseService {
 
   /// Envía un comando de intensidad sin pasar por la base de datos (Latencia mínima)
   Future<void> sendBroadcastCommand(String sessionId, String key, int value) async {
-    final channel = client.channel('session_$sessionId');
+    final channel = _currentSessionId == sessionId && _activeChannel != null
+        ? _activeChannel!
+        : client.channel('session_$sessionId')..subscribe();
 
     await channel.sendBroadcastMessage(
       event: 'control_command',
@@ -336,5 +340,6 @@ class SupabaseService {
   void leaveControlRoom() {
     _activeChannel?.unsubscribe();
     _activeChannel = null;
+    _currentSessionId = null;
   }
 }

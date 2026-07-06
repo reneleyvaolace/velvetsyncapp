@@ -1,5 +1,6 @@
+// 🔒 Las credenciales de servicios externos deben cargarse desde .env
+// y no hardcodearse aquí. Revisa .env.example para las variables requeridas.
 
 class AppConfig {
-  static const String agoraAppId = 'TU_AGORA_APP_ID_AQUI';
-  static const String agoraToken = '';
+  // Obsoleto: usar dotenv.env['VARIABLE'] directamente
 }
