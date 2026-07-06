@@ -172,6 +172,8 @@ class CloudBackupService extends ChangeNotifier {
         await prefs.setInt(entry.key, value);
       } else if (value is double) {
         await prefs.setDouble(entry.key, value);
+      } else if (value is List<String>) {
+        await prefs.setStringList(entry.key, value);
       }
     }
   }

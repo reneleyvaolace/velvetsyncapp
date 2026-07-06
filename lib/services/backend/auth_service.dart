@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
-final authServiceProvider = Provider<AuthService>((ref) {
+final authServiceProvider = ChangeNotifierProvider<AuthService>((ref) {
   return AuthService();
 });
 
@@ -140,7 +140,7 @@ class AuthService extends ChangeNotifier {
     try {
       await _client.auth.resetPasswordForEmail(email);
       lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
-      _status = AuthStatus.authenticated;
+      _status = AuthStatus.unauthenticated;
       notifyListeners();
       return true;
     } on AuthException catch (e) {
