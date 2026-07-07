@@ -14,9 +14,9 @@ void main() {
       expect(profile.hasDualChannel, true);
     });
 
-    test('detects dual channel from knight name', () {
+    test('returns single channel for knight name (no more hardcoded bypass)', () {
       final profile = ToyProfile.fromName('Knight Device');
-      expect(profile.hasDualChannel, true);
+      expect(profile.hasDualChannel, false);
     });
 
     test('returns single channel for unknown name', () {

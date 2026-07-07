@@ -15,22 +15,22 @@ class PatternDef {
 
 // ── Modos de Intensidad (Canal de Empuje/Rotación) ────────
 const List<PatternDef> _kIntensityDefs = [
-  PatternDef(label: 'BAJO',   asset: 'assets/icons/icon_intensity.png',       fallback: Icons.keyboard_arrow_up),
+  PatternDef(label: 'SUAVE',  asset: 'assets/icons/icon_intensity.png',       fallback: Icons.keyboard_arrow_up),
   PatternDef(label: 'MEDIO',  asset: 'assets/icons/icon_heart.png',           fallback: Icons.bolt),
-  PatternDef(label: 'FUERTE', asset: 'assets/icons/icon_thrust.png',          fallback: Icons.rocket_launch),
+  PatternDef(label: 'INTENSO', asset: 'assets/icons/icon_thrust.png',          fallback: Icons.rocket_launch),
 ];
 
 // ── Modos de Ritmo (Canal de Vibración/Patrones) ───────────────────────────
 const List<PatternDef> _kRhythmDefs = [
-  PatternDef(label: 'PULSO',   asset: 'assets/icons/icon_sync_music.png',     fallback: Icons.favorite),
-  PatternDef(label: 'OLA',     asset: 'assets/icons/icon_pulse_waves.png',    fallback: Icons.water),
-  PatternDef(label: 'RAMPA',   asset: 'assets/icons/icon_motion_control.png', fallback: Icons.graphic_eq),
-  PatternDef(label: 'FLIP',    asset: 'assets/icons/icon_dual_motor.png',     fallback: Icons.gesture),
-  PatternDef(label: 'STORM',   asset: 'assets/icons/icon_cool_down.png',      fallback: Icons.cyclone),
-  PatternDef(label: 'CHAOS',   asset: 'assets/icons/icon_custom_pattern.png', fallback: Icons.crisis_alert),
-  PatternDef(label: 'SURF',    asset: 'assets/icons/icon_vibrator.png',       fallback: Icons.water), 
-  PatternDef(label: 'VOLCAN',  asset: 'assets/icons/icon_thrust.png',         fallback: Icons.volcano),
-  PatternDef(label: 'LATIDO',  asset: 'assets/icons/icon_heart.png',          fallback: Icons.favorite),
+  PatternDef(label: 'PULSO',    asset: 'assets/icons/icon_sync_music.png',     fallback: Icons.favorite),
+  PatternDef(label: 'OLA',      asset: 'assets/icons/icon_pulse_waves.png',    fallback: Icons.water_drop),
+  PatternDef(label: 'RAMPA',    asset: 'assets/icons/icon_motion_control.png', fallback: Icons.trending_up),
+  PatternDef(label: 'GIROS',    asset: 'assets/icons/icon_dual_motor.png',     fallback: Icons.swap_horiz),
+  PatternDef(label: 'TORMENTA', asset: 'assets/icons/icon_cool_down.png',      fallback: Icons.thunderstorm),
+  PatternDef(label: 'CAOS',     asset: 'assets/icons/icon_custom_pattern.png', fallback: Icons.blur_on),
+  PatternDef(label: 'MAREA',    asset: 'assets/icons/icon_vibrator.png',       fallback: Icons.waves),
+  PatternDef(label: 'VOLCÁN',   asset: 'assets/icons/icon_thrust.png',         fallback: Icons.whatshot),
+  PatternDef(label: 'LATIDO',   asset: 'assets/icons/icon_heart.png',          fallback: Icons.monitor_heart),
 ];
 
 // ── Grilla de Selección de Modos ───────────────────────────────────

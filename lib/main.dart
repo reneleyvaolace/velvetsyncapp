@@ -4,21 +4,20 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:velvet_sync/services/ble/ble_service_platform.dart';
-import 'package:velvet_sync/services/backend/sync_service.dart';
-import 'package:velvet_sync/services/backend/link_service.dart';
-import 'package:velvet_sync/services/backend/profile_service.dart';
-import 'package:velvet_sync/services/backend/auth_service.dart';
 import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/backend/profile_service.dart';
+import 'package:velvet_sync/services/backend/link_service.dart';
+import 'package:velvet_sync/services/backend/sync_service.dart';
 import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
+import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/backend/auth_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
+import 'package:velvet_sync/screens/auth_screen.dart';
 import 'package:velvet_sync/screens/main_navigation.dart';
 import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
-import 'package:velvet_sync/screens/auth_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +42,6 @@ void main() async {
     final supabaseService = SupabaseService();
     await supabaseService.initialize();
 
-    // Autenticación anónima para obtener user ID persistente
     final auth = supabaseService.client.auth;
     if (auth.currentUser == null) {
       await auth.signInAnonymously();
@@ -155,12 +153,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       final skipAuth = prefs.getBool('skip_auth') ?? false;
 
       if (!hasEmail && !skipAuth) {
+        if (!mounted) return;
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) => AuthScreen(
               onSkip: () async {
-                (await SharedPreferences.getInstance()).setBool('skip_auth', true);
+                final prefs2 = await SharedPreferences.getInstance();
+                await prefs2.setBool('skip_auth', true);
                 if (!mounted) return;
+                if (!context.mounted) return;
                 Navigator.of(context).pushReplacement(
                   PageRouteBuilder(
                     pageBuilder: (_, __, ___) => _getPostAuthScreen(),
@@ -179,6 +180,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           ),
         );
       } else {
+        if (!mounted) return;
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) => _getPostAuthScreen(),
@@ -195,6 +197,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Widget _getPostAuthScreen() {
     final profileService = ref.read(profileServiceProvider);
     final needsProfile = profileService.myProfile == null;
+    if (!needsProfile) {
+      profileService.updateLastSeen();
+    }
     return needsProfile ? const MyProfileScreen() : const MainNavigation();
   }
 

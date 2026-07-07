@@ -2,7 +2,76 @@
 // Velvet Sync · lib/models/toy_model.dart
 // Modelo de datos para dispositivos del catálogo
 // ═══════════════════════════════════════════════════════════════
+import 'dart:convert';
 import 'package:flutter/material.dart';
+
+/// Botón de patrón individual del ClassicId
+class PatternButton {
+  final int id;
+  final String name;
+  final int command;
+  final int stopCommand;
+  final String imageUrl;
+  final String newCommand;
+
+  const PatternButton({
+    required this.id,
+    required this.name,
+    required this.command,
+    required this.stopCommand,
+    this.imageUrl = '',
+    this.newCommand = '',
+  });
+
+  factory PatternButton.fromJson(Map<String, dynamic> json) => PatternButton(
+    id: int.tryParse(json['Id']?.toString() ?? '') ?? 0,
+    name: json['Name']?.toString() ?? 'Modo',
+    command: int.tryParse(json['Command']?.toString() ?? '') ?? 0,
+    stopCommand: int.tryParse(json['StopCommand']?.toString() ?? '') ?? 0,
+    imageUrl: json['Image']?.toString() ?? '',
+    newCommand: json['NewCommand']?.toString() ?? '',
+  );
+
+  Map<String, dynamic> toJson() => {
+    'Id': id, 'Name': name, 'Command': command,
+    'StopCommand': stopCommand, 'Image': imageUrl,
+    'NewCommand': newCommand,
+  };
+}
+
+/// Grupo de patrones (un grupo = un canal en dispositivos duales)
+class PatternGroup {
+  final int id;
+  final String name;
+  final int type;
+  final List<PatternButton> buttons;
+
+  const PatternGroup({
+    required this.id,
+    required this.name,
+    this.type = 0,
+    this.buttons = const [],
+  });
+
+  bool get isEmpty => buttons.isEmpty;
+
+  factory PatternGroup.fromJson(Map<String, dynamic> json) {
+    final buttons = (json['Buttons'] as List? ?? [])
+        .map((b) => PatternButton.fromJson(b))
+        .toList();
+    return PatternGroup(
+      id: json['Id'] ?? 0,
+      name: json['Name']?.toString() ?? '',
+      type: json['Type'] ?? 0,
+      buttons: buttons,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'Id': id, 'Name': name, 'Type': type,
+    'Buttons': buttons.map((b) => b.toJson()).toList(),
+  };
+}
 
 class ToyModel {
   final String id;
@@ -16,6 +85,10 @@ class ToyModel {
   final String supportedFuncs;
   final bool isPrecise;
   final String broadcastPrefix;
+  final String bleName;
+  final bool isEncrypt;
+  final String encryptCommand;
+  final List<PatternGroup> patternGroups;
 
   ToyModel({
     required this.id,
@@ -29,9 +102,23 @@ class ToyModel {
     required this.supportedFuncs,
     required this.isPrecise,
     required this.broadcastPrefix,
+    this.bleName = '',
+    this.isEncrypt = false,
+    this.encryptCommand = '',
+    this.patternGroups = const [],
   });
 
   bool get hasDualChannel => motorLogic.toLowerCase().contains('dual');
+
+  /// Check if this device supports a specific feature.
+  /// [feature] is a feature code like 'music', 'shake', 'video', 'game', 'kegel', etc.
+  /// Parses `supportedFuncs` which is pipe (`|`) or comma (`,`) delimited.
+  /// Returns `true` if `supportedFuncs` is empty (backward compatible fallback).
+  bool supports(String feature) {
+    if (supportedFuncs.isEmpty) return true;
+    final lower = feature.toLowerCase();
+    return supportedFuncs.toLowerCase().split(RegExp(r'[,|]')).any((f) => f.trim() == lower);
+  }
 
   /// Icono Vectorial Nativo (Material Icons) para la app, escalable y tintable
   IconData get materialIcon {
@@ -108,12 +195,41 @@ class ToyModel {
           qrCodeUrl == other.qrCodeUrl &&
           supportedFuncs == other.supportedFuncs &&
           isPrecise == other.isPrecise &&
-          broadcastPrefix == other.broadcastPrefix;
+          broadcastPrefix == other.broadcastPrefix &&
+          bleName == other.bleName &&
+          isEncrypt == other.isEncrypt &&
+          encryptCommand == other.encryptCommand &&
+          _listEquals(patternGroups, other.patternGroups);
+
+  static bool _listEquals(List<PatternGroup>? a, List<PatternGroup>? b) {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].id != b[i].id || 
+          a[i].name != b[i].name || 
+          a[i].type != b[i].type ||
+          a[i].buttons.length != b[i].buttons.length) {
+        return false;
+      }
+      for (var j = 0; j < a[i].buttons.length; j++) {
+        if (a[i].buttons[j].id != b[i].buttons[j].id ||
+            a[i].buttons[j].name != b[i].buttons[j].name ||
+            a[i].buttons[j].command != b[i].buttons[j].command) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
   @override
   int get hashCode =>
       Object.hash(id, name, usageType, targetAnatomy, stimulationType,
-          motorLogic, imageUrl, qrCodeUrl, supportedFuncs, isPrecise, broadcastPrefix);
+          motorLogic, imageUrl, qrCodeUrl, supportedFuncs, isPrecise, broadcastPrefix,
+          bleName, isEncrypt, encryptCommand,
+          Object.hashAll(patternGroups.map((g) =>
+              Object.hash(g.id, g.name, g.type, g.buttons.length))));
 
   factory ToyModel.fromCsv(List<dynamic> row) {
     // Estructura esperada segun el CSV:
@@ -139,35 +255,78 @@ class ToyModel {
       supportedFuncs: safeGet(row, 12),
       isPrecise: safeGet(row, 16) == '0-255',
       broadcastPrefix: safeGet(row, 17) == '' ? '77 62 4d 53 45' : safeGet(row, 17),
+      isEncrypt: safeGet(row, 15) == '1',
+      bleName: safeGet(row, 18),
     );
   }
 
-  factory ToyModel.fromSupabase(Map<String, dynamic> row) {
-    // Manejo de target_anatomy que puede venir como JSON Array o String
-    var anatomy = 'Universal';
-    if (row['target_anatomy'] != null) {
-      final raw = row['target_anatomy'];
-      if (raw is List) {
-        anatomy = raw.join('|').replaceAll('"', '').replaceAll('[', '').replaceAll(']', '');
-      } else {
-        // Limpieza de string si viene como ["Anal"]
-        anatomy = raw.toString().replaceAll('[', '').replaceAll(']', '').replaceAll('"', '').replaceAll('\\', '');
-        if (anatomy.isEmpty) anatomy = 'Universal';
-      }
+  /// Extrae texto de un campo que puede venir como String, List o JSON array string
+  static String _extractText(dynamic val, String defaultVal) {
+    if (val == null) return defaultVal;
+    if (val is List) {
+      if (val.isEmpty) return defaultVal;
+      return val.map((e) => e.toString()).join(', ');
     }
+    final s = val.toString().replaceAll('[', '').replaceAll(']', '').replaceAll('"', '').replaceAll('\\', '');
+    if (s.isEmpty) return defaultVal;
+    return s;
+  }
 
+  /// Normaliza motor_logic: single→Single Channel, dual→Dual Channel
+  static String _normalizeMotorLogic(dynamic val) {
+    if (val == null) return 'Single Channel';
+    final s = val.toString().toLowerCase();
+    if (s.contains('dual')) return 'Dual Channel';
+    if (s.contains('single') || s == '1') return 'Single Channel';
+    return val.toString();
+  }
+
+  /// Toma el primer valor no vacío y no "N/A" de una lista de campos
+  static String _pickName(Map<String, dynamic> row, List<String> keys) {
+    for (final key in keys) {
+      final val = row[key]?.toString() ?? '';
+      if (val.isNotEmpty && val != 'N/A') return val;
+    }
+    return 'Generic LVS';
+  }
+
+  /// Extrae el ClassicId del raw_json_data (Groups → patrones por canal)
+  static List<PatternGroup> _extractPatterns(dynamic rawJson) {
+    if (rawJson == null) return [];
+    try {
+      final data = rawJson is Map ? rawJson : jsonDecode(rawJson.toString());
+      final classicId = data['ClassicId'];
+      if (classicId == null || classicId is! List) return [];
+      final groups = <PatternGroup>[];
+      for (final entry in classicId) {
+        final entryGroups = entry['Groups'] as List? ?? [];
+        for (final g in entryGroups) {
+          groups.add(PatternGroup.fromJson(g));
+        }
+      }
+      return groups;
+    } catch (_) {
+      return [];
+    }
+  }
+
+  factory ToyModel.fromSupabase(Map<String, dynamic> row) {
     return ToyModel(
       id: row['id']?.toString() ?? '',
-      name: row['factory_model']?.toString() ?? row['model_name']?.toString() ?? row['name']?.toString() ?? 'Generic LVS',
-      usageType: row['usage_type']?.toString() ?? 'Universal',
-      targetAnatomy: anatomy,
-      stimulationType: row['stimulation_type']?.toString() ?? 'Vibración',
-      motorLogic: row['motor_logic']?.toString() ?? 'Single Channel',
+      name: _pickName(row, ['model_name', 'factory_model', 'name', 'id']),
+      usageType: _extractText(row['usage_type'], 'Universal'),
+      targetAnatomy: _extractText(row['target_anatomy'], 'Universal'),
+      stimulationType: _extractText(row['stimulation_type'], 'Vibración'),
+      motorLogic: _normalizeMotorLogic(row['motor_logic']),
       imageUrl: row['image_url']?.toString() ?? '',
       qrCodeUrl: row['qr_code_url']?.toString() ?? '',
       supportedFuncs: row['supported_funcs']?.toString() ?? '',
       isPrecise: row['is_precise_new'] == true || row['is_precise'] == true,
       broadcastPrefix: row['broadcast_prefix']?.toString() ?? '77 62 4d 53 45',
+      bleName: row['ble_name']?.toString() ?? '',
+      isEncrypt: row['is_encrypt'] == true || row['is_encrypt'] == 1,
+      encryptCommand: row['encrypt_command']?.toString() ?? '',
+      patternGroups: _extractPatterns(row['raw_json_data']),
     );
   }
 
@@ -185,6 +344,12 @@ class ToyModel {
       supportedFuncs: json['supportedFuncs']?.toString() ?? '',
       isPrecise     : json['isPrecise'] == true,
       broadcastPrefix: json['broadcastPrefix']?.toString() ?? '77 62 4d 53 45',
+      isEncrypt     : json['isEncrypt'] == true,
+      encryptCommand: json['encryptCommand']?.toString() ?? '',
+      bleName       : json['bleName']?.toString() ?? '',
+      patternGroups : (json['patternGroups'] as List?)
+          ?.map((g) => PatternGroup.fromJson(g))
+          .toList() ?? [],
     );
   }
 
@@ -200,5 +365,12 @@ class ToyModel {
     'supportedFuncs' : supportedFuncs,
     'isPrecise'      : isPrecise,
     'broadcastPrefix': broadcastPrefix,
+    'isEncrypt'      : isEncrypt,
+    if (bleName.isNotEmpty)
+      'bleName'      : bleName,
+    if (encryptCommand.isNotEmpty)
+      'encryptCommand': encryptCommand,
+    if (patternGroups.isNotEmpty)
+      'patternGroups': patternGroups.map((g) => g.toJson()).toList(),
   };
 }

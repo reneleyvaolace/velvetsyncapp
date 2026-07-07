@@ -31,14 +31,14 @@ class NetworkTab extends ConsumerWidget {
 
               _buildContactsCard(context),
               const SizedBox(height: 40),
-              CardGlass(
+              const CardGlass(
                 child: Column(
                   children: [
-                    const Icon(Icons.enhanced_encryption, size: 52, color: LvsColors.teal),
-                    const SizedBox(height: 12),
-                    const Text('CONEXIÓN ENCRIPTADA', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
-                    const SizedBox(height: 8),
-                    const Text(
+                    Icon(Icons.enhanced_encryption, size: 52, color: LvsColors.teal),
+                    SizedBox(height: 12),
+                    Text('CONEXIÓN ENCRIPTADA', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    SizedBox(height: 8),
+                    Text(
                       'Todas las sesiones remotas utilizan cifrado de extremo a extremo y canales efímeros en tiempo real.',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 10, color: LvsColors.text3),
@@ -72,11 +72,11 @@ class NetworkTab extends ConsumerWidget {
               begin: Alignment.topLeft, end: Alignment.bottomRight,
             ),
           ),
-          child: Row(
+          child: const Row(
             children: [
-              const Icon(Icons.public, color: LvsColors.pink, size: 40),
-              const SizedBox(width: 20),
-              const Expanded(
+              Icon(Icons.public, color: LvsColors.pink, size: 40),
+              SizedBox(width: 20),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -90,7 +90,7 @@ class NetworkTab extends ConsumerWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.white24),
+              Icon(Icons.chevron_right, color: Colors.white24),
             ],
           ),
         ),

@@ -100,7 +100,7 @@ class SupabaseService {
       // 🔒 PERFORMANCE: Timeout de 10 segundos para prevenir cuelgues en redes pobres
       final response = await client
           .from('device_catalog')
-          .select('id, factory_model, model_name, usage_type, target_anatomy, stimulation_type, motor_logic, image_url, qr_code_url, supported_funcs, is_precise_new, broadcast_prefix')
+          .select('id, factory_model, model_name, usage_type, target_anatomy, stimulation_type, motor_logic, image_url, qr_code_url, supported_funcs, is_precise_new, broadcast_prefix, ble_name, is_encrypt, encrypt_command')
           .limit(limit)
           .timeout(const Duration(seconds: 10), onTimeout: () => []);
 
@@ -275,27 +275,7 @@ class SupabaseService {
       lvsLog('Sesión creada: ID ${response['id']}', tag: 'SUPABASE');
       return response;
     } catch (e) {
-      lvsLog('⚠️ Fallo inicial en createSharedSession ($deviceId): $e', tag: 'SUPABASE');
-
-      // 2. Reintento con ID genérico (por si el deviceId no existe en el catálogo remoto y hay FK)
-      if (deviceId != '8154') {
-        try {
-          lvsLog('🔄 Reintentando con ID genérico...', tag: 'SUPABASE');
-          final retryResponse = await client
-              .from('shared_sessions')
-              .insert({
-                'device_id': '8154', // Usamos el ID del Knight No. 3 como fallback universal
-                'is_active': true,
-                if (hostName != null) 'host_name': hostName,
-              })
-              .select()
-              .single();
-          return retryResponse;
-        } catch (e2) {
-          lvsLog('❌ Error fatal en reintento: $e2', tag: 'SUPABASE');
-          rethrow;
-        }
-      }
+      lvsLog('❌ Error fatal en createSharedSession ($deviceId): $e', tag: 'SUPABASE');
       rethrow;
     }
   }

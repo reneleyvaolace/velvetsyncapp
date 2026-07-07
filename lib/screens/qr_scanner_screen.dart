@@ -26,7 +26,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   void _onDetect(BarcodeCapture capture) {
     if (_isProcessing) return;
     
-    final List<Barcode> barcodes = capture.barcodes;
+    final barcodes = capture.barcodes;
     if (barcodes.isNotEmpty) {
       final barcode = barcodes.first;
       if (barcode.rawValue != null) {

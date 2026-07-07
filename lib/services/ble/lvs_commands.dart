@@ -10,7 +10,7 @@
 //   Modo 18B: [FF FF 00] + prefix + [CMD 3B] + [03 03 8F AE]
 // ═══════════════════════════════════════════════════════════════
 
-// Modo de construcción del paquete
+import 'package:velvet_sync/devices/models/toy_model.dart';// Modo de construcción del paquete
 enum PacketMode { b11, b18 }
 
 // Niveles de velocidad estándar
@@ -28,6 +28,32 @@ class LvsCommands {
   static const List<int> prefix    = [0x6D, 0xB6, 0x43, 0xCE, 0x97, 0xFE, 0x42, 0x7C];
   static const List<int> header    = [0xFF, 0xFF, 0x00];
   static const List<int> appendix  = [0x03, 0x03, 0x8F, 0xAE];
+
+  // ── Funciones especiales (heating, strike, suction) ────────
+  // Prefijos: 0xF1 = heating, 0xF2 = strike, 0xF3 = suction
+  // Estos son valores tentativos — descubiertos por RE del APK
+  // TODO: confirmar con dispositivo físico
+  static const List<int> heatingOn    = [0xF1, 0x01, 0x01];
+  static const List<int> heatingOff   = [0xF1, 0x00, 0x00];
+  static const List<int> strikeOn     = [0xF2, 0x01, 0x01];
+  static const List<int> strikeOff    = [0xF2, 0x00, 0x00];
+  static const List<int> suctionOn    = [0xF3, 0x01, 0x01];
+  static const List<int> suctionOff   = [0xF3, 0x00, 0x00];
+
+  static List<int> heatingLevel(int level) {
+    final b = level.clamp(0, 255);
+    return [0xF1, b, b ^ 0xF1];
+  }
+
+  static List<int> strikePattern(int index) {
+    final p = (index.clamp(0, 8)) + 1;
+    return [0xF2, p, p ^ 0xF2];
+  }
+
+  static List<int> suctionLevel(int level) {
+    final b = level.clamp(0, 255);
+    return [0xF3, b, b ^ 0xF3];
+  }
 
   // ── Comandos de velocidad (Classic) ──────────────────────────
   static const List<int> cmdStop   = [0xE5, 0x15, 0x7D];
@@ -175,6 +201,78 @@ class LvsCommands {
     return [0xF6, m1.clamp(0, 255), m2.clamp(0, 255)];
   }
 
+  // ── Encryption ─────────────────────────────────────────────
+  /// Applies XOR encryption to command bytes using [encryptCommand] as key.
+  /// If [encryptCommand] is empty, returns bytes unchanged.
+  /// The key is parsed as hex and XORed cyclically with the command bytes.
+  static List<int> encrypt(List<int> bytes, String encryptCommand) {
+    if (encryptCommand.isEmpty) return bytes;
+    final key = parseHexCommand(encryptCommand);
+    if (key == null || key.isEmpty) return bytes;
+    return List.generate(bytes.length, (i) => bytes[i] ^ key[i % key.length]);
+  }
+
+  // ── NewCommand hex parser ───────────────────────────────────
+  /// Parses a hex string like "F1 01 01" or "F10101" or "0xF1 0x01 0x01"
+  /// into a list of int bytes. Returns null if parsing fails.
+  static List<int>? parseHexCommand(String hex) {
+    if (hex.isEmpty) return null;
+    try {
+      final cleaned = hex
+          .replaceAll('0x', '')
+          .replaceAll('0X', '')
+          .trim();
+      final parts = cleaned.split(RegExp(r'\s+'));
+      if (parts.length == 1 && parts[0].isNotEmpty) {
+        // Could be concatenated hex "F10101"
+        if (parts[0].length % 2 == 0 && parts[0].length > 2) {
+          return List.generate(
+            parts[0].length ~/ 2,
+            (i) => int.parse(parts[0].substring(i * 2, i * 2 + 2), radix: 16),
+          );
+        }
+      }
+      return parts
+          .where((p) => p.isNotEmpty)
+          .map((p) => int.parse(p, radix: 16))
+          .toList();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Returns the BLE command for a ClassicId button.
+  /// Uses [btn.newCommand] if available (NewCommand protocol),
+  /// otherwise falls back to positional mapping via [channel] and [index].
+  static List<int> commandForButton(PatternButton btn, int channel, int index) {
+    if (btn.newCommand.isNotEmpty) {
+      final parsed = parseHexCommand(btn.newCommand);
+      if (parsed != null && parsed.isNotEmpty) return parsed;
+    }
+    // Fallback to positional mapping
+    final p = (index.clamp(0, 8)) + 4;
+    return channel == 1 ? ch1PatternFor(p) : ch2PatternFor(p);
+  }
+
+  static List<int> commandForButtonStop(PatternButton btn, int channel) {
+    if (btn.stopCommand > 0) {
+      return [btn.stopCommand];
+    }
+    return channel == 1 ? ch1Stop : ch2Stop;
+  }
+
+  // ── Device-specific patterns (from ClassicId) ─────────────
+  /// Maps a device pattern index (within a ClassicId group) to a BLE command.
+  /// [channel] 1 (0xDx prefix) or 2 (0xEx prefix), [index] 0-8 (position in group).
+  static List<int> devicePatternFor(int channel, int index) {
+    final p = (index.clamp(0, 8)) + 4;
+    return channel == 1 ? ch1PatternFor(p) : ch2PatternFor(p);
+  }
+
+  static List<int> deviceStopFor(int channel) {
+    return channel == 1 ? ch1Stop : ch2Stop;
+  }
+
   // ── Generar comando proporcional (0-100) ───────────────────
   static List<int> proportional(int intensityLevel) {
     final intensityByte = intensityLevel.clamp(0, 100);
@@ -194,12 +292,21 @@ class LvsCommands {
   }
 
   // ── Construir el paquete completo ────────────────────────────
-  static List<int> buildPacket(List<int> cmdBytes, {PacketMode mode = PacketMode.b11}) {
+  static List<int> buildPacket(List<int> cmdBytes, {PacketMode mode = PacketMode.b11, List<int>? prefixBytes}) {
+    final p = prefixBytes ?? prefix;
     if (mode == PacketMode.b11) {
-      return [...prefix, ...cmdBytes];
+      return [...p, ...cmdBytes];
     } else {
-      return [...header, ...prefix, ...cmdBytes, ...appendix];
+      return [...header, ...p, ...cmdBytes, ...appendix];
     }
+  }
+
+  /// Parses a hex broadcast prefix string (e.g. "77 62 4d 53 45") to bytes.
+  /// Returns the default [prefix] if parsing fails or [prefixStr] is empty.
+  static List<int> parseBroadcastPrefix(String prefixStr) {
+    if (prefixStr.isEmpty) return prefix;
+    final parsed = parseHexCommand(prefixStr);
+    return (parsed != null && parsed.isNotEmpty) ? parsed : prefix;
   }
 
   static List<int> buildDebugPacket(int b0, int b1, int b2, {PacketMode mode = PacketMode.b11}) {

@@ -53,30 +53,30 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           unselectedItemColor: LvsColors.text3,
           selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
           unselectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 1),
-          items: [
+          items: const [
             BottomNavigationBarItem(
-              icon: const Icon(Icons.gamepad, size: 24),
-              activeIcon: const Icon(Icons.gamepad, size: 30),
+              icon: Icon(Icons.gamepad, size: 24),
+              activeIcon: Icon(Icons.gamepad, size: 30),
               label: 'CONTROL',
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.explore, size: 24),
-              activeIcon: const Icon(Icons.explore, size: 30),
+              icon: Icon(Icons.explore, size: 24),
+              activeIcon: Icon(Icons.explore, size: 30),
               label: 'MODOS',
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.public, size: 24),
-              activeIcon: const Icon(Icons.public, size: 30),
+              icon: Icon(Icons.public, size: 24),
+              activeIcon: Icon(Icons.public, size: 30),
               label: 'REMOTO',
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.auto_awesome_mosaic, size: 24),
-              activeIcon: const Icon(Icons.auto_awesome_mosaic, size: 30),
+              icon: Icon(Icons.auto_awesome_mosaic, size: 24),
+              activeIcon: Icon(Icons.auto_awesome_mosaic, size: 30),
               label: 'CATÁLOGO',
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.build_circle, size: 24),
-              activeIcon: const Icon(Icons.build_circle, size: 30),
+              icon: Icon(Icons.build_circle, size: 24),
+              activeIcon: Icon(Icons.build_circle, size: 30),
               label: 'SISTEMA',
             ),
           ],

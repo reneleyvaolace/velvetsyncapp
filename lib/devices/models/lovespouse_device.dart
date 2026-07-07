@@ -282,6 +282,9 @@ class LovespouseDevice {
       supportedFuncs: supportedFuncCodes.join(','),
       isPrecise: isPrecise == 1,
       broadcastPrefix: broadcastPrefix.isNotEmpty ? broadcastPrefix : '77 62 4d 53 45',
+      isEncrypt: isEncrypt == 1,
+      encryptCommand: encryptCommand,
+      bleName: bleName,
     );
   }
 

@@ -139,12 +139,12 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
       child: CardGlass(
         borderColor: LvsColors.amber.withValues(alpha: 0.2),
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: const Row(
           children: [
             Icon(Icons.build_circle, color: LvsColors.amber, size: 32),
-            const SizedBox(width: 14),
-            const Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
-            const Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
+            SizedBox(width: 14),
+            Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
+            Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
           ],
         ),
       ),

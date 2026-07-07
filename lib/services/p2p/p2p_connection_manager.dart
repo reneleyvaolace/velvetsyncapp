@@ -69,7 +69,7 @@ class P2PConnectionManager extends ChangeNotifier {
   String? _lastError;
   bool _isHost = false;
 
-  final Completer<Map<String, dynamic>> _offerCompleter = Completer();
+  Completer<Map<String, dynamic>> _offerCompleter = Completer();
   final StreamController<Map<String, dynamic>> _commandController =
       StreamController<Map<String, dynamic>>.broadcast();
 
@@ -111,6 +111,7 @@ class P2PConnectionManager extends ChangeNotifier {
   }) async {
     _sessionId = sessionId;
     _isHost = isHost;
+    _offerCompleter = Completer();
     _setState(P2PConnectionState.connecting);
 
     lvsLog(

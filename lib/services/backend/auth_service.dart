@@ -158,6 +158,65 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  /// Cambia la contraseña del usuario autenticado sin modificar el correo
+  Future<bool> changePassword(String newPassword) async {
+    try {
+      final response = await _client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+      if (response.user != null) {
+        lvsLog('Contraseña cambiada', tag: 'AUTH');
+        return true;
+      }
+      return false;
+    } on AuthException catch (e) {
+      _errorMessage = e.message;
+      lvsError('Error changePassword: ${e.message}', tag: 'AUTH');
+      return false;
+    } catch (e) {
+      _errorMessage = 'Error de conexión';
+      lvsError('Error changePassword: $e', tag: 'AUTH');
+      return false;
+    }
+  }
+
+  /// Vincula un correo y contraseña a la cuenta anónima actual
+  Future<bool> linkEmail(String email, String password) async {
+    _status = AuthStatus.authenticating;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await _client.auth.updateUser(
+        UserAttributes(email: email, password: password),
+      );
+      if (response.user != null) {
+        _user = response.user;
+        _status = AuthStatus.authenticated;
+        lvsLog('Correo vinculado: $email', tag: 'AUTH');
+        notifyListeners();
+        return true;
+      }
+
+      _status = AuthStatus.error;
+      _errorMessage = 'No se pudo vincular el correo';
+      notifyListeners();
+      return false;
+    } on AuthException catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = e.message;
+      lvsError('Error linkEmail: ${e.message}', tag: 'AUTH');
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = 'Error de conexión';
+      lvsError('Error linkEmail: $e', tag: 'AUTH');
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<void> signOut() async {
     await _client.auth.signOut();
     _user = null;

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 
 void main() {
@@ -229,6 +230,109 @@ void main() {
       expect(LvsCommands.debugPresets[SpeedLevel.low], {'b0': 0xE4, 'b1': 0x9C, 'b2': 0x6C});
       expect(LvsCommands.debugPresets[SpeedLevel.medium], {'b0': 0xE7, 'b1': 0x07, 'b2': 0x5E});
       expect(LvsCommands.debugPresets[SpeedLevel.high], {'b0': 0xE6, 'b1': 0x8E, 'b2': 0x4F});
+    });
+  });
+
+  group('LvsCommands - parseHexCommand', () {
+    test('parses space-separated hex string', () {
+      expect(LvsCommands.parseHexCommand('F1 01 01'), [0xF1, 0x01, 0x01]);
+    });
+
+    test('parses concatenated hex string', () {
+      expect(LvsCommands.parseHexCommand('F10101'), [0xF1, 0x01, 0x01]);
+    });
+
+    test('parses 0x-prefixed hex string', () {
+      expect(LvsCommands.parseHexCommand('0xF1 0x01 0x01'), [0xF1, 0x01, 0x01]);
+    });
+
+    test('parses mixed case hex', () {
+      expect(LvsCommands.parseHexCommand('f1 aB Cd'), [0xF1, 0xAB, 0xCD]);
+    });
+
+    test('returns null for empty string', () {
+      expect(LvsCommands.parseHexCommand(''), isNull);
+    });
+
+    test('returns null for invalid hex', () {
+      expect(LvsCommands.parseHexCommand('ZZ ZZ'), isNull);
+    });
+  });
+
+  group('LvsCommands - commandForButton', () {
+    test('uses newCommand when available', () {
+      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0, newCommand: 'F1 01 01');
+      expect(LvsCommands.commandForButton(btn, 1, 0), [0xF1, 0x01, 0x01]);
+    });
+
+    test('falls back to positional when newCommand is empty', () {
+      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0);
+      final cmd = LvsCommands.commandForButton(btn, 1, 0);
+      expect(cmd, LvsCommands.ch1PatternFor(4));
+    });
+
+    test('falls back to positional when newCommand is invalid', () {
+      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0, newCommand: 'ZZZ');
+      final cmd = LvsCommands.commandForButton(btn, 2, 0);
+      expect(cmd, LvsCommands.ch2PatternFor(4));
+    });
+  });
+
+  group('LvsCommands - commandForButtonStop', () {
+    test('uses stopCommand when > 0', () {
+      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0xE5, newCommand: '');
+      expect(LvsCommands.commandForButtonStop(btn, 1), [0xE5]);
+    });
+
+    test('falls back to channel stop when stopCommand is 0', () {
+      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0);
+      expect(LvsCommands.commandForButtonStop(btn, 1), LvsCommands.ch1Stop);
+      expect(LvsCommands.commandForButtonStop(btn, 2), LvsCommands.ch2Stop);
+    });
+  });
+
+  group('LvsCommands - encrypt', () {
+    test('returns bytes unchanged when encryptCommand is empty', () {
+      expect(LvsCommands.encrypt([0xE5, 0x15, 0x7D], ''), [0xE5, 0x15, 0x7D]);
+    });
+
+    test('XORs bytes with key cyclically', () {
+      final result = LvsCommands.encrypt([0xAA, 0xBB, 0xCC], '12 34');
+      expect(result, [0xAA ^ 0x12, 0xBB ^ 0x34, 0xCC ^ 0x12]);
+    });
+
+    test('handles key shorter than data', () {
+      final result = LvsCommands.encrypt([0x01, 0x02, 0x03, 0x04], 'FF');
+      expect(result, [0xFE, 0xFD, 0xFC, 0xFB]);
+    });
+  });
+
+  group('LvsCommands - parseBroadcastPrefix', () {
+    test('returns parsed bytes for valid hex prefix', () {
+      expect(LvsCommands.parseBroadcastPrefix('77 62 4d 53 45'), [0x77, 0x62, 0x4D, 0x53, 0x45]);
+    });
+
+    test('returns default prefix for empty string', () {
+      expect(LvsCommands.parseBroadcastPrefix(''), LvsCommands.prefix);
+    });
+
+    test('returns default prefix for invalid string', () {
+      expect(LvsCommands.parseBroadcastPrefix('GG HH'), LvsCommands.prefix);
+    });
+  });
+
+  group('LvsCommands - buildPacket with custom prefix', () {
+    test('uses custom prefix when provided', () {
+      final customPrefix = [0x77, 0x62, 0x4D, 0x53, 0x45];
+      final packet = LvsCommands.buildPacket([0x01, 0x02, 0x03], prefixBytes: customPrefix);
+      expect(packet.length, 8); // 5 prefix + 3 cmd
+      expect(packet.take(5), customPrefix);
+      expect(packet.skip(5), [0x01, 0x02, 0x03]);
+    });
+
+    test('uses default prefix when custom is null', () {
+      final packet = LvsCommands.buildPacket([0x01, 0x02, 0x03]);
+      expect(packet.take(8), LvsCommands.prefix);
     });
   });
 }

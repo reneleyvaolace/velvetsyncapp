@@ -20,9 +20,7 @@ class ToyProfile {
 
   /// Construye el perfil a partir del nombre BLE real del hardware.
   static ToyProfile fromName(String deviceName) {
-    final isDual = deviceName.contains('8154') ||
-        deviceName.startsWith('wbMSE') ||
-        deviceName.toLowerCase().contains('knight');
+    final isDual = deviceName.startsWith('wbMSE');
 
     return ToyProfile(
       name: deviceName.isNotEmpty ? deviceName : 'Dispositivo LVS',

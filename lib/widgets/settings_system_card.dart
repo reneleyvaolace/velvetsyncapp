@@ -26,9 +26,9 @@ class SettingsSystemCard extends ConsumerWidget {
             const Divider(height: 32, color: Colors.white10),
             _DemoModeOption(),
             const Divider(height: 32, color: Colors.white10),
-            _CloudBackupOption(),
+            const _CloudBackupOption(),
             const Divider(height: 32, color: Colors.white10),
-            _FirmwareUpdateOption(),
+            const _FirmwareUpdateOption(),
           ],
         ),
       ),
@@ -397,18 +397,19 @@ class _DemoModeOption extends ConsumerWidget {
 }
 
 class _CloudBackupOption extends StatelessWidget {
+  const _CloudBackupOption();
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BackupScreen())),
       borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-            const Icon(Icons.cloud_upload, color: LvsColors.teal, size: 38),
-            const SizedBox(width: 16),
-            const Expanded(
+            Icon(Icons.cloud_upload, color: LvsColors.teal, size: 38),
+            SizedBox(width: 16),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -418,7 +419,7 @@ class _CloudBackupOption extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+            Icon(Icons.chevron_right, color: Colors.white24, size: 18),
           ],
         ),
       ),
@@ -427,6 +428,7 @@ class _CloudBackupOption extends StatelessWidget {
 }
 
 class _FirmwareUpdateOption extends StatelessWidget {
+  const _FirmwareUpdateOption();
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -439,13 +441,13 @@ class _FirmwareUpdateOption extends StatelessWidget {
         );
       },
       borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-            const Icon(Icons.system_update_alt, color: LvsColors.violet, size: 38),
-            const SizedBox(width: 16),
-            const Expanded(
+            Icon(Icons.system_update_alt, color: LvsColors.violet, size: 38),
+            SizedBox(width: 16),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -455,7 +457,7 @@ class _FirmwareUpdateOption extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+            Icon(Icons.chevron_right, color: Colors.white24, size: 18),
           ],
         ),
       ),
