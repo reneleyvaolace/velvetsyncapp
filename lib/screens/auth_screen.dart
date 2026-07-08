@@ -4,9 +4,14 @@ import 'package:velvet_sync/services/backend/auth_service.dart';
 import 'package:velvet_sync/theme.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
-  final VoidCallback onSkip;
+  final VoidCallback? onSkip;
+  final VoidCallback? onAuthenticated;
 
-  const AuthScreen({super.key, required this.onSkip});
+  const AuthScreen({
+    super.key,
+    this.onSkip,
+    this.onAuthenticated,
+  });
 
   @override
   ConsumerState<AuthScreen> createState() => _AuthScreenState();
@@ -109,7 +114,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: TextButton(
-            onPressed: widget.onSkip,
+          onPressed: widget.onSkip ?? () {},
             child: const Text(
               'OMITIR Y CONTINUAR COMO INVITADO',
               style: TextStyle(fontSize: 9, letterSpacing: 1, color: LvsColors.text3),
@@ -164,7 +169,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                       final password = _passwordController.text;
                       if (email.isEmpty || password.isEmpty) return;
                       final ok = await auth.signIn(email, password);
-                      if (ok && mounted) Navigator.of(context).pop(true);
+                      if (ok && mounted) widget.onAuthenticated?.call();
                     },
                   ),
                 ),
@@ -245,7 +250,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                         return;
                       }
                       final ok = await auth.signUp(email, password);
-                      if (ok && mounted) Navigator.of(context).pop(true);
+                      if (ok && mounted) widget.onAuthenticated?.call();
                     },
                   ),
                 ),

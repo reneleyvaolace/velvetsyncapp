@@ -172,6 +172,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   ),
                 );
               },
+              onAuthenticated: () async {
+                if (!mounted) return;
+                if (!context.mounted) return;
+                Navigator.of(context).pushReplacement(
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => _getPostAuthScreen(),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    transitionDuration: const Duration(milliseconds: 800),
+                  ),
+                );
+              },
             ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
@@ -195,7 +208,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Widget _getPostAuthScreen() {
+    final auth = ref.read(authServiceProvider);
     final profileService = ref.read(profileServiceProvider);
+    final hasEmail = auth.email != null;
+
+    if (hasEmail) {
+      profileService.updateLastSeen();
+      return const MainNavigation();
+    }
+
     final needsProfile = profileService.myProfile == null;
     if (!needsProfile) {
       profileService.updateLastSeen();
