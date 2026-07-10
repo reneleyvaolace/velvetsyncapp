@@ -161,13 +161,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       final hasEmail = auth.email != null;
       final skipAuth = prefs.getBool('skip_auth') ?? false;
 
-      // Auto-skip si es anónimo (ya tiene sesión de Supabase desde main())
-      if (auth.isAnonymous && !skipAuth) {
-        await prefs.setBool('skip_auth', true);
-      }
-      final effectiveSkip = prefs.getBool('skip_auth') ?? false;
-
-      if (!hasEmail && !effectiveSkip) {
+      if (!hasEmail && !skipAuth) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) => AuthScreen(
