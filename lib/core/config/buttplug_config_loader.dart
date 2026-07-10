@@ -46,6 +46,7 @@ class ButtplugDeviceConfig {
       supportedFuncs: config.getSupportedFuncs(),
       isPrecise: true,
       broadcastPrefix: 'BUTTPLUG_${identifier.protocol}',
+      bleProtocol: BleProtocolType.classic,
     );
   }
 }

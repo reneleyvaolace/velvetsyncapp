@@ -270,6 +270,15 @@ class LovespouseDevice {
 
   /// Convierte este dispositivo LoveSpouse a un ToyModel
   ToyModel toToyModel() {
+    final BleProtocolType proto;
+    if (isEncrypt == 1) {
+      proto = BleProtocolType.cryptBle;
+    } else if (barcode.toLowerCase().contains('omysky')) {
+      proto = BleProtocolType.ipao;
+    } else {
+      proto = BleProtocolType.classic;
+    }
+
     return ToyModel(
       id: barcode,
       name: displayName,
@@ -282,6 +291,9 @@ class LovespouseDevice {
       supportedFuncs: supportedFuncCodes.join(','),
       isPrecise: isPrecise == 1,
       broadcastPrefix: broadcastPrefix.isNotEmpty ? broadcastPrefix : '77 62 4d 53 45',
+      bleProtocol: proto,
+      isPrivateProtocol: isPrivateProtocol == 1,
+      encryptCommand: encryptCommand,
     );
   }
 

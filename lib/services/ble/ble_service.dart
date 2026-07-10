@@ -23,13 +23,18 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'lvs_commands.dart';
+import 'ble_protocol.dart';
+import 'ipao_protocol.dart' as ipao;
+import 'crypt_ble.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'toy_profile.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:velvet_sync/services/backend/notification_service.dart';
+import 'package:velvet_sync/controllers/device_controller.dart';
 
 // ── Provider Global para Riverpod ──────────────────────────────
 final bleProvider = ChangeNotifierProvider((ref) => BleService());
+final deviceControllerProvider = ChangeNotifierProvider((ref) => DeviceController());
 
 
 
@@ -47,12 +52,16 @@ class BleService extends ChangeNotifier {
   // ── Estado ─────────────────────────────────────────────────
   BleState state = BleState.idle;
   List<BluetoothDevice> connectedDevices = [];
+  BluetoothDevice? _lastConnectedDevice; // Último dispositivo conectado
   BluetoothCharacteristic? characteristic;
   ToyProfile? toyProfile;
   ToyModel? activeToy; // El modelo del catálogo que está en uso
 
   // Nombre real del hardware detectado en la sesión actual
   String connectedDeviceName = '';
+
+  // Guarda el nombre real detectado durante el escaneo BLE (advName)
+  String _discoveredDeviceName = '';
 
   // ── NUEVO: Control de conexión real vs virtual ─────────────
   // True si hay hardware físico confirmado mediante handshake
@@ -80,6 +89,7 @@ class BleService extends ChangeNotifier {
   int burstIntervalMs  = 250;
   bool isDeepScan      = false;
   int batteryLevel     = 0;
+  ToyModel? _pendingToy;
 
   // Notificaciones
   NotificationService? _notificationService;
@@ -165,7 +175,6 @@ class BleService extends ChangeNotifier {
 
   void renameActiveToy(String newName) {
     if (activeToy == null) return;
-    // Creamos una copia con el nuevo nombre
     final updated = ToyModel(
       id: activeToy!.id,
       name: newName,
@@ -174,10 +183,13 @@ class BleService extends ChangeNotifier {
       stimulationType: activeToy!.stimulationType,
       motorLogic: activeToy!.motorLogic,
       imageUrl: activeToy!.imageUrl,
-      qrCodeUrl: activeToy!.qrCodeUrl, // <--- FALTANTE
+      qrCodeUrl: activeToy!.qrCodeUrl,
       supportedFuncs: activeToy!.supportedFuncs,
       isPrecise: activeToy!.isPrecise,
       broadcastPrefix: activeToy!.broadcastPrefix,
+      bleProtocol: activeToy!.bleProtocol,
+      isPrivateProtocol: activeToy!.isPrivateProtocol,
+      encryptCommand: activeToy!.encryptCommand,
     );
     activeToy = updated;
     toyProfile = ToyProfile(
@@ -307,6 +319,8 @@ class BleService extends ChangeNotifier {
   Future<void> connectToDevice({List<ToyModel>? catalog}) async {
     if (state == BleState.scanning || state == BleState.connecting) return;
 
+    _discoveredDeviceName = ''; // Reset para nueva búsqueda
+
     // 🔒 PERFORMANCE: Throttling - evitar escaneos muy seguidos
     final now = DateTime.now();
     if (_lastScanTime != null) {
@@ -402,6 +416,9 @@ class BleService extends ChangeNotifier {
           if (shouldConnect && found == null) {
             _log('🎯 MATCH ($reason): "$realName" [$mac] RSSI: $rssi', 'success');
             found = r.device;
+            // Guardar nombre real detectado (de advertisement, no platformName que da "N/A" en Android)
+            final cleanName = (realName.isEmpty || realName == 'N/A' || realName == 'Unknown') ? mac : realName;
+            _discoveredDeviceName = cleanName;
             FlutterBluePlus.stopScan();
           }
         }
@@ -434,15 +451,22 @@ class BleService extends ChangeNotifier {
     // Si lo encontró, resetear la variable para futuras búsquedas limpias
     isDeepScan = false;
 
-    // Registrar nombre real del dispositivo detectado
-    final rawName = found!.platformName.isEmpty
-        ? found!.remoteId.str
-        : found!.platformName;
+    // Usar el nombre detectado durante el escaneo (advName), no platformName
+    // que en Android puede devolver "N/A".
+    final rawName = _discoveredDeviceName.isNotEmpty
+        ? _discoveredDeviceName
+        : found!.remoteId.str;
     connectedDeviceName = rawName;
     notifyListeners();
 
     if (catalog != null) {
       toyProfile = ToyProfile.fromCatalog(rawName, catalog);
+      final matched = catalog!.where((t) =>
+        rawName.contains(t.id) ||
+        t.name.toLowerCase() == rawName.toLowerCase() ||
+        t.broadcastPrefix.contains(rawName)
+      ).firstOrNull;
+      if (matched != null) _pendingToy = matched;
     }
     toyProfile ??= ToyProfile.fromName(rawName);
 
@@ -458,12 +482,28 @@ class BleService extends ChangeNotifier {
 
     const handshakeTimeout = Duration(seconds: 3);
 
-    try {
+try {
+      // ── PASO 1: CONEXIÓN GATT REAL ──
+      // Si no se puede conectar vía GATT, el dispositivo está apagado o fuera de rango
+      _log('🔗 Estableciendo conexión GATT...', 'info');
+      try {
+                await dev.connect(timeout: const Duration(seconds: 5), license: License.free);
+      } catch (e) {
+        _log('❌ No se pudo conectar GATT: $e. Dispositivo apagado o fuera de rango.', 'error');
+        connectedDeviceName = '';
+        connectedDevices.remove(dev);
+        _hardwareConfirmed = false;
+        _setState(BleState.idle);
+        _showHardwareNotFoundSnackbar();
+        return;
+      }
+
       if (!connectedDevices.contains(dev)) {
         connectedDevices.add(dev);
       }
 
-      // HANDSHAKE ACTIVO REAL con timeout
+      // ── PASO 2: HANDSHAKE VÍA GATT ──
+      // Escribir comando de verificación al UUID del protocolo detectado
       final ok = await writeCommand(verificationCmd, label: 'VERIFY', silent: false)
           .timeout(handshakeTimeout, onTimeout: () {
             _log('⏱️ Timeout de handshake (3s) - hardware no responde', 'error');
@@ -497,10 +537,37 @@ class BleService extends ChangeNotifier {
       }
 
 
-      // ── NUEVO: Confirmar hardware exitoso ──
       _hardwareConfirmed = true;
+      _lastConnectedDevice = dev; // Rastrear último dispositivo conectado
       _initNotifications();
       batteryLevel = 100;
+
+      // Intentar leer el Device Name via GATT (0x2A00)
+      // Útil cuando advName viene vacío y platformName devuelve "N/A"
+      final gattName = await _readDeviceName(dev);
+      if (gattName != null && gattName.isNotEmpty &&
+          (connectedDeviceName.isEmpty || connectedDeviceName == 'N/A' || connectedDeviceName == 'Unknown' || connectedDeviceName.contains(':'))) {
+        connectedDeviceName = gattName;
+        _log('📛 Nombre obtenido vía GATT: "$gattName"', 'success');
+        notifyListeners();
+      }
+
+      if (activeToy == null && connectedDeviceName.isNotEmpty) {
+        setActiveToy(_pendingToy ?? ToyModel(
+          id: connectedDeviceName,
+          name: connectedDeviceName,
+          usageType: 'Universal',
+          targetAnatomy: 'Universal',
+          stimulationType: 'Vibración',
+          motorLogic: 'Single Channel',
+          imageUrl: '',
+          qrCodeUrl: '',
+          supportedFuncs: 'speed,vibration',
+          isPrecise: false,
+          broadcastPrefix: '77 62 4d 53 45',
+        ));
+        _pendingToy = null;
+      }
       _setState(BleState.connected);
       _log('✅ Handshake OK — ${toyProfile?.name ?? connectedDeviceName} vinculado. Hardware CONFIRMADO.', 'success');
       await _updateNotification('Vinculado (${connectedDevices.length}) → ${toyProfile?.name ?? connectedDeviceName}');
@@ -553,6 +620,7 @@ class BleService extends ChangeNotifier {
 
     // ── NUEVO: Resetear confirmación de hardware ──
     _hardwareConfirmed = false;
+    _discoveredDeviceName = '';
 
     _setState(BleState.idle);
     await _updateNotification('Desconectado');
@@ -562,6 +630,47 @@ class BleService extends ChangeNotifier {
 
 
   // Para de emergencia: detiene burst+sequencer, bypassa mutex y para el advertising
+  BleProtocolType get _activeProtocol {
+    if (activeToy != null) return detectBleProtocol(activeToy!);
+    return BleProtocolType.classic;
+  }
+
+  /// Envía comando de parada de emergencia según protocolo activo
+  Future<void> _emergencyStopByProtocol() async {
+    final proto = _activeProtocol;
+    switch (proto) {
+      case BleProtocolType.ipao:
+        await writeCommand(ipao.IpaoProtocol.stopAll(), label: 'IPAO_ESTOP');
+        break;
+      case BleProtocolType.cryptBle:
+        final psk = _derivePsk();
+        final cmd = CryptBle.encryptCommand(0, 0, psk);
+        await writeCommand(cmd, label: 'CRYPT_ESTOP');
+        break;
+      case BleProtocolType.classic:
+        await writeCommand(LvsCommands.cmdStop, label: 'EMERGENCY_STOP');
+        await Future.delayed(const Duration(milliseconds: 120));
+        await writeCommand(LvsCommands.ch1Stop, label: 'EMERGENCY_STOP_CH1');
+        break;
+    }
+    // Fallback: escribir a todos los UUIDs BLE conocidos
+    if (connectedDevices.isNotEmpty) {
+      await _writeGattByUuid(LvsCommands.cmdStop, BleUuids.classicWrite);
+      await _writeGattByUuid([0xAA, 1, 0, 0], BleUuids.ipaoWrite);
+      if (proto == BleProtocolType.cryptBle) {
+        final psk = _derivePsk();
+        await _writeGattByUuid(CryptBle.encryptCommand(0, 0, psk), BleUuids.cryptWrite);
+      }
+    }
+  }
+
+  List<int> _derivePsk() {
+    // Placeholder: en una implementación real, el seed vendría del scan record
+    // almacenado en MMKV/secure storage, y la MAC del dispositivo conectado.
+    // Por ahora retornamos un PSK por defecto.
+    return [0x01, 0x02, 0x03, 0x04];
+  }
+
   Future<void> emergencyStop() async {
     _stopBurst();
     _stopSequencer();
@@ -569,20 +678,17 @@ class BleService extends ChangeNotifier {
     activeIntensityCh1 = null; activeIntensityCh2 = null;
     activePatternCh1 = null; activePatternCh2 = null;
     try {
-      _isWriting = false;   // Liberar mutex por si está bloqueado
+      _isWriting = false;
       _lastPacket = null;
       if (await _peripheral.isAdvertising) {
         await _peripheral.stop();
       }
-      await writeCommand(LvsCommands.cmdStop, label: 'EMERGENCY_STOP', silent: false);
-      await Future.delayed(const Duration(milliseconds: 120));
-      await writeCommand(LvsCommands.ch1Stop, label: 'EMERGENCY_STOP_CH1', silent: false);
+      await _emergencyStopByProtocol();
     } catch (_) {}
     _log('🛑 PARADA DE EMERGENCIA', 'error');
     notifyListeners();
   }
 
-  // Detiene todos los motores sin afectar el estado del servicio BLE
   Future<void> stopAllMotors() async {
     _stopBurst();
     _stopSequencer();
@@ -591,12 +697,20 @@ class BleService extends ChangeNotifier {
     activePatternCh1 = null; activePatternCh2 = null;
     try {
       _lastPacket = null;
-      await writeCommand(LvsCommands.cmdStop, label: 'STOP_MOTORS');
-      await Future.delayed(const Duration(milliseconds: 120));
-      await writeCommand(LvsCommands.ch1Stop, label: 'STOP_MOTORS_CH1');
-      await Future.delayed(const Duration(milliseconds: 100));
-      // Extra safety for dual channel devices
-      await writeCommand(LvsCommands.dualMotor(0, 0), label: 'STOP_MOTORS_DUAL_SYNC');
+      final proto = _activeProtocol;
+      if (proto == BleProtocolType.ipao) {
+        await writeCommand(ipao.IpaoProtocol.stopAll(), label: 'IPAO_STOP');
+      } else if (proto == BleProtocolType.cryptBle) {
+        final psk = _derivePsk();
+        final cmd = CryptBle.encryptCommand(0, 0, psk);
+        await writeCommand(cmd, label: 'CRYPT_STOP');
+      } else {
+        await writeCommand(LvsCommands.cmdStop, label: 'STOP_MOTORS');
+        await Future.delayed(const Duration(milliseconds: 120));
+        await writeCommand(LvsCommands.ch1Stop, label: 'STOP_MOTORS_CH1');
+        await Future.delayed(const Duration(milliseconds: 100));
+        await writeCommand(LvsCommands.dualMotor(0, 0), label: 'STOP_MOTORS_DUAL_SYNC');
+      }
     } catch (_) {}
     _log('⏹️ MOTORES DETENIDOS', 'info');
     notifyListeners();
@@ -655,9 +769,7 @@ class BleService extends ChangeNotifier {
     _isProcessingQueue = true;
     final cmd = _commandQueue.removeAt(0);
 
-    // Ejecutar comando con mutex
     if (_isWriting) {
-      // Re-encolar si está escribiendo
       _commandQueue.insert(0, cmd);
       _isProcessingQueue = false;
       return;
@@ -665,71 +777,112 @@ class BleService extends ChangeNotifier {
 
     _isWriting = true;
     try {
-      final packet = LvsCommands.buildPacket(cmd.cmdBytes, mode: packetMode);
+      final proto = _activeProtocol;
+      final rawBytes = cmd.cmdBytes;
 
-      // OPTIMIZACIÓN: No reiniciar si el paquete es el mismo
-      if (_lastPacket != null && listEquals(_lastPacket, packet)) {
-        _isWriting = false;
+      if (!cmd.silent) _log('→ [${cmd.label}] ${LvsCommands.bytesToHex(rawBytes)}', 'cmd');
+
+      if (proto == BleProtocolType.ipao && connectedDevices.isNotEmpty) {
+        // IPAO: GATT write directo a 00008ac1-...
+        await _writeGattByUuid(rawBytes, BleUuids.ipaoWrite);
         cmd.completer.complete(true);
-        _processCommandQueue();
-        return;
-      }
-      _lastPacket = packet;
+      } else if (proto == BleProtocolType.cryptBle && connectedDevices.isNotEmpty) {
+        // CryptBle: encriptar y escribir a 0000f6c2-...
+        final psk = _derivePsk();
+        final encrypted = CryptBle.encrypt(rawBytes, psk);
+        await _writeGattByUuid(encrypted, BleUuids.cryptWrite);
+        cmd.completer.complete(true);
+      } else {
+        // Classic: advertising + GATT a fff0 (comportamiento legacy)
+        final packet = LvsCommands.buildPacket(rawBytes, mode: packetMode);
 
-      if (!cmd.silent) _log('→ [${cmd.label}] ${LvsCommands.bytesToHex(packet)}', 'cmd');
+        if (_lastPacket != null && listEquals(_lastPacket, packet)) {
+          _isWriting = false;
+          cmd.completer.complete(true);
+          _processCommandQueue();
+          return;
+        }
+        _lastPacket = packet;
 
-      final data = AdvertiseData(
-        serviceUuid: LvsCommands.serviceUuid,
-        manufacturerId: LvsCommands.companyId,
-        manufacturerData: Uint8List.fromList(packet),
-        includeDeviceName: false,
-      );
+        final data = AdvertiseData(
+          serviceUuid: LvsCommands.serviceUuid,
+          manufacturerId: LvsCommands.companyId,
+          manufacturerData: Uint8List.fromList(packet),
+          includeDeviceName: false,
+        );
 
-      final parameters = AdvertiseSetParameters(
-        connectable: true,
-        scannable: true,
-        legacyMode: true,
-        interval: 160,
-      );
+        final parameters = AdvertiseSetParameters(
+          connectable: true,
+          scannable: true,
+          legacyMode: true,
+          interval: 160,
+        );
 
-      // 🔒 PERFORMANCE: Delay no bloqueante para limpiar buffer HCI
-      if (await _peripheral.isAdvertising) {
-        await _peripheral.stop();
-        await Future.delayed(const Duration(milliseconds: 15)); // Reducido de 20ms
-      }
+        if (await _peripheral.isAdvertising) {
+          await _peripheral.stop();
+          await Future.delayed(const Duration(milliseconds: 15));
+        }
 
-      await _peripheral.start(
-        advertiseData: data,
-        advertiseSetParameters: parameters,
-      );
+        await _peripheral.start(
+          advertiseData: data,
+          advertiseSetParameters: parameters,
+        );
 
-      // Soporte para dispositivos GATT estándar
-      for (var dev in connectedDevices) {
-        try {
-          final services = await dev.discoverServices();
-          for (var s in services) {
-            if (s.uuid.toString().contains('fff0')) {
-              for (var c in s.characteristics) {
-                if (c.properties.write || c.properties.writeWithoutResponse) {
-                  await c.write(packet, withoutResponse: true);
+        for (var dev in connectedDevices) {
+          try {
+            final services = await dev.discoverServices();
+            for (var s in services) {
+              if (s.uuid.toString().contains('fff0')) {
+                for (var c in s.characteristics) {
+                  if (c.properties.write || c.properties.writeWithoutResponse) {
+                    await c.write(packet, withoutResponse: true);
+                  }
                 }
               }
             }
+          } catch (e) {
+            if (!cmd.silent) lvsLog('Error escribiendo a GATT: $e');
           }
-        } catch (e) {
-          if (!cmd.silent) lvsLog('Error escribiendo a GATT: $e');
         }
-      }
 
-      cmd.completer.complete(true);
+        cmd.completer.complete(true);
+      }
     } catch (e) {
-      if (!cmd.silent) _log('✗ Error Peripheral: $e', 'error');
+      if (!cmd.silent) _log('✗ Error: $e', 'error');
       _lastPacket = null;
       cmd.completer.complete(false);
     } finally {
       _isWriting = false;
       _processCommandQueue();
     }
+  }
+
+  Future<void> _writeGattByUuid(List<int> data, String targetUuid) async {
+    final devicesToTry = connectedDevices.isNotEmpty 
+        ? connectedDevices 
+        : (isConnected && activeToy != null ? [connectedDevices.last] : []);
+    
+    for (var dev in devicesToTry) {
+      try {
+        final services = await dev.discoverServices();
+        for (var s in services) {
+          final sUuid = s.uuid.toString().toLowerCase();
+          if (!sUuid.contains(targetUuid.substring(0, 8))) continue;
+          for (var c in s.characteristics) {
+            final cUuid = c.uuid.toString().toLowerCase();
+            if (cUuid == targetUuid.toLowerCase() &&
+                (c.properties.write || c.properties.writeWithoutResponse)) {
+              await c.write(data, withoutResponse: !c.properties.write);
+              _log('✅ Emergency STOP escrito a $cUuid', 'success');
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        _log('⚠️ Error escribiendo a GATT: $e', 'warn');
+      }
+    }
+    _log('❌ No se pudo escribir comando de emergencia', 'error');
   }
 
   Future<void> selectSpeed(SpeedLevel level) async {
@@ -1037,6 +1190,7 @@ class BleService extends ChangeNotifier {
         supportedFuncs: 'Gamificación, Sync',
         isPrecise: true,
         broadcastPrefix: 'wbMSE',
+        bleProtocol: BleProtocolType.classic,
       );
       setActiveToy(dummyToy);
     } else {
@@ -1063,6 +1217,27 @@ class BleService extends ChangeNotifier {
     _log('🔒 Travel Lock: ${isTravelLockActive ? "ACTIVO" : "INACTIVO"}', 'info');
     notifyListeners();
     return true;
+  }
+
+  /// Lee el Device Name (0x2A00) del Generic Access service (0x1800) vía GATT
+  Future<String?> _readDeviceName(BluetoothDevice dev) async {
+    try {
+      final services = await dev.discoverServices();
+      for (final s in services) {
+        if (!s.uuid.toString().toLowerCase().startsWith('00001800')) continue;
+        for (final c in s.characteristics) {
+          if (c.uuid.toString().toLowerCase().startsWith('00002a00') && c.properties.read) {
+            final value = await c.read();
+            if (value.isNotEmpty) {
+              return String.fromCharCodes(value).trim();
+            }
+          }
+        }
+      }
+    } catch (e) {
+      _log('⚠️ No se pudo leer Device Name GATT: $e', 'warn');
+    }
+    return null;
   }
 
   @override

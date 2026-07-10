@@ -316,6 +316,7 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
         supportedFuncs: 'speed,vibration,pattern',
         isPrecise: false,
         broadcastPrefix: '77 62 4d 53 45',
+        bleProtocol: BleProtocolType.classic,
       );
     }
 
@@ -405,6 +406,9 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
       supportedFuncs: baseToy.supportedFuncs,
       isPrecise: baseToy.isPrecise,
       broadcastPrefix: baseToy.broadcastPrefix,
+      bleProtocol: baseToy.bleProtocol,
+      isPrivateProtocol: baseToy.isPrivateProtocol,
+      encryptCommand: baseToy.encryptCommand,
     );
 
     // Actualizar lista persistente
@@ -447,6 +451,7 @@ final List<ToyModel> lvsLocalFallback = [
     qrCodeUrl: 'https://image.zlmicro.com/images/product/qrcode/8154.png',
     supportedFuncs: 'speed,vibration,thrust,pattern',
     isPrecise: true, broadcastPrefix: '77 62 4d 53 45',
+    bleProtocol: BleProtocolType.classic,
   ),
   ToyModel(
     id: '9001', name: 'LVS Aria Pro',
@@ -455,6 +460,7 @@ final List<ToyModel> lvsLocalFallback = [
     imageUrl: '', qrCodeUrl: '',
     supportedFuncs: 'speed,vibration,pattern',
     isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+    bleProtocol: BleProtocolType.classic,
   ),
   ToyModel(
     id: '7721', name: 'LVS Luna Mini',
@@ -463,6 +469,7 @@ final List<ToyModel> lvsLocalFallback = [
     imageUrl: '', qrCodeUrl: '',
     supportedFuncs: 'speed,vibration,pattern',
     isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+    bleProtocol: BleProtocolType.classic,
   ),
   ToyModel(
     id: '5543', name: 'LVS Storm Plus',
@@ -471,6 +478,7 @@ final List<ToyModel> lvsLocalFallback = [
     imageUrl: '', qrCodeUrl: '',
     supportedFuncs: 'speed,vibration,pattern',
     isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+    bleProtocol: BleProtocolType.classic,
   ),
   ToyModel(
     id: '3398', name: 'LVS Wave',
@@ -479,6 +487,7 @@ final List<ToyModel> lvsLocalFallback = [
     imageUrl: '', qrCodeUrl: '',
     supportedFuncs: 'speed,vibration,pattern',
     isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+    bleProtocol: BleProtocolType.classic,
   ),
   ToyModel(
     id: '6672', name: 'LVS Pulse',
@@ -487,6 +496,7 @@ final List<ToyModel> lvsLocalFallback = [
     imageUrl: '', qrCodeUrl: '',
     supportedFuncs: 'speed,vibration,pattern',
     isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+    bleProtocol: BleProtocolType.classic,
   ),
   ToyModel(
     id: '4429', name: 'LVS Zen',
@@ -495,5 +505,6 @@ final List<ToyModel> lvsLocalFallback = [
     imageUrl: '', qrCodeUrl: '',
     supportedFuncs: 'speed,vibration,pattern',
     isPrecise: false, broadcastPrefix: '77 62 4d 53 45',
+    bleProtocol: BleProtocolType.classic,
   ),
 ];

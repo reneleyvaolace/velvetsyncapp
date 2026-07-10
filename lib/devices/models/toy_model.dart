@@ -4,6 +4,18 @@
 // ═══════════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
 
+/// Tipo de protocolo BLE que usa el dispositivo
+enum BleProtocolType {
+  /// Protocolo clásico (2-byte commands via aaa1, o advertising con prefijo)
+  classic,
+
+  /// Protocolo IPAO (0xAA header, 4-byte commands via 8ac1)
+  ipao,
+
+  /// Protocolo CryptBle (encriptado via f6c2)
+  cryptBle,
+}
+
 class ToyModel {
   final String id;
   final String name;
@@ -17,6 +29,15 @@ class ToyModel {
   final bool isPrecise;
   final String broadcastPrefix;
 
+  /// Tipo de protocolo BLE (auto-detectado o explícito)
+  final BleProtocolType bleProtocol;
+
+  /// Usa advertising (peripheral mode) en vez de GATT writes
+  final bool isPrivateProtocol;
+
+  /// Comando de encriptación para CryptBle (ej. "AA")
+  final String encryptCommand;
+
   ToyModel({
     required this.id,
     required this.name,
@@ -29,6 +50,9 @@ class ToyModel {
     required this.supportedFuncs,
     required this.isPrecise,
     required this.broadcastPrefix,
+    this.bleProtocol = BleProtocolType.classic,
+    this.isPrivateProtocol = false,
+    this.encryptCommand = '',
   });
 
   bool get hasDualChannel => motorLogic.toLowerCase().contains('dual');
@@ -108,12 +132,27 @@ class ToyModel {
           qrCodeUrl == other.qrCodeUrl &&
           supportedFuncs == other.supportedFuncs &&
           isPrecise == other.isPrecise &&
-          broadcastPrefix == other.broadcastPrefix;
+          broadcastPrefix == other.broadcastPrefix &&
+          bleProtocol == other.bleProtocol &&
+          isPrivateProtocol == other.isPrivateProtocol &&
+          encryptCommand == other.encryptCommand;
 
   @override
   int get hashCode =>
       Object.hash(id, name, usageType, targetAnatomy, stimulationType,
-          motorLogic, imageUrl, qrCodeUrl, supportedFuncs, isPrecise, broadcastPrefix);
+          motorLogic, imageUrl, qrCodeUrl, supportedFuncs, isPrecise,
+          broadcastPrefix, bleProtocol, isPrivateProtocol, encryptCommand);
+
+  /// Detecta el tipo de protocolo BLE basado en campos CSV
+  static BleProtocolType _detectProtocol(String isEncrypt, String bleName, String encryptCmd) {
+    if (isEncrypt == '1' || encryptCmd.isNotEmpty) {
+      return BleProtocolType.cryptBle;
+    }
+    if (bleName.toLowerCase().contains('omysky') || bleName.contains('ipa')) {
+      return BleProtocolType.ipao;
+    }
+    return BleProtocolType.classic;
+  }
 
   factory ToyModel.fromCsv(List<dynamic> row) {
     // Estructura esperada segun el CSV:
@@ -127,6 +166,8 @@ class ToyModel {
       return row[index]?.toString() ?? '';
     }
 
+    final isEncrypt = safeGet(row, 15);
+    final encryptCmd = safeGet(row, 19);
     return ToyModel(
       id: safeGet(row, 0),
       name: safeGet(row, 2) == '' ? 'Unknown' : safeGet(row, 2),
@@ -139,6 +180,9 @@ class ToyModel {
       supportedFuncs: safeGet(row, 12),
       isPrecise: safeGet(row, 16) == '0-255',
       broadcastPrefix: safeGet(row, 17) == '' ? '77 62 4d 53 45' : safeGet(row, 17),
+      bleProtocol: _detectProtocol(isEncrypt, safeGet(row, 18), encryptCmd),
+      isPrivateProtocol: safeGet(row, 14).toLowerCase() == 'private',
+      encryptCommand: encryptCmd,
     );
   }
 
@@ -168,7 +212,18 @@ class ToyModel {
       supportedFuncs: row['supported_funcs']?.toString() ?? '',
       isPrecise: row['is_precise_new'] == true || row['is_precise'] == true,
       broadcastPrefix: row['broadcast_prefix']?.toString() ?? '77 62 4d 53 45',
+      bleProtocol: _parseProtocol(row['ble_protocol']),
+      isPrivateProtocol: row['is_private_protocol'] == true,
+      encryptCommand: row['encrypt_command']?.toString() ?? '',
     );
+  }
+
+  static BleProtocolType _parseProtocol(dynamic value) {
+    if (value == null) return BleProtocolType.classic;
+    final str = value.toString().toLowerCase();
+    if (str == 'ipao') return BleProtocolType.ipao;
+    if (str == 'cryptble' || str == 'crypt_ble') return BleProtocolType.cryptBle;
+    return BleProtocolType.classic;
   }
 
   // ── Persistencia JSON (Secure Storage) ──────────────────────
@@ -185,6 +240,9 @@ class ToyModel {
       supportedFuncs: json['supportedFuncs']?.toString() ?? '',
       isPrecise     : json['isPrecise'] == true,
       broadcastPrefix: json['broadcastPrefix']?.toString() ?? '77 62 4d 53 45',
+      bleProtocol  : _parseProtocol(json['bleProtocol']),
+      isPrivateProtocol: json['isPrivateProtocol'] == true,
+      encryptCommand: json['encryptCommand']?.toString() ?? '',
     );
   }
 
@@ -200,5 +258,8 @@ class ToyModel {
     'supportedFuncs' : supportedFuncs,
     'isPrecise'      : isPrecise,
     'broadcastPrefix': broadcastPrefix,
+    'bleProtocol'    : bleProtocol.name,
+    'isPrivateProtocol': isPrivateProtocol,
+    'encryptCommand' : encryptCommand,
   };
 }

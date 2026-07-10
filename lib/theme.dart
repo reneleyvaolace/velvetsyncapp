@@ -33,6 +33,23 @@ class LvsColors {
   static const Color text1 = Color(0xFFFFFFFF); // Pure White
   static const Color text2 = Color(0xFFD1D1D1); // Light Grey
   static const Color text3 = Color(0xFF8E8E9F); // Muted Blueish Grey
+
+  // ── Colores de categoría de dispositivo (CateId) ──
+  // Mapeo homólogo a Utils.k(CateId) en LoveSpouse/MuSe
+  static const Color cateBlue   = Color(0xFF2196F3); // CateId 1
+  static const Color cateRed    = Color(0xFFDC143C); // CateId 2
+  static const Color cateAmber  = Color(0xFFFFC107); // CateId 3
+  static const Color cateGrey   = Color(0xFF9E9E9E); // Default
+
+  /// Devuelve el color según el CateId (homólogo a Utils.k)
+  static Color cateColor(int? cateId) {
+    switch (cateId) {
+      case 1: return cateBlue;
+      case 2: return cateRed;
+      case 3: return cateAmber;
+      default: return cateGrey;
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════

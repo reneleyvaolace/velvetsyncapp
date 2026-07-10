@@ -43,7 +43,13 @@ class ControlTab extends ConsumerWidget {
   }
 
   Widget _buildSliverHeader(WidgetRef ref) {
-    final deviceName = ref.watch(bleProvider.select((p) => p.activeToy?.name ?? 'DISPOSITIVO'));
+    final deviceName = ref.watch(bleProvider.select((p) {
+      final name = p.activeToy?.name ?? p.connectedDeviceName ?? 'DISPOSITIVO';
+      if (name.isEmpty || name == 'N/A' || name == 'Unknown') {
+        return p.connectedDeviceName.isNotEmpty ? p.connectedDeviceName : 'DISPOSITIVO';
+      }
+      return name;
+    }));
     final isConnected = ref.watch(bleProvider.select((p) => p.isConnected));
 
     return SliverAppBar(
@@ -387,12 +393,18 @@ class ControlTab extends ConsumerWidget {
                     _BleStateBox(state: bleState),
                     if (ble.isConnected) ...[
                       const SizedBox(height: 6),
-                      const Row(
+                      Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _StatusIcon(icon: Icons.battery_charging_full, label: '85%'),
-                          SizedBox(width: 4),
-                          _StatusIcon(icon: Icons.signal_cellular_alt, label: 'GOOD'),
+                          _StatusIcon(
+                            icon: Icons.battery_charging_full,
+                            label: ble.batteryLevel > 0 ? '${ble.batteryLevel}%' : '—',
+                          ),
+                          const SizedBox(width: 4),
+                          _StatusIcon(
+                            icon: Icons.signal_cellular_alt,
+                            label: ble.connectedDevices.isNotEmpty ? 'CON' : '—',
+                          ),
                         ],
                       ),
                     ],
@@ -496,7 +508,7 @@ class ControlTab extends ConsumerWidget {
                       
                       // Nombre del dispositivo
                       Text(
-                        ble.activeToy?.name.toUpperCase() ?? ble.connectedDeviceName.toUpperCase(),
+                        _safeDeviceName(ble.activeToy?.name ?? ble.connectedDeviceName).toUpperCase(),
                         style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
                         textAlign: TextAlign.center,
                       ),
@@ -618,6 +630,12 @@ class ControlTab extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Filtra nombres BLE inválidos ("N/A", "Unknown", vacío)
+  String _safeDeviceName(String name) {
+    if (name.isEmpty || name == 'N/A' || name == 'Unknown') return 'DISPOSITIVO';
+    return name;
   }
 
   Widget _buildControlCard(WidgetRef ref) {

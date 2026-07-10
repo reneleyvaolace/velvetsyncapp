@@ -95,6 +95,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         supportedFuncs: 'speed,vibration,pattern',
         isPrecise: false,
         broadcastPrefix: '77 62 4d 53 45',
+        bleProtocol: BleProtocolType.classic,
       );
     }
     
