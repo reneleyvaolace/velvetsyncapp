@@ -705,6 +705,10 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
   Widget _buildAccountCard() {
     final auth = ref.watch(authServiceProvider);
     final isAnon = auth.isAnonymous;
+    final accountLabel = isAnon ? 'INVITADO (SIN CUENTA)' : (auth.email ?? 'CUENTA SIN CORREO');
+    final accountSubtitle = isAnon
+        ? 'Tus datos solo están en este dispositivo'
+        : 'ID: ${auth.userId?.substring(0, 8) ?? "---"}...';
 
     return CardGlass(
       child: Column(
@@ -728,7 +732,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isAnon ? 'INVITADO' : (auth.email ?? 'USUARIO'),
+                        accountLabel,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -737,7 +741,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        isAnon ? 'Sin sesión iniciada' : 'Sesión activa',
+                        accountSubtitle,
                         style: const TextStyle(fontSize: 9, color: LvsColors.text3),
                       ),
                     ],
@@ -768,28 +772,75 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           ),
           if (!isAnon) ...[
             const SizedBox(height: 12),
+            const Divider(height: 1, color: Colors.white10),
+            const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: TextButton.icon(
                 onPressed: () async {
+                  final email = auth.email ?? 'CUENTA DESCONOCIDA';
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
                       backgroundColor: LvsColors.bgCard,
-                      title: const Text('ELIMINAR CUENTA', style: TextStyle(fontSize: 14, color: LvsColors.red)),
-                      content: const Text(
-                        'Esta acción eliminará permanentemente tu cuenta y todos tus datos. ¿Estás seguro?',
-                        style: TextStyle(fontSize: 12, color: LvsColors.text3),
+                      title: const Text('⚠️ ELIMINAR CUENTA', style: TextStyle(fontSize: 14, color: LvsColors.red, fontWeight: FontWeight.bold)),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: LvsColors.red.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: LvsColors.red.withValues(alpha: 0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.email, size: 16, color: LvsColors.red),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    email,
+                                    style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Esta acción eliminará permanentemente esta cuenta y todos tus datos almacenados en la nube. No se puede deshacer.',
+                            style: TextStyle(fontSize: 11, color: LvsColors.text3),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            '¿Estás seguro de que deseas continuar?',
+                            style: TextStyle(fontSize: 11, color: Colors.white70),
+                          ),
+                        ],
                       ),
                       actions: [
-                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCELAR', style: TextStyle(color: LvsColors.text3))),
-                        TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('ELIMINAR', style: TextStyle(color: LvsColors.red))),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text('CANCELAR', style: TextStyle(color: LvsColors.text3, fontWeight: FontWeight.bold)),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: const Text('ELIMINAR', style: TextStyle(color: LvsColors.red, fontWeight: FontWeight.bold)),
+                        ),
                       ],
                     ),
                   );
                   if (confirm == true) {
                     final ok = await auth.deleteAccount();
                     if (ok && mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Cuenta eliminada correctamente'),
+                          backgroundColor: Color(0xFF00C853),
+                        ),
+                      );
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
