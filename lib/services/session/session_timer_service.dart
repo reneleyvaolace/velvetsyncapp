@@ -281,6 +281,85 @@ class SessionTimerService extends ChangeNotifier {
   }
 
   /// Detener y resetear temporizador
+  /// Sincroniza el temporizador con la ventana definida en el servidor.
+  ///
+  /// El restante se calcula contra [startedAt] (marca del servidor), no
+  /// contra el reloj del móvil, así que cerrar la app o cambiar la hora
+  /// no regala tiempo. [pausedTotalMs] descuenta las pausas acumuladas.
+  void applyServerTiming({
+    required DateTime startedAt,
+    required int durationSeconds,
+    int pausedTotalMs = 0,
+  }) {
+    if (durationSeconds <= 0) return;
+
+    final elapsed = DateTime.now().toUtc().difference(startedAt.toUtc()).inSeconds;
+    final remaining = durationSeconds - elapsed + (pausedTotalMs ~/ 1000);
+
+    _durationSeconds = durationSeconds;
+    _remainingSeconds = remaining.clamp(0, durationSeconds);
+    _timer?.cancel();
+    _saveToPrefs();
+    notifyListeners();
+
+    lvsLog('Timer sincronizado con servidor: quedan $_remainingSeconds s de $durationSeconds s', tag: 'TIMER');
+
+    if (_remainingSeconds <= 0) {
+      _isActive = false;
+      _saveToPrefs();
+      notifyListeners();
+      _onTimeExpired();
+      return;
+    }
+
+    _isActive = true;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (_remainingSeconds > 0) {
+        _remainingSeconds--;
+        if (_remainingSeconds % 10 == 0) await _saveToPrefs();
+        notifyListeners();
+      } else {
+        timer.cancel();
+        _isActive = false;
+        await _saveToPrefs();
+        notifyListeners();
+        _onTimeExpired();
+      }
+    });
+  }
+
+  /// Aplica un restante ya calculado por el servidor (p. ej. tras reanudar)
+  /// y reanuda el tick local.
+  void applyRemaining(int remainingSeconds, {int? totalSeconds}) {
+    final total = totalSeconds ?? (remainingSeconds > _durationSeconds ? remainingSeconds : _durationSeconds);
+    _durationSeconds = total <= 0 ? remainingSeconds : total;
+    _remainingSeconds = remainingSeconds.clamp(0, _durationSeconds);
+    _timer?.cancel();
+    _saveToPrefs();
+    notifyListeners();
+
+    if (_remainingSeconds <= 0) {
+      _isActive = false;
+      _onTimeExpired();
+      return;
+    }
+
+    _isActive = true;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (_remainingSeconds > 0) {
+        _remainingSeconds--;
+        if (_remainingSeconds % 10 == 0) await _saveToPrefs();
+        notifyListeners();
+      } else {
+        timer.cancel();
+        _isActive = false;
+        await _saveToPrefs();
+        notifyListeners();
+        _onTimeExpired();
+      }
+    });
+  }
+
   void stop() {
     _isActive = false;
     _timer?.cancel();

@@ -294,6 +294,9 @@ class LovespouseDevice {
       bleProtocol: proto,
       isPrivateProtocol: isPrivateProtocol == 1,
       encryptCommand: encryptCommand,
+      bleName: bleName,
+      isEncrypt: isEncrypt == 1,
+      patternGroups: const [],
     );
   }
 

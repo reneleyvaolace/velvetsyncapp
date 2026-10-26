@@ -2,46 +2,12 @@
 // Velvet Sync · lib/services/backend/profile_service.dart
 // Servicio de perfiles de usuario para la libreta de contactos
 //
-// SQL Migration (ejecutar en Supabase SQL Editor):
-// ═══════════════════════════════════════════════════════════════
-// CREATE TABLE IF NOT EXISTS profiles (
-//   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-//   username VARCHAR(20) UNIQUE NOT NULL CHECK (username ~ '^[a-zA-Z0-9_]{3,20}$'),
-//   display_name VARCHAR(50) NOT NULL,
-//   avatar_url TEXT,
-//   last_seen_at TIMESTAMPTZ DEFAULT NOW(),
-//   created_at TIMESTAMPTZ DEFAULT NOW()
-// );
-//
-// CREATE TABLE IF NOT EXISTS contacts (
-//   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-//   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-//   contact_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-//   created_at TIMESTAMPTZ DEFAULT NOW(),
-//   UNIQUE(user_id, contact_user_id)
-// );
-//
-// CREATE INDEX IF NOT EXISTS idx_profiles_username ON profiles(username);
-// CREATE INDEX IF NOT EXISTS idx_profiles_display_name ON profiles(display_name);
-// CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id);
-//
-// -- session_invites (nueva)
-// CREATE TABLE IF NOT EXISTS session_invites (
-//   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-//   session_id TEXT NOT NULL,
-//   from_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-//   to_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-//   access_token TEXT NOT NULL,
-//   device_id TEXT NOT NULL DEFAULT '',
-//   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'expired')),
-//   created_at TIMESTAMPTZ DEFAULT NOW()
-// );
-//
-// CREATE INDEX IF NOT EXISTS idx_invites_to_user ON session_invites(to_user_id, status);
-// CREATE INDEX IF NOT EXISTS idx_invites_from_user ON session_invites(from_user_id, status);
+// SQL Migration en: supabase/migrations/001_init.sql
+// Ejecutar en Supabase SQL Editor (Dashboard > SQL Editor)
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,6 +15,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:velvet_sync/devices/models/user_profile.dart';
 import 'package:velvet_sync/types/result_types.dart';
 import 'package:velvet_sync/utils/logger.dart';
+import 'package:path/path.dart' as p;
 
 final profileServiceProvider = Provider<ProfileService>((ref) {
   return ProfileService();
@@ -157,7 +124,7 @@ class ProfileService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      String? userId = _currentUserId;
+      var userId = _currentUserId;
       if (userId == null) {
         lvsLog('Intentando auth anónima de respaldo...', tag: 'PROFILE');
         try {
@@ -390,6 +357,30 @@ class ProfileService extends ChangeNotifier {
       notifyListeners();
       lvsError('Error updating profile: $e', tag: 'PROFILE');
       return const Failure(ProfileError.networkError);
+    }
+  }
+
+  /// Upload avatar image to Supabase Storage and return public URL
+  Future<String?> uploadAvatar(File image) async {
+    try {
+      final userId = _currentUserId;
+      if (userId == null) return null;
+
+      final ext = p.extension(image.path).toLowerCase();
+      final fileName = 'avatars/$userId$ext';
+
+      await _client.storage.from('user_backups').upload(
+        fileName,
+        image,
+        fileOptions: const FileOptions(upsert: true),
+      );
+
+      final publicUrl = _client.storage.from('user_backups').getPublicUrl(fileName);
+      lvsLog('Avatar uploaded: $publicUrl', tag: 'PROFILE');
+      return publicUrl;
+    } catch (e) {
+      lvsError('Error uploading avatar: $e', tag: 'PROFILE');
+      return null;
     }
   }
 

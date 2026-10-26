@@ -5,9 +5,11 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/devices/models/lovespouse_device.dart';
 import 'package:velvet_sync/services/backend/supabase_service.dart';
@@ -15,6 +17,13 @@ import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velvet_sync/devices/parsers/lovespouse_parser_service.dart';
+
+// ── LoveSpouse API directa ──────────────────────────────────────
+const _kLoveSpouseApiBase = 'https://lovespouse.zlmicro.com/index.php';
+const _kLoveSpouseUserIds = [
+  '745540175', '749000390', '771002891', '781986154',
+  '781053646', '772488032', '782514043', '7815577341',
+];
 
 // ── Clave de almacenamiento ─────────────────────────────────────
 const _kPreregisteredKey = 'lvs_preregistered_devices';
@@ -255,6 +264,39 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
     }
   }
 
+  // ─── LOVE SPOUSE API DIRECTA (FALLBACK) ─────────────────────────
+
+  /// Fetches device details directly from the LoveSpouse API as a last resort.
+  /// Uses rotating user IDs and the `custom=inter` parameter for full FuncObj.
+  Future<ToyModel?> _fetchFromLoveSpouseApi(String barcode) async {
+    final rng = math.Random();
+    for (var attempt = 0; attempt < 3; attempt++) {
+      final userId = _kLoveSpouseUserIds[rng.nextInt(_kLoveSpouseUserIds.length)];
+      final uri = Uri.parse(_kLoveSpouseApiBase).replace(queryParameters: {
+        'g': 'App',
+        'm': 'Diyapp',
+        'a': 'getproductdetail',
+        'barcode': barcode,
+        'userid': userId,
+        'custom': 'inter',
+      });
+      try {
+        final response = await http.get(uri).timeout(const Duration(seconds: 5));
+        if (response.statusCode != 200) continue;
+        final data = jsonDecode(response.body);
+        if (data['code'] != 1 || data['data'] == null) continue;
+        final device = LovespouseDevice.fromJson(data['data']);
+        if (device.status != 1) continue;
+        lvsLog('✅ API directa: encontrado ${device.displayName} ($barcode)', tag: 'CATALOG');
+        return device.toToyModel();
+      } catch (_) {
+        continue;
+      }
+    }
+    lvsLog('⚠️ API directa: no encontrado $barcode', tag: 'CATALOG');
+    return null;
+  }
+
   // ─── PRE-REGISTRO / AGREGAR ────────────────────────────────────
 
   Future<ToyModel?> addByKey(String key) async {
@@ -284,24 +326,38 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
     // Buscar en servidor o fallback
     ToyModel? found;
 
-    // 1. Bypass Knight No. 3
-    if (cleanId == '8154' || cleanId.contains('knight')) {
-      found = _localFallbackCatalog().first;
-    } else {
-      // 2. Supabase
+    // 1. Supabase
+    try {
+      found = await _supabase.fetchDeviceById(cleanId);
+    } catch (_) {}
+
+    // 3. Catálogo LoveSpouse JSON local (2,753 dispositivos)
+    if (found == null) {
+      final lovespouseCatalog = _ref.read(lovespouseCatalogProvider);
       try {
-        found = await _supabase.fetchDeviceById(cleanId);
+        found = lovespouseCatalog.firstWhere((t) => t.id == cleanId);
+        lvsLog('Match en catálogo LoveSpouse: ${found.name} ($cleanId)', tag: 'CATALOG');
       } catch (_) {}
+      // Si no encontró por ID exacto, buscar por nombre/alias
+      if (found == null) {
+        try {
+          found = lovespouseCatalog.firstWhere((t) =>
+              t.name.toLowerCase().contains(cleanId) ||
+              cleanId.contains(t.id));
+        } catch (_) {}
+      }
     }
 
-    // 3. Fallback Local
+    // 4. LoveSpouse API directa (último recurso antes del fallback local)
+    found ??= await _fetchFromLoveSpouseApi(cleanId);
+
     if (found == null) {
       try {
         found = _localFallbackCatalog().firstWhere((t) => t.id == cleanId);
       } catch (_) {}
     }
 
-    // 4. ✨ NUEVO: Fallback Dinámico para IDs desconocidos
+    // 6. ✨ Fallback Dinámico para IDs desconocidos
     if (found == null && cleanId.length >= 3) {
       lvsLog('ID desconocido "$cleanId". Generando perfil genérico...', tag: 'CATALOG');
       found = ToyModel(

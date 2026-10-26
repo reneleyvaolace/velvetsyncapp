@@ -6,8 +6,8 @@
 import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:velvet_sync/config/env.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
@@ -47,34 +47,31 @@ class SupabaseService {
 
   // Canales para comunicación rápida (P2P Virtual)
   RealtimeChannel? _activeChannel;
+  String? _currentSessionId;
   final String _clientId = DateTime.now().millisecondsSinceEpoch.toString(); // Identificador único por sesión de app
 
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    // 🔒 SECURITY: Credentials MUST come from .env file - no hardcoded fallbacks
-    final url = dotenv.env['SUPABASE_URL'];
-    final anonKey = dotenv.env['SUPABASE_ANON_KEY'];
-
-    // Validate credentials are present
-    if (url == null || url.isEmpty) {
-      throw StateError('SUPABASE_URL not found in .env file. Application cannot start without Supabase configuration.');
-    }
-
-    if (anonKey == null || anonKey.isEmpty) {
-      throw StateError('SUPABASE_ANON_KEY not found in .env file. Application cannot start without Supabase configuration.');
+    // 🔒 SECURITY: SUPABASE_URL y anon key llegan por --dart-define.
+    // La anon key es pública por diseño; los secretos viven en Supabase.
+    if (!AppEnv.hasSupabase) {
+      throw StateError(
+        'Supabase no configurado. Compila con '
+        '--dart-define-from-file=env.json (ver env.example.json).',
+      );
     }
 
     try {
       await Supabase.initialize(
-        url: url,
-        anonKey: anonKey,
+        url: AppEnv.supabaseUrl,
+        anonKey: AppEnv.supabaseAnonKey,
         realtimeClientOptions: const RealtimeClientOptions(
           eventsPerSecond: 10,
         ),
       );
       _isInitialized = true;
-      lvsLog('Supabase Inicializado OK: $url', tag: 'SUPABASE');
+      lvsLog('Supabase Inicializado OK: ${AppEnv.supabaseUrl}', tag: 'SUPABASE');
     } catch (e) {
       if (e.toString().contains('already been initialized')) {
         _isInitialized = true;
@@ -99,7 +96,7 @@ class SupabaseService {
       // 🔒 PERFORMANCE: Timeout de 10 segundos para prevenir cuelgues en redes pobres
       final response = await client
           .from('device_catalog')
-          .select('id, factory_model, model_name, usage_type, target_anatomy, stimulation_type, motor_logic, image_url, qr_code_url, supported_funcs, is_precise_new, broadcast_prefix')
+          .select('id, factory_model, model_name, usage_type, target_anatomy, stimulation_type, motor_logic, image_url, qr_code_url, supported_funcs, is_precise_new, broadcast_prefix, ble_name, is_encrypt, encrypt_command')
           .limit(limit)
           .timeout(const Duration(seconds: 10), onTimeout: () => []);
 
@@ -115,9 +112,10 @@ class SupabaseService {
     if (!_isInitialized) return null;
     try {
       // 🔒 PERFORMANCE: Timeout de 8 segundos
+      // Incluimos raw_json_data para parsear ClassicId → patternGroups
       final response = await client
           .from('device_catalog')
-          .select()
+          .select('id, factory_model, model_name, usage_type, target_anatomy, stimulation_type, motor_logic, image_url, qr_code_url, supported_funcs, is_precise_new, broadcast_prefix, ble_name, is_encrypt, encrypt_command, raw_json_data')
           .or('id.eq.$id,model_name.ilike.%$id%')
           .limit(1)
           .maybeSingle()
@@ -127,7 +125,7 @@ class SupabaseService {
         return null;
       }
       final matchName = response['model_name'] ?? response['name'] ?? 'Generic';
-      lvsLog('Match encontrado para "$id" -> $matchName', tag: 'SUPABASE');
+      lvsLog('Match encontrado para "$id" -> $matchName (patternGroups: ${(response['raw_json_data'] as Map?)?['ClassicId']?.length ?? 0})', tag: 'SUPABASE');
       return ToyModel.fromSupabase(response);
     } catch (e) {
       lvsLog('Error fetchDeviceById: $e', tag: 'SUPABASE');
@@ -274,27 +272,7 @@ class SupabaseService {
       lvsLog('Sesión creada: ID ${response['id']}', tag: 'SUPABASE');
       return response;
     } catch (e) {
-      lvsLog('⚠️ Fallo inicial en createSharedSession ($deviceId): $e', tag: 'SUPABASE');
-
-      // 2. Reintento con ID genérico (por si el deviceId no existe en el catálogo remoto y hay FK)
-      if (deviceId != '8154') {
-        try {
-          lvsLog('🔄 Reintentando con ID genérico...', tag: 'SUPABASE');
-          final retryResponse = await client
-              .from('shared_sessions')
-              .insert({
-                'device_id': '8154', // Usamos el ID del Knight No. 3 como fallback universal
-                'is_active': true,
-                if (hostName != null) 'host_name': hostName,
-              })
-              .select()
-              .single();
-          return retryResponse;
-        } catch (e2) {
-          lvsLog('❌ Error fatal en reintento: $e2', tag: 'SUPABASE');
-          rethrow;
-        }
-      }
+      lvsLog('❌ Error fatal en createSharedSession ($deviceId): $e', tag: 'SUPABASE');
       rethrow;
     }
   }
@@ -303,6 +281,7 @@ class SupabaseService {
   /// Se une a una sala de control en tiempo real para una sesión
   void joinControlRoom(String sessionId, Function(Map<String, dynamic> payload, bool isSelf) onCommandReceived) {
     _activeChannel?.unsubscribe();
+    _currentSessionId = sessionId;
 
     _activeChannel = client.channel('session_$sessionId');
 
@@ -321,7 +300,9 @@ class SupabaseService {
 
   /// Envía un comando de intensidad sin pasar por la base de datos (Latencia mínima)
   Future<void> sendBroadcastCommand(String sessionId, String key, int value) async {
-    final channel = client.channel('session_$sessionId');
+    final channel = _currentSessionId == sessionId && _activeChannel != null
+        ? _activeChannel!
+        : client.channel('session_$sessionId')..subscribe();
 
     await channel.sendBroadcastMessage(
       event: 'control_command',
@@ -333,8 +314,105 @@ class SupabaseService {
     );
   }
 
+  /// Parada remota: cualquier participante puede detener el juguete del otro.
+  /// Se envía por broadcast (sin pasar por la DB) para que llegue en milisegundos.
+  Future<void> sendRemoteStop(String sessionId, {String reason = 'manual'}) async {
+    final channel = client.channel('session_$sessionId');
+    await channel.sendBroadcastMessage(
+      event: 'control_command',
+      payload: {
+        'sender_id': _clientId,
+        'stop': 1,
+        'reason': reason,
+        'ts': DateTime.now().millisecondsSinceEpoch,
+      },
+    );
+    lvsLog('STOP remoto enviado ($reason)', tag: 'SUPA');
+  }
+
+  // ── Tiempo de sesión (autoritativo en servidor) ─────────────
+
+  /// Marca el inicio y la duración contratada. Solo el host debería llamarlo.
+  Future<DateTime?> startSessionTiming(String sessionId, int durationSeconds) async {
+    try {
+      final value = await client.rpc('session_start_timing', params: {
+        'p_session': sessionId,
+        'p_duration_seconds': durationSeconds,
+      });
+      if (value == null) return null;
+      return DateTime.tryParse(value.toString());
+    } catch (e) {
+      lvsLog('Error startSessionTiming: $e', tag: 'SUPA');
+      return null;
+    }
+  }
+
+  /// Cierra la cuenta de tiempo con un motivo (`host_stop`, `expired`...).
+  Future<void> endSessionTiming(String sessionId, String reason) async {
+    try {
+      await client.rpc('session_end_timing', params: {
+        'p_session': sessionId,
+        'p_reason': reason,
+      });
+    } catch (e) {
+      lvsLog('Error endSessionTiming: $e', tag: 'SUPA');
+    }
+  }
+
+  /// Segundos restantes según el reloj del servidor (null si no aplica).
+  Future<int?> fetchRemainingSeconds(String sessionId) async {
+    try {
+      final value = await client.rpc('session_remaining_seconds', params: {
+        'p_session': sessionId,
+      });
+      if (value == null) return null;
+      return (value as num).toInt();
+    } catch (e) {
+      lvsLog('Error fetchRemainingSeconds: $e', tag: 'SUPA');
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSessionHistory({int limit = 50}) async {
+    if (!_isInitialized) return const [];
+    try {
+      final rows = await client
+          .from('shared_sessions')
+          .select('id, device_id, started_at, ended_at, duration_seconds, ended_reason')
+          .not('ended_at', 'is', null)
+          .order('started_at', ascending: false)
+          .limit(limit);
+      return (rows as List).cast<Map<String, dynamic>>();
+    } catch (e) {
+      lvsLog('Error fetchSessionHistory: $e', tag: 'SUPA');
+      return const [];
+    }
+  }
+
+  /// Congela el reloj de la sesión en el servidor.
+  Future<void> pauseSessionTiming(String sessionId) async {
+    try {
+      await client.rpc('session_pause_timing', params: {'p_session': sessionId});
+    } catch (e) {
+      lvsLog('Error pauseSessionTiming: $e', tag: 'SUPA');
+    }
+  }
+
+  /// Reanuda y devuelve los segundos restantes calculados en servidor.
+  Future<int?> resumeSessionTiming(String sessionId) async {
+    try {
+      final value = await client.rpc('session_resume_timing', params: {'p_session': sessionId});
+      if (value == null) return null;
+      return (value as num).toInt();
+    } catch (e) {
+      lvsLog('Error resumeSessionTiming: $e', tag: 'SUPA');
+      return null;
+    }
+  }
+
   void leaveControlRoom() {
     _activeChannel?.unsubscribe();
     _activeChannel = null;
+    _currentSessionId = null;
   }
 }

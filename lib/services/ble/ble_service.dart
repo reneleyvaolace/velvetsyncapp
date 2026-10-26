@@ -1,21 +1,9 @@
 // ═══════════════════════════════════════════════════════════════
-// LVS Control · lib/ble/ble_service.dart · v2.1.0
-// Migrado a flutter_blue_plus v2.x
-// Servicio BLE: escaneo, conexión GATT, burst mode, permisos, batería
-//
-// NOTAS DE FONDO:
-//  - Android: FlutterForegroundTask mantiene el proceso vivo.
-//    El escaneo BLE sigue activo con pantalla apagada.
-//  - iOS: background mode 'bluetooth-central' en Info.plist
-//    permite continuar recibiendo eventos BLE mientras la app
-//    está en background (limitado por iOS power management).
+// Velvet Sync · lib/services/ble/ble_service.dart
+// Re-export de la implementación móvil (ble_service_mobile.dart)
 // ═══════════════════════════════════════════════════════════════
-import 'dart:async';
-import 'dart:io' show Platform;
-import 'dart:math' as math;
-import 'package:velvet_sync/services/ble/ble_types.dart';
-export 'package:velvet_sync/services/ble/ble_types.dart';
 
+<<<<<<< HEAD
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';

@@ -9,6 +9,8 @@ import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 import 'package:velvet_sync/screens/backup_screen.dart';
 import 'package:velvet_sync/screens/auth_screen.dart';
 import 'package:velvet_sync/screens/main_navigation.dart';
+import 'package:velvet_sync/widgets/settings_account_card.dart';
+import 'package:velvet_sync/widgets/settings_system_card.dart';
 
 class SettingsTab extends ConsumerStatefulWidget {
   const SettingsTab({super.key});
@@ -20,7 +22,6 @@ class SettingsTab extends ConsumerStatefulWidget {
 class _SettingsTabState extends ConsumerState<SettingsTab> {
   @override
   Widget build(BuildContext context) {
-    final timerState = ref.watch(sessionTimerStateProvider);
     final burstInterval = ref.watch(bleProvider.select((p) => p.burstIntervalMs));
     final isDeepScan = ref.watch(bleProvider.select((p) => p.isDeepScan));
     final logs = ref.watch(bleProvider.select((p) => p.logs));
@@ -47,7 +48,9 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
               const SizedBox(height: 20),
               _buildSettingsCard(burstInterval, isDeepScan),
               const SizedBox(height: 20),
-              _buildSystemProCard(timerState),
+              const SettingsSystemCard(),
+              const SizedBox(height: 20),
+              const SettingsAccountCard(),
               const SizedBox(height: 20),
               _buildAccountCard(),
               const SizedBox(height: 20),
@@ -143,12 +146,12 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
       child: CardGlass(
         borderColor: LvsColors.amber.withValues(alpha: 0.2),
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: const Row(
           children: [
             Icon(Icons.build_circle, color: LvsColors.amber, size: 32),
-            const SizedBox(width: 14),
-            const Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
-            const Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
+            SizedBox(width: 14),
+            Expanded(child: Text('CONSOLA DE DEPURACIÓN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1, color: LvsColors.amber))),
+            Icon(Icons.arrow_forward_ios, color: LvsColors.amber, size: 14),
           ],
         ),
       ),
@@ -216,6 +219,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     );
   }
 
+<<<<<<< HEAD
   Widget _buildSystemProCard(SessionTimerState timerState) {
     final timerService = ref.read(sessionTimerServiceProvider);
     final ble = ref.read(bleProvider);

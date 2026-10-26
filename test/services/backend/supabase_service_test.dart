@@ -226,7 +226,7 @@ void main() {
 
       expect(result.length, 1);
       expect(result.first.id, 'dev-1');
-      expect(result.first.name, 'Knight No. 3');
+      expect(result.first.name, 'Knight 3');
     });
 
     test('returns empty list when not initialized', () async {
@@ -442,14 +442,13 @@ void main() {
       expect(result!['id'], 'sess-1');
     });
 
-    test('retries with generic ID on FK failure', () async {
-      final row = _sessionRow(id: 'sess-2');
+    test('throws on FK failure (no more generic ID fallback)', () async {
       mockMapBuilder.thenThrows(Exception('foreign key violation'));
-      mockMapBuilder.thenReturns(PostgrestMap.from(row));
 
-      final result = await service.createSharedSession('dev-unknown');
-      expect(result, isNotNull);
-      expect(result!['id'], 'sess-2');
+      expect(
+        () => service.createSharedSession('dev-unknown'),
+        throwsA(isA<Exception>()),
+      );
     });
 
     test('throws StateError on rate limit', () async {
@@ -468,13 +467,10 @@ void main() {
 
     test('rethrows on unknown error', () async {
       mockMapBuilder.thenThrows(Exception('unknown'));
-      mockMapBuilder.thenThrows(Exception('unknown'));
-      try {
-        await service.createSharedSession('dev-1');
-        fail('Expected exception');
-      } catch (e) {
-        expect(e, isA<Exception>());
-      }
+      expect(
+        () => service.createSharedSession('dev-1'),
+        throwsA(isA<Exception>()),
+      );
     });
   });
 
@@ -515,6 +511,7 @@ void main() {
     test('sends broadcast message via channel', () async {
       final channel = MockRealtimeChannel();
       when(() => mockClient.channel(any())).thenReturn(channel);
+      when(() => channel.subscribe()).thenReturn(channel);
       when(() => channel.sendBroadcastMessage(
             event: any(named: 'event'),
             payload: any(named: 'payload'),

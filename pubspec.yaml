@@ -16,6 +16,7 @@ dependencies:
 
   permission_handler: ^12.0.1
   flutter_secure_storage: ^10.0.0  # 🔒 Updated: Latest secure version
+  flutter_dotenv: ^5.1.0
 
   # ── Servicio en segundo plano (Android Foreground Service) ─
   flutter_foreground_task: ^9.2.1
@@ -27,7 +28,6 @@ dependencies:
 
   # ── State management ───────────────────────────────────────
   flutter_riverpod: ^2.6.1  # Updated: Latest stable
-  provider: ^6.1.5
 
   # ── Multimedia Sync ───────────────────────────────
   just_audio: ^0.9.46  # Updated: Bug fixes
@@ -52,13 +52,12 @@ dependencies:
   mobile_scanner: ^7.2.0      # QR / Barcode scanner real
   supabase_flutter: ^2.12.0
   url_launcher: ^6.3.1
-  flutter_dotenv: ^5.2.1  # Updated: Bug fixes
   shared_preferences: ^2.3.3  # Persistencia de configuración
   share_plus: ^10.1.4         # Compartir archivos de respaldo
   webview_flutter: ^4.8.0     # WebView para catálogo web (Android/iOS)
   path_provider: ^2.1.2       # 🔒 PERSISTENCE: Required for Logger library
-  web_socket_channel: any
-  path: any
+  web_socket_channel: ^3.0.1
+  path: ^1.9.0
 
   meta: any
   flutter_svg: ^2.3.0
@@ -80,7 +79,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - .env
     - assets/
     - assets/icon/
     - assets/icons/

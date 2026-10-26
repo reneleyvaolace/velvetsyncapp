@@ -101,9 +101,9 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
           indicatorColor: LvsColors.pink,
           labelColor: LvsColors.pink,
           unselectedLabelColor: LvsColors.text3,
-          tabs: [
-            Tab(icon: const Icon(Icons.gamepad, size: 24), text: 'Mis Dispositivos'),
-            Tab(icon: const Icon(Icons.add_circle_outline, size: 24), text: 'Agregar'),
+          tabs: const [
+            Tab(icon: Icon(Icons.gamepad, size: 24), text: 'Mis Dispositivos'),
+            Tab(icon: Icon(Icons.add_circle_outline, size: 24), text: 'Agregar'),
           ],
         ),
       ),

@@ -65,9 +65,7 @@ class AuthService {
   Stream<AuthState> get authState => _client?.auth.onAuthStateChange ?? const Stream.empty();
 }
 
-final authServiceProvider = Provider<AuthService>((ref) {
-  return AuthService();
-});
+
 
 // ═══════════════════════════════════════════════════════════════
 // Session Manager
@@ -153,13 +151,13 @@ class SessionManager extends ChangeNotifier {
   Future<SharedSession?> createSession({
     required String name,
     SessionConfig? config,
+    String deviceId = 'unknown',
   }) async {
     try {
       lvsLog('Creando sesión: $name', tag: 'SESSION');
 
       // Crear sesión en Supabase
       final userId = _currentUserId;
-      const deviceId = '8154'; // Default device ID
       
       final sessionData = await _supabaseService?.createSharedSession(deviceId);
       
@@ -533,8 +531,16 @@ class SessionManager extends ChangeNotifier {
     if (_currentSession == null) return;
 
     try {
-
-      lvsLog('🛑 STOP ALL - Todos los dispositivos detenidos', tag: 'SESSION');
+      if (_sessionChannel != null) {
+        await _sessionChannel!.sendBroadcastMessage(
+          event: 'control_command',
+          payload: {
+            'command': 'stop_all',
+            'ts': DateTime.now().millisecondsSinceEpoch,
+          },
+        );
+      }
+      lvsLog('🛑 STOP ALL - Comando enviado a la sesión', tag: 'SESSION');
     } catch (e) {
       _lastError = 'Error deteniendo dispositivos: $e';
       lvsLog(_lastError!, tag: 'SESSION');

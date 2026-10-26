@@ -15,27 +15,30 @@ Velvet Sync ahora soporta **build flavors** para separar entornos de desarrollo 
 
 ```bash
 # Desarrollo
-flutter run --flavor dev
-flutter build apk --flavor dev --debug
+flutter run --flavor dev --dart-define-from-file=env.json
+flutter build apk --flavor dev --debug --dart-define-from-file=env.json
 
 # Producción
-flutter run --flavor prod
-flutter build apk --flavor prod --release
-flutter build appbundle --flavor prod --release
+flutter run --flavor prod --dart-define-from-file=env.json
+flutter build apk --flavor prod --release --dart-define-from-file=env.json
+flutter build appbundle --flavor prod --release --dart-define-from-file=env.json
 ```
 
 ### 📁 Estructura de Archivos
 
 ```
 velvetsyncapp/
-├── .env                    # 🔒 TU archivo local (NO COMMIT)
-├── .env.template           # Plantilla segura (COMMIT)
-├── .env.example            # Ejemplo alternativo
+├── env.example.json        # Plantilla (COMMIT, sin secretos)
+├── env.json                # TU config local (IGNORADO por git)
+├── supabase/
+│   └── functions/
+│       └── ai-proxy/index.ts  # Proxy IA (clave solo en Supabase Secrets)
 ├── flavors.yaml            # Configuración de flavors
 ├── android/
 │   └── app/
 │       └── build.gradle.kts # Configuración Android flavors
 └── lib/
+    ├── config/env.dart     # --dart-define / env.json
     └── main.dart           # Entry point único
 ```
 
@@ -43,9 +46,26 @@ velvetsyncapp/
 
 ## 🔐 Seguridad de Credenciales
 
-### NUNCA commites `.env`
+### El cliente solo lleva la anon key
 
-El archivo `.env` está en `.gitignore`. Usa `.env.template` como referencia.
+`env.json` contiene `SUPABASE_URL` y `SUPABASE_ANON_KEY` (pública por diseño).
+Se inyecta con `--dart-define-from-file=env.json` y está en `.gitignore`.
+
+Nunca incluir en `env.json` ni en el código:
+- `OPENROUTER_API_KEY` → Supabase Secrets
+- `service_role` de Supabase → solo servidor
+- Claves privadas de terceros
+
+### Edge Function `ai-proxy`
+
+```bash
+supabase secrets set OPENROUTER_API_KEY=<clave> --project-ref <project-ref>
+supabase secrets set OPENROUTER_MODEL=google/gemma-4-26b-a4b-it:free --project-ref <project-ref>
+supabase functions deploy ai-proxy --project-ref <project-ref>
+```
+
+La función valida el JWT en el gateway, limita el tamaño del mensaje, aplica
+un rate limit por instancia y nunca devuelve el cuerpo de error del proveedor.
 
 ### Rotación de API Keys
 
@@ -62,12 +82,13 @@ El archivo `.env` está en `.gitignore`. Usa `.env.template` como referencia.
 Antes de publicar:
 
 ```markdown
-- [ ] Build de producción: `flutter build apk --flavor prod --release`
+- [ ] Build de producción: `flutter build apk --flavor prod --release --dart-define-from-file=env.json`
 - [ ] Tests en dispositivo real Android
 - [ ] Verificar que Debug Screen no esté accesible
 - [ ] Confirmar que no hay logging de datos sensibles
-- [ ] API Keys rotadas y actualizadas en servidor
-- [ ] `.env` NO está en git (verificar con `git status`)
+- [ ] API Keys rotadas y actualizadas en Supabase Secrets
+- [ ] `env.json` NO está en git (verificar con `git status`)
+- [ ] APK inspeccionado: sin `.env` ni claves privadas
 - [ ] Firmar APK con keystore de producción
 ```
 
@@ -75,10 +96,11 @@ Antes de publicar:
 
 ## 🛡️ Mejoras de Seguridad Implementadas
 
-### CRITICAL (7/7 ✅)
+### CRITICAL (6/7 ✅)
 - [x] Eliminar credenciales hardcodeadas
-- [x] Fail fast si `.env` no carga
-- [x] Autenticación requerida para sync
+- [x] Configuración por `--dart-define-from-file` (sin `.env` en el APK)
+- [x] Clave de OpenRouter solo en Supabase Secrets (Edge Function)
+- [ ] Autenticación requerida para sync — pendiente (fase 2)
 - [x] Validación de expiración de tokens
 - [x] Sin logging de API keys
 - [x] Rate limiting en creación de sesiones
@@ -119,5 +141,5 @@ Para Velvet Sync, HTTPS + Network Security Config es suficiente.
 
 ---
 
-*Última actualización: Marzo 2026*
+*Última actualización: Octubre 2026*
 *Versión: 1.4.0*

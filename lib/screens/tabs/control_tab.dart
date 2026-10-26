@@ -270,15 +270,16 @@ class ControlTab extends ConsumerWidget {
               color: LvsColors.teal,
               title: 'Escanear Código QR',
               subtitle: 'Vincular rápidamente dispositivos Lovense y compatibles.',
-              onTap: () async {
+              onTap: () {
                 Navigator.pop(bsContext);
-                final result = await Navigator.push(
-                  outerContext,
+                Navigator.push(
+                  bsContext,
                   MaterialPageRoute(builder: (_) => const QRScannerScreen()),
-                );
-                if (result != null && result is String) {
-                  _processQRResult(outerContext, result, ref);
-                }
+                ).then((result) {
+                  if (result != null && result is String) {
+                    _processQRResult(bsContext, result, ref);
+                  }
+                });
               },
             ),
             const SizedBox(height: 16),
@@ -368,21 +369,21 @@ class ControlTab extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.bluetooth, color: LvsColors.teal, size: 20),
-                        const SizedBox(width: 8),
-                        const Flexible(
+                        Icon(Icons.bluetooth, color: LvsColors.teal, size: 20),
+                        SizedBox(width: 8),
+                        Flexible(
                           child: SectionLabel('ESTADO DE CONEXIÓN'),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    const Text('Auto-Link activo para rMesh v2', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
+                    SizedBox(height: 4),
+                    Text('Auto-Link activo para rMesh v2', style: TextStyle(fontSize: 10, color: LvsColors.text3)),
                   ],
                 ),
               ),
@@ -397,13 +398,13 @@ class ControlTab extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           _StatusIcon(
-                            icon: Icons.battery_charging_full,
+                            icon: ble.batteryLevel > 0 ? Icons.battery_charging_full : Icons.battery_unknown,
                             label: ble.batteryLevel > 0 ? '${ble.batteryLevel}%' : '—',
                           ),
                           const SizedBox(width: 4),
                           _StatusIcon(
                             icon: Icons.signal_cellular_alt,
-                            label: ble.connectedDevices.isNotEmpty ? 'CON' : '—',
+                            label: ble.connectedDevices.isNotEmpty ? 'CON' : 'GOOD',
                           ),
                         ],
                       ),
