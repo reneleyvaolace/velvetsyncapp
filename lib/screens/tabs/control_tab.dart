@@ -388,11 +388,14 @@ class ControlTab extends ConsumerWidget {
                     _BleStateBox(state: bleState),
                     if (ble.isConnected) ...[
                       const SizedBox(height: 6),
-                      const Row(
+                      Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _StatusIcon(icon: Icons.battery_charging_full, label: '85%'),
-                          SizedBox(width: 4),
+                          _StatusIcon(
+                            icon: ble.batteryLevel > 0 ? Icons.battery_charging_full : Icons.battery_unknown,
+                            label: ble.batteryLevel > 0 ? '${ble.batteryLevel}%' : '—',
+                          ),
+                          const SizedBox(width: 4),
                           _StatusIcon(icon: Icons.signal_cellular_alt, label: 'GOOD'),
                         ],
                       ),

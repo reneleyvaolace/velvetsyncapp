@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,6 +9,7 @@ import 'package:velvet_sync/devices/models/user_profile.dart';
 import 'package:velvet_sync/types/result_types.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/screens/main_navigation.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 class MyProfileScreen extends ConsumerStatefulWidget {
   const MyProfileScreen({super.key});
@@ -44,12 +46,23 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
 
   Future<void> _loadProfile() async {
     setState(() => _isLoadingProfile = true);
+    lvsLog('🔄 Cargando perfil...', tag: 'PROFILE_UI');
     try {
-      final result = await ref.read(profileServiceProvider).getMyProfile();
+      final result = await ref.read(profileServiceProvider).getMyProfile().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          lvsError('⏰ Timeout cargando perfil', tag: 'PROFILE_UI');
+          throw TimeoutException('Timeout cargando perfil');
+        },
+      );
       if (mounted) {
         result.fold(
-          (_) => setState(() { _isCreateMode = true; _isLoadingProfile = false; }),
+          (error) {
+            lvsLog('⚠️ Perfil no encontrado/error: $error → modo crear', tag: 'PROFILE_UI');
+            setState(() { _isCreateMode = true; _isLoadingProfile = false; });
+          },
           (profile) {
+            lvsLog('✅ Perfil cargado: ${profile.username}', tag: 'PROFILE_UI');
             _usernameController.text = profile.username;
             _displayNameController.text = profile.displayName;
             _avatarUrl = profile.avatarUrl;
@@ -58,6 +71,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
         );
       }
     } catch (e) {
+      lvsError('❌ Error cargando perfil: $e', tag: 'PROFILE_UI');
       if (mounted) {
         setState(() { _isCreateMode = true; _isLoadingProfile = false; });
       }

@@ -11,6 +11,8 @@ import 'package:velvet_sync/services/backend/supabase_service.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
+import 'package:velvet_sync/screens/session_history_screen.dart';
+import 'package:velvet_sync/services/session/session_timer_service.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:velvet_sync/services/backend/profile_service.dart';
@@ -116,7 +118,19 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
       
       final ble = ref.read(bleProvider);
 
-      // Feedback visual de actividad del socio
+      // ── Parada remota: el otro participante detiene el juguete ──
+      if (payload['stop'] == 1) {
+        ble.emergencyStop();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Sesión detenida por tu pareja (${payload['reason'] ?? 'manual'}).'),
+            ),
+          );
+        }
+        return;
+      }
+
       setState(() => _partnerActive = true);
       _partnerTimer?.cancel();
       _partnerTimer = Timer(const Duration(seconds: 3), () {
@@ -142,6 +156,16 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         }
       });
     });
+  }
+
+  /// Detiene la sesión en ambos lados: broadcast + parada local inmediata.
+  Future<void> _sendRemoteStop() async {
+    if (_sessionData == null) return;
+    final supabase = ref.read(supabaseServiceProvider);
+    final ble = ref.read(bleProvider);
+    await supabase.sendRemoteStop(_sessionData!['id'].toString());
+    await ble.emergencyStop();
+    await supabase.endSessionTiming(_sessionData!['id'].toString(), 'host_stop');
   }
 
   Future<void> _connect() async {
@@ -173,6 +197,19 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     
     _loadToyModel();
     _startListening();
+
+    // ── Tiempo autoritativo: usar la marca del servidor ──
+    final DateTime? startedAt = session['started_at'] != null
+        ? DateTime.tryParse(session['started_at'].toString())
+        : null;
+    final int totalSeconds = (session['duration_seconds'] as num?)?.toInt() ?? 0;
+    if (startedAt != null && totalSeconds > 0) {
+      ref.read(sessionTimerServiceProvider).applyServerTiming(
+            startedAt: startedAt,
+            durationSeconds: totalSeconds,
+            pausedTotalMs: (session['paused_total_ms'] as num?)?.toInt() ?? 0,
+          );
+    }
   }
 
   Future<void> _updateIntensity(int channel, double value) async {
@@ -205,6 +242,32 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
+          if (_isConnected)
+            IconButton(
+              tooltip: 'Pausar / reanudar',
+              icon: Icon(
+                ref.watch(sessionTimerStateProvider).status == SessionTimerStatus.paused
+                    ? Icons.play_arrow
+                    : Icons.pause,
+                color: LvsColors.teal,
+              ),
+              onPressed: _togglePause,
+            ),
+          if (_isConnected)
+            IconButton(
+              tooltip: 'Historial',
+              icon: const Icon(Icons.history, color: LvsColors.teal),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SessionHistoryScreen()),
+              ),
+            ),
+          if (_isConnected)
+            IconButton(
+              tooltip: 'Parada remota',
+              icon: const Icon(Icons.stop_circle, color: Colors.redAccent),
+              onPressed: _sendRemoteStop,
+            ),
           if (_isConnected)
             IconButton(
               icon: const Icon(Icons.share, color: LvsColors.teal),
@@ -364,6 +427,9 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
       return;
     }
 
+    final int? selected = await _pickDuration();
+    if (selected == null) return;
+
     setState(() => _isLoading = true);
     try {
       final supabase = ref.read(supabaseServiceProvider);
@@ -386,6 +452,19 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         _loadToyModel();
         _startListening();
         
+        // ── Tiempo autoritativo en servidor (30 min por defecto) ──
+        final int sessionMinutes = selected;
+        final DateTime? startedAt = await supabase.startSessionTiming(
+          session['id'].toString(),
+          sessionMinutes * 60,
+        );
+        if (startedAt != null) {
+          ref.read(sessionTimerServiceProvider).applyServerTiming(
+                startedAt: startedAt,
+                durationSeconds: sessionMinutes * 60,
+              );
+        }
+
         // Mostrar el diálogo del token automáticamente al crear
         if (mounted) _showTokenDialog();
       }
@@ -562,6 +641,8 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     return Column(
       children: [
           _buildSessionHeader(),
+          const SizedBox(height: 12),
+          _buildTimerPill(),
           const SizedBox(height: 40),
           
           // Slider Canal 1
@@ -602,6 +683,84 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
             ),
           ),
         ],
+    );
+  }
+
+  /// Selector de duración antes de crear la sesión.
+  Future<int?> _pickDuration() {
+    return showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: LvsColors.bg,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Duración de la sesión',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+            for (final minutes in const [5, 15, 30, 60])
+              ListTile(
+                leading: const Icon(Icons.timer_outlined, color: LvsColors.teal),
+                title: Text('$minutes minutos', style: const TextStyle(color: Colors.white)),
+                onTap: () => Navigator.pop(ctx, minutes),
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Pausa o reanuda la sesión (reloj en servidor + tick local).
+  Future<void> _togglePause() async {
+    if (_sessionData == null) return;
+    final supabase = ref.read(supabaseServiceProvider);
+    final timer = ref.read(sessionTimerServiceProvider);
+    final id = _sessionData!['id'].toString();
+    final status = ref.read(sessionTimerStateProvider).status;
+
+    if (status == SessionTimerStatus.running) {
+      timer.pause();
+      await supabase.pauseSessionTiming(id);
+    } else {
+      final remaining = await supabase.resumeSessionTiming(id);
+      if (remaining != null) {
+        timer.applyRemaining(remaining);
+      } else {
+        timer.resume();
+      }
+    }
+  }
+
+  Widget _buildTimerPill() {
+    final timer = ref.watch(sessionTimerStateProvider);
+    if (timer.status != SessionTimerStatus.running &&
+        timer.status != SessionTimerStatus.paused) {
+      return const SizedBox.shrink();
+    }
+    final color = timer.isWarning ? LvsColors.red : LvsColors.teal;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.timer_outlined, size: 16, color: color),
+          const SizedBox(width: 6),
+          Text(
+            timer.formattedRemaining,
+            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+        ],
+      ),
     );
   }
 

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// LVS Control · lib/ble/ble_service.dart · v2.1.0
+// LVS Control · lib/ble/ble_service_mobile.dart · v2.1.0
 // Migrado a flutter_blue_plus v2.x
 // Servicio BLE: escaneo, conexión GATT, burst mode, permisos, batería
 //
@@ -32,8 +32,6 @@ import 'package:velvet_sync/services/backend/notification_service.dart';
 // ── Provider Global para Riverpod ──────────────────────────────
 final bleProvider = ChangeNotifierProvider((ref) => BleService());
 
-
-
 // 🔒 PERFORMANCE: Clase para cola de comandos BLE
 class _QueuedCommand {
   final List<int> cmdBytes;
@@ -62,6 +60,7 @@ class BleService extends ChangeNotifier {
   // ── VARIABLES RECUPERADAS ────────────────────────────────
   Timer? _heartbeatTimer;
   Timer? _smoothingTimer;
+  Timer? _telemetryPollTimer; // Polling fallback para telemetría
   bool _demoMode = false;
   bool isBridgeModeActive = false;
   bool isTravelLockActive = false;
@@ -88,6 +87,12 @@ class BleService extends ChangeNotifier {
   int get strikeIndex => _strikeIndex;
   bool get suctionActive => _suctionActive;
   int get suctionLevel => _suctionLevel;
+
+  // ── TELEMETRÍA (Love Spouse 8154) ──────────────────────────
+  /// Presión actual del sensor Kegel (0-255)
+  int kegelPressure = 0;
+  /// Repeticiones detectadas en sesión Kegel actual
+  int kegelReps = 0;
 
   PacketMode packetMode = PacketMode.b11;
   bool isBurstActive   = false;
@@ -209,7 +214,7 @@ class BleService extends ChangeNotifier {
       stimulationType: activeToy!.stimulationType,
       motorLogic: activeToy!.motorLogic,
       imageUrl: activeToy!.imageUrl,
-      qrCodeUrl: activeToy!.qrCodeUrl, // <--- FALTANTE
+      qrCodeUrl: activeToy!.qrCodeUrl,
       supportedFuncs: activeToy!.supportedFuncs,
       isPrecise: activeToy!.isPrecise,
       broadcastPrefix: activeToy!.broadcastPrefix,
@@ -269,9 +274,9 @@ class BleService extends ChangeNotifier {
   // ── Constantes de escaneo ──────────────────────────────────
   static const _scanTimeout = Duration(seconds: 20);
 
-  // ══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════
   // PERMISOS Y FOREGROUND
-  // ══════════════════════════════════════════════════════════════
+  // ═════════════════════════════════════════════════════
   Future<bool> requestPermissions() async {
     if (Platform.isAndroid) {
       final statuses = await [
@@ -331,10 +336,9 @@ class BleService extends ChangeNotifier {
     }
   }
 
-  // ══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════
   // ESCANEO Y CONEXIÓN
-  // ══════════════════════════════════════════════════════════════
-
+  // ═════════════════════════════════════════════════
   // 🔒 PERFORMANCE: Throttling para prevenir escaneos repetitivos
   DateTime? _lastScanTime;
   static const Duration _scanCooldown = Duration(seconds: 5);
@@ -537,10 +541,16 @@ class BleService extends ChangeNotifier {
       // ── NUEVO: Confirmar hardware exitoso ──
       _hardwareConfirmed = true;
       _initNotifications();
-      batteryLevel = 100;
+      batteryLevel = 0; // Se actualizará por telemetría real (0x8A)
       _setState(BleState.connected);
       _log('✅ Handshake OK — ${toyProfile?.name ?? connectedDeviceName} vinculado. Hardware CONFIRMADO.', 'success');
       await _updateNotification('Vinculado (${connectedDevices.length}) → ${toyProfile?.name ?? connectedDeviceName}');
+
+      // ── NUEVO: Suscribirse a notificaciones GATT para telemetría (batería 0x8A, Kegel 0x8B) ──
+      _setupGattNotifications(dev);
+
+      // ── NUEVO: Iniciar polling de telemetría cada 30s como fallback ──
+      _startTelemetryPolling();
 
     } catch (e) {
       _log('❌ Error en handshake: $e', 'error');
@@ -553,14 +563,14 @@ class BleService extends ChangeNotifier {
 
   /// ── NUEVO: Mostrar Snackbar de hardware no encontrado ──
   void _showHardwareNotFoundSnackbar() {
-    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
+    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
     _log('⚠️  NO SE DETECTÓ HARDWARE FÍSICO', 'warn');
-    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
+    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
     _log('La app intentó conectarse pero el dispositivo:', 'warn');
     _log('  • Está apagado o fuera de rango', 'warn');
     _log('  • No está en modo emparejamiento', 'warn');
     _log('  • O fue un falso positivo del escaneo BLE', 'warn');
-    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
+    _log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
   }
 
   Future<void> disconnect() async {
@@ -577,6 +587,10 @@ class BleService extends ChangeNotifier {
     _smoothingTimer?.cancel();
     _stopBurst();
     _batterySub?.cancel();
+
+    // ── NUEVO: Detener polling de telemetría ──
+    _stopTelemetryPolling();
+
     characteristic = null;
     activeToy = null; // Limpiar dispositivo virtual
     activeSpeed = null;
@@ -591,12 +605,87 @@ class BleService extends ChangeNotifier {
     // ── NUEVO: Resetear confirmación de hardware ──
     _hardwareConfirmed = false;
 
+    // ── NUEVO: Cancelar suscripción a telemetría ──
+    _batterySub?.cancel();
+
     _setState(BleState.idle);
     await _updateNotification('Desconectado');
     _log('🔌 Dispositivo desconectado. Hardware no confirmado.', 'info');
   }
 
+  /// Configura suscripción a notificaciones GATT para telemetría (0x8A battery, 0x8B kegel)
+  Future<void> _setupGattNotifications(BluetoothDevice dev) async {
+    try {
+      _log('📡 Configurando notificaciones GATT para telemetría...', 'info');
+      final services = await dev.discoverServices();
 
+      for (final service in services) {
+        final serviceUuid = service.uuid.toString().toLowerCase();
+
+        // Buscar servicio FFF0 (Love Spouse) o servicios genéricos
+        if (serviceUuid.contains('fff0') || serviceUuid.contains('180f') /* Battery Service */) {
+          for (final characteristic in service.characteristics) {
+            final charUuid = characteristic.uuid.toString().toLowerCase();
+
+            // Characteristic con notify/indicate para telemetría
+            if (characteristic.properties.notify || characteristic.properties.indicate) {
+              _log('🔔 Suscribiendo a characteristic: $charUuid (service: $serviceUuid)', 'info');
+
+              // Guardar referencia para escritura
+              if (characteristic.properties.write || characteristic.properties.writeWithoutResponse) {
+                this.characteristic = characteristic;
+              }
+
+              // Suscribirse a notificaciones
+              await characteristic.setNotifyValue(true);
+
+              // Escuchar notificaciones
+              _batterySub?.cancel();
+              _batterySub = characteristic.lastValueStream.listen((value) {
+                _onGattNotification(value);
+              }, onError: (e) {
+                _log('❌ Error en stream notificaciones: $e', 'error');
+              });
+            }
+          }
+        }
+      }
+    } catch (e) {
+      _log('⚠️ Error configurando notificaciones GATT: $e', 'warn');
+    }
+  }
+
+  /// Procesa notificación GATT entrante y parsea telemetría
+  void _onGattNotification(List<int> value) {
+    if (value.isEmpty) return;
+
+    final telemetry = LvsCommands.parseTelemetry(value);
+    if (telemetry != null) {
+      final type = telemetry['type'] as String;
+
+      if (type == 'battery') {
+        final level = telemetry['level'] as int;
+        final charging = telemetry['charging'] as bool;
+
+        if (level != batteryLevel) {
+          batteryLevel = level;
+          _log('🔋 Batería: $batteryLevel% ${charging ? '(cargando)' : ''}', 'success');
+          notifyListeners();
+        }
+      } else if (type == 'kegel') {
+        final pressure = telemetry['pressure'] as int;
+        final reps = telemetry['reps'] as int;
+
+        kegelPressure = pressure;
+        kegelReps = reps;
+        _log('💪 Kegel: presión=$pressure reps=$reps', 'info');
+        notifyListeners();
+      }
+    } else {
+      // Log raw notification for debugging unknown telemetry
+      _log('📨 Notificación GATT desconocida: ${LvsCommands.bytesToHex(value)}', 'debug');
+    }
+  }
 
   // Para de emergencia: detiene burst+sequencer, bypassa mutex y para el advertising
   Future<void> emergencyStop() async {
@@ -665,10 +754,9 @@ class BleService extends ChangeNotifier {
     );
   }
 
-  // ══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════
   // ESCRITURA Y COMANDOS
-  // ══════════════════════════════════════════════════════════════
-
+  // ════════════════════════════════════════════════
   // 🔒 PERFORMANCE: Cola de comandos para evitar bloqueo UI
   final List<_QueuedCommand> _commandQueue = [];
   bool _isProcessingQueue = false;
@@ -1300,12 +1388,59 @@ class BleService extends ChangeNotifier {
     return true;
   }
 
+  /// Solicita telemetría manualmente (para dispositivos que usan polling)
+  /// Envía comando de lectura de batería (0x8A) y Kegel (0x8B)
+  Future<void> requestTelemetry() async {
+    if (state != BleState.connected) return;
+
+    _log('📡 Solicitando telemetría manual...', 'info');
+
+    try {
+      // Intentar leer characteristic con notify para forzar envío
+      // Algunos dispositivos responden a escritura en characteristic específica
+      // Por ahora enviamos comando de verificación que suele disparar telemetría
+      await writeCommand([0x00, 0x00, 0x00], label: 'REQ_TELEMETRY', silent: true);
+
+      // También intentar leer characteristic de batería si está disponible
+      if (characteristic != null && characteristic!.properties.read) {
+        try {
+          final value = await characteristic!.read();
+          _onGattNotification(value);
+        } catch (_) {}
+      }
+    } catch (e) {
+      _log('⚠️ Error solicitando telemetría: $e', 'warn');
+    }
+  }
+
+  /// Inicia polling de telemetría cada 30 segundos (fallback para dispositivos sin notify automático)
+  void _startTelemetryPolling() {
+    _stopTelemetryPolling(); // Asegurar que no haya uno previo
+    _telemetryPollTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (state == BleState.connected) {
+        _log('📡 Polling telemetría (30s)...', 'debug');
+        requestTelemetry();
+      } else {
+        _stopTelemetryPolling();
+      }
+    });
+    _log('⏱️ Polling telemetría iniciado (30s intervalo)', 'info');
+  }
+
+  /// Detiene polling de telemetría
+  void _stopTelemetryPolling() {
+    _telemetryPollTimer?.cancel();
+    _telemetryPollTimer = null;
+    _log('⏹️ Polling telemetría detenido', 'debug');
+  }
+
   @override
   void dispose() {
     _cooldownTimer?.cancel();
     _sequenceTimer?.cancel();
     _burstTimer?.cancel();
     _stopBurst();
+    _stopTelemetryPolling(); // Asegurar limpieza
     _connSub?.cancel();
     _batterySub?.cancel();
     super.dispose();

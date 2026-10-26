@@ -115,8 +115,9 @@ class _ModesTabState extends ConsumerState<ModesTab> {
     }
 
     final toy = ble.activeToy;
-    final hasDevicePatterns = toy != null && toy.patternGroups.length >= 2 &&
-        toy.patternGroups.every((g) => g.buttons.length >= 3);
+    final hasDevicePatterns = toy != null && 
+        toy.patternGroups.isNotEmpty &&
+        toy.patternGroups.any((g) => g.buttons.length >= 3);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,23 +1,19 @@
 // ═══════════════════════════════════════════════════════════════
 // Velvet Sync · lib/main.dart
-// Entrypoint unificado de la plataforma (Refactored & Robust)
+// Entrypoint unificado de la plataforma (Refactored)
 // ═══════════════════════════════════════════════════════════════
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:velvet_sync/services/backend/supabase_service.dart';
-import 'package:velvet_sync/services/backend/profile_service.dart';
-import 'package:velvet_sync/services/backend/link_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:velvet_sync/config/env.dart';
+import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/backend/sync_service.dart';
+import 'package:velvet_sync/services/backend/link_service.dart';
 import 'package:velvet_sync/services/ai/ai_hardware_bridge_service.dart';
-import 'package:velvet_sync/services/ble/ble_service.dart';
-import 'package:velvet_sync/services/backend/auth_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
-import 'package:velvet_sync/screens/auth_screen.dart';
 import 'package:velvet_sync/screens/main_navigation.dart';
-import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,27 +24,24 @@ void main() async {
   
   lvsLog('Iniciando Velvet Sync App...', tag: 'APP');
 
-  // 2. Cargar variables de entorno
-  try {
-    await dotenv.load(fileName: '.env');
-    lvsLog('Variables de entorno cargadas', tag: 'APP');
-  } catch (e) {
-    lvsError('Error crítico cargando .env: $e', tag: 'APP');
-    // Continuamos pero los servicios fallarán si dependen de .env
-  }
-
-  // 3. Inicializar Supabase (servicio unificado)
-  try {
-    final supabaseService = SupabaseService();
-    await supabaseService.initialize();
-
-    final auth = supabaseService.client.auth;
-    if (auth.currentUser == null) {
-      await auth.signInAnonymously();
-      lvsLog('Usuario anónimo autenticado', tag: 'APP');
+  // 2. Inicializar Supabase Temprano
+  if (AppEnv.hasSupabase) {
+    try {
+      await Supabase.initialize(
+        url: AppEnv.supabaseUrl,
+        anonKey: AppEnv.supabaseAnonKey,
+        realtimeClientOptions: const RealtimeClientOptions(eventsPerSecond: 10),
+      );
+      lvsLog('Supabase inicializado en main()', tag: 'APP');
+    } catch (e) {
+      if (e.toString().contains('already been initialized')) {
+        lvsLog('Supabase ya estaba inicializado', tag: 'APP');
+      } else {
+        lvsError('Fallo inicialización Supabase en main: $e', tag: 'APP');
+      }
     }
-  } catch (e) {
-    lvsError('Fallo inicialización Supabase en main: $e', tag: 'APP');
+  } else {
+    lvsLog('Supabase sin configurar (--dart-define-from-file); modo offline', tag: 'APP');
   }
 
   runApp(
@@ -75,7 +68,7 @@ class VelvetSyncApp extends ConsumerWidget {
     final baseTheme = ThemeData(
       brightness: brightness,
       scaffoldBackgroundColor: const Color(0xFF0D0D12),
-      fontFamily: 'Outfit',
+      fontFamily: 'Outfit', // Fuente local en assets/fonts/
     );
     return baseTheme.copyWith(
       colorScheme: ColorScheme.fromSeed(
@@ -94,8 +87,6 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-  String _statusMessage = 'Inicializando core services...';
-
   @override
   void initState() {
     super.initState();
@@ -103,125 +94,54 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _initApp() async {
+    lvsLog('Inicializando core services...', tag: 'APP');
+    
     try {
-      // 1. Inicializar LinkService
-      setState(() => _statusMessage = 'Preparando Deep Links...');
-      await ref.read(linkServiceProvider).init().timeout(const Duration(seconds: 3));
+      // 1. Inicializar LinkService (con timeout)
+      await LinkService().init().timeout(const Duration(seconds: 3), onTimeout: () {
+        lvsLog('LinkService timeout', tag: 'APP');
+      });
       
       if (!mounted) return;
 
-      // 2. Cargar BleService
-      setState(() => _statusMessage = 'Configurando Bluetooth...');
+      // 2. Cargar BleService (síncrono)
       final bleService = ref.read(bleProvider);
-      await bleService.initSecurity();
       
-      // 3. Inicializar SyncService (Supabase Realtime)
-      setState(() => _statusMessage = 'Conectando con la nube...');
-      await ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 5));
+      // 3. Inicializar SyncService (con timeout)
+      await ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 4), onTimeout: () {
+        lvsLog('SyncService timeout', tag: 'APP');
+      });
       
-      if (!mounted) return;
-
       // 4. Inicializar AI Hardware Bridge
-      setState(() => _statusMessage = 'Activando Puente de IA...');
       final aiBridge = ref.read(aiHardwareBridgeProvider);
       await aiBridge.init(
         bleService: bleService,
         syncService: ref.read(syncServiceProvider),
-      ).timeout(const Duration(seconds: 3));
-
-      // 5. Cargar perfil de usuario
-      setState(() => _statusMessage = 'Cargando perfil...');
-      final profileService = ref.read(profileServiceProvider);
-      await profileService.loadCachedProfile();
+      ).timeout(const Duration(seconds: 3), onTimeout: () {
+        lvsLog('AI Bridge timeout', tag: 'APP');
+      });
 
     } catch (e) {
-      lvsError('Error en inicialización: $e', tag: 'APP');
-      setState(() {
-        _statusMessage = 'Error en algunos servicios. Continuando...';
-      });
-      await Future.delayed(const Duration(seconds: 1));
+      lvsError('Error silencioso en inicialización: $e', tag: 'APP');
     }
     
+    lvsLog('App inicializada correctamente o por timeout', tag: 'APP');
+      
     if (mounted) {
-      setState(() => _statusMessage = '¡Todo listo!');
-      await Future.delayed(const Duration(seconds: 1));
+      // Tiempo mínimo de Splash para ver el logo
+      await Future.delayed(const Duration(seconds: 2));
       if (!mounted) return;
-
-      final auth = ref.read(authServiceProvider);
-      final prefs = await SharedPreferences.getInstance();
-      final hasEmail = auth.email != null;
-      final skipAuth = prefs.getBool('skip_auth') ?? false;
-
-      if (!hasEmail && !skipAuth) {
-        if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => AuthScreen(
-              onSkip: () async {
-                final prefs2 = await SharedPreferences.getInstance();
-                await prefs2.setBool('skip_auth', true);
-                if (!mounted) return;
-                if (!context.mounted) return;
-                Navigator.of(context).pushReplacement(
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => _getPostAuthScreen(),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                    transitionDuration: const Duration(milliseconds: 800),
-                  ),
-                );
-              },
-              onAuthenticated: () async {
-                if (!mounted) return;
-                if (!context.mounted) return;
-                Navigator.of(context).pushReplacement(
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => _getPostAuthScreen(),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                    transitionDuration: const Duration(milliseconds: 800),
-                  ),
-                );
-              },
-            ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      } else {
-        if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => _getPostAuthScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      }
+      
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const MainNavigation(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          transitionDuration: const Duration(milliseconds: 800),
+        ),
+      );
     }
-  }
-
-  Widget _getPostAuthScreen() {
-    final auth = ref.read(authServiceProvider);
-    final profileService = ref.read(profileServiceProvider);
-    final hasEmail = auth.email != null;
-
-    if (hasEmail) {
-      profileService.updateLastSeen();
-      return const MainNavigation();
-    }
-
-    final needsProfile = profileService.myProfile == null;
-    if (!needsProfile) {
-      profileService.updateLastSeen();
-    }
-    return needsProfile ? const MyProfileScreen() : const MainNavigation();
   }
 
   @override
@@ -231,6 +151,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // ── Logo Central ──────────────────────────────────────────
             Image.asset(
               'assets/images/logo_neon.png',
               height: 180,
@@ -241,6 +162,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ),
             ),
             const SizedBox(height: 32),
+            // ── Nombre de la App ──────────────────────────────────────
             const Text(
               'VELVET SYNC',
               style: TextStyle(
@@ -251,19 +173,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ),
             ),
             const SizedBox(height: 40),
-            Text(
-              _statusMessage,
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.7),
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 20),
+            // ── Indicador de Carga ────────────────────────────────────
             const SizedBox(
               width: 30,
               height: 30,
               child: CircularProgressIndicator(
-                strokeWidth: 2,
+                strokeWidth: 2.5,
                 color: Color(0xFFE91E63),
               ),
             ),
@@ -292,7 +207,7 @@ class DebugDashboard extends ConsumerWidget {
           const SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: () {
-              // Navegar al catálogo
+              // Navegar al catálogo web o local
             },
             icon: const Icon(Icons.explore),
             label: const Text('Open Device Catalog'),
@@ -317,10 +232,7 @@ class DebugDashboard extends ConsumerWidget {
         title: Text(title),
         trailing: Text(
           status.toUpperCase(),
-          style: TextStyle(
-            fontWeight: FontWeight.bold, 
-            color: status.toLowerCase() == 'error' ? Colors.red : Colors.blue
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
         ),
       ),
     );

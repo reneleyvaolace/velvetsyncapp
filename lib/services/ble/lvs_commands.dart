@@ -317,6 +317,48 @@ class LvsCommands {
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase()).join(' ');
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  // TELEMETRÍA (Love Spouse 8154)
+  // ═══════════════════════════════════════════════════════════════
+  /// Telemetría de Batería: 0x8A
+  /// Formato: [0x8A, level(0-100), charging(0/1), checksum]
+  static const int telemetryBatteryCmd = 0x8A;
+
+  /// Telemetría de Kegel: 0x8B
+  /// Formato: [0x8B, pressure(0-255), reps, checksum]
+  static const int telemetryKegelCmd = 0x8B;
+
+  /// Parsea notificación de telemetría entrante
+  /// Retorna mapa con tipo y datos, o null si no es telemetría conocida
+  static Map<String, dynamic>? parseTelemetry(List<int> bytes) {
+    if (bytes.isEmpty) return null;
+
+    final cmd = bytes[0];
+    switch (cmd) {
+      case telemetryBatteryCmd:
+        if (bytes.length >= 3) {
+          return {
+            'type': 'battery',
+            'level': bytes[1].clamp(0, 100),
+            'charging': bytes.length > 2 ? bytes[2] == 1 : false,
+            'raw': bytes,
+          };
+        }
+        break;
+      case telemetryKegelCmd:
+        if (bytes.length >= 3) {
+          return {
+            'type': 'kegel',
+            'pressure': bytes[1],
+            'reps': bytes.length > 2 ? bytes[2] : 0,
+            'raw': bytes,
+          };
+        }
+        break;
+    }
+    return null;
+  }
+
   // ── Presets para el modo debug (b0, b1, b2 conocido) ────────
   static const Map<SpeedLevel, Map<String, int>> debugPresets = {
     SpeedLevel.stop:   {'b0': 0xE5, 'b1': 0x15, 'b2': 0x7D},

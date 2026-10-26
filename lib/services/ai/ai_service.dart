@@ -4,12 +4,10 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/config/env.dart';
+import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
@@ -24,30 +22,53 @@ class AiResponse {
 
 class AiService {
   final BleService bleService;
-  final SupabaseClient supabase = Supabase.instance.client;
 
   Timer? _autoStopTimer;
 
   AiService(this.bleService);
 
-  /// Envía un mensaje a la IA
-  /// Usa OpenRouter como proveedor principal
+  /// Envía un mensaje a la IA a través de la Edge Function `ai-proxy`.
+  /// La clave de OpenRouter nunca sale del servidor.
   Future<AiResponse> sendMessage(String text) async {
+    final message = text.trim();
+    if (message.isEmpty) {
+      return AiResponse('Escríbeme algo y te respondo... [H:0,0]', 0, 0, provider: 'local');
+    }
+
     try {
-      lvsLog('OpenRouter: Iniciando petición: "$text"', tag: 'AI');
-      // Usar DIRECTAMENTE OpenRouter (sin Supabase)
-      return await _callOpenRouter(text);
-
-    } catch (e) {
-      lvsLog('OpenRouter error: $e', tag: 'AI');
-
-      // Si es timeout, mostrar mensaje especial
-      if (e is TimeoutException) {
-        return AiResponse('⏰ Timeout: OpenRouter no respondió en 20s. Verifica tu conexión.', 0, 0, provider: 'timeout');
+      lvsLog('AI proxy: enviando ${message.length} caracteres', tag: 'AI');
+      return await _callAiProxy(message);
+    } on TimeoutException {
+      lvsLog('AI proxy: timeout', tag: 'AI');
+      return AiResponse(
+        '⏰ La IA no respondió a tiempo. Intenta de nuevo. [H:0,0]',
+        0,
+        0,
+        provider: 'timeout',
+      );
+    } on FunctionException catch (e) {
+      // No registramos el cuerpo del error: puede contener detalles del proveedor.
+      lvsLog('AI proxy: FunctionException (${e.status})', tag: 'AI');
+      if (e.status == 429) {
+        return AiResponse(
+          'Estoy recibiendo muchos mensajes... dame un momento. [H:0,0]',
+          0,
+          0,
+          provider: 'rate_limited',
+        );
       }
-
-      // Fallback local
-      return _getFallbackResponse(text);
+      if (e.status == 401 || e.status == 403) {
+        return AiResponse(
+          '⚠️ Sesión no autorizada para usar la IA. [H:0,0]',
+          0,
+          0,
+          provider: 'unauthorized',
+        );
+      }
+      return _getFallbackResponse(message);
+    } catch (e) {
+      lvsLog('AI proxy error: ${e.runtimeType}', tag: 'AI');
+      return _getFallbackResponse(message);
     }
   }
 
@@ -62,86 +83,34 @@ class AiService {
     return AiResponse(parsed.text, parsed.motor1, parsed.motor2, provider: provider);
   }
 
-  Future<AiResponse> _callOpenRouter(String text) async {
-    try {
-      final apiKey = dotenv.env['OPENROUTER_API_KEY'];
+  Future<AiResponse> _callAiProxy(String text) async {
+    if (!AppEnv.hasSupabase) {
+      lvsLog('AI proxy: Supabase no configurado', tag: 'AI');
+      return AiResponse(
+        '⚠️ IA no configurada: falta SUPABASE_URL/SUPABASE_ANON_KEY. [H:0,0]',
+        0,
+        0,
+        provider: 'offline',
+      );
+    }
 
-      // 🔒 SECURITY: Validate API key without logging sensitive information
-      if (apiKey == null || apiKey.isEmpty) {
-        lvsLog('OpenRouter: API Key no configurada en .env', tag: 'AI');
-        return AiResponse('⚠️ API Key no configurada. Agrega OPENROUTER_API_KEY en tu archivo .env', 0, 0, provider: 'no_key');
-      }
+    final response = await Supabase.instance.client.functions
+        .invoke(
+          AppEnv.aiProxyFunction,
+          body: {'message': text},
+        )
+        .timeout(const Duration(seconds: 25));
 
-      lvsLog('OpenRouter: Enviando petición...', tag: 'AI');
-      lvsLog('OpenRouter: Mensaje = "$text"', tag: 'AI');
-      lvsLog('OpenRouter: URL = openrouter.ai/api/v1/chat/completions', tag: 'AI');
+    final data = response.data;
+    final aiText = data is Map ? data['text']?.toString() : null;
 
-      final response = await http.post(
-        Uri.parse('https://openrouter.ai/api/v1/chat/completions'),
-        headers: {
-          'Authorization': 'Bearer $apiKey',
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://velvetsync.app',
-          'X-Title': 'Velvet Sync Companion',
-        },
-        body: json.encode({
-          // Probar con modelo gratuito disponible (Google Gemma)
-          'model': 'google/gemma-7b-it:free',
-          'messages': [
-            {
-              'role': 'system',
-              'content': 'Eres Velvet, una compañera digital cariñosa y juguetona. Responde de forma breve (1-2 frases), coqueta y sugerente. IMPORTANTE: Siempre incluye tags [H:m1,m2] al final donde m1 y m2 son valores 0-255 para intensidad de motores según la emoción. Ejemplos: "Me encanta... [H:80,90]" o "Qué travieso... [H:60,70]" o "Mmm... [H:0,0]" si es suave.',
-            },
-            {
-              'role': 'user',
-              'content': text,
-            },
-          ],
-          'max_tokens': 80,
-        }),
-      ).timeout(const Duration(seconds: 20), onTimeout: () {
-        lvsLog('OpenRouter: TIMEOUT 20s', tag: 'AI');
-        throw TimeoutException('OpenRouter timeout');
-      });
-
-      lvsLog('OpenRouter: HTTP Status = ${response.statusCode}', tag: 'AI');
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final aiText = data['choices']?[0]?['message']?['content'] ?? '';
-
-        lvsLog('OpenRouter: Respuesta raw = "$aiText"', tag: 'AI');
-
-        if (aiText.isEmpty) {
-          lvsLog('OpenRouter: Respuesta vacía', tag: 'AI');
-          return _getFallbackResponse(text);
-        }
-
-        lvsLog('OpenRouter: Éxito', tag: 'AI');
-        return _handleSuccess(aiText, 'openrouter');
-      }
-
-      // Log del error completo
-      lvsLog('OpenRouter: Error ${response.statusCode}', tag: 'AI');
-      lvsLog('OpenRouter: Body = ${response.body}', tag: 'AI');
-      throw Exception('OpenRouter error ${response.statusCode}');
-
-    } catch (e) {
-      lvsLog('OpenRouter falló: $e', tag: 'AI');
-
-      // Si es timeout, agregar mensaje especial
-      if (e is TimeoutException) {
-        return AiResponse('⏰ Timeout: OpenRouter no respondió en 20s. Verifica tu conexión.', 0, 0, provider: 'timeout');
-      }
-
-      // Si es error HTTP, mostrar código
-      if (e.toString().contains('404')) {
-        return AiResponse('❌ Error 404: API Key inválida o endpoint no existe. Verifica tu API Key en openrouter.ai', 0, 0, provider: 'error_404');
-      }
-
-      // Fallback local
+    if (aiText == null || aiText.isEmpty) {
+      lvsLog('AI proxy: respuesta vacía', tag: 'AI');
       return _getFallbackResponse(text);
     }
+
+    lvsLog('AI proxy: respuesta OK (${aiText.length} caracteres)', tag: 'AI');
+    return _handleSuccess(aiText, 'openrouter');
   }
 
   AiResponse _getFallbackResponse(String originalText) {

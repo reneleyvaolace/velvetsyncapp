@@ -1,7 +1,7 @@
 # Velvet Sync — Flutter App
 ## Guía de Instalación y Compilación
 
-> **Versión:** 1.4.0+1 | **Plataforma:** Velvet Sync AI-Powered | **Protocolo:** Love Spouse 8154 (wbMSE) | **BLE + Background**
+> **Versión:** 1.4.0 | **Plataforma:** Velvet Sync AI-Powered | **Protocolo:** Love Spouse 8154 (wbMSE) | **BLE + Background**
 
 ---
 
@@ -25,14 +25,7 @@ https://developer.android.com/studio
 - Instalar **Android SDK Build-Tools 34**
 - Instalar **Android Emulator** (opcional, BLE solo funciona en dispositivo real)
 
-### 3 · Configurar variables de entorno
-Crea un archivo `.env` en la raíz del proyecto basado en `.env.example`:
-```powershell
-cp .env.example .env
-# Luego edita .env con tus credenciales de Supabase
-```
-
-### 4 · Verificar entorno
+### 3 · Verificar entorno
 ```powershell
 flutter doctor -v
 # Debe mostrar ✓ en Flutter, Android toolchain, y Android Studio
@@ -40,33 +33,60 @@ flutter doctor -v
 
 ---
 
+## 🔐 Configuración (sin secretos en el cliente)
+
+La app solo recibe la URL y la `anon key` de Supabase en tiempo de compilación.
+La clave de OpenRouter **no** se incluye en el APK: vive en Supabase Secrets y
+la usa la Edge Function `ai-proxy`.
+
+```powershell
+Copy-Item env.example.json env.json
+# Edita env.json con tu SUPABASE_URL y SUPABASE_ANON_KEY
+```
+
+`env.json` está en `.gitignore`. Nunca agregues `OPENROUTER_API_KEY`,
+`service_role` ni otras claves privadas a este archivo.
+
+### Desplegar la Edge Function (una vez)
+
+```powershell
+supabase login
+supabase link --project-ref <project-ref>
+supabase secrets set OPENROUTER_API_KEY=<tu-clave> --project-ref <project-ref>
+supabase secrets set OPENROUTER_MODEL=google/gemma-4-26b-a4b-it:free --project-ref <project-ref>
+supabase functions deploy ai-proxy --project-ref <project-ref>
+```
+
+Si faltan `SUPABASE_URL`/`SUPABASE_ANON_KEY`, la app arranca en modo offline
+(catálogo y sesiones remotas deshabilitados, BLE local sigue funcionando).
+
+---
+
 ## 🚀 Compilar y ejecutar
 
 ### Instalar dependencias
 ```powershell
-cd c:\Proyectos\velvet-sync
+cd c:\Proyectos\lvs-flutter
 flutter pub get
 ```
 
-### Ejecutar con Flavors (Entornos)
+### Ejecutar en dispositivo Android (modo depuración)
 ```powershell
-# Desarrollo (Paquete: com.velvetsync.app.dev)
-flutter run --flavor dev
-
-# Producción (Paquete: com.velvetsync.app)
-flutter run --flavor prod
+# Conectar tu teléfono Android con USB y activar:
+# Ajustes → Opciones de desarrollador → Depuración USB
+flutter devices          # Ver dispositivos disponibles
+flutter run --dart-define-from-file=env.json
 ```
 
-### Compilar APK de release
+### Compilar APK de release (para instalar directamente)
 ```powershell
-# Es necesario especificar el flavor prod para la versión final
-flutter build apk --flavor prod --release
-# Salida: build/app/outputs/flutter-apk/app-prod-release.apk
+flutter build apk --release --dart-define-from-file=env.json
+# Salida: build/app/outputs/flutter-apk/app-release.apk
 ```
 
 ### Compilar AAB para Google Play
 ```powershell
-flutter build appbundle --flavor prod --release
+flutter build appbundle --release --dart-define-from-file=env.json
 ```
 
 ### iOS (requiere macOS + Xcode)
@@ -88,21 +108,21 @@ El app usa `flutter_foreground_task` que lanza un **Foreground Service** con una
 App → Background → Sistema intenta matar proceso
                    ↓
                ForegroundService activo
-               "Velvet Sync activo • wbMSE/8154"  [notificación]
+               "LVS Control activo • wbMSE/8154"  [notificación]
                    ↓
            Proceso continúa → BLE sigue enviando comandos
 ```
 
 **Permisos Android configurados:**
- Permiso | Propósito | SDK |
----|---|---|
- `BLUETOOTH_SCAN` | Escanear dispositivos BLE | API 31+ |
- `BLUETOOTH_CONNECT` | Conectar/escribir GATT | API 31+ |
- `BLUETOOTH` + `BLUETOOTH_ADMIN` | Compatibilidad API ≤30 | API ≤30 |
- `FOREGROUND_SERVICE` | Servicio en segundo plano | Todos |
- `FOREGROUND_SERVICE_CONNECTED_DEVICE` | Tipo específico BLE BG | API 34+ |
- `WAKE_LOCK` | Evitar sleep durante burst | Todos |
- `POST_NOTIFICATIONS` | Notificación del servicio | API 33+ |
+| Permiso | Propósito | SDK |
+|---|---|---|
+| `BLUETOOTH_SCAN` | Escanear dispositivos BLE | API 31+ |
+| `BLUETOOTH_CONNECT` | Conectar/escribir GATT | API 31+ |
+| `BLUETOOTH` + `BLUETOOTH_ADMIN` | Compatibilidad API ≤30 | API ≤30 |
+| `FOREGROUND_SERVICE` | Servicio en segundo plano | Todos |
+| `FOREGROUND_SERVICE_CONNECTED_DEVICE` | Tipo específico BLE BG | API 34+ |
+| `WAKE_LOCK` | Evitar sleep durante burst | Todos |
+| `POST_NOTIFICATIONS` | Notificación del servicio | API 33+ |
 
 ### iOS — bluetooth-central Background Mode
 En `Info.plist` se declara `UIBackgroundModes: [bluetooth-central]`. Esto instriye a iOS para que CoreBluetooth pueda:
@@ -117,27 +137,24 @@ En `Info.plist` se declara `UIBackgroundModes: [bluetooth-central]`. Esto instri
 ## 📁 Estructura del proyecto
 
 ```
-c:\Proyectos\velvet-sync\
+c:\Proyectos\lvs-flutter\
 ├── lib/
-│   ├── main.dart              # Entrypoint + Inicialización (Riverpod)
-│   ├── theme.dart             # Sistema de diseño (Outfit font, ThemeData)
-│   ├── services/
-│   │   ├── ble/               # BLE: scanning, GATT, lvs_commands
-│   │   ├── backend/           # SyncService & LinkService (Supabase)
-│   │   └── ai/                # AI Hardware Bridge Service
-│   ├── providers/             # Riverpod providers (State management)
-│   ├── screens/               # UI: Home, Navigation, Debug, Settings
-│   └── utils/                 # Logger, Helpers, Constants
-├── assets/                    # .env, Fuentes, Iconos, Imágenes
-├── directivas/                # Guías de diseño, desarrollo y procesos
+│   ├── main.dart              # Entrypoint + ForegroundTask handler
+│   ├── theme.dart             # Sistema de diseño (colores, ThemeData)
+│   ├── ble/
+│   │   ├── ble_service.dart   # BLE: scan, GATT, burst, permisos
+│   │   └── lvs_commands.dart  # Protocolo: comandos, paquetes 11B/18B
+│   └── screens/
+│       ├── home_screen.dart   # Pantalla principal
+│       └── debug_screen.dart  # Modo depuración: barrido byte 2
 ├── android/
 │   ├── app/
-│   │   ├── build.gradle.kts   # Configuración de minSdk, flavors y firma
+│   │   ├── build.gradle       # minSdk 21, targetSdk 34
 │   │   └── src/main/
 │   │       ├── AndroidManifest.xml   ← PERMISOS BLE COMPLETOS
-│   │       └── kotlin/com/velvetsync/app/
+│   │       └── kotlin/com/lvs/control/
 │   │           └── MainActivity.kt
-│   └── build.gradle.kts
+│   └── build.gradle
 ├── ios/
 │   └── Runner/
 │       └── Info.plist         ← BACKGROUND MODE bluetooth-central
@@ -154,7 +171,7 @@ c:\Proyectos\velvet-sync\
 ```
 **Causa:** Android 12+ requiere solicitar permisos en tiempo de ejecución.  
 **Solución:** El app ya lo hace automáticamente al tocar "Escanear". Si persiste, ve a:
-`Ajustes → Apps → Velvet Sync → Permisos → Bluetooth → Permitir`
+`Ajustes → Apps → LVS Control → Permisos → Bluetooth → Permitir`
 
 ### No encuentra el dispositivo wbMSE
 1. Asegúrate que el dispositivo esté encendido y en modo pairing (LED parpadeando)
@@ -162,28 +179,26 @@ c:\Proyectos\velvet-sync\
 3. Intenta olvidar el dispositivo en Bluetooth del sistema y volver a escanear desde la app
 
 ### App se desconecta en background (Android)
-- Confirmar que la notificación "Velvet Sync activo" esté visible en la barra de notificaciones
-- `Ajustes → Batería → Velvet Sync → Sin restricciones`
+- Confirmar que la notificación "LVS Control activo" esté visible en la barra de notificaciones
+- `Ajustes → Batería → LVS Control → Sin restricciones`
 - Si usas un fabricante con RAM agresiva (Xiaomi, Huawei, Samsung), agregar la app a la lista blanca de batería
 
 ### Compilación falla: "flutter_foreground_task requires minSdkVersion >= 21"
 ```powershell
-# Verificar que android/app/build.gradle.kts tenga:
-minSdk = 21 (o flutter.minSdkVersion configurado correctamente)
+# Verificar que android/app/build.gradle tenga:
+minSdkVersion 21
 ```
 
 ---
 
 ## 📦 Dependencias principales
 
- Paquete | Versión | Propósito |
----|---|---|
- `flutter_blue_plus` | ^2.2.1 | BLE scanning y GATT |
- `permission_handler` | ^12.0.1 | Permisos de runtime |
- `flutter_foreground_task` | ^9.2.1 | Servicio Android en background |
- `sensors_plus` | ^7.0.0 | Acelerómetro (Shake Mode) |
- `flutter_riverpod` | ^2.6.1 | State management (moderno) |
- `supabase_flutter` | ^2.12.0 | Backend, Auth y Realtime |
- `just_audio` | ^0.9.46 | Motor de audio y efectos |
- `shared_preferences` | ^2.3.3 | Persistencia de ajustes locales |
- `wakelock_plus` | ^1.4.0 | Prevenir sleep durante sesiones activas |
+| Paquete | Versión | Propósito |
+|---|---|---|
+| `flutter_blue_plus` | ^1.34.4 | BLE scanning y GATT |
+| `permission_handler` | ^11.3.1 | Permisos de runtime |
+| `flutter_foreground_task` | ^8.11.0 | Servicio Android en background |
+| `sensors_plus` | ^5.0.1 | Acelerómetro (Shake Mode) |
+| `provider` | ^6.1.2 | State management |
+| `shared_preferences` | ^2.3.2 | Persistencia de ajustes |
+| `wakelock_plus` | ^1.2.8 | Prevenir sleep durante debug |
