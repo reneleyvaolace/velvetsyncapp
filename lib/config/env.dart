@@ -1,18 +1,17 @@
 // ═══════════════════════════════════════════════════════════════
 // Velvet Sync · lib/config/env.dart
-// Configuración de compilación (--dart-define / env.json)
+// Configuración de entorno (env.json via flutter_dotenv)
 // ═══════════════════════════════════════════════════════════════
-
-/// Valores inyectados en tiempo de compilación.
+/// Valores cargados desde env.json via flutter_dotenv en runtime.
 ///
-/// Nunca incluir aquí secretos de servidores: el valor de una
-/// `String.fromEnvironment` viaja dentro del binario. Solo se admiten
-/// la URL del proyecto y la clave anon (pública por diseño) de Supabase.
+/// Requiere llamar `await dotenv.load(fileName: "env.json")` antes de usar.
+/// Usar `dotenv.env['KEY']` directamente o los getters de esta clase.
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppEnv {
-  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-  static const String aiProxyFunction =
-      String.fromEnvironment('AI_PROXY_FUNCTION', defaultValue: 'ai-proxy');
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+  static String get aiProxyFunction => dotenv.env['AI_PROXY_FUNCTION'] ?? 'ai-proxy';
 
   static bool get hasSupabase => supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 }

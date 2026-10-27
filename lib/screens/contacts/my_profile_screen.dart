@@ -1,17 +1,18 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvet_sync/services/backend/profile_service.dart';
-import 'package:velvet_sync/services/backend/auth_service.dart'
-import 'package:velvet_sync/devices/models/user_profile.dart'
-import 'package:velvet_sync/types/result_types.dart'
-import 'package:velvet_sync/theme.dart'
-import 'package:velvet_sync/screens/main_navigation.dart'
-import 'package:velvet_sync/screens/auth_screen.dart'
-import 'package:velvet_sync/utils/logger.dart'
+import 'package:velvet_sync/services/backend/auth_service.dart';
+import 'package:velvet_sync/devices/models/user_profile.dart';
+import 'package:velvet_sync/types/result_types.dart';
+import 'package:velvet_sync/theme.dart';
+import 'package:velvet_sync/screens/main_navigation.dart';
+import 'package:velvet_sync/screens/auth_screen.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 class MyProfileScreen extends ConsumerStatefulWidget {
   const MyProfileScreen({super.key});

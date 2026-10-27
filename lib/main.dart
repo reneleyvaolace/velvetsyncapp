@@ -24,18 +24,25 @@ import 'package:velvet_sync/screens/auth_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // 1. Inicializar Logger
+  // 1. Cargar variables de entorno desde env.json
+  await dotenv.load(fileName: "env.json");
+  
+  // 2. Inicializar Logger
   final logger = Logger();
   await logger.initFileLogging();
   
   lvsLog('Iniciando Velvet Sync App...', tag: 'APP');
 
-  // 2. Inicializar Supabase Temprano
-  if (AppEnv.hasSupabase) {
+  // 3. Inicializar Supabase Temprano
+  // Usar valores de dotenv (cargados desde env.json)
+  final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+  
+  if (supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty) {
     try {
       await Supabase.initialize(
-        url: AppEnv.supabaseUrl,
-        anonKey: AppEnv.supabaseAnonKey,
+        url: supabaseUrl,
+        anonKey: supabaseAnonKey,
         realtimeClientOptions: const RealtimeClientOptions(eventsPerSecond: 10),
       );
       lvsLog('Supabase inicializado en main()', tag: 'APP');
@@ -47,7 +54,7 @@ void main() async {
       }
     }
   } else {
-    lvsLog('Supabase sin configurar (--dart-define-from-file); modo offline', tag: 'APP');
+    lvsLog('Supabase sin configurar (falta env.json); modo offline', tag: 'APP');
   }
 
   runApp(
@@ -274,7 +281,7 @@ class DebugDashboard extends ConsumerWidget {
         leading: Icon(icon),
         title: Text(title),
         trailing: Text(
-          status.toUpperCASE(),
+          status.toUpperCase(),
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
         ),
       ),

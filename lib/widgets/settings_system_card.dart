@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/services/session/session_timer_service.dart';
-import 'package:velvet_sync/screens/backup_screen.dart';
 import 'package:velvet_sync/theme.dart';
 
 class SettingsSystemCard extends ConsumerWidget {
@@ -26,8 +25,8 @@ class SettingsSystemCard extends ConsumerWidget {
             const Divider(height: 32, color: Colors.white10),
             _DemoModeOption(),
             const Divider(height: 32, color: Colors.white10),
-            const _CloudBackupOption(),
-            const Divider(height: 32, color: Colors.white10),
+            // const _CloudBackupOption(),
+            // const Divider(height: 32, color: Colors.white10),
             const _FirmwareUpdateOption(),
           ],
         ),
@@ -396,36 +395,36 @@ class _DemoModeOption extends ConsumerWidget {
   }
 }
 
-class _CloudBackupOption extends StatelessWidget {
-  const _CloudBackupOption();
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BackupScreen())),
-      borderRadius: BorderRadius.circular(8),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            Icon(Icons.cloud_upload, color: LvsColors.teal, size: 38),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('RESPALDO EN NUBE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-                  SizedBox(height: 2),
-                  Text('Sincronizar perfiles y ritmos', style: TextStyle(fontSize: 9, color: LvsColors.text3)),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right, color: Colors.white24, size: 18),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// class _CloudBackupOption extends StatelessWidget {
+//   const _CloudBackupOption();
+//   @override
+//   Widget build(BuildContext context) {
+//     return InkWell(
+//       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BackupScreen())),
+//       borderRadius: BorderRadius.circular(8),
+//       child: const Padding(
+//         padding: EdgeInsets.symmetric(vertical: 8),
+//         child: Row(
+//           children: [
+//             Icon(Icons.cloud_upload, color: LvsColors.teal, size: 38),
+//             SizedBox(width: 16),
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Text('RESPALDO EN NUBE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+//                   SizedBox(height: 2),
+//                   Text('Sincronizar perfiles y ritmos', style: TextStyle(fontSize: 9, color: LvsColors.text3)),
+//                 ],
+//               ),
+//             ),
+//             Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class _FirmwareUpdateOption extends StatelessWidget {
   const _FirmwareUpdateOption();
