@@ -10,6 +10,9 @@ import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
 import 'package:velvet_sync/screens/catalog_screen.dart';
 import 'package:velvet_sync/screens/qr_scanner_screen.dart';
+import 'package:velvet_sync/services/audio/audio_reactive_service.dart';
+import 'package:velvet_sync/services/sensors/sensors_service.dart';
+import 'package:velvet_sync/utils/logger.dart';
 
 
 class ControlTab extends ConsumerWidget {
@@ -759,7 +762,35 @@ class ControlTab extends ConsumerWidget {
             shadowColor: LvsColors.red.withValues(alpha: 0.4),
           ),
         ),
-        
+
+        const SizedBox(height: 24),
+
+        // Audio Reactivo + Sensores
+        if (ble.isConnected) ...[
+          Row(
+            children: [
+              Expanded(
+                child: _FeatureToggleBtn(
+                  label: 'AUDIO REACTIVO',
+                  icon: Icons.graphic_eq,
+                  color: LvsColors.pink,
+                  onTap: () => _toggleAudioReactive(ref, ble),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _FeatureToggleBtn(
+                  label: 'SENSORES',
+                  icon: Icons.sensors,
+                  color: LvsColors.teal,
+                  onTap: () => _toggleSensors(ref, ble),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+        ],
+
         const SizedBox(height: 32),
         
         SliderTheme(
@@ -936,6 +967,88 @@ class _StatusIcon extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Botón toggle para features
+// ═══════════════════════════════════════════════════════════════
+class _FeatureToggleBtn extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _FeatureToggleBtn({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  State<_FeatureToggleBtn> createState() => _FeatureToggleBtnState();
+}
+
+class _FeatureToggleBtnState extends State<_FeatureToggleBtn>
+    with SingleTickerProviderStateMixin {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) => setState(() => _pressed = false),
+      onTapCancel: () => setState(() => _pressed = false),
+      onTap: widget.onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        decoration: BoxDecoration(
+          color: _pressed ? widget.color.withValues(alpha: 0.25) : widget.color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: widget.color.withValues(alpha: 0.4), width: 1.2),
+          boxShadow: _pressed
+              ? [BoxShadow(color: widget.color.withValues(alpha: 0.3), blurRadius: 16, spreadRadius: 2)]
+              : [],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(widget.icon, size: 20, color: widget.color),
+            const SizedBox(width: 8),
+            Text(widget.label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.2, color: widget.color)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Helpers para Audio Reactivo y Sensores
+// ═══════════════════════════════════════════════════════════════
+extension _ControlTabExtensions on ControlTab {
+  void _toggleAudioReactive(WidgetRef ref, BleService ble) {
+    final service = ref.read(audioReactiveServiceProvider);
+    if (service.isActive) {
+      service.stop();
+      lvsLog('🔇 Audio reactivo apagado', tag: 'UI');
+    } else {
+      service.initialize().then((_) => service.start());
+      lvsLog('🎵 Audio reactivo encendido', tag: 'UI');
+    }
+  }
+
+  void _toggleSensors(WidgetRef ref, BleService ble) {
+    final service = ref.read(sensorsServiceProvider);
+    if (service.isActive) {
+      service.stop();
+      lvsLog('⏹️ Sensores apagados', tag: 'UI');
+    } else {
+      service.initialize().then((_) => service.start());
+      lvsLog('🎯 Sensores encendidos', tag: 'UI');
+    }
   }
 }
 

@@ -18,6 +18,12 @@ dependencies:
   flutter_secure_storage: ^10.0.0  # 🔒 Updated: Latest secure version
   flutter_dotenv: ^5.1.0
 
+  # ── Videollamadas (Agora) ─────────────────────────────────
+  agora_rtc_engine: ^6.3.0
+
+  # ── Audio Reactivo (FFT) ──────────────────────────────────
+  fft: ^0.5.1
+
   # ── Servicio en segundo plano (Android Foreground Service) ─
   flutter_foreground_task: ^9.2.1
 
