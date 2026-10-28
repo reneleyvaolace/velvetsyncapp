@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/ble_types.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/theme.dart';

@@ -12,6 +12,7 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:rxdart/rxdart.dart'; // 🔒 PERFORMANCE: Para debounce de streams
 import 'package:velvet_sync/providers/media_sync_provider.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/ble_types.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/widgets/compatible_devices_row.dart';

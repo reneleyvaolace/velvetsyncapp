@@ -16,6 +16,11 @@ class BleUuids {
   static const String cryptService = '0000f6c0-0000-1000-8000-00805f9b34fb';
   static const String cryptWrite = '0000f6c2-0000-1000-8000-00805f9b34fb';
 
+  // LoveSpouse (wbMSE / 8154)
+  static const String lovespouseService = '0000fff0-0000-1000-8000-00805f9b34fb';
+  static const String lovespouseWrite = '0000fff1-0000-1000-8000-00805f9b34fb';
+  static const String lovespouseWriteExtended = '0000fff3-0000-1000-8000-00805f9b34fb';
+
   // Advertising (private protocol legacy)
   static const String advService = '0000fff0-0000-1000-8000-00805f9b34fb';
 }
@@ -27,6 +32,8 @@ String writeUuidFor(BleProtocolType type) {
       return BleUuids.ipaoWrite;
     case BleProtocolType.cryptBle:
       return BleUuids.cryptWrite;
+    case BleProtocolType.loveSpouse:
+      return BleUuids.lovespouseWrite;
     case BleProtocolType.classic:
       return BleUuids.classicWrite;
   }
@@ -96,6 +103,19 @@ BleProtocolType detectBleProtocol(ToyModel toy) {
 
   final id = toy.id.toLowerCase();
   final name = toy.name.toLowerCase();
+  final bleName = toy.bleName.toLowerCase();
+  final prefix = toy.broadcastPrefix.toLowerCase();
+
+  // LoveSpouse: detecta por prefijo wbMSE, ID 8154, o nombre BLE característico
+  if (prefix.contains('77 62 4d 53 45') || 
+      prefix.contains('wbms') ||
+      id.contains('8154') ||
+      bleName.contains('wbms') ||
+      bleName.contains('lovespouse') ||
+      bleName.contains('zb') ||
+      name.contains('lovespouse')) {
+    return BleProtocolType.loveSpouse;
+  }
 
   if (id.contains('omysky') || name.contains('omysky') || name.contains('ipao')) {
     return BleProtocolType.ipao;

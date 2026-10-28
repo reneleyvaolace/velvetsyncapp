@@ -1,12 +1,12 @@
 // Velvet Sync · lib/services/ble/ble_service_platform.dart
-// Compat wrapper: reusa ble_service_mobile.dart como entrada única BLE.
+// Compat wrapper: reusa ble_service.dart como entrada única BLE.
 // Exporta tipos y provider necesarios para otros módulos.
-export 'ble_service_mobile.dart' show BleService, bleProvider, BleState, WaveType;
-export 'ble_types.dart' show BleLogEntry, QueuedCommand;
+export 'ble_service.dart' show BleService, bleProvider;
+export 'ble_types.dart' show BleState, WaveType, BleLogEntry, QueuedCommand;
 
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'ble_service_mobile.dart';
+import 'ble_service.dart';
 
 dynamic getBleService() {
   if (kIsWeb) throw UnsupportedError('Web no soporta BLE nativo. Requiere backend.');

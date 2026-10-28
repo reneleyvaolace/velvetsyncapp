@@ -91,7 +91,7 @@ export 'services/catalog/catalog_service.dart';
 // ═══════════════════════════════════════════════════════════════
 
 export 'utils/logger.dart' hide LogEntry;
-export 'utils/cache_manager.dart';
+// export 'utils/cache_manager.dart'; // TODO: crear o implementar
 export 'utils/protocol_translator.dart';
 export 'utils/snack_helper.dart';
 

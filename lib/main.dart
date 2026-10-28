@@ -5,7 +5,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -100,91 +99,107 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  String _status = 'Iniciando...';
+  double _progress = 0.0;
+  bool _navigationTriggered = false;
+
   @override
   void initState() {
     super.initState();
-    _initApp();
+    _initAppParallel();
   }
 
-  Future<void> _initApp() async {
-    lvsLog('Inicializando core services...', tag: 'APP');
-    
-    try {
-      // 1. Inicializar LinkService (con timeout)
-      await LinkService().init().timeout(const Duration(seconds: 3), onTimeout: () {
-        lvsLog('LinkService timeout', tag: 'APP');
-      });
+  Future<void> _initAppParallel() async {
+    lvsLog('Inicializando core services en paralelo...', tag: 'APP');
+
+    // Lanzar todas las inicializaciones EN PARALELO (no secuencial)
+    final futures = <Future<void>>[
+      // 1. LinkService (crítico para deep links)
+      _safeInit('LinkService', () => LinkService().init().timeout(const Duration(seconds: 3))),
       
+      // 2. SyncService (crítico para sincronización)
+      _safeInit('SyncService', () => ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 4))),
+      
+      // 3. AI Bridge (no crítico, puede fallar silenciosamente)
+      _safeInit('AI Bridge', () async {
+        final bleService = ref.read(bleProvider);
+        final aiBridge = ref.read(aiHardwareBridgeProvider);
+        await aiBridge.init(
+          bleService: bleService as BleService?,
+          syncService: ref.read(syncServiceProvider),
+        ).timeout(const Duration(seconds: 3));
+      }),
+      
+      // 5. BleService (síncrono, solo leer provider)
+      _safeInit('BleService', () async {
+        ref.read(bleProvider);
+      }),
+    ];
+
+    // Ejecutar todo en paralelo con progreso visual
+    int completed = 0;
+    for (final future in futures) {
+      await future;
       if (!mounted) return;
-
-      // 2. Cargar BleService (síncrono)
-      final bleService = ref.read(bleProvider);
-      
-      // 3. Inicializar SyncService (con timeout)
-      await ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 4), onTimeout: () {
-        lvsLog('SyncService timeout', tag: 'APP');
+      completed++;
+      setState(() {
+        _progress = completed / futures.length;
+        _status = 'Inicializando... ${(completed * 100 / futures.length).round()}%';
       });
-      
-      // 4. Inicializar AI Hardware Bridge
-      final aiBridge = ref.read(aiHardwareBridgeProvider);
-      await aiBridge.init(
-        bleService: bleService,
-        syncService: ref.read(syncServiceProvider),
-      ).timeout(const Duration(seconds: 3), onTimeout: () {
-        lvsLog('AI Bridge timeout', tag: 'APP');
-      });
-
-    } catch (e) {
-      lvsError('Error silencioso en inicialización: $e', tag: 'APP');
     }
-    
-    lvsLog('App inicializada correctamente o por timeout', tag: 'APP');
-      
+
+    lvsLog('Core services inicializados', tag: 'APP');
+
     if (mounted) {
-      // Tiempo mínimo de Splash para ver el logo
-      await Future.delayed(const Duration(seconds: 2));
+      // Mínimo 1.5s para ver el logo (en lugar de 2s fijos)
+      await Future.delayed(const Duration(milliseconds: 1500));
       if (!mounted) return;
+      _navigateToNextScreen();
+    }
+  }
 
-      final auth = ref.read(authServiceProvider);
-      final prefs = await SharedPreferences.getInstance();
-      final hasEmail = auth.email != null;
-      final skipAuth = prefs.getBool('skip_auth') ?? false;
+  Future<void> _safeInit(String name, Future<void> Function() init) async {
+    try {
+      await init();
+      lvsLog('✅ $name OK', tag: 'APP');
+    } catch (e) {
+      lvsLog('⚠️ $name timeout/error (continúa): $e', tag: 'APP');
+    }
+  }
 
-      if (!hasEmail && !skipAuth) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => AuthScreen(
-              onSkip: () async {
-                (await SharedPreferences.getInstance()).setBool('skip_auth', true);
-                if (!mounted) return;
-                Navigator.of(context).pushReplacement(
-                  PageRouteBuilder(
-                    pageBuilder: (_, __, ___) => _getPostAuthScreen(),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                    transitionDuration: const Duration(milliseconds: 800),
-                  ),
-                );
-              },
-            ),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
+  void _navigateToNextScreen() async {
+    if (_navigationTriggered || !mounted) return;
+    _navigationTriggered = true;
+
+    final auth = ref.read(authServiceProvider);
+    final prefs = await SharedPreferences.getInstance();
+    final hasEmail = auth.email != null;
+    final skipAuth = prefs.getBool('skip_auth') ?? false;
+
+    final nextScreen = (!hasEmail && !skipAuth) 
+        ? AuthScreen(
+            onSkip: () async {
+              (await SharedPreferences.getInstance()).setBool('skip_auth', true);
+              if (!mounted) return;
+              Navigator.of(context).pushReplacement(
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => _getPostAuthScreen(),
+                  transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
+                  transitionDuration: const Duration(milliseconds: 800),
+                ),
+              );
             },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      } else {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => _getPostAuthScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
-      }
+          )
+        : _getPostAuthScreen();
+
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => nextScreen,
+          transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
+          transitionDuration: const Duration(milliseconds: 800),
+        ),
+      );
     }
   }
 
@@ -230,6 +245,37 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
                 color: Color(0xFFE91E63),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Estado de progreso
+            Text(
+              _status,
+              style: TextStyle(
+                fontFamily: 'Outfit',
+                fontSize: 12,
+                color: Colors.white.withValues(alpha: 0.7),
+                letterSpacing: 1.5,
+              ),
+            ),
+            // Barra de progreso
+            Container(
+              margin: const EdgeInsets.only(top: 16),
+              width: 200,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(2),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: _progress,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE91E63),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
               ),
             ),
           ],

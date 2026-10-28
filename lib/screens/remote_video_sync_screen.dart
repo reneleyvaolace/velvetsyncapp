@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/ble_types.dart';
 import 'package:velvet_sync/services/p2p/p2p_connection_manager.dart';
 import 'package:velvet_sync/services/media/funscript_loader.dart';
 import 'package:velvet_sync/devices/models/funscript.dart';

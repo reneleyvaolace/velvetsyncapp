@@ -276,7 +276,50 @@ class LovespouseDevice {
     } else if (barcode.toLowerCase().contains('omysky')) {
       proto = BleProtocolType.ipao;
     } else {
-      proto = BleProtocolType.classic;
+      proto = BleProtocolType.loveSpouse;
+    }
+
+    // Convertir ClassicMode/Groups/Buttons → PatternGroup/PatternButton
+    final patternGroups = <PatternGroup>[];
+    for (var mode in classicModes) {
+      for (var group in mode.groups) {
+        final buttons = <PatternButton>[];
+        for (var btn in group.buttons) {
+          // Parsear comando (puede ser int o String hex)
+          var cmdInt = 0;
+          var stopCmdInt = 0;
+          
+          if (btn.command is int) {
+            cmdInt = btn.command;
+          } else if (btn.command is String) {
+            cmdInt = int.tryParse(btn.command, radix: 16) ?? 
+                     int.tryParse(btn.command) ?? 0;
+          }
+          
+          if (btn.stopCommand case String s when s.isNotEmpty) {
+            stopCmdInt = int.tryParse(s, radix: 16) ??
+                         int.tryParse(s) ?? 0;
+          }
+          
+          buttons.add(PatternButton(
+            id: btn.id,
+            name: btn.name,
+            command: cmdInt,
+            stopCommand: stopCmdInt,
+            imageUrl: btn.image,
+            newCommand: btn.newCommand,
+          ));
+        }
+        
+        if (buttons.isNotEmpty) {
+          patternGroups.add(PatternGroup(
+            id: group.id,
+            name: group.name,
+            type: group.type,
+            buttons: buttons,
+          ));
+        }
+      }
     }
 
     return ToyModel(
@@ -296,7 +339,9 @@ class LovespouseDevice {
       encryptCommand: encryptCommand,
       bleName: bleName,
       isEncrypt: isEncrypt == 1,
-      patternGroups: const [],
+      patternGroups: patternGroups,
+      gamePath: gamePath,
+      isNewCommand: isNewCommand == 1,
     );
   }
 
