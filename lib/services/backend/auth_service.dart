@@ -28,19 +28,25 @@ class AuthService extends ChangeNotifier {
   SupabaseClient get _client => Supabase.instance.client;
 
   AuthService() {
-    _user = _client.auth.currentUser;
-    if (_user != null) {
-      _status = AuthStatus.authenticated;
-    }
-    _client.auth.onAuthStateChange.listen((event) {
-      _user = event.session?.user;
+    try {
+      _user = _client.auth.currentUser;
       if (_user != null) {
         _status = AuthStatus.authenticated;
-      } else {
-        _status = AuthStatus.unauthenticated;
       }
-      notifyListeners();
-    });
+      _client.auth.onAuthStateChange.listen((event) {
+        _user = event.session?.user;
+        if (_user != null) {
+          _status = AuthStatus.authenticated;
+        } else {
+          _status = AuthStatus.unauthenticated;
+        }
+        notifyListeners();
+      });
+    } catch (e) {
+      lvsLog('AuthService: Supabase no inicializado (modo offline): $e', tag: 'AUTH');
+      _user = null;
+      _status = AuthStatus.unauthenticated;
+    }
   }
 
   Future<bool> signUp(String email, String password) async {

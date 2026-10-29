@@ -194,25 +194,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (_navigationTriggered || !mounted) return;
     _navigationTriggered = true;
 
-    final auth = ref.read(authServiceProvider);
-    final prefs = await SharedPreferences.getInstance();
-    final hasEmail = auth.email != null;
-    final skipAuth = prefs.getBool('skip_auth') ?? false;
+    bool hasEmail = false;
+    bool skipAuth = false;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      skipAuth = prefs.getBool('skip_auth') ?? false;
+
+      // Intentar leer el email de auth de forma segura
+      try {
+        final auth = ref.read(authServiceProvider);
+        hasEmail = auth.email != null;
+      } catch (e) {
+        lvsLog('AuthService no disponible (modo offline): $e', tag: 'APP');
+        hasEmail = false;
+      }
+    } catch (e) {
+      lvsLog('Error leyendo preferencias: $e', tag: 'APP');
+    }
 
     final nextScreen = (!hasEmail && !skipAuth) 
-        ? AuthScreen(
-            onSkip: () async {
-              (await SharedPreferences.getInstance()).setBool('skip_auth', true);
-              if (!mounted) return;
-              Navigator.of(context).pushReplacement(
-                PageRouteBuilder(
-                  pageBuilder: (_, __, ___) => _getPostAuthScreen(),
-                  transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
-                  transitionDuration: const Duration(milliseconds: 800),
-                ),
-              );
-            },
-          )
+        ? const AuthScreen()
         : _getPostAuthScreen();
 
     if (mounted) {
@@ -227,8 +229,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Widget _getPostAuthScreen() {
-    final profileService = ref.read(profileServiceProvider);
-    final needsProfile = profileService.myProfile == null;
+    bool needsProfile = true;
+    try {
+      final profileService = ref.read(profileServiceProvider);
+      needsProfile = profileService.myProfile == null;
+    } catch (e) {
+      lvsLog('ProfileService no disponible: $e', tag: 'APP');
+    }
     return needsProfile ? const MyProfileScreen() : const MainNavigation();
   }
 
