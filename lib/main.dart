@@ -1,7 +1,7 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/main.dart
 // Entrypoint unificado de la plataforma (Refactored)
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 import 'dart:convert';
 import 'dart:io';
@@ -24,43 +24,56 @@ import 'package:velvet_sync/screens/main_navigation.dart';
 import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 import 'package:velvet_sync/screens/auth_screen.dart';
 
+/// Variables de entorno cargadas desde env.json (assets de Flutter)
+class _Env {
+  static String supabaseUrl = '';
+  static String supabaseAnonKey = '';
+  static bool loaded = false;
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
+  // ══════════════════════════════════════════════════════════════
   // 1. Cargar variables de entorno desde env.json
-  // En Android Release, dotenv.load(fileName:) no funciona porque el archivo
-  // está empaquetado como asset de Flutter, no en el sistema de archivos.
-  // Solución: leer desde rootBundle, escribir a archivo temporal, luego llamar dotenv.load().
-  String supabaseUrl = '';
-  String supabaseAnonKey = '';
-  
+  // Usamos rootBundle.loadString porque dotenv.load(fileName:) no funciona
+  // en Android Release (el archivo está empaquetado como asset de Flutter).
+  // ══════════════════════════════════════════════════════════════
   try {
     final envData = await rootBundle.loadString('env.json');
-    final tempFile = File('${Directory.systemTemp.path}/velvet_sync_env.json');
-    await tempFile.writeAsString(envData);
-    await dotenv.load(fileName: tempFile.path);
-    supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
-    supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+    final envMap = jsonDecode(envData) as Map<String, dynamic>;
+
+    _Env.supabaseUrl = envMap['SUPABASE_URL'] ?? '';
+    _Env.supabaseAnonKey = envMap['SUPABASE_ANON_KEY'] ?? '';
+    _Env.loaded = true;
+
     lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
-    lvsLog('SUPABASE_URL: $supabaseUrl', tag: 'APP');
+    lvsLog('SUPABASE_URL: ${_Env.supabaseUrl}', tag: 'APP');
   } catch (e) {
     lvsLog('env.json no disponible (modo offline): $e', tag: 'APP');
+    _Env.loaded = false;
   }
-  
+
+  // Nota: flutter_dotenv se mantiene como dependencia pero no se usa
+  // para cargar env.json en Android Release. Los valores se leen
+  // directamente con rootBundle + jsonDecode arriba.
+
+  // ══════════════════════════════════════════════════════════════
   // 2. Inicializar Logger
+  // ══════════════════════════════════════════════════════════════
   final logger = Logger();
   await logger.initFileLogging();
-  
+
   lvsLog('Iniciando Velvet Sync App...', tag: 'APP');
 
+  // ══════════════════════════════════════════════════════════════
   // 3. Inicializar Supabase Temprano
-  // Usar valores de dotenv (cargados desde env.json)
-  
-  if (supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty) {
+  // ══════════════════════════════════════════════════════════════
+  if (_Env.loaded && _Env.supabaseUrl.isNotEmpty && _Env.supabaseAnonKey.isNotEmpty) {
     try {
       await Supabase.initialize(
-        url: supabaseUrl,
-        anonKey: supabaseAnonKey,
+        url: _Env.supabaseUrl,
+        anonKey: _Env.supabaseAnonKey,
         realtimeClientOptions: const RealtimeClientOptions(eventsPerSecond: 10),
       );
       lvsLog('Supabase inicializado en main()', tag: 'APP');
@@ -78,7 +91,7 @@ void main() async {
   runApp(
     const ProviderScope(
       child: VelvetSyncApp(),
-    )
+    ),
   );
 }
 
@@ -136,10 +149,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       final futures = <Future<void>>[
         // 1. LinkService (crítico para deep links)
         _safeInit('LinkService', () => LinkService().init().timeout(const Duration(seconds: 3))),
-        
+
         // 2. SyncService (crítico para sincronización)
         _safeInit('SyncService', () => ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 4))),
-        
+
         // 3. AI Bridge (no crítico, puede fallar silenciosamente)
         _safeInit('AI Bridge', () async {
           final bleService = ref.read(bleProvider);
@@ -149,7 +162,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             syncService: ref.read(syncServiceProvider),
           ).timeout(const Duration(seconds: 3));
         }),
-        
+
         // 5. BleService (síncrono, solo leer provider)
         _safeInit('BleService', () async {
           ref.read(bleProvider);
@@ -213,7 +226,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       lvsLog('Error leyendo preferencias: $e', tag: 'APP');
     }
 
-    final nextScreen = (!hasEmail && !skipAuth) 
+    final nextScreen = (!hasEmail && !skipAuth)
         ? const AuthScreen()
         : _getPostAuthScreen();
 
