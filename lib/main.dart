@@ -120,43 +120,47 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future<void> _initAppParallel() async {
     lvsLog('Inicializando core services en paralelo...', tag: 'APP');
 
-    // Lanzar todas las inicializaciones EN PARALELO (no secuencial)
-    final futures = <Future<void>>[
-      // 1. LinkService (crítico para deep links)
-      _safeInit('LinkService', () => LinkService().init().timeout(const Duration(seconds: 3))),
-      
-      // 2. SyncService (crítico para sincronización)
-      _safeInit('SyncService', () => ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 4))),
-      
-      // 3. AI Bridge (no crítico, puede fallar silenciosamente)
-      _safeInit('AI Bridge', () async {
-        final bleService = ref.read(bleProvider);
-        final aiBridge = ref.read(aiHardwareBridgeProvider);
-        await aiBridge.init(
-          bleService: bleService as BleService?,
-          syncService: ref.read(syncServiceProvider),
-        ).timeout(const Duration(seconds: 3));
-      }),
-      
-      // 5. BleService (síncrono, solo leer provider)
-      _safeInit('BleService', () async {
-        ref.read(bleProvider);
-      }),
-    ];
+    try {
+      // Lanzar todas las inicializaciones EN PARALELO (no secuencial)
+      final futures = <Future<void>>[
+        // 1. LinkService (crítico para deep links)
+        _safeInit('LinkService', () => LinkService().init().timeout(const Duration(seconds: 3))),
+        
+        // 2. SyncService (crítico para sincronización)
+        _safeInit('SyncService', () => ref.read(syncServiceProvider).init().timeout(const Duration(seconds: 4))),
+        
+        // 3. AI Bridge (no crítico, puede fallar silenciosamente)
+        _safeInit('AI Bridge', () async {
+          final bleService = ref.read(bleProvider);
+          final aiBridge = ref.read(aiHardwareBridgeProvider);
+          await aiBridge.init(
+            bleService: bleService as BleService?,
+            syncService: ref.read(syncServiceProvider),
+          ).timeout(const Duration(seconds: 3));
+        }),
+        
+        // 5. BleService (síncrono, solo leer provider)
+        _safeInit('BleService', () async {
+          ref.read(bleProvider);
+        }),
+      ];
 
-    // Ejecutar todo en paralelo con progreso visual
-    int completed = 0;
-    for (final future in futures) {
-      await future;
-      if (!mounted) return;
-      completed++;
-      setState(() {
-        _progress = completed / futures.length;
-        _status = 'Inicializando... ${(completed * 100 / futures.length).round()}%';
-      });
+      // Ejecutar todo en paralelo con progreso visual
+      int completed = 0;
+      for (final future in futures) {
+        await future;
+        if (!mounted) return;
+        completed++;
+        setState(() {
+          _progress = completed / futures.length;
+          _status = 'Inicializando... ${(completed * 100 / futures.length).round()}%';
+        });
+      }
+
+      lvsLog('Core services inicializados', tag: 'APP');
+    } catch (e) {
+      lvsError('Error durante inicialización de servicios: $e', tag: 'APP');
     }
-
-    lvsLog('Core services inicializados', tag: 'APP');
 
     if (mounted) {
       // Mínimo 1.5s para ver el logo (en lugar de 2s fijos)
