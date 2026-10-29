@@ -341,12 +341,6 @@ class _OutgoingCallScreenState extends ConsumerState<OutgoingCallScreen>
     }
   }
 
-  String _formatTime(int seconds) {
-    final mins = seconds ~/ 60;
-    final secs = seconds % 60;
-    return '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-  }
-
   Widget _defaultAvatar() {
     return Container(
       width: 140,

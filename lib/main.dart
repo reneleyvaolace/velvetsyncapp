@@ -25,7 +25,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // 1. Cargar variables de entorno desde env.json
-  await dotenv.load(fileName: "env.json");
+  // Se intenta cargar desde assets; si falta (p. ej. build sin --dart-define-from-file
+  // o env.json no empaquetado), la app sigue arrancando en modo offline.
+  try {
+    await dotenv.load(fileName: "env.json");
+    lvsLog('env.json cargado desde assets', tag: 'APP');
+  } catch (e) {
+    lvsLog('env.json no disponible como asset (modo offline): $e', tag: 'APP');
+  }
   
   // 2. Inicializar Logger
   final logger = Logger();

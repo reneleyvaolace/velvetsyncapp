@@ -1,7 +1,7 @@
-// ═══════════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/screens/calls/active_call_screen.dart
 // Pantalla de llamada activa (controles durante la llamada)
-// ═══════════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════════════
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,178 +26,178 @@ class ActiveCallScreen extends ConsumerWidget {
         children: [
           // Video remoto (fullscreen)
           Positioned.fill(
-            child: controller.getRemoteView() ??
-                Container(
-                  color: Colors.black,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.videocam_off_rounded,
-                          color: Colors.white54,
-                          size: 80,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Esperando video...',
-                          style: TextStyle(color: Colors.white54, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-          ),
-        
-        // Video local (picture-in-picture)
-        Positioned(
-          top: 60,
-          right: 16,
-          child: GestureDetector(
-            onTap: () => controller.switchCamera(),
             child: Container(
-              width: 120,
-              height: 160,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.5),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: controller.getLocalView() ??
-                    Container(
-                      color: Colors.grey[900],
-                      child: const Center(
-                        child: Icon(Icons.person, color: Colors.white54, size: 40),
-                      ),
+              color: Colors.black,
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.videocam_off_rounded,
+                      color: Colors.white54,
+                      size: 80,
                     ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Esperando video...',
+                      style: TextStyle(color: Colors.white54, fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        
-        // Controles inferiores
-        Positioned(
-          bottom: 40,
-          left: 0,
-          right: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                // Timer y estado
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Consumer(
-                      builder: (context, ref, _) {
-                        final callState = ref.watch(callStateProvider);
-                        final secs = callState.value?.durationSeconds ?? 0;
-                        final mins = secs ~/ 60;
-                        final sec = secs % 60;
-                        return Text(
-                          '${mins.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontFamily: 'monospace',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
-                    ),
-                    Row(
-                      children: [
-                        _ConnectionQualityIndicator(),
-                        const SizedBox(width: 12),
-                        _BatteryIndicator(),
-                      ],
+          // Video local (picture-in-picture)
+          Positioned(
+            top: 60,
+            right: 16,
+            child: GestureDetector(
+              onTap: () => controller.switchCamera(),
+              child: Container(
+                width: 120,
+                height: 160,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
                     ),
                   ],
                 ),
-                
-                const SizedBox(height: 32),
-                
-                // Controles principales
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _CallControlButton(
-                      icon: ref.watch(callStateProvider).value?.isMuted == true
-                          ? Icons.mic_off_rounded
-                          : Icons.mic_rounded,
-                      label: 'Mute',
-                      color: ref.watch(callStateProvider).value?.isMuted == true
-                          ? Colors.red
-                          : Colors.white,
-                      onTap: () => ref.read(callControllerProvider).toggleMute(),
-                    ),
-                    _CallControlButton(
-                      icon: ref.watch(callStateProvider).value?.isVideoMuted == true
-                          ? Icons.videocam_off_rounded
-                          : Icons.videocam_rounded,
-                      label: 'Video',
-                      color: ref.watch(callStateProvider).value?.isVideoMuted == true
-                          ? Colors.red
-                          : Colors.white,
-                      onTap: () => ref.read(callControllerProvider).toggleVideoMute(),
-                    ),
-                    _CallControlButton(
-                      icon: ref.watch(callStateProvider).value?.isSpeakerOn == true
-                          ? Icons.volume_up_rounded
-                          : Icons.volume_off_rounded,
-                      label: 'Audio',
-                      color: ref.watch(callStateProvider).value?.isSpeakerOn == true
-                          ? Colors.cyan
-                          : Colors.white,
-                      onTap: () => ref.read(callControllerProvider).toggleSpeaker(),
-                    ),
-                    _CallControlButton(
-                      icon: Icons.flip_camera_android_rounded,
-                      label: 'Cámara',
-                      color: Colors.purple,
-                      onTap: () => ref.read(callControllerProvider).switchCamera(),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 24),
-                
-                // Botón colgar
-                GestureDetector(
-                  onTap: () => ref.read(callControllerProvider).endCall(),
-                  child: Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [Colors.red, Colors.redAccent],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.red.withValues(alpha: 0.5),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                          offset: const Offset(0, 8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: controller.getLocalView() ??
+                      Container(
+                        color: Colors.grey[900],
+                        child: const Center(
+                          child: Icon(Icons.person, color: Colors.white54, size: 40),
                         ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.call_end_rounded,
-                      color: Colors.white,
-                      size: 28,
+                      ),
+                ),
+              ),
+            ),
+          ),
+          // Controles inferiores
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Timer y estado
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Consumer(
+                        builder: (context, ref, _) {
+                          final callState = ref.watch(callStateProvider);
+                          final secs = callState.value?.durationSeconds ?? 0;
+                          final mins = secs ~/ 60;
+                          final sec = secs % 60;
+                          return Text(
+                            '${mins.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontFamily: 'monospace',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        },
+                      ),
+                      Row(
+                        children: [
+                          _ConnectionQualityIndicator(),
+                          const SizedBox(width: 12),
+                          _BatteryIndicator(),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  // Controles principales
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _CallControlButton(
+                        icon: currentCall.isMuted
+                            ? Icons.mic_off_rounded
+                            : Icons.mic_rounded,
+                        label: 'Mute',
+                        color: currentCall.isMuted ? Colors.red : Colors.white,
+                        onTap: () =>
+                            ref.read(callControllerProvider).toggleMute(),
+                      ),
+                      _CallControlButton(
+                        icon: currentCall.isVideoMuted
+                            ? Icons.videocam_off_rounded
+                            : Icons.videocam_rounded,
+                        label: 'Video',
+                        color: currentCall.isVideoMuted
+                            ? Colors.red
+                            : Colors.white,
+                        onTap: () =>
+                            ref.read(callControllerProvider).toggleVideoMute(),
+                      ),
+                      _CallControlButton(
+                        icon: currentCall.isSpeakerOn
+                            ? Icons.volume_up_rounded
+                            : Icons.volume_off_rounded,
+                        label: 'Audio',
+                        color: currentCall.isSpeakerOn
+                            ? Colors.cyan
+                            : Colors.white,
+                        onTap: () =>
+                            ref.read(callControllerProvider).toggleSpeaker(),
+                      ),
+                      _CallControlButton(
+                        icon: Icons.flip_camera_android_rounded,
+                        label: 'Cámara',
+                        color: Colors.purple,
+                        onTap: () =>
+                            ref.read(callControllerProvider).switchCamera(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  // Botón colgar
+                  GestureDetector(
+                    onTap: () =>
+                        ref.read(callControllerProvider).endCall(),
+                    child: Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [Colors.red, Colors.redAccent],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.withValues(alpha: 0.5),
+                            blurRadius: 20,
+                            spreadRadius: 5,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.call_end_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -271,7 +271,11 @@ class _ConnectionQualityIndicator extends ConsumerWidget {
           const SizedBox(width: 4),
           const Text(
             'Excelente',
-            style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.green,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -296,7 +300,11 @@ class _BatteryIndicator extends StatelessWidget {
           const SizedBox(width: 4),
           const Text(
             '—%',
-            style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

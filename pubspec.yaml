@@ -68,9 +68,11 @@ dependencies:
   meta: any
   flutter_svg: ^2.3.0
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: true
   ios: true
   image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#0D0D12"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
   min_sdk_android: 21
 
 
