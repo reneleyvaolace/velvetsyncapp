@@ -12,7 +12,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:velvet_sync/config/env.dart';
+import 'package:velvet_sync/config/app_env.dart';
 import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/backend/sync_service.dart';
 import 'package:velvet_sync/services/backend/link_service.dart';
@@ -24,12 +24,7 @@ import 'package:velvet_sync/screens/main_navigation.dart';
 import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 import 'package:velvet_sync/screens/auth_screen.dart';
 
-/// Variables de entorno cargadas desde env.json (assets de Flutter)
-class _Env {
-  static String supabaseUrl = '';
-  static String supabaseAnonKey = '';
-  static bool loaded = false;
-}
+// AppEnv se importa desde lib/config/app_env.dart
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,15 +38,15 @@ void main() async {
     final envData = await rootBundle.loadString('env.json');
     final envMap = jsonDecode(envData) as Map<String, dynamic>;
 
-    _Env.supabaseUrl = envMap['SUPABASE_URL'] ?? '';
-    _Env.supabaseAnonKey = envMap['SUPABASE_ANON_KEY'] ?? '';
-    _Env.loaded = true;
+    AppEnv.supabaseUrl = envMap['SUPABASE_URL'] ?? '';
+    AppEnv.supabaseAnonKey = envMap['SUPABASE_ANON_KEY'] ?? '';
+    AppEnv.loaded = true;
 
     lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
-    lvsLog('SUPABASE_URL: ${_Env.supabaseUrl}', tag: 'APP');
+    lvsLog('SUPABASE_URL: ${AppEnv.supabaseUrl}', tag: 'APP');
   } catch (e) {
     lvsLog('env.json no disponible (modo offline): $e', tag: 'APP');
-    _Env.loaded = false;
+    AppEnv.loaded = false;
   }
 
   // Nota: flutter_dotenv se mantiene como dependencia pero no se usa
@@ -69,11 +64,11 @@ void main() async {
   // ══════════════════════════════════════════════════════════════
   // 3. Inicializar Supabase Temprano
   // ══════════════════════════════════════════════════════════════
-  if (_Env.loaded && _Env.supabaseUrl.isNotEmpty && _Env.supabaseAnonKey.isNotEmpty) {
+  if (AppEnv.loaded && AppEnv.supabaseUrl.isNotEmpty && AppEnv.supabaseAnonKey.isNotEmpty) {
     try {
       await Supabase.initialize(
-        url: _Env.supabaseUrl,
-        anonKey: _Env.supabaseAnonKey,
+        url: AppEnv.supabaseUrl,
+        anonKey: AppEnv.supabaseAnonKey,
         realtimeClientOptions: const RealtimeClientOptions(eventsPerSecond: 10),
       );
       lvsLog('Supabase inicializado en main()', tag: 'APP');

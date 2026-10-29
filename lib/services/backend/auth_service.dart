@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:velvet_sync/config/app_env.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
 final authServiceProvider = ChangeNotifierProvider<AuthService>((ref) {
@@ -238,7 +238,7 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
+      final supabaseUrl = AppEnv.supabaseUrl;
       final session = _client.auth.currentSession;
       if (session == null) {
         _errorMessage = 'No hay sesión activa';
