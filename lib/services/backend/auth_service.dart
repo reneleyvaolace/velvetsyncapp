@@ -145,11 +145,13 @@ class AuthService extends ChangeNotifier {
 
     try {
       // Usar Edge Function con Resend para enviar el correo de recuperación
+      // Pasar la API key como query parameter para que Supabase la acepte
       final response = await http.post(
-        Uri.parse('${AppEnv.supabaseUrl}/functions/v1/send-reset-email'),
+        Uri.parse(
+          '${AppEnv.supabaseUrl}/functions/v1/send-reset-email?apikey=${AppEnv.supabaseAnonKey}',
+        ),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${AppEnv.supabaseAnonKey}',
         },
         body: jsonEncode({
           'email': email,
