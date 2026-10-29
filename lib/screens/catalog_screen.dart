@@ -10,6 +10,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/theme.dart';
+import 'package:velvet_sync/screens/multimedia_player_screen.dart';
 
 // ══════════════════════════════════════════════════════════════
 // Pantalla principal del Catálogo
@@ -354,6 +355,33 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
             Text('ID: ${toy.id}',
                 style: const TextStyle(color: LvsColors.pink, fontSize: 11)),
             const SizedBox(height: 20),
+            _menuAction(
+              iconWidget: const Icon(Icons.movie_creation_outlined, size: 24, color: LvsColors.pink),
+              color: LvsColors.pink,
+              label: 'Multimedia / GamePath',
+              onTap: () {
+                Navigator.pop(ctx);
+                if (toy.gamePath.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MultimediaPlayerScreen(
+                        toy: toy,
+                        gamePath: toy.gamePath,
+                      ),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Este dispositivo no tiene GamePath multimedia'),
+                      backgroundColor: LvsColors.amber,
+                    ),
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 10),
             _menuAction(
               iconWidget: const Icon(Icons.settings, size: 24, color: LvsColors.teal),
               color: LvsColors.teal,

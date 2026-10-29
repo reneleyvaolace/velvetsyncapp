@@ -12,6 +12,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/ble_types.dart';
 
 final mediaSyncProvider = ChangeNotifierProvider((ref) => MediaSyncNotifier(ref));
 

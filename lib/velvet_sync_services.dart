@@ -50,6 +50,16 @@ export 'services/media/game_haptics_mapper.dart';
 export 'services/media/haptic_video_sync_service.dart';
 export 'services/media/haptic_recorder_service.dart';
 export 'services/media/remote_haptic_receiver.dart';
+export 'services/media/video_cache_service.dart';
+export 'services/media/url_sync_service.dart';
+export 'services/media/audio_reactive_service.dart';
+export 'services/media/voice_control_service.dart';
+
+// Location Services
+export 'services/location/geofencing_service.dart';
+
+// Game Services
+export 'services/game/game_mode_service.dart';
 
 // Backend Services
 export 'services/backend/supabase_service.dart';

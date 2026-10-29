@@ -75,6 +75,18 @@ android {
         multiDexEnabled = true
     }
 
+    // Split APKs by ABI (reduce size ~40-50% per APK)
+    android {
+        splits {
+            abi {
+                isEnable = true
+                reset()
+                include("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+                isUniversalApk = false
+            }
+        }
+    }
+
     buildTypes {
         release {
             // Optimización y Seguridad

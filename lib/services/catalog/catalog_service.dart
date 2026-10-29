@@ -34,50 +34,142 @@ const kWebCatalogUrl = 'https://velvetsynccatalog.vercel.app/';
 // Provider solo para los pre-registrados (donde vive la persistencia reactiva)
 final preregisteredProvider = StateProvider<List<ToyModel>>((ref) => []);
 
-// Provider para catálogo LoveSpouse (dispositivos técnicos)
-final lovespouseCatalogProvider = StateNotifierProvider<LovespouseCatalogNotifier, List<ToyModel>>((ref) {
+// Provider para catálogo LoveSpouse (dispositivos técnicos - 2,753 dispositivos precargados)
+final lovespouseCatalogProvider = StateNotifierProvider<LovespouseCatalogNotifier, AsyncValue<List<ToyModel>>>((ref) {
   return LovespouseCatalogNotifier();
 });
 
-class LovespouseCatalogNotifier extends StateNotifier<List<ToyModel>> {
+class LovespouseCatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
   final _parserService = LovespouseParserService();
   List<LovespouseDevice> _rawDevices = [];
+  bool _isLoading = false;
+  bool _hasLoaded = false;  // Nueva bandera para carga perezosa
 
-  LovespouseCatalogNotifier() : super([]) {
-    _loadDevices();
+  LovespouseCatalogNotifier() : super(const AsyncValue.data([])) {
+    // NO cargar en el constructor - carga perezosa en primer acceso
   }
 
-  Future<void> _loadDevices() async {
+  /// Carga dispositivos bajo demanda (lazy loading)
+  Future<void> _ensureLoaded() async {
+    if (_hasLoaded || _isLoading) return;
+    _isLoading = true;
+    
     try {
+      lvsLog('🔄 Cargando catálogo LoveSpouse bajo demanda...', tag: 'CATALOG');
+      final stopwatch = Stopwatch()..start();
+      
       _rawDevices = await _parserService.getAllDevices();
-      state = _rawDevices.map((d) => d.toToyModel()).toList();
-      lvsLog('✅ LoveSpouse: ${state.length} dispositivos cargados', tag: 'CATALOG');
-    } catch (e) {
+      final toyModels = _rawDevices.map((d) => d.toToyModel()).toList();
+      
+      state = AsyncValue.data(toyModels);
+      _hasLoaded = true;
+      
+      stopwatch.stop();
+      lvsLog('✅ LoveSpouse: ${toyModels.length} dispositivos cargados en ${stopwatch.elapsedMilliseconds}ms', tag: 'CATALOG');
+    } catch (e, stack) {
       lvsLog('❌ Error cargando LoveSpouse: $e', tag: 'CATALOG');
-      state = [];
+      lvsLog('Stack: $stack', tag: 'CATALOG');
+      state = AsyncValue.error(e, stack);
+    } finally {
+      _isLoading = false;
     }
   }
 
-  /// Busca un dispositivo por barcode
-  ToyModel? findByBarcode(String barcode) {
-    try {
-      return state.firstWhere((t) => t.id == barcode);
-    } catch (_) {
-      return null;
+  /// Fuerza recarga completa
+  Future<void> reload() async {
+    _hasLoaded = false;
+    _rawDevices.clear();
+    state = const AsyncValue.loading();
+    await _ensureLoaded();
+  }
+
+  /// Asegura que los datos estén cargados antes de buscar
+  Future<void> _ensureLoadedBeforeSearch() async {
+    if (!_hasLoaded) {
+      await _ensureLoaded();
     }
+  }
+
+  /// Busca un dispositivo por barcode (O(1) usando índice del parser)
+  Future<ToyModel?> findByBarcode(String barcode) async {
+    await _ensureLoadedBeforeSearch();
+    // Si ya está cargado, buscar en memoria
+    if (state is AsyncData<List<ToyModel>>) {
+      try {
+        return (state as AsyncData<List<ToyModel>>).value.firstWhere((t) => t.id == barcode);
+      } catch (_) {}
+    }
+    
+    // Si no, usar el parser con índice optimizado
+    final device = await _parserService.findByBarcode(barcode);
+    return device?.toToyModel();
   }
 
   /// Busca un dispositivo por nombre BLE
-  ToyModel? findByBleName(String bleName) {
-    try {
-      return state.firstWhere((t) => t.name.toLowerCase().contains(bleName.toLowerCase()));
-    } catch (_) {
-      return null;
+  Future<ToyModel?> findByBleName(String bleName) async {
+    await _ensureLoadedBeforeSearch();
+    if (state is AsyncData<List<ToyModel>>) {
+      try {
+        return (state as AsyncData<List<ToyModel>>).value.firstWhere((t) => t.name.toLowerCase().contains(bleName.toLowerCase()));
+      } catch (_) {}
     }
+    
+    final device = await _parserService.findByBleName(bleName);
+    return device?.toToyModel();
   }
 
-  /// Recarga los dispositivos
-  Future<void> reload() async => _loadDevices();
+  /// Busca por título (parcial)
+  Future<List<ToyModel>> findByTitle(String title) async {
+    await _ensureLoadedBeforeSearch();
+    if (state is AsyncData<List<ToyModel>>) {
+      final all = (state as AsyncData<List<ToyModel>>).value;
+      return all.where((t) => t.name.toLowerCase().contains(title.toLowerCase())).toList();
+    }
+    final devices = await _parserService.findByTitle(title);
+    return devices.map((d) => d.toToyModel()).toList();
+  }
+
+  /// Filtra por función
+  Future<List<ToyModel>> filterByFunction(String funcCode) async {
+    await _ensureLoadedBeforeSearch();
+    if (state is AsyncData<List<ToyModel>>) {
+      final all = (state as AsyncData<List<ToyModel>>).value;
+      return all.where((t) => t.supports(funcCode)).toList();
+    }
+    final devices = await _parserService.filterByFunction(funcCode);
+    return devices.map((d) => d.toToyModel()).toList();
+  }
+
+  /// Obtiene dispositivos con canal dual
+  Future<List<ToyModel>> getDualChannelDevices() async {
+    await _ensureLoadedBeforeSearch();
+    if (state is AsyncData<List<ToyModel>>) {
+      final all = (state as AsyncData<List<ToyModel>>).value;
+      return all.where((t) => t.hasDualChannel).toList();
+    }
+    final devices = await _parserService.getDualChannelDevices();
+    return devices.map((d) => d.toToyModel()).toList();
+  }
+
+  /// Obtiene todos los códigos de función únicos
+  Future<Set<String>> getAllFunctionCodes() async {
+    await _ensureLoadedBeforeSearch();
+    if (state is AsyncData<List<ToyModel>>) {
+      final all = (state as AsyncData<List<ToyModel>>).value;
+      final codes = <String>{};
+      for (var d in all) {
+        codes.addAll(d.supportedFuncs.split(RegExp(r'[,|]')).map((e) => e.trim()));
+      }
+      return codes;
+    }
+    return _parserService.getAllFunctionCodes();
+  }
+
+/// Verifica si el catálogo está cargado
+bool get isLoaded => _hasLoaded;
+  
+  /// Número de dispositivos cargados
+  int get count => state is AsyncData<List<ToyModel>> ? (state as AsyncData<List<ToyModel>>).value.length : 0;
 }
 
 // Provider para TODOS los dispositivos del catálogo servidor (para CompatibleDevicesRow)
@@ -331,20 +423,42 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
       found = await _supabase.fetchDeviceById(cleanId);
     } catch (_) {}
 
-    // 3. Catálogo LoveSpouse JSON local (2,753 dispositivos)
+    // 3. Catálogo LoveSpouse JSON local (2,753 dispositivos) - Precargado en memoria
     if (found == null) {
-      final lovespouseCatalog = _ref.read(lovespouseCatalogProvider);
-      try {
-        found = lovespouseCatalog.firstWhere((t) => t.id == cleanId);
-        lvsLog('Match en catálogo LoveSpouse: ${found.name} ($cleanId)', tag: 'CATALOG');
-      } catch (_) {}
-      // Si no encontró por ID exacto, buscar por nombre/alias
-      if (found == null) {
+      // Primero intentar desde el estado del provider (si ya está cargado)
+      final lovespouseCatalogState = _ref.read(lovespouseCatalogProvider);
+      if (lovespouseCatalogState is AsyncData<List<ToyModel>>) {
+        final lovespouseCatalog = lovespouseCatalogState.value;
         try {
-          found = lovespouseCatalog.firstWhere((t) =>
-              t.name.toLowerCase().contains(cleanId) ||
-              cleanId.contains(t.id));
+          found = lovespouseCatalog.firstWhere((t) => t.id == cleanId);
+          lvsLog('Match en catálogo LoveSpouse: ${found.name} ($cleanId)', tag: 'CATALOG');
         } catch (_) {}
+        // Si no encontró por ID exacto, buscar por nombre/alias
+        if (found == null) {
+          try {
+            found = lovespouseCatalog.firstWhere((t) =>
+                t.name.toLowerCase().contains(cleanId) ||
+                cleanId.contains(t.id));
+          } catch (_) {}
+        }
+      }
+      // Si el catálogo no está listo aún, usar el parser directamente
+      if (found == null) {
+        final parser = LovespouseParserService();
+        final device = await parser.findByBarcode(cleanId);
+        found = device?.toToyModel();
+        if (found != null) {
+          lvsLog('Match en catálogo LoveSpouse (parser): ${found.name} ($cleanId)', tag: 'CATALOG');
+        }
+      }
+      // Si aún no encontró, buscar por nombre/alias
+      if (found == null) {
+        final parser = LovespouseParserService();
+        final devicesByTitle = await parser.findByTitle(cleanId);
+        if (devicesByTitle.isNotEmpty) {
+          found = devicesByTitle.first.toToyModel();
+          lvsLog('Match por título LoveSpouse: ${found.name} ($cleanId)', tag: 'CATALOG');
+        }
       }
     }
 

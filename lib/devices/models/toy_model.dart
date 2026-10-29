@@ -16,6 +16,9 @@ enum BleProtocolType {
 
   /// Protocolo CryptBle (encriptado via f6c2)
   cryptBle,
+
+  /// Protocolo LoveSpouse (wbMSE / 8154) - Advertising + GATT
+  loveSpouse,
 }
 
 /// Botón de patrón individual del ClassicId
@@ -109,6 +112,12 @@ class ToyModel {
   /// Usa advertising (peripheral mode) en vez de GATT writes
   final bool isPrivateProtocol;
 
+  /// Ruta del juego/video para sincronización multimedia (LoveSpouse)
+  final String gamePath;
+
+  /// Usa el nuevo formato de comandos (LoveSpouse NewCommand)
+  final bool isNewCommand;
+
   ToyModel({
     required this.id,
     required this.name,
@@ -127,6 +136,8 @@ class ToyModel {
     this.patternGroups = const [],
     this.bleProtocol = BleProtocolType.classic,
     this.isPrivateProtocol = false,
+    this.gamePath = '',
+    this.isNewCommand = false,
   });
 
   bool get hasDualChannel => motorLogic.toLowerCase().contains('dual');
@@ -377,6 +388,7 @@ class ToyModel {
     final str = value.toString().toLowerCase();
     if (str == 'ipao') return BleProtocolType.ipao;
     if (str == 'cryptble' || str == 'crypt_ble') return BleProtocolType.cryptBle;
+    if (str == 'lovespouse' || str == 'love_spouse') return BleProtocolType.loveSpouse;
     return BleProtocolType.classic;
   }
 

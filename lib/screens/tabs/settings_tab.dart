@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/ble_types.dart';
 import 'package:velvet_sync/theme.dart';
 import 'package:velvet_sync/screens/debug_screen.dart';
 import 'package:velvet_sync/services/session/session_timer_service.dart';
 import 'package:velvet_sync/services/backend/auth_service.dart';
 import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
-// import 'package:velvet_sync/screens/backup_screen.dart'; // Temporarily disabled
+import 'package:velvet_sync/screens/backup_screen.dart';
 import 'package:velvet_sync/screens/auth_screen.dart';
 import 'package:velvet_sync/screens/main_navigation.dart';
 import 'package:velvet_sync/widgets/settings_account_card.dart';
@@ -219,7 +220,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
     );
   }
 
-Widget _buildSystemProCard(SessionTimerState timerState) {
+  Widget _buildSystemProCard(SessionTimerState timerState) {
     final timerService = ref.read(sessionTimerServiceProvider);
     final ble = ref.read(bleProvider);
 
@@ -256,7 +257,7 @@ Widget _buildSystemProCard(SessionTimerState timerState) {
             // ═══════════════════════════════════════════════════════════════
             // 4. RESPALDO EN NUBE (PRÓXIMAMENTE)
             // ═══════════════════════════════════════════════════════════════
-            // _buildCloudBackupOption(),
+            _buildCloudBackupOption(),
 
             const Divider(height: 32, color: Colors.white10),
 
@@ -629,41 +630,41 @@ Widget _buildSystemProCard(SessionTimerState timerState) {
     );
   }
 
-//   Widget _buildCloudBackupOption() {
-//     return InkWell(
-//       onTap: () => Navigator.push(
-//         context,
-//         MaterialPageRoute(builder: (_) => const BackupScreen()),
-//       ),
-//       borderRadius: BorderRadius.circular(8),
-//       child: Padding(
-//         padding: const EdgeInsets.symmetric(vertical: 8),
-//         child: Row(
-//           children: [
-//             const Icon(Icons.cloud_upload, color: LvsColors.teal, size: 38),
-//             const SizedBox(width: 16),
-//             const Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text(
-//                     'RESPALDO EN NUBE',
-//                     style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5),
-//                   ),
-//                   SizedBox(height: 2),
-//                   Text(
-//                     'Sincronizar perfiles y ritmos',
-//                     style: TextStyle(fontSize: 9, color: LvsColors.text3),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  Widget _buildCloudBackupOption() {
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const BackupScreen()),
+      ),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            const Icon(Icons.cloud_upload, color: LvsColors.teal, size: 38),
+            const SizedBox(width: 16),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'RESPALDO EN NUBE',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Sincronizar perfiles y ritmos',
+                    style: TextStyle(fontSize: 9, color: LvsColors.text3),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildFirmwareUpdateOption() {
     return InkWell(

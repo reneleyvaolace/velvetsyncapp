@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
+import 'package:velvet_sync/services/ble/ble_types.dart';
 import 'package:velvet_sync/services/p2p/p2p_connection_manager.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
