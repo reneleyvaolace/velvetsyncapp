@@ -3,7 +3,9 @@
 // Entrypoint unificado de la plataforma (Refactored)
 // ═══════════════════════════════════════════════════════════════
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,13 +27,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // 1. Cargar variables de entorno desde env.json
-  // Se intenta cargar desde assets; si falta (p. ej. build sin --dart-define-from-file
-  // o env.json no empaquetado), la app sigue arrancando en modo offline.
+  // Se lee desde los assets de Flutter (rootBundle) porque fileName no funciona
+  // en Android Release (el archivo está empaquetado dentro del APK).
   try {
-    await dotenv.load(fileName: "env.json");
-    lvsLog('env.json cargado desde assets', tag: 'APP');
+    final envData = await rootBundle.loadString('env.json');
+    final envMap = jsonDecode(envData) as Map<String, dynamic>;
+    envMap.forEach((key, value) {
+      dotenv.env[key] = value.toString();
+    });
+    lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
+    lvsLog('SUPABASE_URL: ${dotenv.env['SUPABASE_URL']}', tag: 'APP');
   } catch (e) {
-    lvsLog('env.json no disponible como asset (modo offline): $e', tag: 'APP');
+    lvsLog('env.json no disponible (modo offline): $e', tag: 'APP');
   }
   
   // 2. Inicializar Logger
