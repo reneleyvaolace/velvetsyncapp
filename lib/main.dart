@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,14 +28,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // 1. Cargar variables de entorno desde env.json
-  // Se lee desde los assets de Flutter (rootBundle) porque fileName no funciona
-  // en Android Release (el archivo está empaquetado dentro del APK).
+  // En Android Release, dotenv.load(fileName:) no funciona porque el archivo
+  // está empaquetado como asset de Flutter, no en el sistema de archivos.
+  // Solución: leer desde rootBundle, escribir a archivo temporal, luego llamar dotenv.load().
   try {
     final envData = await rootBundle.loadString('env.json');
-    final envMap = jsonDecode(envData) as Map<String, dynamic>;
-    envMap.forEach((key, value) {
-      dotenv.env[key] = value.toString();
-    });
+    final tempFile = File('${Directory.systemTemp.path}/velvet_sync_env.json');
+    await tempFile.writeAsString(envData);
+    await dotenv.load(fileName: tempFile.path);
     lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
     lvsLog('SUPABASE_URL: ${dotenv.env['SUPABASE_URL']}', tag: 'APP');
   } catch (e) {
