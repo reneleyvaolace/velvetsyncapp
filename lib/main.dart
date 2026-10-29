@@ -40,6 +40,7 @@ void main() async {
 
     AppEnv.supabaseUrl = envMap['SUPABASE_URL'] ?? '';
     AppEnv.supabaseAnonKey = envMap['SUPABASE_ANON_KEY'] ?? '';
+    AppEnv.resendApiKey = envMap['RESEND_API_KEY'] ?? '';
     AppEnv.loaded = true;
 
     lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');

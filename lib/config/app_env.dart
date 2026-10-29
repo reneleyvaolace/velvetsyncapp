@@ -6,5 +6,6 @@
 class AppEnv {
   static String supabaseUrl = '';
   static String supabaseAnonKey = '';
+  static String resendApiKey = '';
   static bool loaded = false;
 }

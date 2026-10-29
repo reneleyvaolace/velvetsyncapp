@@ -144,17 +144,32 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _client.auth.resetPasswordForEmail(email);
-      lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
-      _status = AuthStatus.unauthenticated;
-      notifyListeners();
-      return true;
-    } on AuthException catch (e) {
-      _status = AuthStatus.error;
-      _errorMessage = e.message;
-      lvsError('Error resetPassword: ${e.message}', tag: 'AUTH');
-      notifyListeners();
-      return false;
+      // Usar Edge Function con Resend para enviar el correo de recuperación
+      final response = await http.post(
+        Uri.parse('${AppEnv.supabaseUrl}/functions/v1/send-reset-email'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AppEnv.supabaseAnonKey}',
+        },
+        body: jsonEncode({
+          'email': email,
+          'redirectTo': '${AppEnv.supabaseUrl}/auth/callback',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
+        _status = AuthStatus.unauthenticated;
+        notifyListeners();
+        return true;
+      } else {
+        final errorData = jsonDecode(response.body);
+        _status = AuthStatus.error;
+        _errorMessage = errorData['error'] ?? 'Error enviando correo';
+        lvsError('Error resetPassword: ${_errorMessage}', tag: 'AUTH');
+        notifyListeners();
+        return false;
+      }
     } catch (e) {
       _status = AuthStatus.error;
       _errorMessage = 'Error de conexión';
