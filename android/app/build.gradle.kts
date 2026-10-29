@@ -78,6 +78,29 @@ android {
         ndk {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
         }
+
+        // 📦 Excluir extensiones de Agora que NO usa este proyecto
+        // El código solo usa el core RTC (init, joinChannel, mute, switchCamera, AgoraVideoView).
+        // Todas las extensiones *_extension.so, códecs y herramientas auxiliares se eliminan.
+        packagingOptions {
+            exclude("lib/**/libagora_lip_sync_extension.so")
+            exclude("lib/**/libagora-ffmpeg.so")
+            exclude("lib/**/libagora_clear_vision_extension.so")
+            exclude("lib/**/libagora_spatial_audio_extension.so")
+            exclude("lib/**/libagora_ai_noise_suppression_extension.so")
+            exclude("lib/**/libagora_face_capture_extension.so")
+            exclude("lib/**/libagora_segmentation_extension.so")
+            exclude("lib/**/libagora_ai_echo_cancellation_extension.so")
+            exclude("lib/**/libagora_audio_beauty_extension.so")
+            exclude("lib/**/libagora_content_inspection_extension.so")
+            exclude("lib/**/libagora_screen_capture_extension.so")
+            exclude("lib/**/libagora_video_quality_analyzer_extension.so")
+            exclude("lib/**/libagora_video_av1_encoder_extension.so")
+            exclude("lib/**/libagora_face_detection_extension.so")
+            exclude("lib/**/libagora_video_encoder_extension.so")
+            exclude("lib/**/libagora-fdkaac.so")
+            exclude("lib/**/libagora-soundtouch.so")
+        }
     }
 
     buildTypes {
