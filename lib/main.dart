@@ -24,16 +24,14 @@ import 'package:velvet_sync/screens/main_navigation.dart';
 import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 import 'package:velvet_sync/screens/auth_screen.dart';
 
-// AppEnv se importa desde lib/config/app_env.dart
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════
   // 1. Cargar variables de entorno desde env.json
   // Usamos rootBundle.loadString porque dotenv.load(fileName:) no funciona
   // en Android Release (el archivo está empaquetado como asset de Flutter).
-  // ══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════
   try {
     final envData = await rootBundle.loadString('env.json');
     final envMap = jsonDecode(envData) as Map<String, dynamic>;
@@ -41,37 +39,36 @@ void main() async {
     AppEnv.supabaseUrl = envMap['SUPABASE_URL'] ?? '';
     AppEnv.supabaseAnonKey = envMap['SUPABASE_ANON_KEY'] ?? '';
     AppEnv.resendApiKey = envMap['RESEND_API_KEY'] ?? '';
-    AppEnv.loaded = true;
-
-    // Fallback: si env.json no tiene valores, usar credenciales por defecto
-    if (AppEnv.supabaseUrl.isEmpty) {
-      AppEnv.supabaseUrl = 'https://baeclricgedhxdtmirid.supabase.co';
-      AppEnv.supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
-      lvsLog('Usando credenciales por defecto (env.json no cargado)', tag: 'APP');
-    }
 
     lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
     lvsLog('SUPABASE_URL: ${AppEnv.supabaseUrl}', tag: 'APP');
   } catch (e) {
-    lvsLog('env.json no disponible (modo offline): $e', tag: 'APP');
-    AppEnv.loaded = false;
+    lvsLog('env.json no disponible: $e', tag: 'APP');
   }
 
-  // Nota: flutter_dotenv se mantiene como dependencia pero no se usa
-  // para cargar env.json en Android Release. Los valores se leen
-  // directamente con rootBundle + jsonDecode arriba.
+  // Siempre tener credenciales disponibles (fallback hardcodeado)
+  if (AppEnv.supabaseUrl.isEmpty) {
+    AppEnv.supabaseUrl = 'https://baeclricgedhxdtmirid.supabase.co';
+    AppEnv.supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
+    AppEnv.loaded = true;
+    lvsLog('Usando credenciales por defecto hardcodeadas', tag: 'APP');
+  } else {
+    AppEnv.loaded = true;
+  }
 
-  // ══════════════════════════════════════════════════════════════
+  lvsLog('Supabase URL: ${AppEnv.supabaseUrl}', tag: 'APP');
+
+  // ═══════════════════════════════════════════════════════════════
   // 2. Inicializar Logger
-  // ══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════
   final logger = Logger();
   await logger.initFileLogging();
 
   lvsLog('Iniciando Velvet Sync App...', tag: 'APP');
 
-  // ══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════
   // 3. Inicializar Supabase Temprano
-  // ══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════
   if (AppEnv.loaded && AppEnv.supabaseUrl.isNotEmpty && AppEnv.supabaseAnonKey.isNotEmpty) {
     try {
       await Supabase.initialize(
@@ -88,7 +85,7 @@ void main() async {
       }
     }
   } else {
-    lvsLog('Supabase sin configurar (falta env.json); modo offline', tag: 'APP');
+    lvsLog('Supabase sin configurar; modo offline', tag: 'APP');
   }
 
   runApp(
