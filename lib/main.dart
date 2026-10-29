@@ -43,6 +43,13 @@ void main() async {
     AppEnv.resendApiKey = envMap['RESEND_API_KEY'] ?? '';
     AppEnv.loaded = true;
 
+    // Fallback: si env.json no tiene valores, usar credenciales por defecto
+    if (AppEnv.supabaseUrl.isEmpty) {
+      AppEnv.supabaseUrl = 'https://baeclricgedhxdtmirid.supabase.co';
+      AppEnv.supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
+      lvsLog('Usando credenciales por defecto (env.json no cargado)', tag: 'APP');
+    }
+
     lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
     lvsLog('SUPABASE_URL: ${AppEnv.supabaseUrl}', tag: 'APP');
   } catch (e) {
