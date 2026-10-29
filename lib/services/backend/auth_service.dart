@@ -144,34 +144,19 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Usar Edge Function con Resend para enviar el correo de recuperación
-      // Pasar la API key como query parameter para que Supabase la acepte
-      final response = await http.post(
-        Uri.parse(
-          '${AppEnv.supabaseUrl}/functions/v1/send-reset-email?apikey=${AppEnv.supabaseAnonKey}',
-        ),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'email': email,
-          'redirectTo': '${AppEnv.supabaseUrl}/auth/callback',
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
-        _status = AuthStatus.unauthenticated;
-        notifyListeners();
-        return true;
-      } else {
-        final errorData = jsonDecode(response.body);
-        _status = AuthStatus.error;
-        _errorMessage = errorData['error'] ?? 'Error enviando correo';
-        lvsError('Error resetPassword: ${_errorMessage}', tag: 'AUTH');
-        notifyListeners();
-        return false;
-      }
+      // Usar el método nativo de Supabase para restablecer contraseña
+      // No depende de Edge Function ni de servicios externos de correo
+      await _client.auth.resetPasswordForEmail(email);
+      lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return true;
+    } on AuthException catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = e.message;
+      lvsError('Error resetPassword: ${e.message}', tag: 'AUTH');
+      notifyListeners();
+      return false;
     } catch (e) {
       _status = AuthStatus.error;
       _errorMessage = 'Error de conexión';
