@@ -31,13 +31,18 @@ void main() async {
   // En Android Release, dotenv.load(fileName:) no funciona porque el archivo
   // está empaquetado como asset de Flutter, no en el sistema de archivos.
   // Solución: leer desde rootBundle, escribir a archivo temporal, luego llamar dotenv.load().
+  String supabaseUrl = '';
+  String supabaseAnonKey = '';
+  
   try {
     final envData = await rootBundle.loadString('env.json');
     final tempFile = File('${Directory.systemTemp.path}/velvet_sync_env.json');
     await tempFile.writeAsString(envData);
     await dotenv.load(fileName: tempFile.path);
+    supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
+    supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
     lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
-    lvsLog('SUPABASE_URL: ${dotenv.env['SUPABASE_URL']}', tag: 'APP');
+    lvsLog('SUPABASE_URL: $supabaseUrl', tag: 'APP');
   } catch (e) {
     lvsLog('env.json no disponible (modo offline): $e', tag: 'APP');
   }
@@ -50,8 +55,6 @@ void main() async {
 
   // 3. Inicializar Supabase Temprano
   // Usar valores de dotenv (cargados desde env.json)
-  final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
-  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
   
   if (supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty) {
     try {
