@@ -145,8 +145,11 @@ class AuthService extends ChangeNotifier {
 
     try {
       // Usar el método nativo de Supabase para restablecer contraseña
-      // No depende de Edge Function ni de servicios externos de correo
-      await _client.auth.resetPasswordForEmail(email);
+      // Redirigir a la página de restablecimiento en Vercel tras hacer clic en el enlace
+      await _client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'https://velvetsynccatalog.vercel.app/reset-password.html',
+      );
       lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
       _status = AuthStatus.unauthenticated;
       notifyListeners();
