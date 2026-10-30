@@ -46,17 +46,13 @@ void main() async {
     lvsLog('env.json no disponible: $e', tag: 'APP');
   }
 
-  // Siempre tener credenciales disponibles (fallback hardcodeado)
-  if (AppEnv.supabaseUrl.isEmpty) {
-    AppEnv.supabaseUrl = 'https://baeclricgedhxdtmirid.supabase.co';
-    AppEnv.supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhZWNscmljZ2VkaHhkdG1pcmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTUwMjYsImV4cCI6MjA4ODU5MTAyNn0.lPUuU6RiUGyaf36NJH4HysIkgTe8qFxt4CxA5OnjvjU';
-    AppEnv.loaded = true;
-    lvsLog('Usando credenciales por defecto hardcodeadas', tag: 'APP');
-  } else {
-    AppEnv.loaded = true;
-  }
+  AppEnv.loaded = AppEnv.supabaseUrl.isNotEmpty && AppEnv.supabaseAnonKey.isNotEmpty;
 
-  lvsLog('Supabase URL: ${AppEnv.supabaseUrl}', tag: 'APP');
+  if (!AppEnv.loaded) {
+    lvsLog('⚠️ Supabase no configurado: env.json no tiene SUPABASE_URL/SUPABASE_ANON_KEY. Modo offline.', tag: 'APP');
+  } else {
+    lvsLog('Supabase URL cargada: ${AppEnv.supabaseUrl}', tag: 'APP');
+  }
 
   // ═══════════════════════════════════════════════════════════════
   // 2. Inicializar Logger
