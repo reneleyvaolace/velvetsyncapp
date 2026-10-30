@@ -55,8 +55,8 @@ migrate_working_dir/
 # Linux - Ignorado (no se usa)
 /linux/
 
-# Web - Ignorado (no se usa)
-/web/
+# Web - Usado para despliegue en Vercel (reset-password.html)
+!web/reset-password.html
 
 # Windows - Ignorado (no se usa)
 /windows/
