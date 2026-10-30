@@ -8,4 +8,9 @@ class AppEnv {
   static String supabaseAnonKey = '';
   static String resendApiKey = '';
   static bool loaded = false;
+
+  // ── URLs centralizadas (evitar hardcodeo en servicios) ──
+  static const String webCatalogUrl = 'https://velvetsynccatalog.vercel.app/';
+  static const String resetPasswordRedirect = 'https://velvetsynccatalog.vercel.app/reset-password.html';
+  static const String loveSpouseApiBase = 'https://lovespouse.zlmicro.com/index.php';
 }

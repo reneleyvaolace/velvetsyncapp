@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -163,22 +162,50 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     final guestName = 'invitado_${DateTime.now().millisecondsSinceEpoch % 100000}';
     final displayName = 'Invitado ${rng.nextInt(999)}';
     setState(() => _isSaving = true);
-    final result = await ref.read(profileServiceProvider).createProfile(guestName, displayName);
-    setState(() => _isSaving = false);
-    if (mounted) {
+
+    try {
+      // 1. Autenticar anónimamente primero
+      final authOk = await _authService.signInAnonymously();
+      if (!authOk && mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo autenticar como invitado')),
+        );
+        return;
+      }
+
+      // 2. Crear perfil de invitado
+      final result = await ref.read(profileServiceProvider).createProfile(guestName, displayName);
+      setState(() => _isSaving = false);
+
       result.fold(
         (err) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${err.message}')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: ${err.message}')),
+            );
+          }
         },
-        (_) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MainNavigation()),
-          );
+        (_) async {
+          // 3. Guardar skip_auth = true para no mostrar auth screen de nuevo
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('skip_auth', true);
+
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const MainNavigation()),
+            );
+          }
         },
       );
+    } catch (e) {
+      setState(() => _isSaving = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error inesperado: $e')),
+        );
+      }
     }
   }
 

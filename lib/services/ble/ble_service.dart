@@ -96,11 +96,25 @@ class BleService extends ChangeNotifier {
   static const List<int> verificationCmdNew = [0x01, 0x01, 0x01, 0x01]; // NewCommand handshake
   static const int expectedAck = 0x06;
 
+  // ── Debounce para notifyListeners (evita rebuilds excesivos de UI) ──
+  Timer? _notifyDebounceTimer;
+  bool _notifyPending = false;
+
+  void _notifyListeners() {
+    if (_notifyPending) return; // Ya hay una notificación pendiente
+    _notifyPending = true;
+    _notifyDebounceTimer?.cancel();
+    _notifyDebounceTimer = Timer(const Duration(milliseconds: 80), () {
+      _notifyPending = false;
+      super.notifyListeners();
+    });
+  }
+
   void activateCooldown() {
     emergencyStop();
     isCooldownActive = true;
     cooldownRemaining = 60;
-    notifyListeners();
+    _notifyListeners();
 
     _cooldownTimer?.cancel();
     _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -109,7 +123,7 @@ class BleService extends ChangeNotifier {
         isCooldownActive = false;
         timer.cancel();
       }
-      notifyListeners();
+      _notifyListeners();
     });
   }
 
@@ -140,7 +154,7 @@ class BleService extends ChangeNotifier {
     _setState(BleState.connected); // Estado "virtual" para UI
 
     _log('📱 Dispositivo "${toy.name}" activado desde el catálogo (MODO VIRTUAL - sin hardware)', 'info');
-    notifyListeners();
+    _notifyListeners();
   }
 
   void _initNotifications() {
@@ -193,7 +207,7 @@ class BleService extends ChangeNotifier {
       hasDualChannel: updated.hasDualChannel,
     );
     connectedDeviceName = newName;
-    notifyListeners();
+    _notifyListeners();
   }
 
   // ── Getter Dinámico para Podómetro Frontal ────────────────
@@ -452,7 +466,7 @@ class BleService extends ChangeNotifier {
         ? _discoveredDeviceName
         : found!.remoteId.str;
     connectedDeviceName = rawName;
-    notifyListeners();
+    _notifyListeners();
 
     if (catalog != null) {
       toyProfile = ToyProfile.fromCatalog(rawName, catalog);
@@ -557,7 +571,7 @@ try {
           (connectedDeviceName.isEmpty || connectedDeviceName == 'N/A' || connectedDeviceName == 'Unknown' || connectedDeviceName.contains(':'))) {
         connectedDeviceName = gattName;
         _log('📛 Nombre obtenido vía GATT: "$gattName"', 'success');
-        notifyListeners();
+        _notifyListeners();
       }
 
       if (activeToy == null && connectedDeviceName.isNotEmpty) {
@@ -700,7 +714,7 @@ try {
       await _emergencyStopByProtocol();
     } catch (_) {}
     _log('🛑 PARADA DE EMERGENCIA', 'error');
-    notifyListeners();
+    _notifyListeners();
   }
 
   Future<void> stopAllMotors() async {
@@ -729,7 +743,7 @@ try {
       }
     } catch (_) {}
     _log('⏹️ MOTORES DETENIDOS', 'info');
-    notifyListeners();
+    _notifyListeners();
   }
 
   // NUEVO: Sincronización Multimedia (Dual Motor 8154)
@@ -939,7 +953,7 @@ try {
     activePatternCh2 = null;
     final cmd = LvsCommands.commandFor(level);
     _startBurst(cmd, level.name);
-    notifyListeners();
+    _notifyListeners();
   }
 
   Future<void> selectPattern(LvsPattern pattern) async {
@@ -957,7 +971,7 @@ try {
     activePatternCh2 = null;
     final cmd = LvsCommands.patternFor(pattern);
     _startBurst(cmd, pattern.name.toUpperCase());
-    notifyListeners();
+    _notifyListeners();
   }
 
   Future<void> setProportionalIntensity(int intensity) async {
@@ -982,7 +996,7 @@ try {
       final cmd = LvsCommands.proportional(capped);
       _startBurst(cmd, 'LVL:$capped');
     }
-    notifyListeners();
+    _notifyListeners();
   }
 
   Future<void> setProportionalChannel1(int intensity) async {
@@ -992,7 +1006,7 @@ try {
     activeIntensityCh1 = capped;
     activeIntensity = null; activeIntensityCh2 = null;
     activeSpeed = null; activePattern = null; activePatternCh1 = null;
-    notifyListeners();
+    _notifyListeners();
     if (capped == 0) {
       _startBurst(LvsCommands.ch1Stop, 'CH1:STOP');
     } else {
@@ -1008,7 +1022,7 @@ try {
     activeIntensityCh2 = capped;
     activeIntensity = null; activeIntensityCh1 = null;
     activeSpeed = null; activePattern = null; activePatternCh2 = null;
-    notifyListeners();
+    _notifyListeners();
     if (capped == 0) {
       _startBurst(LvsCommands.cmdStop, 'CH2:STOP');
     } else {
@@ -1030,7 +1044,7 @@ try {
     activePattern = null;
     activeSpeed = null;
     activePatternCh1 = null; // Unificar estado: si cambiamos canal, limpiamos otros modos
-    notifyListeners();
+    _notifyListeners();
     if (p == 0) {
       _startBurst(LvsCommands.cmdStop, 'CH2:STOP');
     } else {
@@ -1052,7 +1066,7 @@ try {
     activePattern = null; 
     activeSpeed = null;
     activePatternCh2 = null;
-    notifyListeners();
+    _notifyListeners();
     if (p == 0) {
       _startBurst(LvsCommands.ch1Stop, 'CH1:STOP');
     } else {
@@ -1068,7 +1082,7 @@ try {
     activeWaveCh1 = type;
     waveMaxIntensityCh1 = max;
     _startSequencer();
-    notifyListeners();
+    _notifyListeners();
   }
 
   void playWaveChannel2(WaveType type, {int max = 100}) {
@@ -1078,7 +1092,7 @@ try {
     activeWaveCh2 = type;
     waveMaxIntensityCh2 = max;
     _startSequencer();
-    notifyListeners();
+    _notifyListeners();
   }
 
   void _startSequencer() {
@@ -1130,7 +1144,7 @@ try {
       activeIntensityCh2 = val2;
     }
 
-    notifyListeners();
+    _notifyListeners();
   }
 
   int _evaluateWave(WaveType type, int tick, int maxIntensity) {
@@ -1156,13 +1170,13 @@ try {
 
   void clearLogs() {
     _logs.clear();
-    notifyListeners();
+    _notifyListeners();
   }
 
   void _startBurst(List<int> cmdBytes, String label) {
     _stopBurst();
     isBurstActive = true;
-    notifyListeners();
+    _notifyListeners();
     _burstTimer = Timer.periodic(Duration(milliseconds: burstIntervalMs), (_) {
       writeCommand(cmdBytes, label: '$label ♻', silent: true);
     });
@@ -1176,7 +1190,7 @@ try {
 
   void setBurstInterval(int ms) {
     burstIntervalMs = ms;
-    notifyListeners();
+    _notifyListeners();
     if (isBurstActive) {
       List<int>? cmd;
       var label = '';
@@ -1189,14 +1203,14 @@ try {
 
   void toggleDeepScan() {
     isDeepScan = !isDeepScan;
-    notifyListeners();
+    _notifyListeners();
     _log('Deep Scan: ${isDeepScan ? "ON" : "OFF"}', 'info');
   }
 
   void setPacketMode(PacketMode mode) {
     packetMode = mode;
     _log('Modo paquete: ${mode.name}', 'info');
-    notifyListeners();
+    _notifyListeners();
   }
 
   void _log(String msg, String type) {
@@ -1204,12 +1218,12 @@ try {
     if (_logs.length > 150) {
       _logs.removeRange(0, 50);
     }
-    notifyListeners();
+    _notifyListeners();
   }
 
   void _setState(BleState s) {
     state = s;
-    notifyListeners();
+    _notifyListeners();
   }
 
   // ── MÉTODOS RECUPERADOS ──────────────────────────────────
@@ -1238,13 +1252,13 @@ try {
         disconnect();
       }
     }
-    notifyListeners();
+    _notifyListeners();
   }
 
   void toggleBridgeMode() {
     isBridgeModeActive = !isBridgeModeActive;
     _log('🌉 Bridge mode: ${isBridgeModeActive ? "ON" : "OFF"}', 'info');
-    notifyListeners();
+    _notifyListeners();
   }
 
   Future<void> initSecurity() async {
@@ -1254,7 +1268,7 @@ try {
   Future<bool> toggleTravelLock(String pin) async {
     isTravelLockActive = !isTravelLockActive;
     _log('🔒 Travel Lock: ${isTravelLockActive ? "ACTIVO" : "INACTIVO"}', 'info');
-    notifyListeners();
+    _notifyListeners();
     return true;
   }
 
@@ -1308,14 +1322,14 @@ try {
     } else {
       await writeCommand(LoveSpouseCommands.heatingOff, label: 'HEATING_OFF');
     }
-    notifyListeners();
+    _notifyListeners();
   }
 
   Future<void> setHeatingLevel(int level) async {
     final clamped = level.clamp(0, 255);
     _heatingLevel = clamped;
     await writeCommand(LoveSpouseCommands.heatingLevel(clamped), label: 'HEATING_LVL:$clamped');
-    notifyListeners();
+    _notifyListeners();
   }
 
   // Strike
@@ -1326,13 +1340,13 @@ try {
     final clamped = index.clamp(0, 8);
     _strikeIndex = clamped;
     await writeCommand(LoveSpouseCommands.strikePattern(clamped), label: 'STRIKE_PAT:$clamped');
-    notifyListeners();
+    _notifyListeners();
   }
 
   Future<void> stopStrike() async {
     _strikeIndex = -1;
     await writeCommand(LoveSpouseCommands.strikeOff, label: 'STRIKE_OFF');
-    notifyListeners();
+    _notifyListeners();
   }
 
   // Suction
@@ -1349,14 +1363,14 @@ try {
     } else {
       await writeCommand(LoveSpouseCommands.suctionOff, label: 'SUCTION_OFF');
     }
-    notifyListeners();
+    _notifyListeners();
   }
 
   Future<void> setSuctionLevel(int level) async {
     final clamped = level.clamp(0, 255);
     _suctionLevel = clamped;
     await writeCommand(LoveSpouseCommands.suctionLevel(clamped), label: 'SUCTION_LVL:$clamped');
-    notifyListeners();
+    _notifyListeners();
   }
 
   // Pattern Channel 1 & 2 (LoveSpouse specific)
@@ -1371,7 +1385,7 @@ try {
     if (index >= 0 && index < patterns.length) {
       activePatternCh1 = index + 1;
       await writeCommand(patterns[index], label: 'CH1_PAT${index + 1}');
-      notifyListeners();
+      _notifyListeners();
     }
   }
 
@@ -1386,7 +1400,7 @@ try {
     if (index >= 0 && index < patterns.length) {
       activePatternCh2 = index + 1;
       await writeCommand(patterns[index], label: 'CH2_PAT${index + 1}');
-      notifyListeners();
+      _notifyListeners();
     }
   }
 
@@ -1438,7 +1452,7 @@ try {
       if (parsed['type'] == 'battery') {
         batteryLevel = parsed['level'] as int;
         // TODO: manejar charging state si se necesita
-        notifyListeners();
+        _notifyListeners();
       } else if (parsed['type'] == 'kegel') {
         // TODO: emitir evento o actualizar estado para Kegel
         _log('🎯 Kegel: pressure=${parsed['pressure']}, reps=${parsed['reps']}', 'info');

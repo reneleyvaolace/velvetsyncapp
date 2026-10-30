@@ -215,7 +215,7 @@ class AuthService extends ChangeNotifier {
         () async {
           await _client.auth.resetPasswordForEmail(
             email,
-            redirectTo: 'https://velvetsynccatalog.vercel.app/reset-password.html',
+            redirectTo: AppEnv.resetPasswordRedirect,
           );
           lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
           _status = AuthStatus.unauthenticated;
@@ -295,6 +295,41 @@ class AuthService extends ChangeNotifier {
       _status = AuthStatus.error;
       _errorMessage = 'Error de conexión';
       lvsError('Error linkEmail: $e', tag: 'AUTH');
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Autentica al usuario anónimamente (modo invitado)
+  Future<bool> signInAnonymously() async {
+    _status = AuthStatus.authenticating;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await _client.auth.signInAnonymously();
+      final user = response.user;
+      if (user != null) {
+        _user = user;
+        _status = AuthStatus.authenticated;
+        lvsLog('Sesión anónima iniciada: ${user.id}', tag: 'AUTH');
+        notifyListeners();
+        return true;
+      }
+      _status = AuthStatus.error;
+      _errorMessage = 'No se pudo iniciar sesión como invitado';
+      notifyListeners();
+      return false;
+    } on AuthException catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = e.message;
+      lvsError('Error signInAnonymously: ${e.message}', tag: 'AUTH');
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = 'Error de conexión';
+      lvsError('Error signInAnonymously: $e', tag: 'AUTH');
       notifyListeners();
       return false;
     }
