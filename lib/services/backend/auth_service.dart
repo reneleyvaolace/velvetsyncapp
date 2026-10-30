@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -49,6 +51,61 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  /// Número máximo de reintentos ante errores de rate limit
+  static const int _maxRetries = 3;
+  /// Delay base en segundos para backoff exponencial (2s, 4s, 8s)
+  static const int _baseDelaySeconds = 2;
+
+  /// Detecta si un error de AuthException es por rate limit de Supabase
+  bool _isRateLimitError(String message) {
+    final lower = message.toLowerCase();
+    return lower.contains('rate limit') ||
+        lower.contains('too many requests') ||
+        lower.contains('too many') ||
+        lower.contains('429');
+  }
+
+  /// Ejecuta una acción de autenticación con reintentos y backoff exponencial.
+  /// Devuelve true si tuvo éxito, false si falló tras agotar los reintentos.
+  Future<bool> _withRetry(
+    Future<bool> Function() action, {
+    required String operationName,
+    required String email,
+  }) async {
+    for (int attempt = 1; attempt <= _maxRetries; attempt++) {
+      try {
+        final result = await action();
+        if (result) return true;
+        // Si la acción devolvió false sin lanzar excepción, no reintentamos
+        return false;
+      } on AuthException catch (e) {
+        _status = AuthStatus.error;
+        _errorMessage = e.message;
+        lvsError('Error $operationName (intento $attempt): ${e.message}', tag: 'AUTH');
+        notifyListeners();
+
+        if (_isRateLimitError(e.message) && attempt < _maxRetries) {
+          final delay = _baseDelaySeconds * pow(2, attempt - 1);
+          lvsLog('Rate limit detectado. Reintentando en ${delay}s...', tag: 'AUTH');
+          await Future.delayed(Duration(seconds: delay.toInt()));
+          continue;
+        }
+        rethrow;
+      } catch (e) {
+        _status = AuthStatus.error;
+        _errorMessage = 'Error de conexión';
+        lvsError('Error $operationName (intento $attempt): $e', tag: 'AUTH');
+        notifyListeners();
+        rethrow;
+      }
+    }
+    // Si llegamos aquí, agotamos los reintentos
+    _status = AuthStatus.error;
+    _errorMessage = 'Demasiados intentos. Espera unos minutos y vuelve a intentar.';
+    notifyListeners();
+    return false;
+  }
+
   Future<bool> signUp(String email, String password) async {
     _status = AuthStatus.authenticating;
     _errorMessage = null;
@@ -69,17 +126,25 @@ class AuthService extends ChangeNotifier {
           return true;
         }
       } else {
-        final response = await _client.auth.signUp(
+        final success = await _withRetry(
+          () async {
+            final response = await _client.auth.signUp(
+              email: email,
+              password: password,
+            );
+            if (response.user != null) {
+              _user = response.user;
+              _status = AuthStatus.authenticated;
+              lvsLog('Cuenta creada: $email', tag: 'AUTH');
+              notifyListeners();
+              return true;
+            }
+            return false;
+          },
+          operationName: 'registro',
           email: email,
-          password: password,
         );
-        if (response.user != null) {
-          _user = response.user;
-          _status = AuthStatus.authenticated;
-          lvsLog('Cuenta creada: $email', tag: 'AUTH');
-          notifyListeners();
-          return true;
-        }
+        return success;
       }
 
       _status = AuthStatus.error;
@@ -146,14 +211,21 @@ class AuthService extends ChangeNotifier {
     try {
       // Usar el método nativo de Supabase para restablecer contraseña
       // Redirigir a la página de restablecimiento en Vercel tras hacer clic en el enlace
-      await _client.auth.resetPasswordForEmail(
-        email,
-        redirectTo: 'https://velvetsynccatalog.vercel.app/reset-password.html',
+      final success = await _withRetry(
+        () async {
+          await _client.auth.resetPasswordForEmail(
+            email,
+            redirectTo: 'https://velvetsynccatalog.vercel.app/reset-password.html',
+          );
+          lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
+          _status = AuthStatus.unauthenticated;
+          notifyListeners();
+          return true;
+        },
+        operationName: 'restablecimiento de contraseña',
+        email: email,
       );
-      lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
-      _status = AuthStatus.unauthenticated;
-      notifyListeners();
-      return true;
+      return success;
     } on AuthException catch (e) {
       _status = AuthStatus.error;
       _errorMessage = e.message;
