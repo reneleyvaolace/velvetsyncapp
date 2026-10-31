@@ -91,6 +91,7 @@ flutter:
     - assets/icon/
     - assets/icons/
     - assets/images/
+    - env.json
     - lib/devices/lovespouse/jsons_consolidated/
   fonts:
     - family: Outfit
