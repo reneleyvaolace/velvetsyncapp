@@ -33,11 +33,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // ═══════════════════════════════════════════════════════════════
-  // 1. Cargar variables de entorno desde env.json
-  // Usamos rootBundle.loadString porque dotenv.load(fileName:) no funciona
-  // en Android Release (el archivo está empaquetado como asset de Flutter).
+  // 1. Cargar variables de entorno
+  // Prioridad: --dart-define / --dart-define-from-file > env.json (asset) > vacío (offline)
+  //   Build release: flutter build apk --flavor prod --release --dart-define-from-file=env.properties
+  //   Debug local:   flutter run --flavor dev --debug (usa env.json como asset)
   // ═══════════════════════════════════════════════════════════════
-  // Primero intentar --dart-define (inyectado en compilación)
+  // Primero intentar --dart-define / --dart-define-from-file (inyectado en compilación)
+  //   env.properties debe tener formato KEY=VALOR (una por línea), NO JSON
   final dartDefineUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
   final dartDefineAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
   final dartDefineResend = String.fromEnvironment('RESEND_API_KEY', defaultValue: '');
@@ -63,7 +65,7 @@ void main() async {
         AppEnv.resendApiKey = envMap['RESEND_API_KEY'] ?? '';
       }
 
-      lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
+      lvsLog('env.json cargado desde assets de Flutter (fallback)', tag: 'APP');
     } catch (e) {
       lvsLog('env.json no disponible: $e', tag: 'APP');
     }

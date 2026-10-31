@@ -74,6 +74,7 @@ app.*.map.json
 /android/app/*.keystore
 # Config local con --dart-define-from-file
 env.json
+env.properties
 *.env.json
 
 # APKs (build artifacts)
