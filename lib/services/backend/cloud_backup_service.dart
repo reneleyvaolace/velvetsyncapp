@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velvet_sync/services/backend/supabase_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
@@ -125,6 +124,16 @@ class CloudBackupService extends ChangeNotifier {
 
   static const String _bucketName = 'user_backups';
 
+  // 🔒 Secure storage para configuración de backup (encriptado)
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
+  // Keys conocidas que se respaldan/restauran (migradas de SharedPreferences)
+  static const List<String> _knownKeys = [
+    'skip_auth',
+    'activity_config',
+    'profile_cache',
+  ];
+
   Future<bool> _ensureBucket() async {
     try {
       final supabase = _ref.read(supabaseServiceProvider);
@@ -142,11 +151,13 @@ class CloudBackupService extends ChangeNotifier {
   }
 
   Future<BackupData> _collectBackupData() async {
-    final prefs = await SharedPreferences.getInstance();
     final settings = <String, dynamic>{};
-    for (final key in prefs.getKeys()) {
+    for (final key in _knownKeys) {
       if (key.startsWith('backup_')) continue;
-      settings[key] = prefs.get(key);
+      final value = await _secureStorage.read(key: key);
+      if (value != null) {
+        settings[key] = value;
+      }
     }
 
     return BackupData(
@@ -161,19 +172,10 @@ class CloudBackupService extends ChangeNotifier {
   }
 
   void _applyBackupData(BackupData data) async {
-    final prefs = await SharedPreferences.getInstance();
     for (final entry in data.settings.entries) {
       final value = entry.value;
       if (value is String) {
-        await prefs.setString(entry.key, value);
-      } else if (value is bool) {
-        await prefs.setBool(entry.key, value);
-      } else if (value is int) {
-        await prefs.setInt(entry.key, value);
-      } else if (value is double) {
-        await prefs.setDouble(entry.key, value);
-      } else if (value is List<String>) {
-        await prefs.setStringList(entry.key, value);
+        await _secureStorage.write(key: entry.key, value: value);
       }
     }
   }
