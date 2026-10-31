@@ -10,7 +10,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:velvet_sync/devices/models/user_profile.dart';
 import 'package:velvet_sync/types/result_types.dart';
@@ -67,14 +67,16 @@ class ProfileService extends ChangeNotifier {
 
   String? get _currentUserId => _client.auth.currentUser?.id;
 
-  // ── SharedPreferences keys ──────────────────────────────────
+  // 🔒 Secure storage para cache de perfil (encriptado)
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
+  // ── Secure storage keys ──────────────────────────────────
   static const String _prefsKey = 'profile_cache';
 
-  /// Load cached profile from SharedPreferences
+  /// Load cached profile from secure storage
   Future<void> loadCachedProfile() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final cached = prefs.getString(_prefsKey);
+      final cached = await _secureStorage.read(key: _prefsKey);
       if (cached != null) {
         final json = jsonDecode(cached) as Map<String, dynamic>;
         _myProfile = UserProfile.fromJson(json);
@@ -86,11 +88,10 @@ class ProfileService extends ChangeNotifier {
     }
   }
 
-  /// Save profile to SharedPreferences cache
+  /// Save profile to secure storage cache
   Future<void> _cacheProfile(UserProfile profile) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_prefsKey, jsonEncode(profile.toJson()));
+      await _secureStorage.write(key: _prefsKey, value: jsonEncode(profile.toJson()));
     } catch (e) {
       lvsError('Error caching profile: $e', tag: 'PROFILE');
     }
@@ -99,8 +100,7 @@ class ProfileService extends ChangeNotifier {
   /// Clear cached profile
   Future<void> clearCache() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_prefsKey);
+      await _secureStorage.delete(key: _prefsKey);
       _myProfile = null;
       notifyListeners();
     } catch (e) {

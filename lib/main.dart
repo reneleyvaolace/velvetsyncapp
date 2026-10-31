@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:velvet_sync/config/app_env.dart';
@@ -24,6 +24,11 @@ import 'package:velvet_sync/screens/main_navigation.dart';
 import 'package:velvet_sync/screens/contacts/my_profile_screen.dart';
 import 'package:velvet_sync/screens/auth_screen.dart';
 
+// ════════════════════════════════════════════════════════════════
+// 🔒 Secure Storage para datos sensibles (reemplaza SharedPreferences)
+// ════════════════════════════════════════════════════════════════
+final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -32,24 +37,42 @@ void main() async {
   // Usamos rootBundle.loadString porque dotenv.load(fileName:) no funciona
   // en Android Release (el archivo está empaquetado como asset de Flutter).
   // ═══════════════════════════════════════════════════════════════
-  try {
-    final envData = await rootBundle.loadString('env.json');
-    final envMap = jsonDecode(envData) as Map<String, dynamic>;
+  // Primero intentar --dart-define (inyectado en compilación)
+  final dartDefineUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
+  final dartDefineAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
+  final dartDefineResend = String.fromEnvironment('RESEND_API_KEY', defaultValue: '');
 
-    AppEnv.supabaseUrl = envMap['SUPABASE_URL'] ?? '';
-    AppEnv.supabaseAnonKey = envMap['SUPABASE_ANON_KEY'] ?? '';
-    AppEnv.resendApiKey = envMap['RESEND_API_KEY'] ?? '';
+  if (dartDefineUrl.isNotEmpty && dartDefineAnonKey.isNotEmpty) {
+    AppEnv.supabaseUrl = dartDefineUrl;
+    AppEnv.supabaseAnonKey = dartDefineAnonKey;
+    AppEnv.resendApiKey = dartDefineResend;
+    lvsLog('Credenciales cargadas via --dart-define', tag: 'APP');
+  } else {
+    // Fallback: leer de env.json (asset de Flutter para desarrollo local)
+    try {
+      final envData = await rootBundle.loadString('env.json');
+      final envMap = jsonDecode(envData) as Map<String, dynamic>;
 
-    lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
-    lvsLog('SUPABASE_URL: ${AppEnv.supabaseUrl}', tag: 'APP');
-  } catch (e) {
-    lvsLog('env.json no disponible: $e', tag: 'APP');
+      if (AppEnv.supabaseUrl.isEmpty) {
+        AppEnv.supabaseUrl = envMap['SUPABASE_URL'] ?? '';
+      }
+      if (AppEnv.supabaseAnonKey.isEmpty) {
+        AppEnv.supabaseAnonKey = envMap['SUPABASE_ANON_KEY'] ?? '';
+      }
+      if (AppEnv.resendApiKey.isEmpty) {
+        AppEnv.resendApiKey = envMap['RESEND_API_KEY'] ?? '';
+      }
+
+      lvsLog('env.json cargado desde assets de Flutter', tag: 'APP');
+    } catch (e) {
+      lvsLog('env.json no disponible: $e', tag: 'APP');
+    }
   }
 
   AppEnv.loaded = AppEnv.supabaseUrl.isNotEmpty && AppEnv.supabaseAnonKey.isNotEmpty;
 
   if (!AppEnv.loaded) {
-    lvsLog('⚠️ Supabase no configurado: env.json no tiene SUPABASE_URL/SUPABASE_ANON_KEY. Modo offline.', tag: 'APP');
+    lvsLog('Supabase no configurado. Modo offline.', tag: 'APP');
   } else {
     lvsLog('Supabase URL cargada: ${AppEnv.supabaseUrl}', tag: 'APP');
   }
@@ -207,8 +230,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     bool skipAuth = false;
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      skipAuth = prefs.getBool('skip_auth') ?? false;
+      final skipAuthStr = await _secureStorage.read(key: 'skip_auth');
+      skipAuth = skipAuthStr == 'true';
 
       // Intentar leer el email de auth de forma segura
       try {

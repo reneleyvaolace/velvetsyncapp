@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:velvet_sync/services/backend/profile_service.dart';
 import 'package:velvet_sync/services/backend/auth_service.dart';
 import 'package:velvet_sync/devices/models/user_profile.dart';
@@ -28,6 +28,9 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
   final TextEditingController _linkPasswordController = TextEditingController();
   final TextEditingController _linkConfirmController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  // 🔒 Secure storage para skip_auth (encriptado, no texto plano)
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   bool _isLoadingProfile = true;
   bool _isSaving = false;
@@ -188,8 +191,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
         },
         (_) async {
           // 3. Guardar skip_auth = true para no mostrar auth screen de nuevo
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('skip_auth', true);
+          await _secureStorage.write(key: 'skip_auth', value: 'true');
 
           if (mounted) {
             Navigator.pushReplacement(
@@ -783,14 +785,14 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
               );
               if (confirmed == true) {
                 await auth.signOut();
-                (await SharedPreferences.getInstance()).setBool('skip_auth', false);
+                await _secureStorage.write(key: 'skip_auth', value: 'false');
                 if (mounted) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => AuthScreen(
                         onSkip: () async {
-                          (await SharedPreferences.getInstance()).setBool('skip_auth', true);
+                          await _secureStorage.write(key: 'skip_auth', value: 'true');
                           if (Navigator.canPop(context)) Navigator.pop(context);
                         },
                       ),
@@ -822,7 +824,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                 if (confirmed == true) {
                   final ok = await auth.deleteAccount();
                   if (ok && mounted) {
-                    (await SharedPreferences.getInstance()).setBool('skip_auth', false);
+                    await _secureStorage.write(key: 'skip_auth', value: 'false');
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => const MyProfileScreen()),
