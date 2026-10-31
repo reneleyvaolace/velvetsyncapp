@@ -117,11 +117,11 @@ class SyncService extends ChangeNotifier {
   /// Debe llamarse después de que SupabaseService esté inicializado
   Future<void> init() async {
     if (_isInitialized) {
-      debugPrint('[SyncService] Ya está inicializado');
+      if (kDebugMode) debugPrint('[SyncService] Ya está inicializado');
       return;
     }
 
-    debugPrint('[SyncService] Iniciando servicio de sincronización...');
+    if (kDebugMode) debugPrint('[SyncService] Iniciando servicio de sincronización...');
     _setState(SyncChannelState.connecting);
 
     try {
@@ -141,7 +141,7 @@ class SyncService extends ChangeNotifier {
       lvsLog('SyncService inicializado - Canal: public:device_sync', tag: 'SYNC');
       notifyListeners();
     } catch (e) {
-      debugPrint('[SyncService] Error al iniciar: $e');
+      if (kDebugMode) debugPrint('[SyncService] Error al iniciar: $e');
       lvsLog('Error al iniciar SyncService: $e', tag: 'SYNC');
       _setState(SyncChannelState.error);
       rethrow;
@@ -167,22 +167,22 @@ class SyncService extends ChangeNotifier {
     // Suscribirse al canal usando callback
     _channel!.subscribe((status, error) {
       if (status == RealtimeSubscribeStatus.subscribed) {
-        debugPrint('[SyncService] Canal suscrito exitosamente');
+        if (kDebugMode) debugPrint('[SyncService] Canal suscrito exitosamente');
         lvsLog('Canal public:device_sync suscrito', tag: 'SYNC');
         _setState(SyncChannelState.receiving);
       } else if (status == RealtimeSubscribeStatus.channelError) {
         // ⚠️ NO LOGUEAR ERRORES DE RED PARA NO SATURAR
-        // debugPrint('[SyncService] Error en el canal: $error');
+        // if (kDebugMode) debugPrint('[SyncService] Error en el canal: $error');
         final isNetworkError = error.toString().contains('SocketException') ||
                                error.toString().contains('Failed host lookup');
         if (!isNetworkError) {
-          debugPrint('[SyncService] Error en el canal: $error');
+          if (kDebugMode) debugPrint('[SyncService] Error en el canal: $error');
           lvsLog('Error en canal realtime: $error', tag: 'SYNC');
         }
         _setState(SyncChannelState.error);
       } else if (status == RealtimeSubscribeStatus.timedOut) {
         // ⚠️ TIMEOUTS DE RED SON NORMALES SIN INTERNET
-        // debugPrint('[SyncService] Timeout al suscribir');
+        // if (kDebugMode) debugPrint('[SyncService] Timeout al suscribir');
         _setState(SyncChannelState.error);
       }
     });
@@ -193,7 +193,7 @@ class SyncService extends ChangeNotifier {
 
   /// Callback cuando hay cambios en la base de datos
   void _onDatabaseChange(PostgresChangePayload payload) {
-    debugPrint('[SyncService] Cambio detectado');
+    if (kDebugMode) debugPrint('[SyncService] Cambio detectado');
 
     try {
       // Extraer el registro nuevo (INSERT)
@@ -204,11 +204,11 @@ class SyncService extends ChangeNotifier {
 
       // Validar que el evento tenga datos válidos
       if (syncEvent.deviceId.isEmpty || syncEvent.command.isEmpty) {
-        debugPrint('[SyncService] Evento inválido recibido');
+        if (kDebugMode) debugPrint('[SyncService] Evento inválido recibido');
         return;
       }
 
-      debugPrint('[SyncService] Evento recibido: ${syncEvent.command} para ${syncEvent.deviceId}');
+      if (kDebugMode) debugPrint('[SyncService] Evento recibido: ${syncEvent.command} para ${syncEvent.deviceId}');
       lvsLog('SYNC: ${syncEvent.command} -> ${syncEvent.deviceId}', tag: 'SYNC');
 
       // Agregar a eventos recientes
@@ -226,7 +226,7 @@ class SyncService extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      debugPrint('[SyncService] Error procesando evento: $e');
+      if (kDebugMode) debugPrint('[SyncService] Error procesando evento: $e');
       lvsLog('Error procesando evento: $e', tag: 'SYNC');
     }
   }
@@ -250,7 +250,7 @@ class SyncService extends ChangeNotifier {
     _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       // ⚠️ SOLO LOGUEAR SI EL CANAL ESTÁ ACTIVO
       if (_channel != null && _state == SyncChannelState.receiving) {
-        // debugPrint('[SyncService] Heartbeat - Canal activo');
+        // if (kDebugMode) debugPrint('[SyncService] Heartbeat - Canal activo');
       }
     });
   }
@@ -258,7 +258,7 @@ class SyncService extends ChangeNotifier {
   /// Establece el estado del canal
   void _setState(SyncChannelState newState) {
     _state = newState;
-    debugPrint('[SyncService] Estado: ${newState.name}');
+    if (kDebugMode) debugPrint('[SyncService] Estado: ${newState.name}');
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -269,25 +269,25 @@ class SyncService extends ChangeNotifier {
   void addAiProfileListener(SyncEventCallback callback) {
     if (!_aiProfileListeners.contains(callback)) {
       _aiProfileListeners.add(callback);
-      debugPrint('[SyncService] Listener AI Profile registrado');
+      if (kDebugMode) debugPrint('[SyncService] Listener AI Profile registrado');
     }
   }
 
   /// Remueve un listener para eventos APPLY_AI_PROFILE
   void removeAiProfileListener(SyncEventCallback callback) {
     _aiProfileListeners.remove(callback);
-    debugPrint('[SyncService] Listener AI Profile removido');
+    if (kDebugMode) debugPrint('[SyncService] Listener AI Profile removido');
   }
 
   /// Notifica a todos los listeners de APPLY_AI_PROFILE
   void _notifyAiProfileListeners(DeviceSyncEvent event) {
-    debugPrint('[SyncService] Notificando ${_aiProfileListeners.length} listeners de AI Profile');
+    if (kDebugMode) debugPrint('[SyncService] Notificando ${_aiProfileListeners.length} listeners de AI Profile');
 
     for (final callback in _aiProfileListeners) {
       try {
         callback(event);
       } catch (e) {
-        debugPrint('[SyncService] Error en listener AI Profile: $e');
+        if (kDebugMode) debugPrint('[SyncService] Error en listener AI Profile: $e');
         lvsLog('Error en listener AI Profile: $e', tag: 'SYNC');
       }
     }
@@ -311,7 +311,7 @@ class SyncService extends ChangeNotifier {
   void clearHistory() {
     _recentEvents.clear();
     _eventsController.add([]);
-    debugPrint('[SyncService] Historial limpiado');
+    if (kDebugMode) debugPrint('[SyncService] Historial limpiado');
   }
 
   /// Remueve eventos antiguos (más de 5 minutos)
@@ -322,7 +322,7 @@ class SyncService extends ChangeNotifier {
     _recentEvents.removeWhere((e) => e.timestamp.isBefore(cutoff));
     _eventsController.add(List.unmodifiable(_recentEvents));
 
-    debugPrint('[SyncService] Eventos antiguos removidos. Restantes: ${_recentEvents.length}');
+    if (kDebugMode) debugPrint('[SyncService] Eventos antiguos removidos. Restantes: ${_recentEvents.length}');
   }
 
   /// Agrega un evento directamente (expuesto para testing)
@@ -346,7 +346,7 @@ class SyncService extends ChangeNotifier {
   /// Cierra el canal y limpia recursos
   @override
   Future<void> dispose() async {
-    debugPrint('[SyncService] Cerrando servicio...');
+    if (kDebugMode) debugPrint('[SyncService] Cerrando servicio...');
 
     _heartbeatTimer?.cancel();
     _eventsSubscription?.cancel();
