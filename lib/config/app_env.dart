@@ -7,7 +7,10 @@ class AppEnv {
   static String supabaseUrl = '';
   static String supabaseAnonKey = '';
   static String resendApiKey = '';
+  static String aiProxyFunction = 'ai-proxy';
   static bool loaded = false;
+
+  static bool get hasSupabase => supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
 
   // ── URLs centralizadas (evitar hardcodeo en servicios) ──
   static const String webCatalogUrl = 'https://velvetsynccatalog.vercel.app/';

@@ -6,7 +6,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:velvet_sync/config/env.dart';
+import 'package:velvet_sync/config/app_env.dart';
 import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/utils/logger.dart';
