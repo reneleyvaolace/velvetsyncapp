@@ -20,7 +20,7 @@ const SYSTEM_PROMPT =
   '"Mmm... [H:0,0]" si es suave.';
 
 const corsHeaders: Record<string, string> = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://velvetsynccatalog.vercel.app',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };

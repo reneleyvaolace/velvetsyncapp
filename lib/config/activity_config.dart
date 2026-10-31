@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Configuración remota de UI (ActivityConfig)
 /// Permite activar/desactivar features por backend sin release
@@ -13,6 +13,9 @@ class ActivityConfig {
   ActivityConfig._internal();
 
   static ActivityConfig get instance => _instance;
+
+  // 🔒 Secure storage para configuración de actividad (encriptado)
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   bool get isInitialized => _initialized;
 
@@ -40,16 +43,14 @@ class ActivityConfig {
     }
   }
 
-  /// Guarda configuración localmente
+  /// Guarda configuración localmente (secure storage, encriptado)
   Future<void> _saveLocal() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('activity_config', jsonEncode(_config));
+    await _secureStorage.write(key: 'activity_config', value: jsonEncode(_config));
   }
 
-  /// Carga configuración guardada localmente
+  /// Carga configuración guardada localmente (secure storage)
   Future<void> _loadLocal() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString('activity_config');
+    final saved = await _secureStorage.read(key: 'activity_config');
     if (saved != null) {
       try {
         final parsed = jsonDecode(saved) as Map<String, dynamic>;

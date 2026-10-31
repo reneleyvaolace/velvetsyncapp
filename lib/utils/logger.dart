@@ -279,7 +279,7 @@ class Logger {
   /// Inicializar logging a archivo
   Future<void> initFileLogging({String? customPath}) async {
     if (kIsWeb) {
-      debugPrint('[LOGGER] File logging is disabled on Web');
+      if (kDebugMode) debugPrint('[LOGGER] File logging is disabled on Web');
       return;
     }
     

@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class MediaSyncNotifier extends ChangeNotifier {
         var maxAmp = rawAmplitudes.reduce((a, b) => a.abs() > b.abs() ? a.abs() : b.abs());
         if (maxAmp == 0) maxAmp = 1;
         _amplitudes = rawAmplitudes.map((amp) => amp.abs() / maxAmp).toList();
-        debugPrint('[MediaSync] Waveform extraída: ${rawAmplitudes.length} muestras');
+        if (kDebugMode) debugPrint('[MediaSync] Waveform extraída: ${rawAmplitudes.length} muestras');
       } else {
         _amplitudes = [];
       }
@@ -117,7 +118,7 @@ class MediaSyncNotifier extends ChangeNotifier {
 
     final ble = ref.read(bleProvider);
     if (ble.state == BleState.connected) {
-       debugPrint('[MediaSync] ch1: $ch1Val, ch2: $ch2Val (amp: ${amplitude.toStringAsFixed(2)})');
+       if (kDebugMode) debugPrint('[MediaSync] ch1: $ch1Val, ch2: $ch2Val (amp: ${amplitude.toStringAsFixed(2)})');
        ble.sendMultimediaSync(ch1Val, ch2Val);
     }
   }

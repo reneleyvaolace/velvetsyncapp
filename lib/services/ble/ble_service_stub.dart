@@ -40,7 +40,7 @@ class BleService extends ChangeNotifier {
     await Future.delayed(const Duration(seconds: 1));
     state = BleState.connected;
     notifyListeners();
-    debugPrint('[BleServiceStub] Conexión simulada activa');
+    if (kDebugMode) debugPrint('[BleServiceStub] Conexión simulada activa');
   }
 
   Future<void> disconnect() async {
@@ -49,12 +49,16 @@ class BleService extends ChangeNotifier {
   }
 
   Future<bool> writeCommand(List<int> bytes, {String label = '', bool silent = false}) async {
-    if (!silent) debugPrint('[BleServiceStub] Simulating command: ${LvsCommands.bytesToHex(bytes)}');
+    if (!silent && kDebugMode) debugPrint('[BleServiceStub] Simulating command: ${LvsCommands.bytesToHex(bytes)}');
     return true;
   }
 
-  Future<void> emergencyStop() async => debugPrint('[BleServiceStub] EMERGENCY STOP');
-  Future<void> initSecurity() async => debugPrint('[BleServiceStub] Security Initialized');
+  Future<void> emergencyStop() async {
+    if (kDebugMode) debugPrint('[BleServiceStub] EMERGENCY STOP');
+  }
+  Future<void> initSecurity() async {
+    if (kDebugMode) debugPrint('[BleServiceStub] Security Initialized');
+  }
   void clearLogs() => notifyListeners();
 
   void writeDebugCommand(int b0, int b1, int b2, {bool silent = false}) async {

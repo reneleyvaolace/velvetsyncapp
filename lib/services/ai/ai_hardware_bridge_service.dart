@@ -135,11 +135,11 @@ class AIHardwareBridge extends ChangeNotifier {
     SyncService? syncService,
   }) async {
     if (_state == AIBridgeState.connected) {
-      debugPrint('[AIHardwareBridge] Ya está conectado');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Ya está conectado');
       return;
     }
 
-    debugPrint('[AIHardwareBridge] Iniciando puente IA-Hardware...');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Iniciando puente IA-Hardware...');
     _setState(AIBridgeState.disconnected);
 
     try {
@@ -151,11 +151,11 @@ class AIHardwareBridge extends ChangeNotifier {
 
       _state = AIBridgeState.connected;
       lvsLog('Puente IA-Hardware conectado', tag: 'AI_BRIDGE');
-      debugPrint('[AIHardwareBridge] Escuchando eventos APPLY_AI_PROFILE');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Escuchando eventos APPLY_AI_PROFILE');
 
       notifyListeners();
     } catch (e) {
-      debugPrint('[AIHardwareBridge] Error al iniciar: $e');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Error al iniciar: $e');
       lvsLog('Error al iniciar puente IA-Hardware: $e', tag: 'AI_BRIDGE');
       _setState(AIBridgeState.error);
       rethrow;
@@ -165,7 +165,7 @@ class AIHardwareBridge extends ChangeNotifier {
   /// Establece el modelo del juguete actualmente conectado
   void setCurrentToy(ToyModel? toy) {
     _currentToy = toy;
-    debugPrint('[AIHardwareBridge] Juguete actual: ${toy?.name ?? 'Ninguno'}');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Juguete actual: ${toy?.name ?? 'Ninguno'}');
   }
 
   /// Manejador principal de eventos APPLY_AI_PROFILE
@@ -173,27 +173,27 @@ class AIHardwareBridge extends ChangeNotifier {
   /// Procesa el intensity_map del evento y envía comandos BLE
   void _handleAIProfile(DeviceSyncEvent event) {
     if (_isExecuting) {
-      debugPrint('[AIHardwareBridge] Descartando evento, ejecución en progreso');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Descartando evento, ejecución en progreso');
       return;
     }
     unawaited(_processAIProfile(event));
   }
 
   Future<void> _processAIProfile(DeviceSyncEvent event) async {
-    debugPrint('[AIHardwareBridge] Evento AI Profile recibido: ${event.id}');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Evento AI Profile recibido: ${event.id}');
     lvsLog('AI Profile: ${event.command} para ${event.deviceId}', tag: 'AI_BRIDGE');
 
     // Validar que tengamos un juguete conectado
     final toy = _currentToy;
     if (toy == null) {
-      debugPrint('[AIHardwareBridge] No hay juguete conectado');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] No hay juguete conectado');
       lvsLog('No hay juguete conectado para aplicar AI Profile', tag: 'AI_BRIDGE');
       return;
     }
 
     // Validar que el BLE esté conectado
     if (_bleService?.isConnected != true) {
-      debugPrint('[AIHardwareBridge] BLE no está conectado');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] BLE no está conectado');
       lvsLog('BLE no está conectado', tag: 'AI_BRIDGE');
       return;
     }
@@ -206,13 +206,13 @@ class AIHardwareBridge extends ChangeNotifier {
       final intensityMap = _extractIntensityMap(event.payload);
 
       if (intensityMap.isEmpty) {
-        debugPrint('[AIHardwareBridge] No hay intensidad en el evento');
+        if (kDebugMode) debugPrint('[AIHardwareBridge] No hay intensidad en el evento');
         _setState(AIBridgeState.connected);
         _isExecuting = false;
         return;
       }
 
-      debugPrint('[AIHardwareBridge] Intensity Map: $intensityMap');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Intensity Map: $intensityMap');
 
       // Procesar cada valor en el mapa de intensidad
       await _executeIntensityMap(intensityMap, toy, event);
@@ -224,7 +224,7 @@ class AIHardwareBridge extends ChangeNotifier {
       _setState(AIBridgeState.connected);
       lvsLog('AI Profile ejecutado exitosamente', tag: 'AI_BRIDGE');
     } catch (e) {
-      debugPrint('[AIHardwareBridge] Error procesando evento: $e');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Error procesando evento: $e');
       lvsLog('Error procesando AI Profile: $e', tag: 'AI_BRIDGE');
       _setState(AIBridgeState.error);
     } finally {
@@ -316,7 +316,7 @@ class AIHardwareBridge extends ChangeNotifier {
     final guardResult1 = _preciseControlGuard(toy: toy, intensity: ch1Val);
 
     if (!guardResult1.allowed) {
-      debugPrint('[AIHardwareBridge] Guard bloqueó CH1: ${guardResult1.reason}');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Guard bloqueó CH1: ${guardResult1.reason}');
       lvsLog('Guard bloqueó AI CH1: ${guardResult1.reason}', tag: 'AI_BRIDGE');
       return;
     }
@@ -336,7 +336,7 @@ class AIHardwareBridge extends ChangeNotifier {
       final guardResult2 = _preciseControlGuard(toy: toy, intensity: ch2Val);
       
       if (!guardResult2.allowed) {
-        debugPrint('[AIHardwareBridge] Guard bloqueó CH2: ${guardResult2.reason}');
+        if (kDebugMode) debugPrint('[AIHardwareBridge] Guard bloqueó CH2: ${guardResult2.reason}');
         lvsLog('Guard bloqueó AI CH2: ${guardResult2.reason}', tag: 'AI_BRIDGE');
         return;
       }
@@ -365,7 +365,7 @@ class AIHardwareBridge extends ChangeNotifier {
                          intensityMap['intensity'] ??
                          50;
 
-    debugPrint('[AIHardwareBridge] Dual Channel: CH1=$ch1Intensity, CH2=$ch2Intensity');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Dual Channel: CH1=$ch1Intensity, CH2=$ch2Intensity');
 
     // Traducir protocolo para cada canal
     final ch1Command = ProtocolTranslator.translate(
@@ -380,8 +380,8 @@ class AIHardwareBridge extends ChangeNotifier {
       channel: 2,  // Canal 2: Vibración
     );
 
-    debugPrint('[AIHardwareBridge] CH1 Bytes: ${ch1Command.bytes}');
-    debugPrint('[AIHardwareBridge] CH2 Bytes: ${ch2Command.bytes}');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] CH1 Bytes: ${ch1Command.bytes}');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] CH2 Bytes: ${ch2Command.bytes}');
 
     // Enviar comandos BLE
     await _sendBleCommand(ch1Command.bytes, 'AI CH1');
@@ -401,7 +401,7 @@ class AIHardwareBridge extends ChangeNotifier {
                       intensityMap['intensity_ch1'] ??
                       50;
 
-    debugPrint('[AIHardwareBridge] Single Channel: intensity=$intensity');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Single Channel: intensity=$intensity');
 
     // Si hay patrón, usarlo
     if (intensityMap.containsKey('pattern')) {
@@ -417,7 +417,7 @@ class AIHardwareBridge extends ChangeNotifier {
       channel: null,  // Ambos canales (o único canal)
     );
 
-    debugPrint('[AIHardwareBridge] Bytes: ${command.bytes}');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Bytes: ${command.bytes}');
 
     // Enviar comando BLE
     await _sendBleCommand(command.bytes, 'AI Single');
@@ -427,7 +427,7 @@ class AIHardwareBridge extends ChangeNotifier {
 
   /// Ejecuta un patrón predefinido
   Future<void> _executePattern(int pattern, ToyModel toy) async {
-    debugPrint('[AIHardwareBridge] Ejecutando patrón: $pattern');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Ejecutando patrón: $pattern');
 
     // Usar LvsCommands para patrones (1-9)
     // El patrón se aplica al canal 1 por defecto
@@ -441,16 +441,16 @@ class AIHardwareBridge extends ChangeNotifier {
   /// Envía comando BLE
   Future<void> _sendBleCommand(List<int> bytes, String label) async {
     if (_bleService == null) {
-      debugPrint('[AIHardwareBridge] BLE Service no está inicializado');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] BLE Service no está inicializado');
       return;
     }
 
     try {
       // Usar writeCommand del BleService
       await _bleService!.writeCommand(bytes, label: label, silent: false);
-      debugPrint('[AIHardwareBridge] Comando enviado: $label');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Comando enviado: $label');
     } catch (e) {
-      debugPrint('[AIHardwareBridge] Error enviando comando BLE: $e');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Error enviando comando BLE: $e');
       lvsLog('Error enviando comando BLE: $e', tag: 'AI_BRIDGE');
       rethrow;
     }
@@ -473,13 +473,13 @@ class AIHardwareBridge extends ChangeNotifier {
     // Verificar propiedad isPrecise del modelo
     if (toy.isPrecise) {
       // Dispositivo preciso: permite 0-255 directo
-      debugPrint('[AIHardwareBridge Guard] Dispositivo PRECISE - Permitido 0-255');
+      if (kDebugMode) debugPrint('[AIHardwareBridge Guard] Dispositivo PRECISE - Permitido 0-255');
       return PreciseControlGuardResult.allowed(intensity, true);
     }
 
     // Dispositivo no preciso: limitar a 0-100
     if (intensity > 100) {
-      debugPrint('[AIHardwareBridge Guard] Dispositivo NO PRECISE - Intensidad $intensity > 100, ajustando a 100');
+      if (kDebugMode) debugPrint('[AIHardwareBridge Guard] Dispositivo NO PRECISE - Intensidad $intensity > 100, ajustando a 100');
       return const PreciseControlGuardResult(
         isPrecise: false,
         allowed: true,
@@ -488,7 +488,7 @@ class AIHardwareBridge extends ChangeNotifier {
       );
     }
 
-    debugPrint('[AIHardwareBridge Guard] Dispositivo NO PRECISE - Permitido (intensidad $intensity <= 100)');
+    if (kDebugMode) debugPrint('[AIHardwareBridge Guard] Dispositivo NO PRECISE - Permitido (intensidad $intensity <= 100)');
     return PreciseControlGuardResult.allowed(intensity, false);
   }
 
@@ -497,13 +497,13 @@ class AIHardwareBridge extends ChangeNotifier {
   // bool _safetyGuard() {
   //   // Verificar cooldown
   //   if (_bleService?.isCooldownActive == true) {
-  //     debugPrint('[AIHardwareBridge Guard] Cooldown activo - Bloqueado');
+  //     if (kDebugMode) debugPrint('[AIHardwareBridge Guard] Cooldown activo - Bloqueado');
   //     return false;
   //   }
   // 
   //   // Verificar estado de conexión
   //   if (_bleService?.isConnected != true) {
-  //     debugPrint('[AIHardwareBridge Guard] BLE no conectado - Bloqueado');
+  //     if (kDebugMode) debugPrint('[AIHardwareBridge Guard] BLE no conectado - Bloqueado');
   //     return false;
   //   }
   // 
@@ -521,7 +521,7 @@ class AIHardwareBridge extends ChangeNotifier {
     int? pattern,
   }) async {
     if (_currentToy == null) {
-      debugPrint('[AIHardwareBridge] No hay juguete conectado');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] No hay juguete conectado');
       return;
     }
 
@@ -545,7 +545,7 @@ class AIHardwareBridge extends ChangeNotifier {
   /// Detiene la ejecución actual
   void stopExecution() {
     if (_isExecuting) {
-      debugPrint('[AIHardwareBridge] Deteniendo ejecución...');
+      if (kDebugMode) debugPrint('[AIHardwareBridge] Deteniendo ejecución...');
       _bleService?.emergencyStop();
       _isExecuting = false;
       _setState(AIBridgeState.connected);
@@ -555,7 +555,7 @@ class AIHardwareBridge extends ChangeNotifier {
   /// Establece el estado interno
   void _setState(AIBridgeState newState) {
     _state = newState;
-    debugPrint('[AIHardwareBridge] Estado: ${newState.name}');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Estado: ${newState.name}');
     notifyListeners();
   }
 
@@ -566,7 +566,7 @@ class AIHardwareBridge extends ChangeNotifier {
   /// Cierra el puente y limpia recursos
   @override
   void dispose() {
-    debugPrint('[AIHardwareBridge] Cerrando puente...');
+    if (kDebugMode) debugPrint('[AIHardwareBridge] Cerrando puente...');
 
     _executionTimer?.cancel();
     _syncService?.removeAiProfileListener(_handleAIProfile);

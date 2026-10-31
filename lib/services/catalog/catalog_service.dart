@@ -6,6 +6,7 @@
 
 import 'dart:convert';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -525,7 +526,7 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
     await _savePreregistered();
     state = AsyncValue.data(_merged());
     _ref.read(bleProvider).setActiveToy(toy);
-    debugPrint('✅ Agregado y activado: ${toy.name}');
+    if (kDebugMode) debugPrint('✅ Agregado y activado: ${toy.name}');
   }
 
   /// Lista de todos los dispositivos pre-registrados (para mostrar en home)
