@@ -52,8 +52,8 @@ class _MultimediaPlayerScreenState extends ConsumerState<MultimediaPlayerScreen>
   bool _funscriptLoaded = false;
   bool _isFunscriptLoading = false;
   int _funscriptActionCount = 0;
-  double _currentCh1Intensity = 0.0;
-  double _currentCh2Intensity = 0.0;
+  final double _currentCh1Intensity = 0.0;
+  final double _currentCh2Intensity = 0.0;
   Timer? _positionTimer;
 
   @override
@@ -202,16 +202,6 @@ class _MultimediaPlayerScreenState extends ConsumerState<MultimediaPlayerScreen>
     _controller!.seekTo(newPosition);
   }
 
-  String _formatDuration(Duration d) {
-    final hours = d.inHours;
-    final minutes = d.inMinutes.remainder(60);
-    final seconds = d.inSeconds.remainder(60);
-    if (hours > 0) {
-      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final ble = ref.watch(bleProvider);
@@ -228,7 +218,7 @@ class _MultimediaPlayerScreenState extends ConsumerState<MultimediaPlayerScreen>
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: Chip(
-                avatar: Icon(Icons.psychology, size: 14, color: LvsColors.pink),
+                avatar: const Icon(Icons.psychology, size: 14, color: LvsColors.pink),
                 label: Text('$_funscriptActionCount acciones',
                     style: GoogleFonts.outfit(fontSize: 10, color: LvsColors.pink)),
                 backgroundColor: LvsColors.pink.withValues(alpha: 0.15),
@@ -239,7 +229,7 @@ class _MultimediaPlayerScreenState extends ConsumerState<MultimediaPlayerScreen>
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: Chip(
-                avatar: Icon(Icons.bluetooth_connected, size: 14, color: LvsColors.teal),
+                avatar: const Icon(Icons.bluetooth_connected, size: 14, color: LvsColors.teal),
                 label: Text('BLE',
                     style: GoogleFonts.outfit(fontSize: 10, color: LvsColors.teal)),
                 backgroundColor: LvsColors.teal.withValues(alpha: 0.15),
@@ -249,7 +239,7 @@ class _MultimediaPlayerScreenState extends ConsumerState<MultimediaPlayerScreen>
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: Chip(
-                avatar: Icon(Icons.bluetooth_disabled, size: 14, color: LvsColors.text3),
+                avatar: const Icon(Icons.bluetooth_disabled, size: 14, color: LvsColors.text3),
                 label: Text('OFFLINE',
                     style: GoogleFonts.outfit(fontSize: 10, color: LvsColors.text3)),
                 backgroundColor: Colors.white.withValues(alpha: 0.05),
@@ -270,7 +260,7 @@ class _MultimediaPlayerScreenState extends ConsumerState<MultimediaPlayerScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: LvsColors.pink, strokeWidth: 3),
+          const CircularProgressIndicator(color: LvsColors.pink, strokeWidth: 3),
           const SizedBox(height: 24),
           Text('CARGANDO MULTIMEDIA',
               style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: LvsColors.text2, letterSpacing: 1.5)),
@@ -292,7 +282,7 @@ class _MultimediaPlayerScreenState extends ConsumerState<MultimediaPlayerScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, size: 64, color: LvsColors.red),
+            const Icon(Icons.error_outline, size: 64, color: LvsColors.red),
             const SizedBox(height: 16),
             Text('ERROR CARGANDO MULTIMEDIA',
                 style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: LvsColors.red, letterSpacing: 1.5)),

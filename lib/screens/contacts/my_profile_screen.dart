@@ -793,7 +793,9 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                       builder: (context) => AuthScreen(
                         onSkip: () async {
                           await _secureStorage.write(key: 'skip_auth', value: 'true');
-                          if (Navigator.canPop(context)) Navigator.pop(context);
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
                         },
                       ),
                     ),
@@ -823,12 +825,14 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                 );
                 if (confirmed == true) {
                   final ok = await auth.deleteAccount();
-                  if (ok && mounted) {
+                  if (ok) {
                     await _secureStorage.write(key: 'skip_auth', value: 'false');
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MyProfileScreen()),
-                    );
+                    if (mounted) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MyProfileScreen()),
+                      );
+                    }
                   }
                 }
               },

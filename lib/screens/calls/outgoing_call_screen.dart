@@ -58,16 +58,6 @@ class _OutgoingCallScreenState extends ConsumerState<OutgoingCallScreen>
   void _cancelCall() async {
     _timeoutTimer?.cancel();
     try {
-      await ref.read(callControllerProvider).cancelCall();
-      if (mounted) Navigator.pop(context);
-    } catch (e) {
-      lvsError('Error cancelando llamada: $e', tag: 'OUTGOING_CALL');
-    }
-  }
-
-  void _endCall() async {
-    _timeoutTimer?.cancel();
-    try {
       await ref.read(callControllerProvider).endCall();
       if (mounted) Navigator.pop(context);
     } catch (e) {
@@ -189,7 +179,7 @@ class _OutgoingCallScreenState extends ConsumerState<OutgoingCallScreen>
                 currentCall.state == CallState.ringing
                     ? 'Llamando... ${_formatTime(_seconds)}'
                     : _getStateSubtext(currentCall.state),
-                style: TextStyle(
+                style: const TextStyle(
                   color: LvsColors.text3,
                   fontSize: 14,
                 ),
@@ -309,8 +299,6 @@ class _OutgoingCallScreenState extends ConsumerState<OutgoingCallScreen>
         return 'CONECTANDO...';
       case CallState.ringing:
         return 'LLAMANDO...';
-      case CallState.connecting:
-        return 'CONECTANDO...';
       case CallState.active:
         return 'EN LLAMADA';
       case CallState.reconnecting:
@@ -345,7 +333,7 @@ class _OutgoingCallScreenState extends ConsumerState<OutgoingCallScreen>
     return Container(
       width: 140,
       height: 140,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [LvsColors.pink, LvsColors.violet],

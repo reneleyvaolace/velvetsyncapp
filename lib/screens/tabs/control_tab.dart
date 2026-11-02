@@ -48,9 +48,9 @@ class ControlTab extends ConsumerWidget {
 
   Widget _buildSliverHeader(WidgetRef ref) {
     final deviceName = ref.watch(bleProvider.select((p) {
-      final name = p.activeToy?.name ?? p.connectedDeviceName ?? 'DISPOSITIVO';
+      final name = p.activeToy?.name ?? p.connectedDeviceName;
       if (name.isEmpty || name == 'N/A' || name == 'Unknown') {
-        return p.connectedDeviceName.isNotEmpty ? p.connectedDeviceName : 'DISPOSITIVO';
+        return 'DISPOSITIVO';
       }
       return name;
     }));
@@ -274,16 +274,15 @@ class ControlTab extends ConsumerWidget {
               color: LvsColors.teal,
               title: 'Escanear Código QR',
               subtitle: 'Vincular rápidamente dispositivos Lovense y compatibles.',
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(bsContext);
-                Navigator.push(
-                  bsContext,
+                final result = await Navigator.push<String>(
+                  outerContext,
                   MaterialPageRoute(builder: (_) => const QRScannerScreen()),
-                ).then((result) {
-                  if (result != null && result is String) {
-                    _processQRResult(bsContext, result, ref);
-                  }
-                });
+                );
+                if (result != null) {
+                  _processQRResult(outerContext, result, ref);
+                }
               },
             ),
             const SizedBox(height: 16),

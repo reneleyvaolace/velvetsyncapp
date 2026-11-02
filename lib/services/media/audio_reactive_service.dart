@@ -9,9 +9,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
-import 'package:velvet_sync/services/ble/lovespouse_protocol.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
-import 'package:velvet_sync/services/ble/ble_protocol.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
 /// Configuración de reactividad
@@ -89,7 +87,7 @@ class AudioAnalysisData {
 
   /// Obtiene intensidad mapeada para BLE (0-255)
   int getBleIntensity(AudioReactiveConfig config) {
-    double source = config.useBassOnly ? bassEnergy : rms;
+    var source = config.useBassOnly ? bassEnergy : rms;
     final mapped = config.minIntensity + (source * (config.maxIntensity - config.minIntensity));
     return (mapped.clamp(0.0, 1.0) * 255).round();
   }
@@ -341,22 +339,22 @@ class AudioReactiveService {
     
     // Distribuir energías en bins
     // Bass: bins 0-15 (~0-250Hz)
-    for (int i = 0; i < 16; i++) {
+    for (var i = 0; i < 16; i++) {
       spectrum[i] = bass * (1.0 - i / 16.0) * 0.8 + rms * 0.2;
     }
     // Mid: bins 16-39 (~250-2000Hz)
-    for (int i = 16; i < 40; i++) {
+    for (var i = 16; i < 40; i++) {
       spectrum[i] = mid * (1.0 - (i - 16) / 24.0) * 0.8 + rms * 0.2;
     }
     // Treble: bins 40-63 (~2000-8000Hz)
-    for (int i = 40; i < 64; i++) {
+    for (var i = 40; i < 64; i++) {
       spectrum[i] = treble * (1.0 - (i - 40) / 24.0) * 0.7 + rms * 0.3;
     }
     
     // Normalizar
     final maxVal = spectrum.reduce(math.max);
     if (maxVal > 0) {
-      for (int i = 0; i < size; i++) {
+      for (var i = 0; i < size; i++) {
         spectrum[i] = (spectrum[i] / maxVal).clamp(0.0, 1.0);
       }
     }
@@ -367,7 +365,7 @@ class AudioReactiveService {
   double _calculateCentroid(List<double> spectrum) {
     double weightedSum = 0;
     double magnitudeSum = 0;
-    for (int i = 0; i < spectrum.length; i++) {
+    for (var i = 0; i < spectrum.length; i++) {
       weightedSum += i * spectrum[i];
       magnitudeSum += spectrum[i];
     }
@@ -380,7 +378,7 @@ class AudioReactiveService {
       return 0;
     }
     double sum = 0;
-    for (int i = 0; i < spectrum.length; i++) {
+    for (var i = 0; i < spectrum.length; i++) {
       sum += math.pow(spectrum[i] - _lastSpectrum![i], 2);
     }
     _lastSpectrum = spectrum;
@@ -388,7 +386,6 @@ class AudioReactiveService {
   }
 
   List<double>? _lastSpectrum;
-  Duration _fileDuration = Duration.zero;
 
   /// Envía actualización BLE basada en análisis
   void _sendBleUpdate() {
@@ -412,7 +409,6 @@ class AudioReactiveService {
     _filePosition = 0.0;
     
     // Obtener duración (simulado)
-    _fileDuration = const Duration(minutes: 3);
     lvsLog('Archivo de audio seleccionado: $path', tag: 'AUDIO_REACTIVE');
   }
 

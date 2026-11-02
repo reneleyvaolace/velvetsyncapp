@@ -108,8 +108,8 @@ class VideoCacheService {
   Future<void> cleanOldCache({int maxAgeDays = 30}) async {
     if (_cacheDir == null) return;
     final cutoff = DateTime.now().subtract(Duration(days: maxAgeDays));
-    int deleted = 0;
-    int freed = 0;
+    var deleted = 0;
+    var freed = 0;
 
     try {
       await for (final entity in _cacheDir!.list()) {
@@ -133,7 +133,7 @@ class VideoCacheService {
   /// Obtiene tamaño total de la caché
   Future<int> getCacheSize() async {
     if (_cacheDir == null) return 0;
-    int size = 0;
+    var size = 0;
     try {
       await for (final entity in _cacheDir!.list()) {
         if (entity is File) {

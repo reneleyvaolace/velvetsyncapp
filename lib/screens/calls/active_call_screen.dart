@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:velvet_sync/services/calls/call_models.dart';
 import 'package:velvet_sync/services/calls/call_controller.dart';
-import 'package:velvet_sync/theme.dart';
-import 'package:velvet_sync/utils/logger.dart';
 
 class ActiveCallScreen extends ConsumerWidget {
   final CallModel call;
@@ -264,14 +262,14 @@ class _ConnectionQualityIndicator extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.green, width: 1),
       ),
-      child: Row(
+      child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.wifi, color: Colors.green, size: 14),
-          const SizedBox(width: 4),
-          const Text(
+          Icon(Icons.wifi, color: Colors.green, size: 14),
+          SizedBox(width: 4),
+          Text(
             'Excelente',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.green,
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -293,14 +291,14 @@ class _BatteryIndicator extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
       ),
-      child: Row(
+      child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.battery_unknown, color: Colors.white70, size: 14),
-          const SizedBox(width: 4),
-          const Text(
+          Icon(Icons.battery_unknown, color: Colors.white70, size: 14),
+          SizedBox(width: 4),
+          Text(
             '—%',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white70,
               fontSize: 11,
               fontWeight: FontWeight.w600,

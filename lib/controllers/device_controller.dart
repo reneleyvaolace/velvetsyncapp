@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/models/device_bean.dart';

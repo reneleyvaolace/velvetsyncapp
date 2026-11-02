@@ -18,7 +18,7 @@ class CryptBle {
   /// macBytes: bytes de la dirección MAC (6 bytes)
   static List<int> derivePsk(List<int> seed, List<int> macBytes) {
     final psk = <int>[0, 0, 0, 0];
-    for (int i = 0; i < 4; i++) {
+    for (var i = 0; i < 4; i++) {
       psk[i] = (seed[i] & 0xFF) ^ (macBytes[i + 2] & 0xFF);
     }
     return psk;
@@ -45,7 +45,7 @@ class CryptBle {
 
     // Cifrar: ciphertext[i] = ((PSK[i%4] + X) & 0xFF) ^ plaintext[i]
     final ciphertext = <int>[for (int i = 0; i < plaintext.length; i++) 0];
-    for (int i = 0; i < plaintext.length; i++) {
+    for (var i = 0; i < plaintext.length; i++) {
       final keyByte = ((psk[i % 4] & 0xFF) + x) & 0xFF;
       ciphertext[i] = keyByte ^ (plaintext[i] & 0xFF);
     }
@@ -56,7 +56,7 @@ class CryptBle {
     packet[0] = totalLen;
     packet[1] = 0x81;
     packet[2] = x;
-    for (int i = 0; i < ciphertext.length; i++) {
+    for (var i = 0; i < ciphertext.length; i++) {
       packet[3 + i] = ciphertext[i];
     }
     packet[totalLen - 1] = checksum;

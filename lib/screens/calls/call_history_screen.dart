@@ -128,7 +128,7 @@ class _CallHistoryScreenState extends ConsumerState<CallHistoryScreen> {
                                   const SizedBox(width: 4),
                                   Text(
                                       isOutgoing ? 'Saliente' : 'Entrante',
-                                      style: TextStyle(color: LvsColors.text3, fontSize: 11),
+                                      style: const TextStyle(color: LvsColors.text3, fontSize: 11),
                                   ),
                                 ],
                               ),

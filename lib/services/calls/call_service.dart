@@ -19,7 +19,6 @@ class CallService {
 
   RtcEngine? _engine;
   String? _currentCallId;
-  String? _localUid;
   String? _remoteUid;
   CallModel? _currentCall;
   StreamSubscription<CallSignal>? _signalSubscription;
@@ -183,7 +182,6 @@ class CallService {
 
     _currentCall = call;
     _currentCallId = callId;
-    _localUid = currentUser.id;
 
     // Crear registro en BD
     await _createCallRecord(call);
@@ -200,7 +198,7 @@ class CallService {
       token: token,
       channelId: channelName,
       uid: 0,
-      options: ChannelMediaOptions(
+      options: const ChannelMediaOptions(
         clientRoleType: ClientRoleType.clientRoleBroadcaster,
         autoSubscribeAudio: true,
         autoSubscribeVideo: true,
@@ -233,17 +231,16 @@ class CallService {
 
     _currentCall = call;
     _currentCallId = call.id;
-    _localUid = Supabase.instance.client.auth.currentUser!.id;
 
-    await _signaling.listenToCall(call.id!, Supabase.instance.client.auth.currentUser!.id);
+    await _signaling.listenToCall(call.id, Supabase.instance.client.auth.currentUser!.id);
     _subscribeToSignals();
 
     // Unirse al canal con token recibido
     await _engine!.joinChannel(
-      token: call.agoraToken ?? _generateToken(call.id!, Supabase.instance.client.auth.currentUser!.id),
+      token: call.agoraToken ?? _generateToken(call.id, Supabase.instance.client.auth.currentUser!.id),
       channelId: call.channelName!,
       uid: 0,
-      options: ChannelMediaOptions(
+      options: const ChannelMediaOptions(
         clientRoleType: ClientRoleType.clientRoleBroadcaster,
         autoSubscribeAudio: true,
         autoSubscribeVideo: true,
@@ -253,18 +250,18 @@ class CallService {
     _updateCallState(state: CallState.connecting);
 
     // Enviar accept
-    await _signaling.acceptCall(call.id!, call.callerId);
+    await _signaling.acceptCall(call.id, call.callerId);
 
     // Actualizar estado en BD
-    await _updateCallRecord(call.id!, {'state': CallState.connecting.name, 'started_at': DateTime.now().toIso8601String()});
+    await _updateCallRecord(call.id, {'state': CallState.connecting.name, 'started_at': DateTime.now().toIso8601String()});
 
     lvsLog('✅ Llamada aceptada: ${call.id}', tag: 'CALL_SERVICE');
   }
 
   /// Rechaza llamada entrante
   Future<void> rejectCall(CallModel call, {String? reason}) async {
-    await _signaling.rejectCall(call.id!, call.callerId, reason: reason);
-    await _updateCallRecord(call.id!, {'state': CallState.rejected.name, 'ended_at': DateTime.now().toIso8601String(), 'error_message': reason});
+    await _signaling.rejectCall(call.id, call.callerId, reason: reason);
+    await _updateCallRecord(call.id, {'state': CallState.rejected.name, 'ended_at': DateTime.now().toIso8601String(), 'error_message': reason});
     _cleanup();
   }
 
@@ -448,7 +445,7 @@ class CallService {
     return AgoraVideoView(
       controller: VideoViewController(
         rtcEngine: _engine!,
-        canvas: VideoCanvas(uid: 0),
+        canvas: const VideoCanvas(uid: 0),
       ),
     );
   }

@@ -179,7 +179,7 @@ class _IncomingCallScreenState extends ConsumerState<IncomingCallScreen>
 
               const SizedBox(height: 8),
 
-              Text(
+              const Text(
                 'Llamada entrante',
                 style: TextStyle(
                   color: LvsColors.text3,
@@ -232,7 +232,7 @@ class _IncomingCallScreenState extends ConsumerState<IncomingCallScreen>
     return Container(
       width: 140,
       height: 140,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [LvsColors.pink, LvsColors.violet],
@@ -328,7 +328,7 @@ class _IncomingCallTimerState extends ConsumerState<_IncomingCallTimer> {
     final secs = _seconds % 60;
     return Text(
       '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}',
-      style: TextStyle(
+      style: const TextStyle(
         color: LvsColors.text3,
         fontSize: 16,
         fontFamily: 'monospace',

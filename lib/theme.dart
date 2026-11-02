@@ -130,7 +130,7 @@ class CardGlass extends StatelessWidget {
           color: borderColor ?? Colors.white.withValues(alpha: 0.05),
           width: 1,
         ),
-        boxShadow: [_cardShadow],
+        boxShadow: const [_cardShadow],
       ),
       child: child,
     );

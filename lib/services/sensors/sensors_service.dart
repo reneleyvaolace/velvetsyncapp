@@ -99,7 +99,7 @@ class SensorsService extends ChangeNotifier {
   StreamSubscription<GyroscopeEvent>? _gyroSub;
   Timer? _shakeDebounce;
 
-  SensorsState _state = SensorsState(config: const SensorsConfig());
+  SensorsState _state = const SensorsState(config: SensorsConfig());
 
   SensorsState get state => _state;
   bool get isActive => _state.isActive;

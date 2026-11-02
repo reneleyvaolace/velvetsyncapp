@@ -373,7 +373,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen>
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Este dispositivo no tiene GamePath multimedia'),
                       backgroundColor: LvsColors.amber,
                     ),

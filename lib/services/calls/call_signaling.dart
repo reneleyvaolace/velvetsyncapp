@@ -49,7 +49,7 @@ class CallSignalingService {
       },
     );
 
-    await _channel!.subscribe();
+    _channel!.subscribe();
     _isListening = true;
     lvsLog('📡 Signaling escuchando call: $callId', tag: 'CALL_SIGNALING');
   }

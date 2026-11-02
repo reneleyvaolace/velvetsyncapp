@@ -46,7 +46,6 @@ class BleService extends ChangeNotifier {
   // ── Estado ─────────────────────────────────────────────────
   BleState state = BleState.idle;
   List<BluetoothDevice> connectedDevices = [];
-  BluetoothDevice? _lastConnectedDevice; // Último dispositivo conectado
   BluetoothCharacteristic? characteristic;
   ToyProfile? toyProfile;
   ToyModel? activeToy; // El modelo del catálogo que está en uso
@@ -470,7 +469,7 @@ class BleService extends ChangeNotifier {
 
     if (catalog != null) {
       toyProfile = ToyProfile.fromCatalog(rawName, catalog);
-      final matched = catalog!.where((t) =>
+      final matched = catalog.where((t) =>
         rawName.contains(t.id) ||
         t.name.toLowerCase() == rawName.toLowerCase() ||
         t.broadcastPrefix.contains(rawName)
@@ -555,7 +554,6 @@ try {
 
 
       _hardwareConfirmed = true;
-      _lastConnectedDevice = dev; // Rastrear último dispositivo conectado
       _initNotifications();
       batteryLevel = 100;
 
@@ -824,7 +822,7 @@ try {
         cmd.completer.complete(true);
       } else if (proto == BleProtocolType.loveSpouse && connectedDevices.isNotEmpty) {
         // LoveSpouse: GATT write a classicWrite UUID (FFF1)
-        List<int> finalBytes = rawBytes;
+        var finalBytes = rawBytes;
         
         // ── NUEVO: Conversión a NewCommand si el dispositivo lo soporta ──
         if (activeToy != null && activeToy!.isNewCommand) {

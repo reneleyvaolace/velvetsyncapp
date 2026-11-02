@@ -14,7 +14,6 @@ import 'package:velvet_sync/services/media/funscript_loader.dart';
 import 'package:velvet_sync/services/media/haptic_video_sync_service.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/devices/models/funscript.dart';
-import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
 /// Tipo de fuente de video soportada
@@ -76,7 +75,6 @@ class UrlSyncResult {
 /// Servicio principal de URL Sync
 class UrlSyncService {
   final VideoCacheService _cacheService = VideoCacheService();
-  final FunscriptLoader _funscriptLoader = FunscriptLoader();
   final HapticVideoSyncService _syncService = HapticVideoSyncService();
 
   VideoPlayerController? _controller;
@@ -281,7 +279,7 @@ class UrlSyncService {
       final contentType = response.headers['content-type']?.toLowerCase() ?? '';
       final contentLength = response.headers['content-length'];
 
-      VideoSourceType detectedType = VideoSourceType.directMp4;
+      var detectedType = VideoSourceType.directMp4;
       if (url.contains('.m3u8') || contentType.contains('mpegurl') || contentType.contains('vnd.apple.mpegurl')) {
         detectedType = VideoSourceType.hls;
       } else if (url.contains('.mpd') || contentType.contains('dash')) {

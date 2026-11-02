@@ -200,10 +200,10 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     _startListening();
 
     // ── Tiempo autoritativo: usar la marca del servidor ──
-    final DateTime? startedAt = session['started_at'] != null
+    final startedAt = session['started_at'] != null
         ? DateTime.tryParse(session['started_at'].toString())
         : null;
-    final int totalSeconds = (session['duration_seconds'] as num?)?.toInt() ?? 0;
+    final totalSeconds = (session['duration_seconds'] as num?)?.toInt() ?? 0;
     if (startedAt != null && totalSeconds > 0) {
       ref.read(sessionTimerServiceProvider).applyServerTiming(
             startedAt: startedAt,
@@ -428,7 +428,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
       return;
     }
 
-    final int? selected = await _pickDuration();
+    final selected = await _pickDuration();
     if (selected == null) return;
 
     setState(() => _isLoading = true);
@@ -454,8 +454,8 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
         _startListening();
         
         // ── Tiempo autoritativo en servidor (30 min por defecto) ──
-        final int sessionMinutes = selected;
-        final DateTime? startedAt = await supabase.startSessionTiming(
+        final sessionMinutes = selected;
+        final startedAt = await supabase.startSessionTiming(
           session['id'].toString(),
           sessionMinutes * 60,
         );

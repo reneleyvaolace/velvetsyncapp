@@ -72,7 +72,7 @@ class AuthService extends ChangeNotifier {
     required String operationName,
     required String email,
   }) async {
-    for (int attempt = 1; attempt <= _maxRetries; attempt++) {
+    for (var attempt = 1; attempt <= _maxRetries; attempt++) {
       try {
         final result = await action();
         if (result) return true;

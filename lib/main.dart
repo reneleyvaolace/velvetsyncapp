@@ -4,11 +4,9 @@
 // ════════════════════════════════════════════════════════════════
 
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -27,7 +25,7 @@ import 'package:velvet_sync/screens/auth_screen.dart';
 // ════════════════════════════════════════════════════════════════
 // 🔒 Secure Storage para datos sensibles (reemplaza SharedPreferences)
 // ════════════════════════════════════════════════════════════════
-final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,9 +38,9 @@ void main() async {
   // ═══════════════════════════════════════════════════════════════
   // Primero intentar --dart-define / --dart-define-from-file (inyectado en compilación)
   //   env.properties debe tener formato KEY=VALOR (una por línea), NO JSON
-  final dartDefineUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
-  final dartDefineAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
-  final dartDefineResend = String.fromEnvironment('RESEND_API_KEY', defaultValue: '');
+  const dartDefineUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
+  const dartDefineAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
+  const dartDefineResend = String.fromEnvironment('RESEND_API_KEY', defaultValue: '');
 
   if (dartDefineUrl.isNotEmpty && dartDefineAnonKey.isNotEmpty) {
     AppEnv.supabaseUrl = dartDefineUrl;
@@ -125,7 +123,7 @@ class VelvetSyncApp extends ConsumerWidget {
       title: 'Velvet Sync',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.dark),
-      home: const SplashScreen(),
+      home: SplashScreen(),
     );
   }
 
@@ -191,7 +189,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       ];
 
       // Ejecutar todo en paralelo con progreso visual
-      int completed = 0;
+      var completed = 0;
       for (final future in futures) {
         await future;
         if (!mounted) return;
@@ -228,8 +226,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (_navigationTriggered || !mounted) return;
     _navigationTriggered = true;
 
-    bool hasEmail = false;
-    bool skipAuth = false;
+    var hasEmail = false;
+    var skipAuth = false;
 
     try {
       final skipAuthStr = await _secureStorage.read(key: 'skip_auth');
@@ -263,7 +261,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Widget _getPostAuthScreen() {
-    bool needsProfile = true;
+    var needsProfile = true;
     try {
       final profileService = ref.read(profileServiceProvider);
       needsProfile = profileService.myProfile == null;

@@ -261,18 +261,18 @@ void main() {
 
   group('LvsCommands - commandForButton', () {
     test('uses newCommand when available', () {
-      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0, newCommand: 'F1 01 01');
+      const btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0, newCommand: 'F1 01 01');
       expect(LvsCommands.commandForButton(btn, 1, 0), [0xF1, 0x01, 0x01]);
     });
 
     test('falls back to positional when newCommand is empty', () {
-      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0);
+      const btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0);
       final cmd = LvsCommands.commandForButton(btn, 1, 0);
       expect(cmd, LvsCommands.ch1PatternFor(4));
     });
 
     test('falls back to positional when newCommand is invalid', () {
-      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0, newCommand: 'ZZZ');
+      const btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0, newCommand: 'ZZZ');
       final cmd = LvsCommands.commandForButton(btn, 2, 0);
       expect(cmd, LvsCommands.ch2PatternFor(4));
     });
@@ -280,12 +280,12 @@ void main() {
 
   group('LvsCommands - commandForButtonStop', () {
     test('uses stopCommand when > 0', () {
-      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0xE5, newCommand: '');
+      const btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0xE5, newCommand: '');
       expect(LvsCommands.commandForButtonStop(btn, 1), [0xE5]);
     });
 
     test('falls back to channel stop when stopCommand is 0', () {
-      final btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0);
+      const btn = PatternButton(id: 1, name: 'Test', command: 0, stopCommand: 0);
       expect(LvsCommands.commandForButtonStop(btn, 1), LvsCommands.ch1Stop);
       expect(LvsCommands.commandForButtonStop(btn, 2), LvsCommands.ch2Stop);
     });
