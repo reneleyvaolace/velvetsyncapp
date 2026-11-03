@@ -209,41 +209,18 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Usar el método nativo de Supabase para restablecer contraseña
+      // Redirigir a la página de restablecimiento en Vercel tras hacer clic en el enlace
       final success = await _withRetry(
         () async {
-          final supabaseUrl = AppEnv.supabaseUrl;
-          final anonKey = AppEnv.supabaseAnonKey;
-
-          if (supabaseUrl.isEmpty || anonKey.isEmpty) {
-            lvsError('Supabase no configurado para resetPassword', tag: 'AUTH');
-            return false;
-          }
-
-          final response = await http.post(
-            Uri.parse('$supabaseUrl/functions/v1/send-reset-email'),
-            headers: {
-              'Authorization': 'Bearer $anonKey',
-              'apikey': anonKey,
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({
-              'email': email,
-              'redirectTo': AppEnv.resetPasswordRedirect,
-            }),
+          await _client.auth.resetPasswordForEmail(
+            email,
+            redirectTo: AppEnv.resetPasswordRedirect,
           );
-
-          if (response.statusCode == 200) {
-            lvsLog('Email de recuperación enviado vía Edge Function: $email', tag: 'AUTH');
-            _status = AuthStatus.unauthenticated;
-            notifyListeners();
-            return true;
-          } else {
-            final errorBody = jsonDecode(response.body) as Map<String, dynamic>?;
-            final errorMsg = errorBody?['error'] ?? 'Error desconocido en Edge Function';
-            lvsError('Edge Function send-reset-email falló: $errorMsg', tag: 'AUTH');
-            _errorMessage = errorMsg;
-            return false;
-          }
+          lvsLog('Email de recuperación enviado: $email', tag: 'AUTH');
+          _status = AuthStatus.unauthenticated;
+          notifyListeners();
+          return true;
         },
         operationName: 'restablecimiento de contraseña',
         email: email,
