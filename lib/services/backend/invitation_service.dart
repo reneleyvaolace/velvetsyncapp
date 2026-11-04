@@ -1,27 +1,12 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/services/backend/invitation_service.dart
-// Servicio de invitaciones a sesiones entre contactos
-//
-// SQL Migration (ejecutar en Supabase SQL Editor):
-// ═══════════════════════════════════════════════════════════════
-// CREATE TABLE IF NOT EXISTS session_invites (
-//   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-//   session_id TEXT NOT NULL,
-//   from_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-//   to_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-//   access_token TEXT NOT NULL,
-//   device_id TEXT NOT NULL DEFAULT '',
-//   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'expired')),
-//   created_at TIMESTAMPTZ DEFAULT NOW()
-// );
-//
-// CREATE INDEX IF NOT EXISTS idx_invites_to_user ON session_invites(to_user_id, status);
-// CREATE INDEX IF NOT EXISTS idx_invites_from_user ON session_invites(from_user_id, status);
-// ═══════════════════════════════════════════════════════════════
+// Servicio de invitaciones con Firebase Firestore
+// ════════════════════════════════════════════════════════════════
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:velvet_sync/devices/models/session_invite.dart';
 import 'package:velvet_sync/types/result_types.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
@@ -30,182 +15,146 @@ final invitationServiceProvider = Provider<InvitationService>((ref) {
 });
 
 enum InvitationError {
-  notAuthenticated,
-  networkError,
   notFound,
-  alreadyAccepted,
+  alreadyExists,
+  invalidCode,
+  networkError,
+  notAuthenticated,
   unknown,
 }
 
 extension InvitationErrorExtension on InvitationError {
   String get message {
     switch (this) {
-      case InvitationError.notAuthenticated:
-        return 'Not authenticated';
-      case InvitationError.networkError:
-        return 'Network error';
       case InvitationError.notFound:
-        return 'Invitation not found';
-      case InvitationError.alreadyAccepted:
-        return 'Invitation already accepted';
+        return 'Invitación no encontrada';
+      case InvitationError.alreadyExists:
+        return 'La invitación ya existe';
+      case InvitationError.invalidCode:
+        return 'Código de invitación inválido';
+      case InvitationError.networkError:
+        return 'Error de red, inténtalo nuevamente';
+      case InvitationError.notAuthenticated:
+        return 'Usuario no autenticado';
       case InvitationError.unknown:
-        return 'Unknown error';
+        return 'Ocurrió un error desconocido';
     }
   }
 }
 
-class InvitationService {
-  SupabaseClient get _client => Supabase.instance.client;
+class InvitationService extends ChangeNotifier {
+  static final InvitationService _instance = InvitationService._internal();
+  factory InvitationService() => _instance;
+  InvitationService._internal();
 
-  String? get _currentUserId => _client.auth.currentUser?.id;
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
 
-  /// Send a session invitation to a contact
-  Future<Result<SessionInvite, InvitationError>> sendInvite({
+  String? get _currentUserId => _auth.currentUser?.uid;
+
+  /// Crear una invitación de sesión
+  Future<Result<String, InvitationError>> createInvitation({
     required String sessionId,
-    required String toUserId,
-    required String accessToken,
-    required String deviceId,
+    required String sessionName,
+    required int expiresInMinutes,
   }) async {
-    final currentUserId = _currentUserId;
-    if (currentUserId == null) {
-      return const Failure(InvitationError.notAuthenticated);
-    }
-
     try {
-      final response = await _client.from('session_invites').insert({
+      final userId = _currentUserId;
+      if (userId == null) {
+        return const Failure(InvitationError.notAuthenticated);
+      }
+
+      final code = _generateInvitationCode();
+      final expiresAt = DateTime.now().add(Duration(minutes: expiresInMinutes));
+
+      await _firestore.collection('session_invites').add({
         'session_id': sessionId,
-        'from_user_id': currentUserId,
-        'to_user_id': toUserId,
-        'access_token': accessToken,
-        'device_id': deviceId,
+        'session_name': sessionName,
+        'code': code,
+        'from_user_id': userId,
         'status': 'pending',
-      }).select().single().timeout(const Duration(seconds: 10));
+        'expires_at': expiresAt,
+        'created_at': FieldValue.serverTimestamp(),
+      });
 
-      return Success(SessionInvite.fromJson(response));
+      return Success(code);
     } catch (e) {
-      lvsLog('Error sending invite: $e', tag: 'INVITE');
+      lvsLog('Error creando invitación: $e', tag: 'INVITATION');
       return const Failure(InvitationError.networkError);
     }
   }
 
-  /// Get pending invitations for the current user
-  Future<Result<List<SessionInvite>, InvitationError>> getPendingInvites() async {
-    final currentUserId = _currentUserId;
-    if (currentUserId == null) {
-      return const Failure(InvitationError.notAuthenticated);
-    }
-
+  /// Validar y aceptar una invitación por código
+  Future<Result<Map<String, dynamic>, InvitationError>> acceptInvitation(
+    String code,
+  ) async {
     try {
-      final response = await _client.from('session_invites')
-          .select()
-          .eq('to_user_id', currentUserId)
-          .eq('status', 'pending')
-          .order('created_at', ascending: false)
-          .timeout(const Duration(seconds: 10));
+      final snapshot = await _firestore
+          .collection('session_invites')
+          .where('code', isEqualTo: code)
+          .where('status', isEqualTo: 'pending')
+          .limit(1)
+          .get();
 
-      final invites = (response as List).map((e) => SessionInvite.fromJson(e)).toList();
-      return Success(invites);
+      if (snapshot.docs.isEmpty) {
+        return const Failure(InvitationError.invalidCode);
+      }
+
+      final doc = snapshot.docs.first;
+      final data = doc.data();
+
+      // Verificar expiración
+      final expiresAt = (data['expires_at'] as Timestamp?)?.toDate();
+      if (expiresAt != null && expiresAt.isBefore(DateTime.now())) {
+        await doc.reference.update({'status': 'expired'});
+        return const Failure(InvitationError.invalidCode);
+      }
+
+      // Marcar como aceptada
+      await doc.reference.update({
+        'status': 'accepted',
+        'accepted_at': FieldValue.serverTimestamp(),
+      });
+
+      return Success({
+        'session_id': data['session_id'],
+        'session_name': data['session_name'],
+        'invite_id': doc.id,
+      });
     } catch (e) {
-      lvsLog('Error getting pending invites: $e', tag: 'INVITE');
+      lvsLog('Error aceptando invitación: $e', tag: 'INVITATION');
       return const Failure(InvitationError.networkError);
     }
   }
 
-  /// Get sent invitations (from current user to others)
-  Future<Result<List<SessionInvite>, InvitationError>> getSentInvites() async {
-    final currentUserId = _currentUserId;
-    if (currentUserId == null) {
-      return const Failure(InvitationError.notAuthenticated);
-    }
+  /// Generar código de invitación aleatorio
+  String _generateInvitationCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    final code = List.generate(8, (i) => chars[(DateTime.now().millisecond + i) % chars.length]).join();
+    return code;
+  }
 
+  /// Obtener invitaciones pendientes del usuario
+  Future<List<Map<String, dynamic>>> getPendingInvitations() async {
     try {
-      final response = await _client.from('session_invites')
-          .select()
-          .eq('from_user_id', currentUserId)
-          .order('created_at', ascending: false)
-          .timeout(const Duration(seconds: 10));
+      final userId = _currentUserId;
+      if (userId == null) return [];
 
-      final invites = (response as List).map((e) => SessionInvite.fromJson(e)).toList();
-      return Success(invites);
+      final snapshot = await _firestore
+          .collection('session_invites')
+          .where('from_user_id', isEqualTo: userId)
+          .where('status', isEqualTo: 'pending')
+          .get();
+
+      return snapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
-      lvsLog('Error getting sent invites: $e', tag: 'INVITE');
-      return const Failure(InvitationError.networkError);
+      lvsLog('Error obteniendo invitaciones: $e', tag: 'INVITATION');
+      return [];
     }
   }
 
-  /// Get invite by session ID (for the current user)
-  Future<Result<SessionInvite?, InvitationError>> getInviteBySessionId(String sessionId) async {
-    final currentUserId = _currentUserId;
-    if (currentUserId == null) {
-      return const Failure(InvitationError.notAuthenticated);
-    }
-
-    try {
-      final response = await _client.from('session_invites')
-          .select()
-          .eq('session_id', sessionId)
-          .eq('to_user_id', currentUserId)
-          .maybeSingle()
-          .timeout(const Duration(seconds: 10));
-
-      if (response == null) return const Success(null);
-      return Success(SessionInvite.fromJson(response));
-    } catch (e) {
-      lvsLog('Error getting invite by session: $e', tag: 'INVITE');
-      return const Failure(InvitationError.networkError);
-    }
-  }
-
-  /// Accept an invitation
-  Future<Result<SessionInvite, InvitationError>> acceptInvite(String inviteId) async {
-    try {
-      final response = await _client.from('session_invites')
-          .update({'status': 'accepted'})
-          .eq('id', inviteId)
-          .eq('status', 'pending')
-          .select()
-          .single()
-          .timeout(const Duration(seconds: 10));
-
-      return Success(SessionInvite.fromJson(response));
-    } catch (e) {
-      lvsLog('Error accepting invite: $e', tag: 'INVITE');
-      return const Failure(InvitationError.notFound);
-    }
-  }
-
-  /// Reject an invitation
-  Future<Result<SessionInvite, InvitationError>> rejectInvite(String inviteId) async {
-    try {
-      final response = await _client.from('session_invites')
-          .update({'status': 'rejected'})
-          .eq('id', inviteId)
-          .eq('status', 'pending')
-          .select()
-          .single()
-          .timeout(const Duration(seconds: 10));
-
-      return Success(SessionInvite.fromJson(response));
-    } catch (e) {
-      lvsLog('Error rejecting invite: $e', tag: 'INVITE');
-      return const Failure(InvitationError.notFound);
-    }
-  }
-
-  /// Expire old pending invites for the current user
-  Future<void> expireOldInvites() async {
-    final currentUserId = _currentUserId;
-    if (currentUserId == null) return;
-
-    try {
-      await _client.from('session_invites')
-          .update({'status': 'expired'})
-          .eq('to_user_id', currentUserId)
-          .eq('status', 'pending')
-          .lt('created_at', DateTime.now().subtract(const Duration(hours: 24)).toIso8601String())
-          .timeout(const Duration(seconds: 10));
-    } catch (e) {
-      lvsLog('Error expiring old invites: $e', tag: 'INVITE');
-    }
+  /// Alias para getPendingInvitations (compatibilidad)
+  Future<List<Map<String, dynamic>>> getPendingInvites() async {
+    return getPendingInvitations();
   }
 }

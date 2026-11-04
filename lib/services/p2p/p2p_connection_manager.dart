@@ -1,20 +1,20 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/services/p2p/p2p_connection_manager.dart
-// Gestor de Conexión P2P con Fallback a Supabase Broadcast
-// ═══════════════════════════════════════════════════════════════
+// Gestor de Conexión P2P con Fallback a Firestore Broadcast
+// ════════════════════════════════════════════════════════════════
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/backend/firestore_service.dart';
 import 'package:velvet_sync/services/p2p/p2p_signaling_service.dart';
 import 'package:velvet_sync/services/p2p/direct_websocket_transport.dart';
-import 'package:velvet_sync/services/p2p/supabase_broadcast_transport.dart';
+import 'package:velvet_sync/services/p2p/firestore_broadcast_transport.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Providers
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 final p2pConnectionManagerProvider = Provider<P2PConnectionManager>((ref) {
   return P2PConnectionManager();
@@ -22,9 +22,9 @@ final p2pConnectionManagerProvider = Provider<P2PConnectionManager>((ref) {
 
 final p2pConnectionStateProvider = StateProvider<P2PConnectionState>((ref) => P2PConnectionState.idle);
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // P2P Connection State
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 enum P2PConnectionState {
   idle,
@@ -34,9 +34,9 @@ enum P2PConnectionState {
   error,
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // P2P Transport Abstract Interface
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 abstract class P2PTransport {
   Future<bool> connect(Map<String, dynamic> peerInfo);
@@ -46,9 +46,9 @@ abstract class P2PTransport {
   P2PConnectionState get state;
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // P2P Connection Manager
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 class P2PConnectionManager extends ChangeNotifier {
   static final P2PConnectionManager _instance = P2PConnectionManager._internal();
@@ -62,7 +62,7 @@ class P2PConnectionManager extends ChangeNotifier {
   P2PTransport? _fallbackTransport;
   P2pSignalingService? _signalingService;
   DirectWebSocketTransport? _directTransport;
-  SupabaseService? _supabaseService;
+  FirestoreService? _firestoreService;
 
   P2PConnectionState _state = P2PConnectionState.idle;
   String? _sessionId;
@@ -76,9 +76,9 @@ class P2PConnectionManager extends ChangeNotifier {
   StreamSubscription<Map<String, dynamic>>? _transportSubscription;
   Timer? _connectionTimer;
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Getters
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   P2PConnectionState get state => _state;
   String? get lastError => _lastError;
@@ -89,20 +89,20 @@ class P2PConnectionManager extends ChangeNotifier {
       _state == P2PConnectionState.p2p || _state == P2PConnectionState.fallback;
   Stream<Map<String, dynamic>> get onCommandReceived => _commandController.stream;
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Inicialización
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
-  void initialize(SupabaseService supabaseService) {
-    _supabaseService = supabaseService;
+  void initialize(FirestoreService firestoreService) {
+    _firestoreService = firestoreService;
     _signalingService = P2pSignalingService();
-    _fallbackTransport = SupabaseBroadcastTransport(supabaseService);
+    _fallbackTransport = FirestoreBroadcastTransport(firestoreService);
     lvsLog('P2PConnectionManager inicializado', tag: 'P2P');
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Establecer Conexión
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   Future<bool> establishConnection({
     required String sessionId,
@@ -120,14 +120,14 @@ class P2PConnectionManager extends ChangeNotifier {
     );
 
     try {
-      if (_signalingService == null || _supabaseService == null) {
+      if (_signalingService == null || _firestoreService == null) {
         _lastError = 'P2PConnectionManager no inicializado';
         lvsLog(_lastError!, tag: 'P2P');
         return false;
       }
 
       final signalingReady = _signalingService!.initialize(
-        supabaseService: _supabaseService!,
+        firestoreService: _firestoreService!,
         sessionId: sessionId,
         isHost: isHost,
         deviceId: deviceId,
@@ -245,7 +245,7 @@ class P2PConnectionManager extends ChangeNotifier {
   }
 
   Future<bool> _activateFallback(String sessionId) async {
-    lvsLog('Activando fallback a Supabase Broadcast', tag: 'P2P');
+    lvsLog('Activando fallback a Firestore Broadcast', tag: 'P2P');
 
     try {
       final fallback = _fallbackTransport;
@@ -260,7 +260,7 @@ class P2PConnectionManager extends ChangeNotifier {
         _activeTransport = fallback;
         _setupTransportListener(fallback);
         _setState(P2PConnectionState.fallback);
-        lvsLog('Fallback a Supabase Broadcast activado', tag: 'P2P');
+        lvsLog('Fallback a Firestore Broadcast activado', tag: 'P2P');
         return true;
       }
 
@@ -283,9 +283,9 @@ class P2PConnectionManager extends ChangeNotifier {
     });
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Envío de Comandos
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   Future<void> sendCommand({
     required int intensityCh1,
@@ -330,9 +330,9 @@ class P2PConnectionManager extends ChangeNotifier {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Cerrar Conexión
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   Future<void> closeConnection() async {
     lvsLog('Cerrando conexión P2P', tag: 'P2P');
@@ -360,9 +360,9 @@ class P2PConnectionManager extends ChangeNotifier {
     lvsLog('Conexión P2P cerrada', tag: 'P2P');
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Reintento de Conexión
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   Future<bool> reconnection({
     required String sessionId,
@@ -381,9 +381,9 @@ class P2PConnectionManager extends ChangeNotifier {
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Estado
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   void _setState(P2PConnectionState newState) {
     _state = newState;

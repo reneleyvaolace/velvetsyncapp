@@ -1,9 +1,9 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/services/calls/call_models.dart
-// Modelos para Videollamadas (Agora + Supabase Signaling)
+// Modelos para Videollamadas (Agora + Firebase Firestore Signaling)
 // ════════════════════════════════════════════════════════════════
 
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Tipo de llamada
 enum CallType {
@@ -74,17 +74,17 @@ class CallModel {
     this.isSpeakerOn = true,
   });
 
-  factory CallModel.fromSupabase(Map<String, dynamic> data) {
+  factory CallModel.fromFirestore(Map<String, dynamic> data) {
     return CallModel(
       id: data['id'] as String,
-      callerId: data['caller_id'] as String,
-      calleeId: data['callee_id'] as String,
-      callerName: data['caller_name'] as String? ?? 'Desconocido',
-      calleeName: data['callee_name'] as String? ?? 'Desconocido',
-      callerAvatar: data['caller_avatar'] as String?,
-      calleeAvatar: data['callee_avatar'] as String?,
+      callerId: data['callerId'] as String,
+      calleeId: data['calleeId'] as String,
+      callerName: data['callerName'] as String? ?? 'Desconocido',
+      calleeName: data['calleeName'] as String? ?? 'Desconocido',
+      callerAvatar: data['callerAvatar'] as String?,
+      calleeAvatar: data['calleeAvatar'] as String?,
       type: CallType.values.firstWhere(
-        (e) => e.name == (data['call_type'] as String? ?? 'video'),
+        (e) => e.name == (data['type'] as String? ?? 'video'),
         orElse: () => CallType.video,
       ),
       direction: CallDirection.values.firstWhere(
@@ -95,42 +95,42 @@ class CallModel {
         (e) => e.name == (data['state'] as String? ?? 'idle'),
         orElse: () => CallState.idle,
       ),
-      startedAt: data['started_at'] != null
-          ? DateTime.parse(data['started_at'] as String)
+      startedAt: data['startedAt'] != null
+          ? (data['startedAt'] as Timestamp).toDate()
           : null,
-      endedAt: data['ended_at'] != null
-          ? DateTime.parse(data['ended_at'] as String)
+      endedAt: data['endedAt'] != null
+          ? (data['endedAt'] as Timestamp).toDate()
           : null,
-      channelName: data['channel_name'] as String?,
-      agoraToken: data['agora_token'] as String?,
-      errorMessage: data['error_message'] as String?,
-      isMuted: data['is_muted'] as bool? ?? false,
-      isVideoMuted: data['is_video_muted'] as bool? ?? false,
-      isSpeakerOn: data['is_speaker_on'] as bool? ?? true,
+      channelName: data['channelName'] as String?,
+      agoraToken: data['agoraToken'] as String?,
+      errorMessage: data['errorMessage'] as String?,
+      isMuted: data['isMuted'] as bool? ?? false,
+      isVideoMuted: data['isVideoMuted'] as bool? ?? false,
+      isSpeakerOn: data['isSpeakerOn'] as bool? ?? true,
     );
   }
 
-  Map<String, dynamic> toSupabase() {
+  Map<String, dynamic> toFirestore() {
     return {
       'id': id,
-      'caller_id': callerId,
-      'callee_id': calleeId,
-      'caller_name': callerName,
-      'callee_name': calleeName,
-      'caller_avatar': callerAvatar,
-      'callee_avatar': calleeAvatar,
-      'call_type': type.name,
+      'callerId': callerId,
+      'calleeId': calleeId,
+      'callerName': callerName,
+      'calleeName': calleeName,
+      'callerAvatar': callerAvatar,
+      'calleeAvatar': calleeAvatar,
+      'type': type.name,
       'direction': direction.name,
       'state': state.name,
-      'started_at': startedAt?.toIso8601String(),
-      'ended_at': endedAt?.toIso8601String(),
-      'channel_name': channelName,
-      'agora_token': agoraToken,
-      'error_message': errorMessage,
-      'is_muted': isMuted,
-      'is_video_muted': isVideoMuted,
-      'is_speaker_on': isSpeakerOn,
-      'updated_at': DateTime.now().toIso8601String(),
+      'startedAt': startedAt != null ? Timestamp.fromDate(startedAt!) : null,
+      'endedAt': endedAt != null ? Timestamp.fromDate(endedAt!) : null,
+      'channelName': channelName,
+      'agoraToken': agoraToken,
+      'errorMessage': errorMessage,
+      'isMuted': isMuted,
+      'isVideoMuted': isVideoMuted,
+      'isSpeakerOn': isSpeakerOn,
+      'updatedAt': FieldValue.serverTimestamp(),
     };
   }
 

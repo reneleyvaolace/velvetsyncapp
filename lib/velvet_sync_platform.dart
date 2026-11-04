@@ -81,7 +81,7 @@ export 'services/buttplug/buttplug_device.dart';
 export 'services/p2p/p2p_connection_manager.dart';
 export 'services/p2p/p2p_signaling_service.dart';
 export 'services/p2p/direct_websocket_transport.dart';
-export 'services/p2p/supabase_broadcast_transport.dart';
+export 'services/p2p/firestore_broadcast_transport.dart';
 
 // Catalog Service
 export 'services/catalog/catalog_service.dart';

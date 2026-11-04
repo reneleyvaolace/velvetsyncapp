@@ -1,11 +1,12 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/screens/calls/call_history_screen.dart
-// Historial de videollamadas
-// ═══════════════════════════════════════════════════════════════
+// Historial de videollamadas (Firebase Firestore)
+// ════════════════════════════════════════════════════════════════
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:velvet_sync/theme.dart';
 
 class CallHistoryScreen extends ConsumerStatefulWidget {
@@ -25,21 +26,36 @@ class _CallHistoryScreenState extends ConsumerState<CallHistoryScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchHistory() async {
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
     if (user == null) return [];
 
-    final response = await Supabase.instance.client
-        .from('calls')
-        .select()
-        .or('caller_id.eq.${user.id},callee_id.eq.${user.id}')
-        .order('created_at', ascending: false)
-        .limit(100);
+    final snapshot = await FirebaseFirestore.instance
+        .collection('calls')
+        .where('callerId', isEqualTo: user.uid)
+        .get();
 
-    return response;
+    final calleeSnapshot = await FirebaseFirestore.instance
+        .collection('calls')
+        .where('calleeId', isEqualTo: user.uid)
+        .get();
+
+    final allDocs = <Map<String, dynamic>>[];
+    allDocs.addAll(snapshot.docs.map((d) => d.data()));
+    allDocs.addAll(calleeSnapshot.docs.map((d) => d.data()));
+
+    allDocs.sort((a, b) {
+      final ta = (a['startedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+      final tb = (b['startedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+      return tb.compareTo(ta);
+    });
+
+    return allDocs.take(100).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
       backgroundColor: LvsColors.bg,
       appBar: AppBar(
@@ -73,13 +89,13 @@ class _CallHistoryScreenState extends ConsumerState<CallHistoryScreen> {
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, i) {
               final r = rows[i];
-              final isOutgoing = r['caller_id'] == Supabase.instance.client.auth.currentUser?.id;
-              final otherName = isOutgoing ? r['callee_name'] : r['caller_name'];
-              final otherAvatar = isOutgoing ? r['callee_avatar'] : r['caller_avatar'];
-              final type = r['call_type'] as String? ?? 'video';
+              final isOutgoing = r['callerId'] == currentUserId;
+              final otherName = isOutgoing ? r['calleeName'] : r['callerName'];
+              final otherAvatar = isOutgoing ? r['calleeAvatar'] : r['callerAvatar'];
+              final type = r['type'] as String? ?? 'video';
               final state = r['state'] as String? ?? 'unknown';
-              final started = r['started_at'] != null ? DateTime.parse(r['started_at']).toLocal() : null;
-              final ended = r['ended_at'] != null ? DateTime.parse(r['ended_at']).toLocal() : null;
+              final started = r['startedAt'] != null ? (r['startedAt'] as Timestamp).toDate().toLocal() : null;
+              final ended = r['endedAt'] != null ? (r['endedAt'] as Timestamp).toDate().toLocal() : null;
               final duration = ended != null && started != null ? ended.difference(started).inSeconds : 0;
 
               return Container(
@@ -120,8 +136,8 @@ class _CallHistoryScreenState extends ConsumerState<CallHistoryScreen> {
                               Row(
                                 children: [
                                   Icon(
-                                      type == 'video' 
-                                          ? Icons.videocam_rounded 
+                                      type == 'video'
+                                          ? Icons.videocam_rounded
                                           : Icons.call_rounded,
                                       color: isOutgoing ? LvsColors.teal : LvsColors.pink,
                                       size: 14),

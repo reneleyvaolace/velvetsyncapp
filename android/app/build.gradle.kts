@@ -4,6 +4,8 @@ import java.io.FileInputStream
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -53,7 +55,6 @@ android {
     productFlavors {
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "Velvet Sync Dev")
         }
@@ -74,10 +75,8 @@ android {
         versionName = flutter.versionName
         multiDexEnabled = true
 
-        // 📦 Limitar arquitecturas para reducir tamaño (~50% menos vs 4 ABIs)
-        ndk {
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
-        }
+        // 📦 ABI filters are handled by --split-per-abi flag
+        // ndk.abiFilters removed to avoid conflict with splits
 
         // 📦 Excluir extensiones de Agora que NO usa este proyecto
         // El código solo usa el core RTC (init, joinChannel, mute, switchCamera, AgoraVideoView).
@@ -128,5 +127,7 @@ flutter {
 }
 
 dependencies {
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

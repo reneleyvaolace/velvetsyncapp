@@ -5,14 +5,15 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:velvet_sync/config/app_env.dart';
+import 'package:velvet_sync/config/firebase_options.dart';
 import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/backend/sync_service.dart';
 import 'package:velvet_sync/services/backend/link_service.dart';
@@ -27,11 +28,11 @@ import 'package:velvet_sync/screens/auth_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // 1. Cargar variables de entorno desde env.json
   // Usamos rootBundle.loadString porque dotenv.load(fileName:) no funciona
   // en Android Release (el archivo está empaquetado como asset de Flutter).
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   try {
     final envData = await rootBundle.loadString('env.json');
     final envMap = jsonDecode(envData) as Map<String, dynamic>;
@@ -46,43 +47,29 @@ void main() async {
     lvsLog('env.json no disponible: $e', tag: 'APP');
   }
 
-  AppEnv.loaded = AppEnv.supabaseUrl.isNotEmpty && AppEnv.supabaseAnonKey.isNotEmpty;
-
-  if (!AppEnv.loaded) {
-    lvsLog('⚠️ Supabase no configurado: env.json no tiene SUPABASE_URL/SUPABASE_ANON_KEY. Modo offline.', tag: 'APP');
-  } else {
-    lvsLog('Supabase URL cargada: ${AppEnv.supabaseUrl}', tag: 'APP');
+  // ════════════════════════════════════════════════════════════════
+  // 2. Inicializar Firebase Temprano
+  // ════════════════════════════════════════════════════════════════
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    lvsLog('Firebase inicializado en main()', tag: 'APP');
+  } catch (e) {
+    if (e.toString().contains('already been initialized')) {
+      lvsLog('Firebase ya estaba inicializado', tag: 'APP');
+    } else {
+      lvsError('Fallo inicialización Firebase en main: $e', tag: 'APP');
+    }
   }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 2. Inicializar Logger
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+  // 3. Inicializar Logger
+  // ════════════════════════════════════════════════════════════════
   final logger = Logger();
   await logger.initFileLogging();
 
   lvsLog('Iniciando Velvet Sync App...', tag: 'APP');
-
-  // ═══════════════════════════════════════════════════════════════
-  // 3. Inicializar Supabase Temprano
-  // ═══════════════════════════════════════════════════════════════
-  if (AppEnv.loaded && AppEnv.supabaseUrl.isNotEmpty && AppEnv.supabaseAnonKey.isNotEmpty) {
-    try {
-      await Supabase.initialize(
-        url: AppEnv.supabaseUrl,
-        anonKey: AppEnv.supabaseAnonKey,
-        realtimeClientOptions: const RealtimeClientOptions(eventsPerSecond: 10),
-      );
-      lvsLog('Supabase inicializado en main()', tag: 'APP');
-    } catch (e) {
-      if (e.toString().contains('already been initialized')) {
-        lvsLog('Supabase ya estaba inicializado', tag: 'APP');
-      } else {
-        lvsError('Fallo inicialización Supabase en main: $e', tag: 'APP');
-      }
-    }
-  } else {
-    lvsLog('Supabase sin configurar; modo offline', tag: 'APP');
-  }
 
   runApp(
     const ProviderScope(

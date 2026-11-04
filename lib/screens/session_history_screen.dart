@@ -6,7 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/backend/firestore_service.dart';
 import 'package:velvet_sync/theme.dart';
 
 class SessionHistoryScreen extends ConsumerStatefulWidget {
@@ -22,7 +22,7 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _future = ref.read(supabaseServiceProvider).fetchSessionHistory();
+    _future = ref.read(firestoreServiceProvider).fetchSessionHistory();
   }
 
   @override

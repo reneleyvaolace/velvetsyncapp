@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:velvet_sync/devices/models/toy_model.dart';
 import 'package:velvet_sync/devices/models/lovespouse_device.dart';
-import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/backend/firestore_service.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -189,18 +189,18 @@ class ServerCatalogNotifier extends StateNotifier<List<ToyModel>> {
 final catalogLoadingProvider = StateProvider<bool>((ref) => true);
 
 final catalogProvider = StateNotifierProvider<CatalogNotifier, AsyncValue<List<ToyModel>>>((ref) {
-  final supabase = ref.watch(supabaseServiceProvider);
-  return CatalogNotifier(supabase, ref);
+  final firestore = ref.watch(firestoreServiceProvider);
+  return CatalogNotifier(firestore, ref);
 });
 
 class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
-  final SupabaseService _supabase;
+  final FirestoreService _firestore;
   final Ref _ref;
   final _storage = const FlutterSecureStorage();
   List<ToyModel> _serverCatalog = [];
   List<ToyModel> _preregisteredList = []; // Persisten Cifrados
 
-  CatalogNotifier(this._supabase, this._ref) : super(const AsyncValue.loading()) {
+  CatalogNotifier(this._firestore, this._ref) : super(const AsyncValue.loading()) {
     _init();
   }
 
@@ -294,7 +294,7 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
     try {
       lvsLog('🔄 Sincronizando catálogo con Supabase...', tag: 'CATALOG');
 
-      final toys = await _supabase.fetchDeviceCatalog(limit: 500).timeout(
+      final toys = await _firestore.fetchDeviceCatalog(limit: 500).timeout(
         const Duration(seconds: 4),
         onTimeout: () => [],
       );
@@ -418,9 +418,9 @@ class CatalogNotifier extends StateNotifier<AsyncValue<List<ToyModel>>> {
     // Buscar en servidor o fallback
     ToyModel? found;
 
-    // 1. Supabase
+    // 1. Firestore
     try {
-      found = await _supabase.fetchDeviceById(cleanId);
+      found = await _firestore.fetchDeviceById(cleanId);
     } catch (_) {}
 
     // 3. Catálogo LoveSpouse JSON local (2,753 dispositivos) - Precargado en memoria

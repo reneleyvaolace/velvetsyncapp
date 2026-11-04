@@ -1,18 +1,20 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/services/calls/call_signaling.dart
-// Signaling WebRTC via Supabase Realtime
+// Signaling WebRTC via Firebase Firestore (migración desde Supabase Realtime)
 // ════════════════════════════════════════════════════════════════
 
 import 'dart:async';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:velvet_sync/services/calls/call_models.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
-/// Servicio de señalización WebRTC usando Supabase Realtime
+/// Servicio de señalización WebRTC usando Firebase Firestore
 class CallSignalingService {
-  final SupabaseClient _supabase = Supabase.instance.client;
-  
-  RealtimeChannel? _channel;
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _signalSubscription;
   StreamController<CallSignal>? _signalController;
   String? _currentCallId;
   String? _currentUserId;
@@ -33,23 +35,19 @@ class CallSignalingService {
     _currentCallId = callId;
     _currentUserId = currentUserId;
 
-    _channel = _supabase.channel('call_signaling_$callId');
+    _signalSubscription = _firestore
+        .collection('call_signals')
+        .where('call_id', isEqualTo: callId)
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((snapshot) {
+      for (final change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          _handleSignal(change.doc.data());
+        }
+      }
+    });
 
-    _channel!.onPostgresChanges(
-      event: PostgresChangeEvent.insert,
-      schema: 'public',
-      table: 'call_signals',
-      filter: PostgresChangeFilter(
-        type: PostgresChangeFilterType.eq,
-        column: 'call_id',
-        value: callId,
-      ),
-      callback: (payload) {
-        _handleSignal(payload.newRecord);
-      },
-    );
-
-    await _channel!.subscribe();
     _isListening = true;
     lvsLog('📡 Signaling escuchando call: $callId', tag: 'CALL_SIGNALING');
   }
@@ -58,12 +56,12 @@ class CallSignalingService {
   void _handleSignal(Map<String, dynamic> record) {
     try {
       final signal = CallSignal.fromMap(record);
-      
+
       // Ignorar señales propias
       if (signal.fromUserId == _currentUserId) return;
 
       lvsLog('📥 Señal recibida: ${signal.type.name} de ${signal.fromUserId}', tag: 'CALL_SIGNALING');
-      
+
       _signalController?.add(signal);
     } catch (e) {
       lvsError('Error parseando señal: $e', tag: 'CALL_SIGNALING');
@@ -78,23 +76,22 @@ class CallSignalingService {
     required Map<String, dynamic> payload,
   }) async {
     try {
-      final currentUser = Supabase.instance.client.auth.currentUser;
+      final currentUser = _auth.currentUser;
       if (currentUser == null) {
         throw Exception('Usuario no autenticado');
       }
 
       final signal = {
         'call_id': callId,
-        'from_user_id': currentUser.id,
+        'from_user_id': currentUser.uid,
         'to_user_id': toUserId,
         'type': type.name,
         'payload': payload,
-        'timestamp': DateTime.now().toIso8601String(),
+        'timestamp': FieldValue.serverTimestamp(),
+        'read': false,
       };
 
-      await Supabase.instance.client
-          .from('call_signals')
-          .insert(signal);
+      await _firestore.collection('call_signals').add(signal);
 
       lvsLog('📤 Señal enviada: ${type.name} a $callId', tag: 'CALL_SIGNALING');
     } catch (e) {
@@ -205,10 +202,8 @@ class CallSignalingService {
 
   /// Limpia recursos
   Future<void> _cleanup() async {
-    if (_channel != null) {
-      await _channel!.unsubscribe();
-      _channel = null;
-    }
+    _signalSubscription?.cancel();
+    _signalSubscription = null;
     _isListening = false;
     _currentCallId = null;
   }

@@ -7,15 +7,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:velvet_sync/services/calls/call_models.dart';
 import 'package:velvet_sync/services/calls/call_signaling.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
-/// Servicio principal de videollamadas (Agora + Supabase Signaling)
+/// Servicio principal de videollamadas (Agora + Firebase Firestore Signaling)
 class CallService {
   final CallSignalingService _signaling = CallSignalingService();
-  final SupabaseClient _supabase = Supabase.instance.client;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   RtcEngine? _engine;
   String? _currentCallId;
@@ -157,7 +159,7 @@ class CallService {
       throw Exception('CallService no inicializado');
     }
 
-    final currentUser = Supabase.instance.client.auth.currentUser;
+    final currentUser = _auth.currentUser;
     if (currentUser == null) throw Exception('Usuario no autenticado');
 
     // Obtener perfil del caller
@@ -233,14 +235,14 @@ class CallService {
 
     _currentCall = call;
     _currentCallId = call.id;
-    _localUid = Supabase.instance.client.auth.currentUser!.id;
+    _localUid = _auth.currentUser!.uid;
 
-    await _signaling.listenToCall(call.id!, Supabase.instance.client.auth.currentUser!.id);
+    await _signaling.listenToCall(call.id!, _auth.currentUser!.uid);
     _subscribeToSignals();
 
     // Unirse al canal con token recibido
     await _engine!.joinChannel(
-      token: call.agoraToken ?? _generateToken(call.id!, Supabase.instance.client.auth.currentUser!.id),
+      token: call.agoraToken ?? _generateToken(call.id!, _auth.currentUser!.uid),
       channelId: call.channelName!,
       uid: 0,
       options: ChannelMediaOptions(
@@ -418,22 +420,19 @@ class CallService {
   }
 
   Future<Map<String, dynamic>> _getCurrentUserProfile() async {
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = _auth.currentUser;
     if (user == null) return {};
-    final data = await Supabase.instance.client
-        .from('profiles')
-        .select('username, avatar_url')
-        .eq('id', user.id)
-        .maybeSingle();
-    return data ?? {};
+    final doc = await _firestore.collection('users').doc(user.uid).get();
+    if (!doc.exists) return {};
+    return doc.data() ?? {};
   }
 
   Future<void> _createCallRecord(CallModel call) async {
-    await _supabase.from('calls').insert(call.toSupabase());
+    await _firestore.collection('calls').add(call.toFirestore());
   }
 
   Future<void> _updateCallRecord(String callId, Map<String, dynamic> updates) async {
-    await _supabase.from('calls').update(updates).eq('id', callId);
+    await _firestore.collection('calls').doc(callId).update(updates);
   }
 
   String _generateToken(String channelName, String uid) {

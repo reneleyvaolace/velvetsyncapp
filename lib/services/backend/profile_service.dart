@@ -1,17 +1,16 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/services/backend/profile_service.dart
-// Servicio de perfiles de usuario para la libreta de contactos
-//
-// SQL Migration en: supabase/migrations/001_init.sql
-// Ejecutar en Supabase SQL Editor (Dashboard > SQL Editor)
-// ═══════════════════════════════════════════════════════════════
+// Servicio de perfiles de usuario con Firebase Firestore
+// ════════════════════════════════════════════════════════════════
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:velvet_sync/devices/models/user_profile.dart';
 import 'package:velvet_sync/types/result_types.dart';
 import 'package:velvet_sync/utils/logger.dart';
@@ -43,7 +42,7 @@ extension ProfileErrorExtension on ProfileError {
       case ProfileError.networkError:
         return 'Network error, please try again';
       case ProfileError.tableNotFound:
-        return 'Profiles table does not exist';
+        return 'Profiles collection does not exist';
       case ProfileError.notAuthenticated:
         return 'User is not authenticated';
       case ProfileError.unknown:
@@ -57,15 +56,16 @@ class ProfileService extends ChangeNotifier {
   factory ProfileService() => _instance;
   ProfileService._internal();
 
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+
   UserProfile? _myProfile;
   bool _isLoading = false;
 
   UserProfile? get myProfile => _myProfile;
   bool get isLoading => _isLoading;
 
-  SupabaseClient get _client => Supabase.instance.client;
-
-  String? get _currentUserId => _client.auth.currentUser?.id;
+  String? get _currentUserId => _auth.currentUser?.uid;
 
   // ── SharedPreferences keys ──────────────────────────────────
   static const String _prefsKey = 'profile_cache';
@@ -128,7 +128,7 @@ class ProfileService extends ChangeNotifier {
       if (userId == null) {
         lvsLog('Intentando auth anónima de respaldo...', tag: 'PROFILE');
         try {
-          await _client.auth.signInAnonymously();
+          await _auth.signInAnonymously();
           userId = _currentUserId;
         } catch (e) {
           lvsError('Fallo auth anónima de respaldo: $e', tag: 'PROFILE');
@@ -149,46 +149,38 @@ class ProfileService extends ChangeNotifier {
         return const Failure(ProfileError.invalidUsername);
       }
 
-      final response = await _client.from('profiles').insert({
-        'id': userId,
-        'username': username.toLowerCase(),
-        'display_name': displayName,
-        'avatar_url': avatarUrl,
-      }).select().single().timeout(const Duration(seconds: 10));
+      // Verificar si el username ya existe
+      final existing = await _firestore
+          .collection('users')
+          .where('username', isEqualTo: username.toLowerCase())
+          .limit(1)
+          .get();
 
-      final profile = UserProfile.fromJson(response);
+      if (existing.docs.isNotEmpty) {
+        lvsError('Username taken: $username', tag: 'PROFILE');
+        _isLoading = false;
+        notifyListeners();
+        return const Failure(ProfileError.usernameTaken);
+      }
+
+      final profile = UserProfile(
+        id: userId,
+        username: username.toLowerCase(),
+        displayName: displayName,
+        avatarUrl: avatarUrl,
+      );
+
+      await _firestore.collection('users').doc(userId).set(profile.toJson());
+
       _myProfile = profile;
       await _cacheProfile(profile);
       _isLoading = false;
       notifyListeners();
       lvsLog('Profile created: ${profile.username}', tag: 'PROFILE');
       return Success(profile);
-    } on PostgrestException catch (e) {
-      _isLoading = false;
-      notifyListeners();
-
-      if (e.message.contains('violates unique constraint') &&
-          e.message.contains('username')) {
-        lvsError('Username taken: $username', tag: 'PROFILE');
-        return const Failure(ProfileError.usernameTaken);
-      }
-      if (e.message.contains('relation "profiles" does not exist')) {
-        lvsError('Profiles table not found', tag: 'PROFILE');
-        return const Failure(ProfileError.tableNotFound);
-      }
-      if (e.message.contains('violates check constraint')) {
-        lvsError('Invalid username format (check constraint): $username', tag: 'PROFILE');
-        return const Failure(ProfileError.invalidUsername);
-      }
-      lvsError('Postgrest error: ${e.message}', tag: 'PROFILE');
-      return const Failure(ProfileError.unknown);
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-
-      if (e.toString().contains('relation "profiles" does not exist')) {
-        return const Failure(ProfileError.tableNotFound);
-      }
       lvsError('Error creating profile: $e', tag: 'PROFILE');
       return const Failure(ProfileError.networkError);
     }
@@ -199,29 +191,20 @@ class ProfileService extends ChangeNotifier {
     try {
       final userId = _currentUserId;
       if (userId == null) {
-      return const Failure(ProfileError.notAuthenticated);
+        return const Failure(ProfileError.notAuthenticated);
       }
 
-      final response = await _client.from('profiles').select()
-          .eq('id', userId)
-          .maybeSingle()
-          .timeout(const Duration(seconds: 10));
+      final doc = await _firestore.collection('users').doc(userId).get();
 
-      if (response == null) {
-      return const Failure(ProfileError.notFound);
+      if (!doc.exists) {
+        return const Failure(ProfileError.notFound);
       }
 
-      final profile = UserProfile.fromJson(response);
+      final profile = UserProfile.fromJson(doc.data()!);
       _myProfile = profile;
       await _cacheProfile(profile);
       notifyListeners();
       return Success(profile);
-    } on PostgrestException catch (e) {
-      if (e.message.contains('relation "profiles" does not exist')) {
-        return const Failure(ProfileError.tableNotFound);
-      }
-      lvsError('Error getting my profile: ${e.message}', tag: 'PROFILE');
-      return const Failure(ProfileError.networkError);
     } catch (e) {
       lvsError('Error getting my profile: $e', tag: 'PROFILE');
       return const Failure(ProfileError.networkError);
@@ -231,22 +214,14 @@ class ProfileService extends ChangeNotifier {
   /// Get a profile by user ID
   Future<Result<UserProfile?, ProfileError>> getProfile(String userId) async {
     try {
-      final response = await _client.from('profiles').select()
-          .eq('id', userId)
-          .maybeSingle()
-          .timeout(const Duration(seconds: 10));
+      final doc = await _firestore.collection('users').doc(userId).get();
 
-      if (response == null) {
-      return const Success(null);
+      if (!doc.exists) {
+        return const Success(null);
       }
 
-      final profile = UserProfile.fromJson(response);
+      final profile = UserProfile.fromJson(doc.data()!);
       return Success(profile);
-    } on PostgrestException catch (e) {
-      if (e.message.contains('relation "profiles" does not exist')) {
-        return const Failure(ProfileError.tableNotFound);
-      }
-      return const Failure(ProfileError.networkError);
     } catch (e) {
       lvsError('Error getting profile: $e', tag: 'PROFILE');
       return const Failure(ProfileError.networkError);
@@ -256,22 +231,18 @@ class ProfileService extends ChangeNotifier {
   /// Get a profile by username (case-insensitive)
   Future<Result<UserProfile?, ProfileError>> getProfileByUsername(String username) async {
     try {
-      final response = await _client.from('profiles').select()
-          .eq('username', username.trim().toLowerCase())
-          .maybeSingle()
-          .timeout(const Duration(seconds: 10));
+      final snapshot = await _firestore
+          .collection('users')
+          .where('username', isEqualTo: username.trim().toLowerCase())
+          .limit(1)
+          .get();
 
-      if (response == null) {
-      return const Success(null);
+      if (snapshot.docs.isEmpty) {
+        return const Success(null);
       }
 
-      final profile = UserProfile.fromJson(response);
+      final profile = UserProfile.fromJson(snapshot.docs.first.data());
       return Success(profile);
-    } on PostgrestException catch (e) {
-      if (e.message.contains('relation "profiles" does not exist')) {
-      return const Failure(ProfileError.tableNotFound);
-      }
-      return const Failure(ProfileError.networkError);
     } catch (e) {
       lvsError('Error getting profile by username: $e', tag: 'PROFILE');
       return const Failure(ProfileError.networkError);
@@ -284,22 +255,28 @@ class ProfileService extends ChangeNotifier {
     int limit = 20,
   }) async {
     try {
-      final response = await _client.from('profiles').select()
-          .or('username.ilike.%$query%,display_name.ilike.%$query%')
-          .limit(limit)
-          .timeout(const Duration(seconds: 10));
+      final lowerQuery = query.toLowerCase();
 
-      final profiles = (response as List)
-          .map((data) => UserProfile.fromJson(data as Map<String, dynamic>))
-          .toList();
+      // Firestore no soporta OR en consultas, así que buscamos por username
+      // y luego filtramos por display_name en cliente
+      final snapshot = await _firestore
+          .collection('users')
+          .where('username', isGreaterThanOrEqualTo: lowerQuery)
+          .where('username', isLessThanOrEqualTo: lowerQuery + '\uffff')
+          .limit(limit)
+          .get();
+
+      final profiles = <UserProfile>[];
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final displayName = (data['display_name'] as String? ?? '').toLowerCase();
+        if (displayName.contains(lowerQuery) || data['username'] == lowerQuery) {
+          profiles.add(UserProfile.fromJson(data));
+        }
+      }
 
       lvsLog('Search "$query": ${profiles.length} results', tag: 'PROFILE');
       return Success(profiles);
-    } on PostgrestException catch (e) {
-      if (e.message.contains('relation "profiles" does not exist')) {
-        return const Failure(ProfileError.tableNotFound);
-      }
-      return const Failure(ProfileError.networkError);
     } catch (e) {
       lvsError('Error searching profiles: $e', tag: 'PROFILE');
       return const Failure(ProfileError.networkError);
@@ -332,26 +309,17 @@ class ProfileService extends ChangeNotifier {
         return const Failure(ProfileError.unknown);
       }
 
-      final response = await _client.from('profiles').update(updates)
-          .eq('id', userId)
-          .select()
-          .single()
-          .timeout(const Duration(seconds: 10));
+      await _firestore.collection('users').doc(userId).update(updates);
 
-      final profile = UserProfile.fromJson(response);
+      // Obtener perfil actualizado
+      final doc = await _firestore.collection('users').doc(userId).get();
+      final profile = UserProfile.fromJson(doc.data()!);
       _myProfile = profile;
       await _cacheProfile(profile);
       _isLoading = false;
       notifyListeners();
       lvsLog('Profile updated: ${profile.username}', tag: 'PROFILE');
       return Success(profile);
-    } on PostgrestException catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      if (e.message.contains('relation "profiles" does not exist')) {
-        return const Failure(ProfileError.tableNotFound);
-      }
-      return const Failure(ProfileError.networkError);
     } catch (e) {
       _isLoading = false;
       notifyListeners();
@@ -360,7 +328,7 @@ class ProfileService extends ChangeNotifier {
     }
   }
 
-  /// Upload avatar image to Supabase Storage and return public URL
+  /// Upload avatar image to Firebase Storage and return public URL
   Future<String?> uploadAvatar(File image) async {
     try {
       final userId = _currentUserId;
@@ -369,15 +337,11 @@ class ProfileService extends ChangeNotifier {
       final ext = p.extension(image.path).toLowerCase();
       final fileName = 'avatars/$userId$ext';
 
-      await _client.storage.from('user_backups').upload(
-        fileName,
-        image,
-        fileOptions: const FileOptions(upsert: true),
-      );
+      await FirebaseStorage.instance.ref(fileName).putFile(image);
+      final downloadUrl = await FirebaseStorage.instance.ref(fileName).getDownloadURL();
 
-      final publicUrl = _client.storage.from('user_backups').getPublicUrl(fileName);
-      lvsLog('Avatar uploaded: $publicUrl', tag: 'PROFILE');
-      return publicUrl;
+      lvsLog('Avatar uploaded: $downloadUrl', tag: 'PROFILE');
+      return downloadUrl;
     } catch (e) {
       lvsError('Error uploading avatar: $e', tag: 'PROFILE');
       return null;
@@ -390,9 +354,9 @@ class ProfileService extends ChangeNotifier {
       final userId = _currentUserId;
       if (userId == null) return;
 
-      await _client.from('profiles').update({
-        'last_seen_at': DateTime.now().toIso8601String(),
-      }).eq('id', userId).timeout(const Duration(seconds: 5));
+      await _firestore.collection('users').doc(userId).update({
+        'last_seen_at': FieldValue.serverTimestamp(),
+      });
 
       if (_myProfile != null) {
         _myProfile = _myProfile!.copyWith(lastSeenAt: DateTime.now());

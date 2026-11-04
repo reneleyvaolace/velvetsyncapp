@@ -1,19 +1,14 @@
-// ═══════════════════════════════════════════════════════════════
-// Velvet Sync · lib/services/sync_service.dart
-// Servicio de sincronización en tiempo real con Supabase
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// Velvet Sync · lib/services/backend/sync_service.dart
+// Servicio de sincronización en tiempo real con Firebase Firestore
+// ════════════════════════════════════════════════════════════════
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:velvet_sync/devices/models/device_sync_model.dart';
 import 'package:velvet_sync/utils/logger.dart';
-import 'supabase_service.dart';
-
-// ═══════════════════════════════════════════════════════════════
-// Providers de Riverpod
-// ═══════════════════════════════════════════════════════════════
 
 /// Provider que expone el SyncService como singleton y maneja su estado
 final syncServiceProvider = ChangeNotifierProvider<SyncService>((ref) {
@@ -34,9 +29,9 @@ final syncEventsProvider = StreamProvider<List<DeviceSyncEvent>>((ref) {
 /// Provider que expone el último evento recibido
 final lastSyncEventProvider = StateProvider<DeviceSyncEvent?>((ref) => null);
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Estados del canal
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 enum SyncChannelState {
   /// Canal desconectado
@@ -55,33 +50,27 @@ enum SyncChannelState {
   error,
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Callbacks para eventos del sistema
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 /// Callback para eventos de sincronización
 typedef SyncEventCallback = void Function(DeviceSyncEvent event);
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // SyncService
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
-/// Servicio de sincronización en tiempo real con Supabase
-/// Escucha cambios en la tabla `device_sync` y emite eventos al sistema
+/// Servicio de sincronización en tiempo real con Firebase Firestore
+/// Escucha cambios en la colección `device_sync` y emite eventos al sistema
 class SyncService extends ChangeNotifier {
   static final SyncService _instance = SyncService._internal();
   factory SyncService() => _instance;
   SyncService._internal();
 
-  @visibleForTesting
-  factory SyncService.testing({SupabaseService? supabaseService}) {
-    final service = SyncService._internal();
-    service._supabaseService = supabaseService;
-    return service;
-  }
+  final _firestore = FirebaseFirestore.instance;
 
-  SupabaseService? _supabaseService;
-  RealtimeChannel? _channel;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _syncSubscription;
 
   final List<DeviceSyncEvent> _recentEvents = [];
   final List<SyncEventCallback> _aiProfileListeners = [];
@@ -114,7 +103,6 @@ class SyncService extends ChangeNotifier {
   bool get isReceiving => _state == SyncChannelState.receiving;
 
   /// Inicializa el servicio de sincronización
-  /// Debe llamarse después de que SupabaseService esté inicializado
   Future<void> init() async {
     if (_isInitialized) {
       debugPrint('[SyncService] Ya está inicializado');
@@ -125,20 +113,16 @@ class SyncService extends ChangeNotifier {
     _setState(SyncChannelState.connecting);
 
     try {
-      // Obtener instancia de SupabaseService
-      _supabaseService ??= SupabaseService();
-      await _supabaseService!.initialize();
+      // Suscribirse a cambios en la colección device_sync
+      await _subscribeToCollection();
 
-      // Suscribirse al canal de device_sync
-      await _subscribeToChannel();
-
-      // Configurar heartbeat para mantener conexión
+      // Configurar heartbeat para mantener conexión activa
       _startHeartbeat();
 
       _isInitialized = true;
       _setState(SyncChannelState.subscribed);
 
-      lvsLog('SyncService inicializado - Canal: public:device_sync', tag: 'SYNC');
+      lvsLog('SyncService inicializado - Colección: device_sync', tag: 'SYNC');
       notifyListeners();
     } catch (e) {
       debugPrint('[SyncService] Error al iniciar: $e');
@@ -148,57 +132,28 @@ class SyncService extends ChangeNotifier {
     }
   }
 
-  /// Suscribe al canal de Supabase para device_sync
-  Future<void> _subscribeToChannel() async {
-    final client = _supabaseService!.client;
-
-    // Suscribirse a cambios en la tabla device_sync
-    // Usamos el formato: schema:table
-    _channel = client.channel('public:device_sync');
-
-    // Configurar Listener para cambios INSERT antes de suscribir
-    _channel!.onPostgresChanges(
-      event: PostgresChangeEvent.insert,
-      schema: 'public',
-      table: 'device_sync',
-      callback: _onDatabaseChange,
-    );
-
-    // Suscribirse al canal usando callback
-    _channel!.subscribe((status, error) {
-      if (status == RealtimeSubscribeStatus.subscribed) {
-        debugPrint('[SyncService] Canal suscrito exitosamente');
-        lvsLog('Canal public:device_sync suscrito', tag: 'SYNC');
-        _setState(SyncChannelState.receiving);
-      } else if (status == RealtimeSubscribeStatus.channelError) {
-        // ⚠️ NO LOGUEAR ERRORES DE RED PARA NO SATURAR
-        // debugPrint('[SyncService] Error en el canal: $error');
-        final isNetworkError = error.toString().contains('SocketException') ||
-                               error.toString().contains('Failed host lookup');
-        if (!isNetworkError) {
-          debugPrint('[SyncService] Error en el canal: $error');
-          lvsLog('Error en canal realtime: $error', tag: 'SYNC');
+  /// Suscribe a cambios en la colección device_sync de Firestore
+  Future<void> _subscribeToCollection() async {
+    _syncSubscription = _firestore
+        .collection('device_sync')
+        .snapshots()
+        .listen((snapshot) {
+      for (final change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          _onDatabaseChange(change.doc.data() ?? {});
         }
-        _setState(SyncChannelState.error);
-      } else if (status == RealtimeSubscribeStatus.timedOut) {
-        // ⚠️ TIMEOUTS DE RED SON NORMALES SIN INTERNET
-        // debugPrint('[SyncService] Timeout al suscribir');
-        _setState(SyncChannelState.error);
       }
     });
 
-    // Esperar un poco para dar tiempo a que se establezca la conexión
-    await Future.delayed(const Duration(milliseconds: 500));
+    _setState(SyncChannelState.receiving);
+    lvsLog('Canal device_sync suscrito', tag: 'SYNC');
   }
 
   /// Callback cuando hay cambios en la base de datos
-  void _onDatabaseChange(PostgresChangePayload payload) {
+  void _onDatabaseChange(Map<String, dynamic> record) {
     debugPrint('[SyncService] Cambio detectado');
 
     try {
-      // Extraer el registro nuevo (INSERT)
-      final record = payload.newRecord;
-
       // Mapear a DeviceSyncEvent
       final syncEvent = DeviceSyncEvent.fromMap(record);
 
@@ -248,10 +203,7 @@ class SyncService extends ChangeNotifier {
   void _startHeartbeat() {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      // ⚠️ SOLO LOGUEAR SI EL CANAL ESTÁ ACTIVO
-      if (_channel != null && _state == SyncChannelState.receiving) {
-        // debugPrint('[SyncService] Heartbeat - Canal activo');
-      }
+      // Firestore mantiene la conexión automáticamente, no se necesita heartbeat manual
     });
   }
 
@@ -261,9 +213,9 @@ class SyncService extends ChangeNotifier {
     debugPrint('[SyncService] Estado: ${newState.name}');
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Gestión de Listeners para APPLY_AI_PROFILE
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Registra un listener para eventos APPLY_AI_PROFILE
   void addAiProfileListener(SyncEventCallback callback) {
@@ -293,9 +245,9 @@ class SyncService extends ChangeNotifier {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Métodos de utilidad
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Obtiene eventos filtrados por deviceId
   List<DeviceSyncEvent> getEventsForDevice(String deviceId) {
@@ -329,32 +281,26 @@ class SyncService extends ChangeNotifier {
   @visibleForTesting
   void addTestEvent(DeviceSyncEvent event) => _addEvent(event);
 
-  /// Procesa un payload de cambio en la BD (expuesto para testing)
+  /// Procesa un cambio de BD (expuesto para testing)
   @visibleForTesting
-  void onDatabaseChange(PostgresChangePayload payload) =>
-      _onDatabaseChange(payload);
+  void onDatabaseChange(Map<String, dynamic> record) => _onDatabaseChange(record);
 
   /// Notifica listeners de AI Profile (expuesto para testing)
   @visibleForTesting
-  void notifyAiProfileListeners(DeviceSyncEvent event) =>
-      _notifyAiProfileListeners(event);
+  void notifyAiProfileListeners(DeviceSyncEvent event) => _notifyAiProfileListeners(event);
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Cleanup
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
-  /// Cierra el canal y limpia recursos
+  /// Cierra la suscripción y limpia recursos
   @override
   Future<void> dispose() async {
     debugPrint('[SyncService] Cerrando servicio...');
 
     _heartbeatTimer?.cancel();
+    _syncSubscription?.cancel();
     _eventsSubscription?.cancel();
-
-    if (_channel != null) {
-      await _channel!.unsubscribe();
-      _channel = null;
-    }
 
     await _eventsController.close();
     _aiProfileListeners.clear();

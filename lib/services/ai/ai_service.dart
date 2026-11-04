@@ -1,12 +1,13 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // LVS Control · lib/services/ai_service.dart · v1.1.0
-// Servicio Unificado de IA con Failover Dinámico
-// ═══════════════════════════════════════════════════════════════
+// Servicio Unificado de IA con Failover Dinámico (Firebase Functions)
+// ════════════════════════════════════════════════════════════════
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:velvet_sync/config/env.dart';
+import 'package:http/http.dart' as http;
+import 'package:velvet_sync/config/app_env.dart';
 import 'package:velvet_sync/services/ble/ble_service_platform.dart';
 import 'package:velvet_sync/services/ble/lvs_commands.dart';
 import 'package:velvet_sync/utils/logger.dart';
@@ -27,8 +28,7 @@ class AiService {
 
   AiService(this.bleService);
 
-  /// Envía un mensaje a la IA a través de la Edge Function `ai-proxy`.
-  /// La clave de OpenRouter nunca sale del servidor.
+  /// Envía un mensaje a la IA a través de la Cloud Function `ai-proxy`.
   Future<AiResponse> sendMessage(String text) async {
     final message = text.trim();
     if (message.isEmpty) {
@@ -42,30 +42,8 @@ class AiService {
       lvsLog('AI proxy: timeout', tag: 'AI');
       return AiResponse(
         '⏰ La IA no respondió a tiempo. Intenta de nuevo. [H:0,0]',
-        0,
-        0,
-        provider: 'timeout',
+        0, 0, provider: 'timeout',
       );
-    } on FunctionException catch (e) {
-      // No registramos el cuerpo del error: puede contener detalles del proveedor.
-      lvsLog('AI proxy: FunctionException (${e.status})', tag: 'AI');
-      if (e.status == 429) {
-        return AiResponse(
-          'Estoy recibiendo muchos mensajes... dame un momento. [H:0,0]',
-          0,
-          0,
-          provider: 'rate_limited',
-        );
-      }
-      if (e.status == 401 || e.status == 403) {
-        return AiResponse(
-          '⚠️ Sesión no autorizada para usar la IA. [H:0,0]',
-          0,
-          0,
-          provider: 'unauthorized',
-        );
-      }
-      return _getFallbackResponse(message);
     } catch (e) {
       lvsLog('AI proxy error: ${e.runtimeType}', tag: 'AI');
       return _getFallbackResponse(message);
@@ -75,7 +53,6 @@ class AiService {
   AiResponse _handleSuccess(String rawText, String provider) {
     final parsed = _parseHardwareTags(rawText);
 
-    // Sincronización de hardware si está conectado
     if (bleService.isConnected) {
       _dispatchHardwareDual(parsed.motor1, parsed.motor2);
     }
@@ -84,25 +61,34 @@ class AiService {
   }
 
   Future<AiResponse> _callAiProxy(String text) async {
-    if (!AppEnv.hasSupabase) {
+    if (AppEnv.supabaseUrl.isEmpty || AppEnv.supabaseAnonKey.isEmpty) {
       lvsLog('AI proxy: Supabase no configurado', tag: 'AI');
       return AiResponse(
         '⚠️ IA no configurada: falta SUPABASE_URL/SUPABASE_ANON_KEY. [H:0,0]',
-        0,
-        0,
-        provider: 'offline',
+        0, 0, provider: 'offline',
       );
     }
 
-    final response = await Supabase.instance.client.functions
-        .invoke(
-          AppEnv.aiProxyFunction,
-          body: {'message': text},
-        )
-        .timeout(const Duration(seconds: 25));
+    // Llamar a la Cloud Function de Firebase ai-proxy vía HTTP
+    final supabaseUrl = AppEnv.supabaseUrl;
+    final functionUrl = Uri.parse('$supabaseUrl/functions/v1/ai-proxy');
 
-    final data = response.data;
-    final aiText = data is Map ? data['text']?.toString() : null;
+    final response = await http.post(
+      functionUrl,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${AppEnv.supabaseAnonKey}',
+      },
+      body: jsonEncode({'message': text}),
+    ).timeout(const Duration(seconds: 25));
+
+    if (response.statusCode != 200) {
+      lvsLog('AI proxy: error ${response.statusCode}', tag: 'AI');
+      return _getFallbackResponse(text);
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final aiText = data['text']?.toString();
 
     if (aiText == null || aiText.isEmpty) {
       lvsLog('AI proxy: respuesta vacía', tag: 'AI');
@@ -114,8 +100,6 @@ class AiService {
   }
 
   AiResponse _getFallbackResponse(String originalText) {
-    // Respuestas de emergencia cuando TODAS las IAs fallan
-    // IMPORTANTE: Todas con [H:0,0] para no activar motores
     final fallbackResponses = [
       'Mmm... mi conexión está inestable, pero sigo aquí... [H:0,0]',
       'Perdón, estoy teniendo problemas de conexión... [H:0,0]',
@@ -134,7 +118,6 @@ class AiService {
     return AiResponse(parsed.text, parsed.motor1, parsed.motor2, provider: 'fallback_local');
   }
 
-  /// Procesa tags [H:m1,m2] en el texto
   AiResponse _parseHardwareTags(String rawText) {
     final tagRegex = RegExp(r'\[H:(\d{1,3}),(\d{1,3})\]');
     final match = tagRegex.firstMatch(rawText);
@@ -152,18 +135,15 @@ class AiService {
     return AiResponse(cleanText, m1, m2);
   }
 
-  /// Despacho eficiente usando el comando F6 (Dual Sincronizado)
   void _dispatchHardwareDual(int m1, int m2) {
     _autoStopTimer?.cancel();
 
-    // Usar el nuevo comando F6 de LvsCommands
     bleService.writeCommand(
       LvsCommands.dualMotor(m1, m2),
       label: 'AI DUAL (F6)',
       silent: false,
     );
 
-    // Auto-stop tras N segundos para seguridad
     final duration = _calcDuration(m1, m2);
     lvsLog('Hardware: M1=$m1, M2=$m2, Duration=${duration}s', tag: 'AI');
 

@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/backend/firestore_service.dart';
 import 'package:velvet_sync/services/catalog/catalog_service.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
 import 'package:velvet_sync/devices/models/toy_model.dart';
@@ -60,7 +60,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
 
   @override
   void dispose() {
-    ref.read(supabaseServiceProvider).leaveControlRoom();
+    ref.read(firestoreServiceProvider).leaveSessionRoom();
     _tokenController.dispose();
     _partnerTimer?.cancel();
     super.dispose();
@@ -80,7 +80,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
     // 2. Si falló, intentar por ID (robusto para dispositivos genéricos)
     if (_toyModel == null && deviceId.isNotEmpty) {
       lvsLog('Buscando modelo por ID: $deviceId', tag: 'REMOTE');
-      _toyModel = await ref.read(supabaseServiceProvider).fetchDeviceById(deviceId);
+      _toyModel = await ref.read(firestoreServiceProvider).fetchDeviceById(deviceId);
     }
     
     // 3. FALLBACK: Si sigue siendo nulo, crear perfil genérico para no romper la UI
@@ -112,10 +112,10 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   void _startListening() {
     if (_sessionData == null) return;
     final sessionId = _sessionData!['id'].toString();
-    final supabase = ref.read(supabaseServiceProvider);
+    final firestore = ref.read(firestoreServiceProvider);
     
-    supabase.joinControlRoom(sessionId, (payload, isSelf) {
-      if (!mounted || isSelf) return;
+    firestore.joinSessionRoom(sessionId).listen((payload) {
+      if (!mounted) return;
       
       final ble = ref.read(bleProvider);
 
@@ -139,20 +139,22 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
       });
       
       setState(() {
-        if (payload.containsKey('intensity_ch1')) {
-          final val = (payload['intensity_ch1'] as num).toDouble();
-          _valCh1 = val;
-          if (ble.isConnected) {
-            // Aplicar al juguete local (Bidireccional)
-            ble.sendMultimediaSync(val.toInt(), _valCh2.toInt());
-          }
-        }
-        if (payload.containsKey('intensity_ch2')) {
-          final val = (payload['intensity_ch2'] as num).toDouble();
-          _valCh2 = val;
-          if (ble.isConnected) {
-            // Aplicar al juguete local (Bidireccional)
-            ble.sendMultimediaSync(_valCh1.toInt(), val.toInt());
+        if (payload.containsKey('key')) {
+          final key = payload['key'] as String?;
+          final val = (payload['value'] as num?)?.toDouble();
+          if (key != null && val != null) {
+            if (key == 'intensity_ch1') {
+              _valCh1 = val;
+              if (ble.isConnected) {
+                ble.sendMultimediaSync(val.toInt(), _valCh2.toInt());
+              }
+            }
+            if (key == 'intensity_ch2') {
+              _valCh2 = val;
+              if (ble.isConnected) {
+                ble.sendMultimediaSync(_valCh1.toInt(), val.toInt());
+              }
+            }
           }
         }
       });
@@ -162,9 +164,9 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   /// Detiene la sesión en ambos lados: broadcast + parada local inmediata.
   Future<void> _sendRemoteStop() async {
     if (_sessionData == null) return;
-    final supabase = ref.read(supabaseServiceProvider);
+    final supabase = ref.read(firestoreServiceProvider);
     final ble = ref.read(bleProvider);
-    await supabase.sendRemoteStop(_sessionData!['id'].toString());
+    await supabase.sendRemoteStop(_sessionData!['id'].toString(), 'host_stop');
     await ble.emergencyStop();
     await supabase.endSessionTiming(_sessionData!['id'].toString(), 'host_stop');
   }
@@ -175,7 +177,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
 
     setState(() => _isLoading = true);
 
-    final supabase = ref.read(supabaseServiceProvider);
+    final supabase = ref.read(firestoreServiceProvider);
     final session = await supabase.fetchSessionByToken(token);
 
     if (session == null) {
@@ -216,7 +218,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   Future<void> _updateIntensity(int channel, double value) async {
     if (_sessionData == null) return;
     
-    final supabase = ref.read(supabaseServiceProvider);
+    final supabase = ref.read(firestoreServiceProvider);
     final sessionId = _sessionData!['id'].toString();
     final key = channel == 1 ? 'intensity_ch1' : 'intensity_ch2';
     
@@ -433,7 +435,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
 
     setState(() => _isLoading = true);
     try {
-      final supabase = ref.read(supabaseServiceProvider);
+      final supabase = ref.read(firestoreServiceProvider);
       final profile = ref.read(profileServiceProvider).myProfile;
       final hostName = profile != null ? '@${profile.username}' : null;
 
@@ -676,7 +678,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
             padding: const EdgeInsets.only(bottom: 20),
             child: TextButton.icon(
               onPressed: () {
-                 ref.read(supabaseServiceProvider).leaveControlRoom();
+                 ref.read(firestoreServiceProvider).leaveSessionRoom();
                  setState(() => _isConnected = false);
               },
               icon: const Icon(Icons.exit_to_app, color: LvsColors.red),
@@ -719,7 +721,7 @@ class _RemoteSessionScreenState extends ConsumerState<RemoteSessionScreen> {
   /// Pausa o reanuda la sesión (reloj en servidor + tick local).
   Future<void> _togglePause() async {
     if (_sessionData == null) return;
-    final supabase = ref.read(supabaseServiceProvider);
+    final supabase = ref.read(firestoreServiceProvider);
     final timer = ref.read(sessionTimerServiceProvider);
     final id = _sessionData!['id'].toString();
     final status = ref.read(sessionTimerStateProvider).status;
