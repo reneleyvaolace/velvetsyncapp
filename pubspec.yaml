@@ -28,7 +28,7 @@ dependencies:
   flutter_foreground_task: ^9.1.0
 
   # ── Acelerómetro (Shake Mode) ──────────────────────────────
-  sensors_plus: ^6.3.0
+  sensors_plus: ^5.0.0
   rxdart: ^0.28.0           # 🔒 PERFORMANCE: Stream transformers (debounce, throttle)
   google_fonts: ^6.2.1
 
@@ -55,7 +55,7 @@ dependencies:
   csv: ^6.0.0
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.1  # 🔒 PERFORMANCE: Custom cache manager para imágenes
-  mobile_scanner: ^3.3.0      # QR / Barcode scanner real
+  mobile_scanner: ^3.5.0      # QR / Barcode scanner real
   # ── Firebase ─────────────────────────────────────────────────
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.0
