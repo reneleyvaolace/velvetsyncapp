@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "221572706400",
+    "project_id": "velvet-sync",
+    "storage_bucket": "velvet-sync.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221572706400:android:6aae5dc9216bc0ddc81305",
+        "android_client_info": {
+          "package_name": "com.velvetsync.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlUcGvwDcKUEb7zyxFoNjA3mr9Z3GZYjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
