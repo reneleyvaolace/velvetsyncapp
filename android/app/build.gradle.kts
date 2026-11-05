@@ -112,7 +112,10 @@ android {
             // ═══════════════════════════════════════════════════════════════
             // ✅ FIRMA DE RELEASE CONFIGURADA (P1 COMPLETADO)
             // ═══════════════════════════════════════════════════════════════
-            signingConfig = signingConfigs.getByName("release")
+            // Firmado condicional: solo si existe key.properties con storeFile
+            if (keystorePropertiesFile.exists() && keystoreProperties.containsKey("storeFile")) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         debug {
             // Debug build configuration - usa signing config por defecto de Android
