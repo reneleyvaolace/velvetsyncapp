@@ -54,7 +54,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           MobileScanner(
             controller: _controller,
             onDetect: _onDetect,
-            errorBuilder: (context, error) {
+            errorBuilder: (context, error, child) {
               return Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
