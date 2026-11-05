@@ -404,7 +404,7 @@ class _SpecialToggleCardState extends State<_SpecialToggleCard> {
               ),
               Switch(
                 value: widget.isActive,
-                activeThumbColor: widget.color,
+                thumbColor: WidgetStateProperty.all(widget.color),
                 onChanged: (v) => widget.onToggle(v),
               ),
             ],
