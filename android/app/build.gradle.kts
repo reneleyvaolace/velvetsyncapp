@@ -105,8 +105,9 @@ android {
     buildTypes {
         release {
             // Optimización y Seguridad
-            isMinifyEnabled = true
-            isShrinkResources = true
+            val hasKeystore = keystorePropertiesFile.exists() && keystoreProperties.containsKey("storeFile")
+            isMinifyEnabled = hasKeystore
+            isShrinkResources = hasKeystore
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             // ═══════════════════════════════════════════════════════════════

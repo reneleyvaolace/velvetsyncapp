@@ -28,8 +28,11 @@ jobs:
         run: flutter pub get
       
       - name: Build APK (Release)
-        run: flutter build apk --release --split-per-abi
-      
+        run: flutter build apk --release --split-per-abi --flavor prod
+
+      - name: List generated APKs
+        run: find build/app/outputs -name "*.apk" -type f
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
