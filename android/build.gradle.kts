@@ -3,7 +3,7 @@ plugins {
     // Keep this compatible with the Kotlin/AGP toolchain used by Flutter 3.29.
     id("com.google.gms.google-services") version "4.4.2" apply false
     // Kotlin Gradle Plugin para compilar código Kotlin (requerido por Firebase Auth 25+)
-    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
+    id("org.jetbrains.kotlin.android") version "2.2.20" apply false
 }
 
 allprojects {
