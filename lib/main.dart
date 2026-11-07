@@ -117,6 +117,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   String _status = 'Iniciando...';
   double _progress = 0.0;
   bool _navigationTriggered = false;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -128,7 +129,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     lvsLog('Inicializando core services en paralelo...', tag: 'APP');
 
     try {
-      // Lanzar todas las inicializaciones EN PARALELO (no secuencial)
+      // Lanzar todas las inicializaciones EN PARALELO con timeout global
       final futures = <Future<void>>[
         // 1. LinkService (crítico para deep links)
         _safeInit('LinkService', () => LinkService().init().timeout(const Duration(seconds: 3))),
@@ -152,29 +153,39 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         }),
       ];
 
-      // Ejecutar todo en paralelo con progreso visual
+      // Ejecutar todo en paralelo con progreso visual y timeout global de 10s
+      final globalTimeout = Future.delayed(const Duration(seconds: 10));
       int completed = 0;
+
       for (final future in futures) {
-        await future;
         if (!mounted) return;
+        await future;
         completed++;
+        if (!mounted) return;
         setState(() {
           _progress = completed / futures.length;
           _status = 'Inicializando... ${(completed * 100 / futures.length).round()}%';
         });
       }
 
-      lvsLog('Core services inicializados', tag: 'APP');
+      // Esperar al timeout global si aún no ha terminado
+      if (!mounted) return;
+      await globalTimeout;
+
+      lvsLog('Core services inicializados (o timeout alcanzado)', tag: 'APP');
     } catch (e) {
       lvsError('Error durante inicialización de servicios: $e', tag: 'APP');
+      if (mounted) {
+        setState(() => _hasError = true);
+      }
     }
 
-    if (mounted) {
-      // Mínimo 1.5s para ver el logo (en lugar de 2s fijos)
-      await Future.delayed(const Duration(milliseconds: 1500));
-      if (!mounted) return;
-      _navigateToNextScreen();
-    }
+    if (!mounted) return;
+
+    // Mínimo 1.5s para ver el logo
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (!mounted) return;
+    _navigateToNextScreen();
   }
 
   Future<void> _safeInit(String name, Future<void> Function() init) async {
@@ -183,6 +194,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       lvsLog('✅ $name OK', tag: 'APP');
     } catch (e) {
       lvsLog('⚠️ $name timeout/error (continúa): $e', tag: 'APP');
+      if (mounted) {
+        setState(() => _hasError = true);
+      }
     }
   }
 
@@ -276,11 +290,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             const SizedBox(height: 16),
             // Estado de progreso
             Text(
-              _status,
+              _hasError ? '⚠️ Algunos servicios no respondieron (modo offline)' : _status,
               style: TextStyle(
                 fontFamily: 'Outfit',
                 fontSize: 12,
-                color: Colors.white.withValues(alpha: 0.7),
+                color: _hasError ? Colors.orangeAccent : Colors.white.withValues(alpha: 0.7),
                 letterSpacing: 1.5,
               ),
             ),
