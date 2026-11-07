@@ -440,4 +440,28 @@ class ToyModel {
     if (patternGroups.isNotEmpty)
       'patternGroups': patternGroups.map((g) => g.toJson()).toList(),
   };
+
+  /// Crea un ToyModel desde datos de Firestore
+  factory ToyModel.fromFirestore(Map<String, dynamic> data, String documentId) {
+    return ToyModel(
+      id: documentId,
+      name: data['name']?.toString() ?? 'Dispositivo',
+      usageType: data['usage_type']?.toString() ?? data['usageType']?.toString() ?? 'Universal',
+      targetAnatomy: data['target_anatomy']?.toString() ?? data['targetAnatomy']?.toString() ?? 'Universal',
+      stimulationType: data['stimulation_type']?.toString() ?? data['stimulationType']?.toString() ?? 'Vibración',
+      motorLogic: data['motor_logic']?.toString() ?? data['motorLogic']?.toString() ?? 'Single Channel',
+      imageUrl: data['image_url']?.toString() ?? data['imageUrl']?.toString() ?? '',
+      qrCodeUrl: data['qr_code_url']?.toString() ?? data['qrCodeUrl']?.toString() ?? '',
+      supportedFuncs: data['supported_funcs']?.toString() ?? data['supportedFuncs']?.toString() ?? '',
+      isPrecise: data['is_precise_new'] == true || data['is_precise'] == true || data['isPrecise'] == true,
+      broadcastPrefix: data['broadcast_prefix']?.toString() ?? data['broadcastPrefix']?.toString() ?? '77 62 4d 53 45',
+      bleProtocol: _parseProtocol(data['ble_protocol']?.toString() ?? data['bleProtocol']?.toString() ?? 'classic'),
+      isPrivateProtocol: data['is_private_protocol'] == true || data['isPrivateProtocol'] == true,
+      encryptCommand: data['encrypt_command']?.toString() ?? data['encryptCommand']?.toString() ?? '',
+      bleName: data['ble_name']?.toString() ?? data['bleName']?.toString() ?? '',
+      isEncrypt: data['is_encrypt'] == true || data['is_encrypt'] == 1 || data['isEncrypt'] == true,
+      patternGroups: (data['pattern_groups'] as List?)?.map((g) => PatternGroup.fromJson(g)).toList() ?? 
+                     (data['patternGroups'] as List?)?.map((g) => PatternGroup.fromJson(g)).toList() ?? [],
+    );
+  }
 }

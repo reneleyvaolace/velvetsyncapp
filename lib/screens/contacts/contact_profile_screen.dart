@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/backend/firestore_service.dart';
 import 'package:velvet_sync/services/backend/contact_service.dart';
 import 'package:velvet_sync/services/backend/invitation_service.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
@@ -27,8 +27,8 @@ class _ContactProfileScreenState extends ConsumerState<ContactProfileScreen> {
     try {
       final ble = ref.read(bleProvider);
       final deviceId = ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs';
-      final supabase = ref.read(supabaseServiceProvider);
-      final session = await supabase.createSharedSession(deviceId);
+      final firestore = ref.read(firestoreServiceProvider);
+      final session = await firestore.createSharedSession(deviceId, hostName: widget.contact.profile?.displayName ?? 'Usuario');
 
       if (session == null) {
         if (mounted) {
@@ -41,14 +41,13 @@ class _ContactProfileScreenState extends ConsumerState<ContactProfileScreen> {
       }
 
       final sessionId = session['id']?.toString() ?? '';
-      final accessToken = session['access_token']?.toString() ?? '';
+      final accessToken = session['access_token']?.toString() ?? sessionId;
 
       final invites = ref.read(invitationServiceProvider);
-      final result = await invites.sendInvite(
+      final result = await invites.createInvitation(
         sessionId: sessionId,
-        toUserId: widget.contact.contactUserId,
-        accessToken: accessToken,
-        deviceId: deviceId,
+        sessionName: widget.contact.profile?.displayName ?? 'Sesión con ${widget.contact.contactUserId}',
+        expiresInMinutes: 60,
       );
 
       if (mounted) {

@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:velvet_sync/config/app_env.dart';
 import 'package:velvet_sync/services/ble/ble_service_platform.dart';
@@ -105,6 +106,22 @@ void main() async {
     }
   } else {
     lvsLog('Supabase sin configurar; modo offline', tag: 'APP');
+  }
+
+  // ═════════════════════════════════════════════════════════════════
+  // 4. Inicializar Firebase Temprano
+  // ═════════════════════════════════════════════════════════════════
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    lvsLog('Firebase inicializado en main()', tag: 'APP');
+  } catch (e) {
+    if (e.toString().contains('already been initialized')) {
+      lvsLog('Firebase ya estaba inicializado', tag: 'APP');
+    } else {
+      lvsError('Fallo inicialización Firebase en main: $e', tag: 'APP');
+    }
   }
 
   runApp(

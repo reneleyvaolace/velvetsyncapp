@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/backend/firestore_service.dart';
 import 'package:velvet_sync/services/backend/contact_service.dart';
 import 'package:velvet_sync/services/backend/invitation_service.dart';
 import 'package:velvet_sync/services/ble/ble_service.dart';
@@ -37,17 +37,13 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
 
     try {
       final contactsResult = await ref.read(contactServiceProvider).getContacts();
-      final invitesResult = await ref.read(invitationServiceProvider).getPendingInvites();
+      final invitesData = await ref.read(invitationServiceProvider).getPendingInvites();
+      final invites = invitesData.map((json) => SessionInvite.fromJson(json)).toList();
 
       if (mounted) {
         contactsResult.fold(
           (error) => setState(() { _error = error.message; _isLoading = false; }),
-          (contacts) {
-            invitesResult.fold(
-              (_) => setState(() { _contacts = contacts; _pendingInvites = []; _isLoading = false; }),
-              (invites) => setState(() { _contacts = contacts; _pendingInvites = invites; _isLoading = false; }),
-            );
-          },
+          (contacts) => setState(() { _contacts = contacts; _pendingInvites = invites; _isLoading = false; }),
         );
       }
     } catch (e) {
@@ -69,8 +65,8 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     try {
       final ble = ref.read(bleProvider);
       final deviceId = ble.activeToy?.id ?? ble.toyProfile?.identifier ?? 'generic_lvs';
-      final supabase = ref.read(supabaseServiceProvider);
-      final session = await supabase.createSharedSession(deviceId);
+      final firestore = ref.read(firestoreServiceProvider);
+      final session = await firestore.createSharedSession(deviceId);
 
       if (mounted) Navigator.pop(context);
 
@@ -87,11 +83,10 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       final accessToken = session['access_token']?.toString() ?? '';
 
       final invites = ref.read(invitationServiceProvider);
-      final result = await invites.sendInvite(
+      final result = await invites.createInvitation(
         sessionId: sessionId,
-        toUserId: contactUserId,
-        accessToken: accessToken,
-        deviceId: deviceId,
+        sessionName: 'Sesión con ${contact.profile?.displayName ?? contact.contactUserId}',
+        expiresInMinutes: 60,
       );
 
       if (mounted) {
@@ -124,7 +119,8 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
 
   Future<void> _acceptInvite(SessionInvite invite) async {
     final invites = ref.read(invitationServiceProvider);
-    final result = await invites.acceptInvite(invite.id);
+    final code = invite.accessToken ?? invite.id;
+    final result = await invites.acceptInvitation(code);
 
     if (mounted) {
       result.fold(
@@ -138,7 +134,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => RemoteSessionScreen(prefilledToken: invite.accessToken),
+              builder: (_) => RemoteSessionScreen(prefilledToken: invite.accessToken ?? invite.id),
             ),
           );
         },
@@ -147,8 +143,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   }
 
   Future<void> _rejectInvite(SessionInvite invite) async {
-    final invites = ref.read(invitationServiceProvider);
-    await invites.rejectInvite(invite.id);
     if (mounted) {
       setState(() => _pendingInvites.removeWhere((i) => i.id == invite.id));
     }

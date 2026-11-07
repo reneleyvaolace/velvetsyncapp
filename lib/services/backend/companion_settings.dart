@@ -1,10 +1,11 @@
-// ═══════════════════════════════════════════════════════════════
-// Velvet Sync · Companion Settings
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// Velvet Sync · Companion Settings (Firebase Firestore)
+// ════════════════════════════════════════════════════════════════
 
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
 enum CompanionGender {
@@ -35,14 +36,14 @@ class CompanionSettings {
   CompanionGender gender;
   CompanionPersonality personality;
   bool saveConversations;
-  bool syncWithSupabase;
+  bool syncWithFirestore;
 
   CompanionSettings({
     this.name = 'Velvet',
     this.gender = CompanionGender.female,
     this.personality = CompanionPersonality.neutral,
     this.saveConversations = true,
-    this.syncWithSupabase = false,
+    this.syncWithFirestore = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -50,7 +51,7 @@ class CompanionSettings {
     'gender': gender.name,
     'personality': personality.name,
     'saveConversations': saveConversations,
-    'syncWithSupabase': syncWithSupabase,
+    'syncWithFirestore': syncWithFirestore,
   };
 
   factory CompanionSettings.fromJson(Map<String, dynamic> json) => CompanionSettings(
@@ -64,7 +65,7 @@ class CompanionSettings {
       orElse: () => CompanionPersonality.neutral,
     ),
     saveConversations: json['saveConversations'] ?? true,
-    syncWithSupabase: json['syncWithSupabase'] ?? false,
+    syncWithFirestore: json['syncWithFirestore'] ?? false,
   );
 }
 
@@ -74,9 +75,12 @@ class CompanionService {
   CompanionService._internal();
 
   final _storage = const FlutterSecureStorage();
-  final supabase = Supabase.instance.client;
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
   CompanionSettings? _settings;
   static const String _settingsKey = 'companion_settings';
+
+  String? get _currentUserId => _auth.currentUser?.uid;
 
   Future<CompanionSettings> getSettings() async {
     if (_settings != null) return _settings!;
@@ -93,38 +97,31 @@ class CompanionService {
   Future<void> saveSettings(CompanionSettings settings) async {
     _settings = settings;
     await _storage.write(key: _settingsKey, value: json.encode(settings.toJson()));
-    if (settings.syncWithSupabase) {
-      await _syncToSupabase(settings);
+    if (settings.syncWithFirestore) {
+      await _syncToFirestore(settings);
     }
   }
 
-  Future<void> _syncToSupabase(CompanionSettings settings) async {
+  Future<void> _syncToFirestore(CompanionSettings settings) async {
     try {
-      // 🔒 SECURITY: Require proper authentication - reject anonymous sync
-      final userId = await _storage.read(key: 'user_id');
-
-      if (userId == null || userId.isEmpty || userId == 'anonymous') {
+      final userId = _currentUserId;
+      if (userId == null || userId.isEmpty) {
         throw StateError('Cannot sync companion settings: User not authenticated. Please log in first.');
       }
 
-      // Validate userId format (prevent injection attacks)
-      if (!RegExp(r'^[a-zA-Z0-9_-]{1,255}$').hasMatch(userId)) {
-        throw const FormatException('Invalid user_id format: User ID contains invalid characters');
-      }
-
-      await supabase.from('companion_settings').upsert({
+      await _firestore.collection('companion_settings').doc(userId).set({
         'user_id': userId,
         'name': settings.name,
         'gender': settings.gender.name,
         'personality': settings.personality.name,
         'save_conversations': settings.saveConversations,
-        'sync_with_supabase': settings.syncWithSupabase,
-        'updated_at': DateTime.now().toIso8601String(),
-      });
+        'sync_with_firestore': settings.syncWithFirestore,
+        'updated_at': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
 
       lvsLog('Companion settings synced for user: $userId', tag: 'COMPANION');
     } catch (e) {
-      lvsLog('Error syncing Companion to Supabase: $e', tag: 'COMPANION');
+      lvsLog('Error syncing Companion to Firestore: $e', tag: 'COMPANION');
       rethrow;
     }
   }

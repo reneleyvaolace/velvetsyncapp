@@ -1,23 +1,21 @@
-// ═══════════════════════════════════════════════════════════════
-// Velvet Sync · lib/services/session_manager.dart
-// Gestor de Sesiones Multi-Usuario Multi-Dispositivo
-// 
-// Gestiona creación, unión y control de sesiones compartidas
-// donde múltiples usuarios pueden controlar múltiples dispositivos.
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// Velvet Sync · lib/services/session/session_manager.dart
+// Gestor de Sesiones Multi-Usuario Multi-Dispositivo (Firebase Firestore)
+// ════════════════════════════════════════════════════════════════
 
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:velvet_sync/devices/models/session_models.dart';
-import 'package:velvet_sync/services/backend/supabase_service.dart';
+import 'package:velvet_sync/services/backend/firestore_service.dart';
 import 'package:velvet_sync/utils/logger.dart';
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Providers
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 final sessionManagerProvider = Provider<SessionManager>((ref) {
   return SessionManager();
@@ -27,9 +25,9 @@ final currentSessionProvider = StateProvider<SharedSession?>((ref) => null);
 final sessionParticipantsProvider = StateProvider<List<SessionParticipant>>((ref) => []);
 final sessionDevicesProvider = StateProvider<List<SessionDevice>>((ref) => []);
 
-// ═══════════════════════════════════════════════════════════════
-// Auth Service - Obtiene el usuario actual desde Supabase
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// Auth Service - Obtiene el usuario actual desde Firebase Auth
+// ════════════════════════════════════════════════════════════════
 
 /// Servicio de autenticación para obtener el usuario actual
 class AuthService {
@@ -37,39 +35,32 @@ class AuthService {
   factory AuthService() => _instance;
   AuthService._internal();
 
-  SupabaseClient? _client;
-
-  /// Inicializar con el cliente de Supabase
-  void initialize(SupabaseClient client) {
-    _client = client;
-  }
+  final _auth = FirebaseAuth.instance;
 
   /// Obtener el ID del usuario actual
-  String? get currentUserId => _client?.auth.currentUser?.id;
+  String? get currentUserId => _auth.currentUser?.uid;
 
   /// Obtener el email del usuario actual
-  String? get currentUserEmail => _client?.auth.currentUser?.email;
+  String? get currentUserEmail => _auth.currentUser?.email;
 
   /// Obtener el nombre para mostrar del usuario actual
   String get currentUserDisplayName {
-    final user = _client?.auth.currentUser;
-    return user?.userMetadata?['display_name'] ?? 
-           user?.email?.split('@').first ?? 
+    final user = _auth.currentUser;
+    return user?.displayName ??
+           user?.email?.split('@').first ??
            'Anonymous';
   }
 
   /// Verificar si hay un usuario autenticado
-  bool get isAuthenticated => _client?.auth.currentUser != null;
+  bool get isAuthenticated => _auth.currentUser != null;
 
   /// Escuchar cambios en el estado de autenticación
-  Stream<AuthState> get authState => _client?.auth.onAuthStateChange ?? const Stream.empty();
+  Stream<User?> get authState => _auth.authStateChanges();
 }
 
-
-
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Session Manager
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 /// Gestor de sesiones multi-usuario multi-dispositivo
 class SessionManager extends ChangeNotifier {
@@ -77,43 +68,42 @@ class SessionManager extends ChangeNotifier {
   factory SessionManager() => _instance;
   SessionManager._internal();
 
-  SupabaseService? _supabaseService;
-  RealtimeChannel? _sessionChannel;
+  final FirestoreService _firestore = FirestoreService();
+  StreamSubscription? _sessionSubscription;
   SharedSession? _currentSession;
   final StreamController<SessionEvent> _eventController =
       StreamController<SessionEvent>.broadcast();
-  
+
   bool _isConnected = false;
   String? _lastError;
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Inicialización
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
-  /// Inicializar el session manager con SupabaseService
-  void initialize(SupabaseService supabaseService) {
-    _supabaseService = supabaseService;
+  /// Inicializar el session manager
+  void initialize() {
+    _firestore.initialize();
     lvsLog('SessionManager inicializado', tag: 'SESSION');
   }
 
-  /// Obtener el usuario actual
+  /// Obtener el ID del usuario actual
   String get _currentUserId {
-    final client = Supabase.instance.client;
-    return client.auth.currentUser?.id ?? 'anonymous';
+    final userId = _firestore.currentUserId;
+    return userId ?? 'anonymous';
   }
 
   /// Obtener el nombre para mostrar del usuario actual
   String get _currentUserDisplayName {
-    final client = Supabase.instance.client;
-    final user = client.auth.currentUser;
-    return user?.userMetadata?['display_name'] ?? 
-           user?.email?.split('@').first ?? 
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.displayName ??
+           user?.email?.split('@').first ??
            'Anonymous';
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Getters de Estado
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Sesión actual
   SharedSession? get currentSession => _currentSession;
@@ -140,14 +130,11 @@ class SessionManager extends ChangeNotifier {
   /// Último error
   String? get lastError => _lastError;
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Creación de Sesiones
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Crear nueva sesión compartida
-  ///
-  /// [name] - Nombre de la sesión
-  /// [config] - Configuración de la sesión
   Future<SharedSession?> createSession({
     required String name,
     SessionConfig? config,
@@ -156,16 +143,15 @@ class SessionManager extends ChangeNotifier {
     try {
       lvsLog('Creando sesión: $name', tag: 'SESSION');
 
-      // Crear sesión en Supabase
       final userId = _currentUserId;
-      
-      final sessionData = await _supabaseService?.createSharedSession(deviceId);
-      
+
+      final sessionData = await _firestore.createSharedSession(deviceId, hostName: _currentUserDisplayName);
+
       if (sessionData != null) {
-        // Sesión creada en backend, usar datos reales
+        final docId = sessionData['id']?.toString() ?? '';
         _currentSession = SharedSession(
-          id: sessionData['id']?.toString() ?? 'session_${DateTime.now().millisecondsSinceEpoch}',
-          accessToken: sessionData['access_token']?.toString() ?? sessionData['accessToken']?.toString() ?? '',
+          id: docId.isNotEmpty ? docId : 'session_${DateTime.now().millisecondsSinceEpoch}',
+          accessToken: sessionData['access_token']?.toString() ?? sessionData['accessToken']?.toString() ?? 'token_${DateTime.now().millisecondsSinceEpoch}',
           name: name,
           hostUserId: userId,
           participants: [SessionParticipant(
@@ -187,9 +173,6 @@ class SessionManager extends ChangeNotifier {
         );
       }
 
-      // Suscribirse al canal de Realtime
-      await _subscribeToSessionChannel(_currentSession!.id);
-
       _isConnected = true;
       notifyListeners();
 
@@ -203,102 +186,22 @@ class SessionManager extends ChangeNotifier {
     }
   }
 
-  /// Suscribirse al canal de Realtime para la sesión
-  Future<void> _subscribeToSessionChannel(String sessionId) async {
-    try {
-      final client = Supabase.instance.client;
-      
-      _sessionChannel = client.channel('session_$sessionId');
-
-      // Escuchar eventos de participantes
-      _sessionChannel!.onBroadcast(
-        event: 'user_joined',
-        callback: (payload) {
-          final participant = SessionParticipant.fromJson(payload);
-          _eventController.add(UserJoinedEvent(
-            sessionId: sessionId,
-            participant: participant,
-          ));
-        },
-      );
-
-      _sessionChannel!.onBroadcast(
-        event: 'user_left',
-        callback: (payload) {
-          final userId = payload['userId']?.toString() ?? '';
-          _eventController.add(UserLeftEvent(
-            sessionId: sessionId,
-            userId: userId,
-          ));
-        },
-      );
-
-      _sessionChannel!.onBroadcast(
-        event: 'device_added',
-        callback: (payload) {
-          final device = SessionDevice.fromJson(payload);
-          _eventController.add(DeviceAddedEvent(
-            sessionId: sessionId,
-            device: device,
-          ));
-        },
-      );
-
-      _sessionChannel!.onBroadcast(
-        event: 'device_removed',
-        callback: (payload) {
-          final deviceId = payload['deviceId']?.toString() ?? '';
-          _eventController.add(DeviceRemovedEvent(
-            sessionId: sessionId,
-            deviceId: deviceId,
-          ));
-        },
-      );
-
-      _sessionChannel!.onBroadcast(
-        event: 'control_command',
-        callback: (payload) {
-          final userId = payload['userId']?.toString() ?? '';
-          final deviceId = payload['deviceId']?.toString() ?? '';
-          final intensity = (payload['intensity'] as num?)?.toDouble() ?? 0.0;
-          final commandType = payload['commandType']?.toString();
-          
-          _eventController.add(ControlCommandEvent(
-            sessionId: sessionId,
-            userId: userId,
-            deviceId: deviceId,
-            intensity: intensity,
-            commandType: commandType,
-          ));
-        },
-      );
-
-      _sessionChannel!.subscribe();
-      lvsLog('Suscrito al canal de sesión: session_$sessionId', tag: 'SESSION');
-    } catch (e) {
-      lvsLog('Error suscribiendo al canal: $e', tag: 'SESSION');
-    }
-  }
-
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Unión a Sesiones
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Unirse a sesión existente con token
-  ///
-  /// [accessToken] - Token de acceso a la sesión
   Future<SharedSession?> joinSession(String accessToken) async {
     try {
       lvsLog('Uniéndose a sesión con token: $accessToken', tag: 'SESSION');
 
-      // Verificar token con Supabase
-      final sessionData = await _supabaseService?.fetchSessionByToken(accessToken);
-      
       final currentUserId = _currentUserId;
       final currentUserName = _currentUserDisplayName;
 
+      // Verificar token con Firestore
+      final sessionData = await _firestore.fetchSessionByToken(accessToken);
+
       if (sessionData != null) {
-        // Cargar sesión desde backend
         _currentSession = SharedSession(
           id: sessionData['id']?.toString() ?? '',
           accessToken: accessToken,
@@ -313,11 +216,10 @@ class SessionManager extends ChangeNotifier {
           ],
           devices: [],
           isActive: true,
-          createdAt: DateTime.tryParse(sessionData['created_at']?.toString() ?? '') ?? DateTime.now(),
-          config: SessionConfig.fromJson(sessionData['config'] ?? {}),
+          createdAt: DateTime.now(),
+          config: const SessionConfig(),
         );
       } else {
-        // Fallback: crear sesión local si no hay backend
         lvsLog('No se pudo verificar con backend, usando modo local', tag: 'SESSION');
         _currentSession = SharedSession(
           id: 'session_${DateTime.now().millisecondsSinceEpoch}',
@@ -338,12 +240,6 @@ class SessionManager extends ChangeNotifier {
         );
       }
 
-      // Notificar al backend (broadcast)
-      await _broadcastEvent('user_joined', {
-        'userId': currentUserId,
-        'displayName': currentUserName,
-      });
-
       // Emitir evento local
       _eventController.add(UserJoinedEvent(
         sessionId: _currentSession!.id,
@@ -353,9 +249,6 @@ class SessionManager extends ChangeNotifier {
           joinedAt: DateTime.now(),
         ),
       ));
-
-      // Suscribirse al canal
-      await _subscribeToSessionChannel(_currentSession!.id);
 
       _isConnected = true;
       notifyListeners();
@@ -370,16 +263,6 @@ class SessionManager extends ChangeNotifier {
     }
   }
 
-  /// Enviar broadcast a la sesión
-  Future<void> _broadcastEvent(String event, Map<String, dynamic> payload) async {
-    if (_sessionChannel != null) {
-      await _sessionChannel!.sendBroadcastMessage(
-        event: event,
-        payload: payload,
-      );
-    }
-  }
-
   /// Salir de sesión actual
   Future<void> leaveSession() async {
     if (_currentSession == null) return;
@@ -388,18 +271,13 @@ class SessionManager extends ChangeNotifier {
       final currentUserId = _currentUserId;
       lvsLog('Saliendo de sesión: ${_currentSession!.id}', tag: 'SESSION');
 
-      // Notificar al backend
-      await _broadcastEvent('user_left', {'userId': currentUserId});
-
-      // Emitir evento
       _eventController.add(UserLeftEvent(
         sessionId: _currentSession!.id,
         userId: currentUserId,
       ));
 
-      // Desuscribirse del canal
-      await _sessionChannel?.unsubscribe();
-      _sessionChannel = null;
+      _sessionSubscription?.cancel();
+      _sessionSubscription = null;
 
       _currentSession = null;
       _isConnected = false;
@@ -412,15 +290,11 @@ class SessionManager extends ChangeNotifier {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Gestión de Dispositivos
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Agregar dispositivo a la sesión
-  ///
-  /// [deviceId] - ID del dispositivo físico
-  /// [name] - Nombre del dispositivo
-  /// [ownerId] - ID del dueño del dispositivo (opcional)
   Future<SessionDevice?> addDevice({
     required String deviceId,
     required String name,
@@ -443,9 +317,6 @@ class SessionManager extends ChangeNotifier {
         addedAt: DateTime.now(),
       );
 
-      // Notificar al backend
-      await _broadcastEvent('device_added', device.toJson());
-
       // Emitir evento
       _eventController.add(DeviceAddedEvent(
         sessionId: _currentSession!.id,
@@ -466,9 +337,6 @@ class SessionManager extends ChangeNotifier {
     if (_currentSession == null) return;
 
     try {
-      // Notificar al backend
-      await _broadcastEvent('device_removed', {'deviceId': deviceId});
-
       _eventController.add(DeviceRemovedEvent(
         sessionId: _currentSession!.id,
         deviceId: deviceId,
@@ -481,15 +349,11 @@ class SessionManager extends ChangeNotifier {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Control de Dispositivos Multi-Usuario
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Controlar dispositivo en sesión compartida
-  ///
-  /// [deviceId] - ID del dispositivo a controlar
-  /// [intensity] - Intensidad (0.0-1.0)
-  /// [userId] - ID del usuario que envía el comando
   Future<bool> controlDevice({
     required String deviceId,
     required double intensity,
@@ -501,14 +365,12 @@ class SessionManager extends ChangeNotifier {
       return false;
     }
 
-    // Verificar permisos
     if (!_currentSession!.canControl(userId, deviceId)) {
       lvsLog('Usuario $userId no tiene permiso para controlar $deviceId', tag: 'SESSION');
       return false;
     }
 
     try {
-      // Emitir evento de control
       _eventController.add(ControlCommandEvent(
         sessionId: _currentSession!.id,
         userId: userId,
@@ -531,15 +393,6 @@ class SessionManager extends ChangeNotifier {
     if (_currentSession == null) return;
 
     try {
-      if (_sessionChannel != null) {
-        await _sessionChannel!.sendBroadcastMessage(
-          event: 'control_command',
-          payload: {
-            'command': 'stop_all',
-            'ts': DateTime.now().millisecondsSinceEpoch,
-          },
-        );
-      }
       lvsLog('🛑 STOP ALL - Comando enviado a la sesión', tag: 'SESSION');
     } catch (e) {
       _lastError = 'Error deteniendo dispositivos: $e';
@@ -547,9 +400,9 @@ class SessionManager extends ChangeNotifier {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Chat de Sesión
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Enviar mensaje al chat de la sesión
   Future<void> sendChatMessage(String message) async {
@@ -563,14 +416,6 @@ class SessionManager extends ChangeNotifier {
       final currentUserId = _currentUserId;
       final currentUserName = _currentUserDisplayName;
 
-      // Enviar al backend (Supabase Realtime / WebSocket)
-      await _broadcastEvent('chat_message', {
-        'userId': currentUserId,
-        'displayName': currentUserName,
-        'message': message,
-      });
-
-      // Emitir evento local
       _eventController.add(ChatMessageEvent(
         sessionId: _currentSession!.id,
         userId: currentUserId,
@@ -584,15 +429,14 @@ class SessionManager extends ChangeNotifier {
     }
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Utilidades
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Obtener URL de invitación para compartir
   String getInviteUrl() {
     if (_currentSession == null) return '';
-    
-    // Generar URL con backend si está disponible
+
     const baseUrl = 'velvetsync://session/join';
     final token = _currentSession!.accessToken;
     return '$baseUrl?token=$token';
@@ -601,8 +445,7 @@ class SessionManager extends ChangeNotifier {
   /// Copiar token de invitación al portapapeles
   Future<void> copyInviteToken() async {
     if (_currentSession == null) return;
-    
-    // Usar clipboard service
+
     await Clipboard.setData(ClipboardData(text: _currentSession!.accessToken));
     lvsLog('Token copiado: ${_currentSession!.accessToken}', tag: 'SESSION');
   }
@@ -622,48 +465,3 @@ class SessionManager extends ChangeNotifier {
     super.dispose();
   }
 }
-
-// ═══════════════════════════════════════════════════════════════
-// Ejemplos de Uso
-// ═══════════════════════════════════════════════════════════════
-
-/*
-// Ejemplo 1: Crear sesión
-final manager = SessionManager();
-final session = await manager.createSession(
-  name: 'Movie Night',
-  config: SessionConfig.publicConfig,
-);
-
-// Ejemplo 2: Unirse a sesión
-await manager.joinSession(session.accessToken);
-
-// Ejemplo 3: Agregar dispositivo
-await manager.addDevice(
-  deviceId: 'buttplug-device-1',
-  name: 'Lovense Nora',
-  ownerId: 'user-123',
-);
-
-// Ejemplo 4: Controlar dispositivo (multi-usuario)
-await manager.controlDevice(
-  deviceId: 'device-1',
-  intensity: 0.75,
-  userId: 'user-456',
-);
-
-// Ejemplo 5: Escuchar eventos
-manager.eventStream.listen((event) {
-  switch (event) {
-    case UserJoinedEvent():
-      lvsLog('Usuario unido: ${event.participant.displayName}');
-      break;
-    case ControlCommandEvent():
-      lvsLog('Control: ${event.deviceId} @ ${event.intensity}');
-      break;
-  }
-});
-
-// Ejemplo 6: Salir de sesión
-await manager.leaveSession();
-*/

@@ -1,21 +1,20 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/services/session_chat_service.dart
-// Servicio de Chat para Sesiones Multi-Usuario
-// 
-// Chat en tiempo real dentro de sesiones compartidas,
-// integrado con video y control de dispositivos.
-// ═══════════════════════════════════════════════════════════════
+// Servicio de Chat para Sesiones Multi-Usuario (Firebase Firestore)
+// ════════════════════════════════════════════════════════════════
 
 import 'dart:async';
+import 'dart:collection';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:velvet_sync/utils/logger.dart';
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Providers
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 final sessionChatServiceProvider = Provider<SessionChatService>((ref) {
   return SessionChatService();
@@ -24,9 +23,9 @@ final sessionChatServiceProvider = Provider<SessionChatService>((ref) {
 final chatMessagesProvider = StateProvider<List<ChatMessage>>((ref) => []);
 final isTypingProvider = StateProvider<Map<String, bool>>((ref) => {});
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Chat Message Model
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 /// Mensaje de chat en sesión
 class ChatMessage {
@@ -52,16 +51,14 @@ class ChatMessage {
     this.videoUrl,
   });
 
-  factory ChatMessage.fromJson(Map<String, dynamic> json) {
+  factory ChatMessage.fromFirestore(Map<String, dynamic> json, String docId) {
     return ChatMessage(
-      id: json['id'] ?? '',
+      id: docId,
       sessionId: json['sessionId'] ?? '',
       userId: json['userId'] ?? '',
       displayName: json['displayName'] ?? 'Anonymous',
       message: json['message'] ?? '',
-      timestamp: json['timestamp'] != null
-          ? DateTime.parse(json['timestamp'])
-          : DateTime.now(),
+      timestamp: (json['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       type: MessageType.values.firstWhere(
         (t) => t.name == json['type'],
         orElse: () => MessageType.text,
@@ -71,14 +68,13 @@ class ChatMessage {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
       'sessionId': sessionId,
       'userId': userId,
       'displayName': displayName,
       'message': message,
-      'timestamp': timestamp.toIso8601String(),
+      'timestamp': FieldValue.serverTimestamp(),
       'type': type.name,
       if (imageUrl != null) 'imageUrl': imageUrl,
       if (videoUrl != null) 'videoUrl': videoUrl,
@@ -104,9 +100,9 @@ enum MessageType {
   control, // Comandos de dispositivo
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Session Chat Service
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 
 /// Servicio de chat para sesiones multi-usuario
 class SessionChatService extends ChangeNotifier {
@@ -114,25 +110,29 @@ class SessionChatService extends ChangeNotifier {
   factory SessionChatService() => _instance;
   SessionChatService._internal();
 
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+
   final List<ChatMessage> _messages = [];
   final Map<String, bool> _typingUsers = {};
   String? _currentSessionId;
   String? _currentUserId;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _messagesSubscription;
   final StreamController<ChatMessage> _messageController =
       StreamController<ChatMessage>.broadcast();
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Getters de Estado
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   List<ChatMessage> get messages => List.unmodifiable(_messages);
   Stream<ChatMessage> get messageStream => _messageController.stream;
   Map<String, bool> get typingUsers => Map.unmodifiable(_typingUsers);
   String? get currentSessionId => _currentSessionId;
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Inicialización
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Inicializar chat para sesión
   void initialize({
@@ -141,12 +141,45 @@ class SessionChatService extends ChangeNotifier {
   }) {
     _currentSessionId = sessionId;
     _currentUserId = userId;
+    _listenToMessages(sessionId);
     lvsLog('Chat inicializado para sesión: $sessionId', tag: 'CHAT');
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  /// Escuchar mensajes en tiempo real desde Firestore
+  void _listenToMessages(String sessionId) {
+    _messagesSubscription?.cancel();
+
+    _messagesSubscription = _firestore
+        .collection('sessions')
+        .doc(sessionId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .limit(50)
+        .snapshots()
+        .listen((snapshot) {
+      final newMessages = List<ChatMessage>.from(
+        snapshot.docs.reversed.map((doc) => ChatMessage.fromFirestore(doc.data(), doc.id)),
+      );
+
+      _messages
+        ..clear()
+        ..addAll(newMessages);
+
+      _messageController.add(newMessages.lastOrNull ?? ChatMessage(
+        id: 'empty',
+        sessionId: sessionId,
+        userId: '',
+        displayName: '',
+        message: '',
+        timestamp: DateTime.now(),
+      ));
+      notifyListeners();
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
   // Envío de Mensajes
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Enviar mensaje de texto
   Future<void> sendMessage(String message) async {
@@ -156,7 +189,6 @@ class SessionChatService extends ChangeNotifier {
 
     if (message.trim().isEmpty) return;
 
-    // Get displayName from user profile (Supabase)
     final displayName = _getDisplayName();
 
     final chatMessage = ChatMessage(
@@ -169,37 +201,40 @@ class SessionChatService extends ChangeNotifier {
     );
 
     await _addMessage(chatMessage);
-    
-    // Send to backend (Supabase Realtime / WebSocket)
-    await _sendToBackend(chatMessage);
-    
+
     lvsLog('Mensaje enviado: $message', tag: 'CHAT');
   }
 
-  /// Obtener nombre para mostrar desde Supabase
+  /// Obtener nombre para mostrar desde Firebase Auth
   String _getDisplayName() {
     try {
-      final user = Supabase.instance.client.auth.currentUser;
-      return user?.userMetadata?['display_name'] ?? 
-             user?.email?.split('@').first ?? 
+      final user = _auth.currentUser;
+      return user?.displayName ??
+             user?.email?.split('@').first ??
              'User';
     } catch (e) {
       return 'User';
     }
   }
 
-  /// Enviar mensaje al backend
-  Future<void> _sendToBackend(ChatMessage message) async {
+  /// Agregar mensaje a Firestore y localmente
+  Future<void> _addMessage(ChatMessage message) async {
     try {
-      final client = Supabase.instance.client;
-      final channel = client.channel('session_$_currentSessionId');
-      
-      await channel.sendBroadcastMessage(
-        event: 'chat_message',
-        payload: message.toJson(),
-      );
+      await _firestore
+          .collection('sessions')
+          .doc(_currentSessionId)
+          .collection('messages')
+          .add(message.toFirestore());
+
+      _messages.add(message);
+      _messageController.add(message);
+      notifyListeners();
     } catch (e) {
-      lvsLog('Error enviando mensaje al backend: $e', tag: 'CHAT');
+      lvsLog('Error guardando mensaje: $e', tag: 'CHAT');
+      // Aún así agregarlo localmente para no perderlo
+      _messages.add(message);
+      _messageController.add(message);
+      notifyListeners();
     }
   }
 
@@ -265,18 +300,11 @@ class SessionChatService extends ChangeNotifier {
     await _addMessage(chatMessage);
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Recepción de Mensajes
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
-  /// Agregar mensaje localmente
-  Future<void> _addMessage(ChatMessage message) async {
-    _messages.add(message);
-    _messageController.add(message);
-    notifyListeners();
-  }
-
-  /// Recibir mensaje de otro usuario
+  /// Recibir mensaje de otro usuario (desde stream de Firestore)
   void onMessageReceived(ChatMessage message) {
     _messages.add(message);
     _messageController.add(message);
@@ -284,9 +312,9 @@ class SessionChatService extends ChangeNotifier {
     lvsLog('Mensaje recibido de ${message.displayName}: ${message.message}', tag: 'CHAT');
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Typing Indicators
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Usuario está escribiendo
   void startTyping(String userId) {
@@ -305,9 +333,9 @@ class SessionChatService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Gestión de Mensajes
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   /// Limpiar historial
   void clearHistory() {
@@ -332,9 +360,9 @@ class SessionChatService extends ChangeNotifier {
     return _messages.where((m) => m.userId == userId).toList();
   }
 
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
   // Utilidades
-  // ═══════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
 
   String _generateId() {
     return 'msg_${DateTime.now().millisecondsSinceEpoch}';
@@ -357,46 +385,8 @@ class SessionChatService extends ChangeNotifier {
 
   @override
   void dispose() {
+    _messagesSubscription?.cancel();
     _messageController.close();
     super.dispose();
   }
 }
-
-// ═══════════════════════════════════════════════════════════════
-// Ejemplos de Uso
-// ═══════════════════════════════════════════════════════════════
-
-/*
-// Ejemplo 1: Inicializar
-final chatService = SessionChatService();
-chatService.initialize(
-  sessionId: 'session-123',
-  userId: 'user-456',
-);
-
-// Ejemplo 2: Enviar mensaje
-await chatService.sendMessage('¡Hola a todos!');
-
-// Ejemplo 3: Enviar mensaje de sistema
-await chatService.sendSystemMessage('Usuario se unió a la sesión');
-
-// Ejemplo 4: Enviar comando de control
-await chatService.sendControlMessage(
-  deviceId: 'device-1',
-  intensity: 0.75,
-  action: 'Vibrar',
-);
-
-// Ejemplo 5: Escuchar mensajes
-chatService.messageStream.listen((message) {
-  lvsLog('${message.displayName}: ${message.message}');
-});
-
-// Ejemplo 6: Typing indicator
-chatService.startTyping('user-123');
-// ... después de 3 segundos, auto-clear ...
-
-// Ejemplo 7: Filtrar mensajes
-final systemMessages = chatService.getMessagesByType(MessageType.system);
-final userMessages = chatService.getMessagesFromUser('user-123');
-*/

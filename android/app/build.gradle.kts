@@ -4,6 +4,8 @@ import java.io.FileInputStream
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -53,7 +55,6 @@ android {
     productFlavors {
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "Velvet Sync Dev")
         }
@@ -68,16 +69,14 @@ android {
         applicationId = "com.velvetsync.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
 
-        // 📦 Limitar arquitecturas para reducir tamaño (~50% menos vs 4 ABIs)
-        ndk {
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
-        }
+        // 📦 ABI filters are handled by --split-per-abi flag
+        // ndk.abiFilters removed to avoid conflict with splits
 
         // 📦 Excluir extensiones de Agora que NO usa este proyecto
         // El código solo usa el core RTC (init, joinChannel, mute, switchCamera, AgoraVideoView).
@@ -106,14 +105,18 @@ android {
     buildTypes {
         release {
             // Optimización y Seguridad
-            isMinifyEnabled = true
-            isShrinkResources = true
+            val hasKeystore = keystorePropertiesFile.exists() && keystoreProperties.containsKey("storeFile")
+            isMinifyEnabled = hasKeystore
+            isShrinkResources = hasKeystore
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             // ═══════════════════════════════════════════════════════════════
             // ✅ FIRMA DE RELEASE CONFIGURADA (P1 COMPLETADO)
             // ═══════════════════════════════════════════════════════════════
-            signingConfig = signingConfigs.getByName("release")
+            // Firmado condicional: solo si existe key.properties con storeFile
+            if (keystorePropertiesFile.exists() && keystoreProperties.containsKey("storeFile")) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         debug {
             // Debug build configuration - usa signing config por defecto de Android
@@ -128,5 +131,7 @@ flutter {
 }
 
 dependencies {
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

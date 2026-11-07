@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.4.0+1
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.6.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -14,7 +14,7 @@ dependencies:
   flutter_blue_plus: ^2.2.1
   flutter_ble_peripheral: ^2.1.0
 
-  permission_handler: ^12.0.1
+  permission_handler: ^11.0.0
   flutter_secure_storage: ^10.0.0  # 🔒 Updated: Latest secure version
   flutter_dotenv: ^5.1.0
 
@@ -25,10 +25,10 @@ dependencies:
   fft: ^0.5.1
 
   # ── Servicio en segundo plano (Android Foreground Service) ─
-  flutter_foreground_task: ^9.2.1
+  flutter_foreground_task: ^9.1.0
 
   # ── Acelerómetro (Shake Mode) ──────────────────────────────
-  sensors_plus: ^7.0.0
+  sensors_plus: ^5.0.0
   rxdart: ^0.28.0           # 🔒 PERFORMANCE: Stream transformers (debounce, throttle)
   google_fonts: ^6.2.1
 
@@ -37,36 +37,42 @@ dependencies:
 
   # ── Multimedia Sync ───────────────────────────────
   just_audio: ^0.9.46  # Updated: Bug fixes
-  file_picker: ^8.1.7
-  audio_waveforms: ^1.1.0
-  video_player: ^2.9.2
+  file_picker: ^8.0.0
+  audio_waveforms: ^1.0.0
+  video_player: ^2.8.0
 
   # ── Deep Linking ──────────────────────────────────
-  app_links: ^6.4.0
+  app_links: ^6.3.0
 
   # ── Notificaciones Push ────────────────────────────
-  flutter_local_notifications: ^18.0.1
+  flutter_local_notifications: ^17.0.0
 
   wakelock_plus: ^1.4.0
   cupertino_icons: ^1.0.8
-  flame: ^1.36.0
-  image_picker: ^1.2.1
+  flame: ^1.30.0
+  image_picker: ^1.0.0
   http: ^1.2.1
   csv: ^6.0.0
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.1  # 🔒 PERFORMANCE: Custom cache manager para imágenes
-  mobile_scanner: ^7.2.0      # QR / Barcode scanner real
-  supabase_flutter: ^2.12.0
+  mobile_scanner: ^3.0.0      # QR / Barcode scanner real
+  # ── Firebase ─────────────────────────────────────────────────
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.0
+  cloud_firestore: ^5.4.0
+  firebase_storage: ^12.3.0
+  clipboard: ^3.0.1
+
   url_launcher: ^6.3.1
   shared_preferences: ^2.3.3  # Persistencia de configuración
-  share_plus: ^10.1.4         # Compartir archivos de respaldo
-  webview_flutter: ^4.8.0     # WebView para catálogo web (Android/iOS)
+  share_plus: ^7.0.0         # Compartir archivos de respaldo
+  webview_flutter: ^4.4.0     # WebView para catálogo web (Android/iOS)
   path_provider: ^2.1.2       # 🔒 PERSISTENCE: Required for Logger library
   web_socket_channel: ^3.0.1
   path: ^1.9.0
 
   meta: any
-  flutter_svg: ^2.3.0
+  flutter_svg: ^2.0.8
 flutter_launcher_icons:
   android: true
   ios: true

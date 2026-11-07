@@ -1,34 +1,12 @@
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
 // Velvet Sync · lib/services/backend/contact_service.dart
-// Servicio de libreta de contactos para encontrar usuarios por username
-//
-// SQL Migration (ejecutar en Supabase SQL Editor):
-// ═══════════════════════════════════════════════════════════════
-// CREATE TABLE IF NOT EXISTS profiles (
-//   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-//   username VARCHAR(20) UNIQUE NOT NULL CHECK (username ~ '^[a-zA-Z0-9_]{3,20}$'),
-//   display_name VARCHAR(50) NOT NULL,
-//   avatar_url TEXT,
-//   last_seen_at TIMESTAMPTZ DEFAULT NOW(),
-//   created_at TIMESTAMPTZ DEFAULT NOW()
-// );
-//
-// CREATE TABLE IF NOT EXISTS contacts (
-//   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-//   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-//   contact_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-//   created_at TIMESTAMPTZ DEFAULT NOW(),
-//   UNIQUE(user_id, contact_user_id)
-// );
-//
-// CREATE INDEX IF NOT EXISTS idx_profiles_username ON profiles(username);
-// CREATE INDEX IF NOT EXISTS idx_profiles_display_name ON profiles(display_name);
-// CREATE INDEX IF NOT EXISTS idx_contacts_user_id ON contacts(user_id);
-// ═══════════════════════════════════════════════════════════════
+// Servicio de libreta de contactos con Firebase Firestore
+// ════════════════════════════════════════════════════════════════
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:velvet_sync/devices/models/contact.dart';
 import 'package:velvet_sync/devices/models/user_profile.dart';
 import 'package:velvet_sync/types/result_types.dart';
@@ -60,7 +38,7 @@ extension ContactErrorExtension on ContactError {
       case ContactError.networkError:
         return 'Network error, please try again';
       case ContactError.tableNotFound:
-        return 'Contacts table does not exist';
+        return 'Contacts collection does not exist';
       case ContactError.notAuthenticated:
         return 'User is not authenticated';
       case ContactError.unknown:
@@ -74,15 +52,16 @@ class ContactService extends ChangeNotifier {
   factory ContactService() => _instance;
   ContactService._internal();
 
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+
   List<Contact> _contacts = [];
   bool _isLoading = false;
 
   List<Contact> get contacts => List.unmodifiable(_contacts);
   bool get isLoading => _isLoading;
 
-  SupabaseClient get _client => Supabase.instance.client;
-
-  String? get _currentUserId => _client.auth.currentUser?.id;
+  String? get _currentUserId => _auth.currentUser?.uid;
 
   /// Add a user to contacts by their user ID
   Future<Result<Contact, ContactError>> addContact(String contactUserId) async {
@@ -103,38 +82,43 @@ class ContactService extends ChangeNotifier {
         return const Failure(ContactError.cannotAddSelf);
       }
 
-      final response = await _client.from('contacts').insert({
+      // Verificar si ya existe
+      final existing = await _firestore
+          .collection('contacts')
+          .where('user_id', isEqualTo: userId)
+          .where('contact_user_id', isEqualTo: contactUserId)
+          .limit(1)
+          .get();
+
+      if (existing.docs.isNotEmpty) {
+        lvsError('Contact already exists: $contactUserId', tag: 'CONTACT');
+        _isLoading = false;
+        notifyListeners();
+        return const Failure(ContactError.alreadyExists);
+      }
+
+      final docRef = await _firestore.collection('contacts').add({
         'user_id': userId,
         'contact_user_id': contactUserId,
-      }).select().single().timeout(const Duration(seconds: 10));
+        'created_at': FieldValue.serverTimestamp(),
+      });
 
-      final contact = Contact.fromJson(response);
+      final contact = Contact(
+        id: docRef.id,
+        userId: userId,
+        contactUserId: contactUserId,
+        profile: null,
+        createdAt: DateTime.now(),
+        lastSessionAt: null,
+      );
       _contacts.add(contact);
       _isLoading = false;
       notifyListeners();
       lvsLog('Contact added: $contactUserId', tag: 'CONTACT');
       return Success(contact);
-    } on PostgrestException catch (e) {
-      _isLoading = false;
-      notifyListeners();
-
-      if (e.message.contains('violates unique constraint')) {
-        lvsError('Contact already exists: $contactUserId', tag: 'CONTACT');
-        return const Failure(ContactError.alreadyExists);
-      }
-      if (e.message.contains('relation "contacts" does not exist')) {
-        lvsError('Contacts table not found', tag: 'CONTACT');
-        return const Failure(ContactError.tableNotFound);
-      }
-      lvsError('Postgrest error: ${e.message}', tag: 'CONTACT');
-      return const Failure(ContactError.unknown);
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-
-      if (e.toString().contains('relation "contacts" does not exist')) {
-        return const Failure(ContactError.tableNotFound);
-      }
       lvsError('Error adding contact: $e', tag: 'CONTACT');
       return const Failure(ContactError.networkError);
     }
@@ -153,24 +137,13 @@ class ContactService extends ChangeNotifier {
         return const Failure(ContactError.notAuthenticated);
       }
 
-      await _client.from('contacts').delete()
-          .eq('id', contactId)
-          .eq('user_id', userId)
-          .timeout(const Duration(seconds: 10));
+      await _firestore.collection('contacts').doc(contactId).delete();
 
       _contacts.removeWhere((c) => c.id == contactId);
       _isLoading = false;
       notifyListeners();
       lvsLog('Contact removed: $contactId', tag: 'CONTACT');
       return const Success(null);
-    } on PostgrestException catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      if (e.message.contains('relation "contacts" does not exist')) {
-        return const Failure(ContactError.tableNotFound);
-      }
-      lvsError('Postgrest error: ${e.message}', tag: 'CONTACT');
-      return const Failure(ContactError.unknown);
     } catch (e) {
       _isLoading = false;
       notifyListeners();
@@ -192,45 +165,40 @@ class ContactService extends ChangeNotifier {
         return const Failure(ContactError.notAuthenticated);
       }
 
-      final response = await _client.from('contacts').select('''
-        *,
-        profile:contact_user_id!inner (
-          id, username, display_name, avatar_url, last_seen_at
-        )
-      ''').eq('user_id', userId).order('created_at', ascending: false)
-          .timeout(const Duration(seconds: 10));
+      final snapshot = await _firestore
+          .collection('contacts')
+          .where('user_id', isEqualTo: userId)
+          .orderBy('created_at', descending: true)
+          .get();
 
-      final contacts = (response as List).map((data) {
-        final map = data as Map<String, dynamic>;
-        final contact = Contact.fromJson(map);
-        if (map['profile'] != null) {
-          final profileData = map['profile'] as Map<String, dynamic>;
-          final profile = UserProfile.fromJson(profileData);
-          return Contact(
-            id: contact.id,
-            userId: contact.userId,
-            contactUserId: contact.contactUserId,
-            profile: profile,
-            createdAt: contact.createdAt,
-            lastSessionAt: contact.lastSessionAt,
-          );
+      final contacts = <Contact>[];
+      for (final doc in snapshot.docs) {
+        final map = doc.data();
+        final contactUserId = map['contact_user_id'] as String?;
+        UserProfile? profile;
+
+        if (contactUserId != null) {
+          final profileDoc = await _firestore.collection('users').doc(contactUserId).get();
+          if (profileDoc.exists) {
+            profile = UserProfile.fromJson(profileDoc.data()!);
+          }
         }
-        return contact;
-      }).toList();
+
+        contacts.add(Contact(
+          id: doc.id,
+          userId: map['user_id'] as String? ?? userId,
+          contactUserId: contactUserId ?? '',
+          profile: profile,
+          createdAt: (map['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          lastSessionAt: null,
+        ));
+      }
 
       _contacts = contacts;
       _isLoading = false;
       notifyListeners();
       lvsLog('Contacts loaded: ${contacts.length} contacts', tag: 'CONTACT');
       return Success(contacts);
-    } on PostgrestException catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      if (e.message.contains('relation "contacts" does not exist')) {
-        return const Failure(ContactError.tableNotFound);
-      }
-      lvsError('Postgrest error: ${e.message}', tag: 'CONTACT');
-      return const Failure(ContactError.networkError);
     } catch (e) {
       _isLoading = false;
       notifyListeners();
@@ -247,42 +215,41 @@ class ContactService extends ChangeNotifier {
         return const Failure(ContactError.notAuthenticated);
       }
 
-      // Get contacts first, then filter by joined profile data
-      final response = await _client.from('contacts').select('''
-        *,
-        profile:contact_user_id!inner (
-          id, username, display_name, avatar_url, last_seen_at
-        )
-      ''').eq('user_id', userId)
-          .or('profile.username.ilike.%$query%,profile.display_name.ilike.%$query%')
-          .timeout(const Duration(seconds: 10));
+      final snapshot = await _firestore
+          .collection('contacts')
+          .where('user_id', isEqualTo: userId)
+          .get();
 
-      final contacts = (response as List).map((data) {
-        final map = data as Map<String, dynamic>;
-        final contact = Contact.fromJson(map);
-        if (map['profile'] != null) {
-          final profileData = map['profile'] as Map<String, dynamic>;
-          final profile = UserProfile.fromJson(profileData);
-          return Contact(
-            id: contact.id,
-            userId: contact.userId,
-            contactUserId: contact.contactUserId,
-            profile: profile,
-            createdAt: contact.createdAt,
-            lastSessionAt: contact.lastSessionAt,
-          );
+      final contacts = <Contact>[];
+      final lowerQuery = query.toLowerCase();
+
+      for (final doc in snapshot.docs) {
+        final map = doc.data();
+        final contactUserId = map['contact_user_id'] as String?;
+        if (contactUserId == null) continue;
+
+        final profileDoc = await _firestore.collection('users').doc(contactUserId).get();
+        if (profileDoc.exists) {
+          final profileData = profileDoc.data()!;
+          final username = (profileData['username'] as String? ?? '').toLowerCase();
+          final displayName = (profileData['display_name'] as String? ?? '').toLowerCase();
+
+          if (username.contains(lowerQuery) || displayName.contains(lowerQuery)) {
+            final profile = UserProfile.fromJson(profileData);
+            contacts.add(Contact(
+              id: doc.id,
+              userId: map['user_id'] as String? ?? userId,
+              contactUserId: contactUserId,
+              profile: profile,
+              createdAt: (map['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              lastSessionAt: null,
+            ));
+          }
         }
-        return contact;
-      }).toList();
+      }
 
       lvsLog('Contact search "$query": ${contacts.length} results', tag: 'CONTACT');
       return Success(contacts);
-    } on PostgrestException catch (e) {
-      if (e.message.contains('relation "contacts" does not exist')) {
-        return const Failure(ContactError.tableNotFound);
-      }
-      lvsError('Postgrest error: ${e.message}', tag: 'CONTACT');
-      return const Failure(ContactError.networkError);
     } catch (e) {
       lvsError('Error searching contacts: $e', tag: 'CONTACT');
       return const Failure(ContactError.networkError);
@@ -297,41 +264,34 @@ class ContactService extends ChangeNotifier {
         return const Failure(ContactError.notAuthenticated);
       }
 
-      final response = await _client.from('contacts').select('''
-        *,
-        profile:contact_user_id!inner (
-          id, username, display_name, avatar_url, last_seen_at
-        )
-      ''').eq('user_id', currentUserId)
-          .eq('contact_user_id', userId)
-          .maybeSingle()
-          .timeout(const Duration(seconds: 10));
+      final snapshot = await _firestore
+          .collection('contacts')
+          .where('user_id', isEqualTo: currentUserId)
+          .where('contact_user_id', isEqualTo: userId)
+          .limit(1)
+          .get();
 
-      if (response == null) {
+      if (snapshot.docs.isEmpty) {
         return const Success(null);
       }
 
-      final map = response;
-      final contact = Contact.fromJson(map);
-      if (map['profile'] != null) {
-        final profileData = map['profile'] as Map<String, dynamic>;
-        final profile = UserProfile.fromJson(profileData);
-        return Success(Contact(
-          id: contact.id,
-          userId: contact.userId,
-          contactUserId: contact.contactUserId,
-          profile: profile,
-          createdAt: contact.createdAt,
-          lastSessionAt: contact.lastSessionAt,
-        ));
+      final doc = snapshot.docs.first;
+      final map = doc.data();
+
+      UserProfile? profile;
+      final profileDoc = await _firestore.collection('users').doc(userId).get();
+      if (profileDoc.exists) {
+        profile = UserProfile.fromJson(profileDoc.data()!);
       }
-      return Success(contact);
-    } on PostgrestException catch (e) {
-      if (e.message.contains('relation "contacts" does not exist')) {
-        return const Failure(ContactError.tableNotFound);
-      }
-      lvsError('Postgrest error: ${e.message}', tag: 'CONTACT');
-      return const Failure(ContactError.networkError);
+
+      return Success(Contact(
+        id: doc.id,
+        userId: map['user_id'] as String? ?? currentUserId,
+        contactUserId: map['contact_user_id'] as String? ?? userId,
+        profile: profile,
+        createdAt: (map['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        lastSessionAt: null,
+      ));
     } catch (e) {
       lvsError('Error getting contact by userId: $e', tag: 'CONTACT');
       return const Failure(ContactError.networkError);
